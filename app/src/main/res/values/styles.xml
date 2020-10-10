@@ -1,0 +1,8 @@
+<resources>
+    <!--去掉系统Title-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+</resources>
