@@ -1,4 +1,4 @@
-package com.bdb.lottery.base.view
+package com.bdb.lottery.base.ui
 
 import android.graphics.Color
 import android.os.Bundle

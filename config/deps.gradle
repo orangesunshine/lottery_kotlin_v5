@@ -1,0 +1,221 @@
+import groovy.json.JsonSlurper
+
+//读取模块配置信息
+def parseConfig() {
+    return new JsonSlurper().parse(file("${rootDir.path}/config/config.json"))
+}
+
+ext.parseConfig = this.&parseConfig
+
+
+//单个dep获取对应依赖url
+def getSingleDep(String dep) {
+    def deps = []
+    if (null != dep && !dep.isEmpty()) {
+        def value = DEPS[dep]
+        if (null != value) {
+            if (value instanceof List && !value.isEmpty()) {
+                deps.addAll(value)
+            } else if (value instanceof CharSequence) {
+                deps.add(value)
+            }
+        }
+    }
+    return deps
+}
+
+//模块依赖配置获取模块依赖
+def getModuleDeps(String modulename) {
+    def moduelDeps = []
+    if (null != modulename && modulename.length() > 0 && null != config && !config.isEmpty()) {
+        List<String> deps = config.get(modulename)
+        if (null != deps && !deps.isEmpty()) {
+            deps.each {
+                if (null != it && it.length() > 0) {
+                    def singleDep = getSingleDep(it)
+                    if (null != singleDep && !singleDep.isEmpty()) {
+                        moduelDeps.addAll(singleDep)
+                    }
+                }
+            }
+        }
+    }
+    return moduelDeps
+}
+
+
+/**
+ * 获取所有依赖
+ */
+def getAllDeps() {
+    Map<String, List<String>> allDeps = new HashMap<>()
+    if (null != config && !config.isEmpty()) {
+        config.each {
+            def module = it.key
+            if (null != module && module.length() > 0) {
+                def moduleDeps = getModuleDeps(module)
+                if (null != moduleDeps && !moduleDeps.isEmpty()) {
+                    allDeps.put(module, moduleDeps)
+                }
+            }
+        }
+    }
+    return allDeps
+}
+
+ext.getAllDeps = this.&getAllDeps
+
+
+/**
+ * 获取工程classpath
+ */
+def getClassPaths() {
+    List<String> classpaths = new ArrayList<>()
+    if (null != allDeps && !allDeps.isEmpty()) {
+        allDeps.each {
+            def value = it.value
+            if (null != value && !value.isEmpty()) {
+                value.forEach {
+                    if (it && it.startsWithAny("classpath__")) {
+                        classpaths.add(it.replaceAll("classpath__", ""))
+                    }
+                }
+            }
+
+        }
+    }
+    return classpaths
+}
+
+ext.getClassPaths = this.&getClassPaths
+
+
+/**
+ * 获取模块plugin
+ */
+def modulePlugins(String modulename) {
+    Set<String> deps = new HashSet<>()
+    def moduleDeps = allDeps[modulename]
+    if (null != moduleDeps && !moduleDeps.isEmpty()) {
+        deps.addAll(moduleDeps)
+    }
+    def commonDeps = allDeps["common"]
+    if (null != commonDeps && !commonDeps.isEmpty()) {
+        deps.addAll(commonDeps)
+    }
+    List<String> plugins = new ArrayList<>()
+    if (null != deps && !deps.isEmpty()) {
+        deps.forEach {
+            if (null != it && it.length() > 0) {
+                if (it.startsWithAny("plugin__")) {
+                    plugins.add(it.replaceAll("plugin__", ""))
+                } else if (it.startsWithAny("kapt__")) {
+                    plugins.add("kotlin-kapt")
+                }
+            }
+        }
+    }
+    println "younger__modulePlugins__modulename: ${modulename}, plugins: ${plugins}"
+    return plugins
+}
+
+ext.modulePlugins = this.&modulePlugins
+
+def applyPlugin(PluginManager manager, String plugin) {
+    manager.apply(plugin)
+}
+//添加插件
+def applyModulePlugin(PluginManager manager, String modulename) {
+    def plugins = modulePlugins(modulename)
+    if (null != plugins && !plugins.isEmpty()) {
+        plugins.forEach {
+            if (null != it && it.length() > 0) {
+                applyPlugin(manager, it)
+            }
+        }
+    }
+}
+
+/**
+ * 获取模块plugin
+ */
+def moduleDeps(String modulename) {
+    Set<String> deps = new HashSet<>()
+    def moduleDeps = allDeps[modulename]
+    if (null != moduleDeps && !moduleDeps.isEmpty()) {
+        deps.addAll(moduleDeps)
+    }
+    def commonDeps = allDeps["common"]
+    if (null != commonDeps && !commonDeps.isEmpty()) {
+        deps.addAll(commonDeps)
+    }
+    println "younger__moduleDeps__modulename: ${modulename}, deps:  ${deps}"
+    return deps
+}
+
+//处理依赖
+def handleDep(DependencyHandler handler, CharSequence dep) {
+    if (dep.startsWithAny("test__")) {
+        handler.testImplementation dep.replaceAll("test__", "")
+    } else if (dep.startsWithAny("androidtest__")) {
+        handler.androidTestImplementation dep.replaceAll("androidtest__", "")
+    } else if (dep.startsWithAny("api__")) {
+        handler.api dep.replaceAll("api__", "")
+    } else if (dep.startsWithAny("kapt__")) {
+        handler.kapt dep.replaceAll("kapt__", "")
+    } else if (dep.startsWithAny("apt__")) {
+        handler.annotationProcessor dep.replaceAll("apt__", "")
+    } else if (!dep.contains("__")) {
+        handler.implementation dep
+    }
+}
+
+//添加插件
+def handleModuleDeps(DependencyHandler handler, String modulename) {
+    def deps = moduleDeps(modulename)
+    if (null != deps && !deps.isEmpty()) {
+        deps.forEach {
+            if (null != it && it.length() > 0) {
+                handleDep(handler, it)
+            }
+        }
+    }
+}
+
+ext.handleModuleDeps = this.&handleModuleDeps
+
+//获取maven仓库
+def mavenRepositorys() {
+    List<String> mavens = new ArrayList<>()
+    if (null != allDeps && !allDeps.isEmpty()) {
+        allDeps.each {
+            def value = it.value
+            if (null != value && !value.isEmpty()) {
+                value.forEach {
+                    if (it && it.startsWithAny("maven__")) {
+                        mavens.add(it.replaceAll("maven__", ""))
+                    }
+                }
+            }
+
+        }
+    }
+    return mavens
+}
+
+ext.mavenRepositorys = this.&mavenRepositorys
+
+//repository
+def addRepos(RepositoryHandler handler) {
+    handler.google()
+    handler.jcenter()
+    handler.mavenCentral()
+    println "younger__mavens: ${mavens}"
+    if (null != mavens && !mavens.isEmpty()) {
+        mavens.forEach {
+            handler.maven { url "${it}" }
+        }
+    }
+}
+
+ext.addRepos = this.&addRepos

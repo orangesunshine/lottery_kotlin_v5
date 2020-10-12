@@ -1,0 +1,100 @@
+apply from: "${rootDir.path}/config/deps.gradle"
+
+ext.ktx = true
+def AndroidConfigVersion = [:]
+ext.AndroidConfigVersion = AndroidConfigVersion
+AndroidConfigVersion.compileSdkVersion = 29
+AndroidConfigVersion.minSdkVersion = 16
+AndroidConfigVersion.targetSdkVersion = 29
+AndroidConfigVersion.versionCode = 1
+AndroidConfigVersion.versionName = "1.0"
+AndroidConfigVersion.buildToolsVersion = "30.0.2"
+AndroidConfigVersion.appId = "com.orange.DM"
+
+def appcompat_version = "1.2.0"
+def espresso_core_version = "3.3.0"
+def junit_test_version = "1.1.1"
+def junit_version = "4.12"
+def core_ktx_version = "1.3.1"
+def kotlin_version = "1.4.10"
+ext.kotlin_version = kotlin_version
+def retrofit_version = "2.9.0"
+def rxandroid3_version = "3.0.0"
+def rxjava3_version = "3.0.4"
+
+def lifecycle_version = "2.2.0"
+def arch_version = "2.1.0"
+def arch_lifecycle_version = "1.1.1"
+def activity_version = "1.1.0"
+def fragment_version = "1.2.5"
+def collection_version = "1.1.0"
+def nav_version = "2.3.0"
+def paging_version = "2.1.2"
+def room_version = "2.2.5"
+def work_version = "2.4.0"
+def navigation_version = "2.1.0"
+
+def gson = "2.8.0"
+
+def gradle_version = "4.0.1"
+
+def DEPS = [:]
+ext.DEPS = DEPS
+def COMMON = []
+DEPS.COMMON = COMMON
+COMMON << "classpath__com.android.tools.build:gradle:$gradle_version"
+COMMON << "test__junit:junit:$junit_version"
+COMMON << "androidtest__androidx.test.ext:junit:$junit_test_version"
+COMMON << "androidtest__androidx.test.espresso:espresso-core:$espresso_core_version"
+COMMON << "androidx.appcompat:appcompat:$appcompat_version"
+// For loading and tinting drawables on older versions of the platform
+COMMON << "androidx.appcompat:appcompat-resources:$appcompat_version"
+COMMON << "maven__https://jitpack.io"
+COMMON << "maven__https://maven.google.com"
+
+if (ktx) {
+    COMMON << "classpath__org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    COMMON << "plugin__kotlin-android-extensions"
+    COMMON << "plugin__kotlin-android"
+    COMMON << "plugin__kotlin-android"
+    COMMON << "androidx.core:core-ktx:$core_ktx_version"
+    COMMON << "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+def RETROFIT = []
+DEPS.RETROFIT = RETROFIT
+RETROFIT << "com.squareup.retrofit2:retrofit:$retrofit_version"
+RETROFIT << "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+RETROFIT << "com.squareup.retrofit2:converter-gson:$retrofit_version"
+
+DEPS.put("RXANDROID3", "io.reactivex.rxjava3:rxandroid:$rxandroid3_version")
+DEPS.put("RXJAVA3", "io.reactivex.rxjava3:rxjava:$rxjava3_version")
+
+DEPS.put("GSON", "com.google.code.gson:gson:$gson")
+
+def HILT = []
+DEPS.HILT = HILT
+HILT << "com.google.dagger:hilt-android:2.28-alpha"
+HILT << "kapt__com.google.dagger:hilt-android-compiler:2.28-alpha"
+HILT << "plugin__dagger.hilt.android.plugin"
+HILT << "classpath__com.google.dagger:hilt-android-gradle-plugin:2.28-alpha"
+
+if (!ext.has("config")) {
+    def config = parseConfig()
+    ext.config = config
+}
+
+if (!ext.has("allDeps")) {
+    def allDeps = getAllDeps()
+    ext.allDeps = allDeps
+}
+
+if (!ext.has("mavens")) {
+    def mavens = mavenRepositorys()
+    ext.mavens = mavens
+}
+
+if (!ext.has("classpaths")) {
+    def classpaths = getClassPaths()
+    ext.classpaths = classpaths
+}

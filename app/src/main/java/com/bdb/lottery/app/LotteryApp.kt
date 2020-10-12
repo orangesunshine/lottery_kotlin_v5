@@ -1,15 +1,11 @@
 package com.bdb.lottery.app
 
 import android.app.Application
-import com.bdb.lottery.utils.Apps.init
+import dagger.hilt.android.HiltAndroidApp
 
-class LotteryApp: Application() {
+@HiltAndroidApp
+class LotteryApp : Application() {
     override fun onCreate() {
         super.onCreate()
-
-        //init 工具方法
-        //init(applicationContext)
-        val s=""
-        s.length
     }
 }
