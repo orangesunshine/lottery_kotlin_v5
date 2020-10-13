@@ -5,21 +5,18 @@ import android.content.res.Resources
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import com.bdb.lottery.utils.Apps.getApp
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 
 object Sizes {
-    inline fun scale(context: Context? = getApp()?.applicationContext): Float {
-        context?.run {
-            return resources.displayMetrics.density
-        }
-        return -1f
+    lateinit var context: Context
+    inline fun scale(): Float {
+        return context.resources.displayMetrics.density
     }
 
-    inline fun fontScale(context: Context? = getApp()?.applicationContext): Float {
-        context?.run {
-            return resources.displayMetrics.scaledDensity
-        }
-        return -1f
+    inline fun fontScale(): Float {
+        return context.resources.displayMetrics.scaledDensity
     }
 
     /**
@@ -104,10 +101,7 @@ object Sizes {
      * metrics depending on its unit.
      */
     fun applyDimension(value: Float, unit: Int): Float {
-        val context = getApp()
-        context?.run {
-            resources.displayMetrics
-        }?.let {
+        context.resources.displayMetrics.let {
             when (unit) {
                 TypedValue.COMPLEX_UNIT_PX -> return value
                 TypedValue.COMPLEX_UNIT_DIP -> return value * it.density
@@ -117,7 +111,7 @@ object Sizes {
                 TypedValue.COMPLEX_UNIT_MM -> return value * it.xdpi * (1.0f / 25.4f)
                 else -> return -1f
             }
-        } ?: return -1f
+        }
     }
 
     /**

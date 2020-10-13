@@ -1,6 +1,14 @@
 {
   "app": [
-    "GSON","RETROFIT","HILT"
+    "GSON",
+    "RETROFIT",
+    "HILT",
+    "ACTIVITY",
+    "FRAGMENT",
+    "VIEWMODEL",
+    "VIEWMODEL_SAVEDSTATE",
+    "LIVEDATA",
+    "MMKV"
   ],
   "common": [
     "COMMON"
