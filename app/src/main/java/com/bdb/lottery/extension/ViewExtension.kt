@@ -8,3 +8,7 @@ fun ViewStub.attach(@LayoutRes layoutId: Int): View {
     layoutResource = layoutId
     return inflate()
 }
+
+fun View.visible(visible: Boolean) {
+    visibility = if (visible) View.VISIBLE else View.GONE
+}

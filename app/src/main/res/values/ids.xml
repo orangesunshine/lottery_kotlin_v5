@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="id_common_statusbar_layout" type="id" />
+    <item name="id_common_actionbar_layout" type="id" />
+    <item name="id_common_content_layout" type="id" />
+    <item name="id_common_loadinglayout" type="id" />
+    <item name="id_common_error_layout" type="id" />
+</resources>

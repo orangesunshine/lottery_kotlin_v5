@@ -1,12 +1,13 @@
 package com.bdb.lottery.biz.splash
 
 import android.os.Bundle
+import android.view.View
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.Devices
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import kotlinx.android.synthetic.main.activity_splash.*
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
@@ -14,5 +15,22 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         toast("deviceId: ${Devices.getDeviceUUid()}")
+
+        splash_empty_tv.setOnClickListener(View.OnClickListener {
+            empty()
+        })
+
+        splash_error_tv.setOnClickListener(View.OnClickListener {
+            error()
+        })
+
+        splash_hide_tv.setOnClickListener(View.OnClickListener {
+            hide()
+        })
+
+        splash_show_tv.setOnClickListener(View.OnClickListener {
+            show()
+        })
+
     }
 }

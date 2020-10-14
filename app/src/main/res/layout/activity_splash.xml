@@ -4,15 +4,48 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ImageView
+    <FrameLayout
+        android:id="@id/id_common_statusbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_height="1dp" />
 
-    <TextView
+    <com.bdb.lottery.widget.LoadingLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="欢迎" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/splash_show_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="show" />
+
+            <Button
+                android:id="@+id/splash_hide_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="hide" />
+
+            <Button
+                android:id="@+id/splash_error_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="error" />
+
+            <Button
+                android:id="@+id/splash_empty_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="empt" />
+        </LinearLayout>
+    </com.bdb.lottery.widget.LoadingLayout>
+
 </LinearLayout>

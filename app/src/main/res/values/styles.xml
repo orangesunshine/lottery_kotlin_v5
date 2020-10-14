@@ -28,5 +28,4 @@
         <!-- 灰色的百分比 0就是全透明了-->
         <item name="android:backgroundDimAmount">0.4</item>
     </style>
-
 </resources>

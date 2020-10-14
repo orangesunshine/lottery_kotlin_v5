@@ -15,6 +15,7 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.FileProvider
 import com.bdb.lottery.utils.Threads.runOnUiThreadDelayed
 import java.io.BufferedReader
@@ -37,7 +38,7 @@ object Apps {
      * @param context context
      */
     fun init(context: Context?) {
-        init(context?.applicationContext as Application ?: getApplicationByReflect())
+        init(context?.applicationContext ?: getApplicationByReflect())
     }
 
     /**
@@ -82,8 +83,8 @@ object Apps {
         }?.let {
             if (it.size <= 0) return false
             for (aInfo in it) {
-                if (aInfo?.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-                    && aInfo?.processName == getApp()?.packageName
+                if (aInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                    && aInfo.processName == getApp()?.packageName
                 ) return true
             }
         }
@@ -102,7 +103,7 @@ object Apps {
 
     fun fixSoftInputLeaks(window: Window) {
         val imm =
-            getApp()?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager ?: return
+            getApp()?.let{it.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager} ?: return
         val leakViews =
             arrayOf("mLastSrvView", "mCurRootView", "mServedView", "mNextServedView")
         for (leakView in leakViews) {
@@ -110,7 +111,7 @@ object Apps {
                 val leakViewField =
                     InputMethodManager::class.java.getDeclaredField(
                         leakView
-                    ) ?: continue
+                    )?: continue
                 if (!leakViewField.isAccessible) {
                     leakViewField.isAccessible = true
                 }
@@ -143,7 +144,7 @@ object Apps {
     }
 
     private fun getCurrentProcessNameByAms(): String? {
-        val am = getApp()?.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val am = getApp()?.let { it.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager }
             ?: return ""
         val info = am.runningAppProcesses
         if (info == null || info.size == 0) return ""
