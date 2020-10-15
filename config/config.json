@@ -8,6 +8,9 @@
     "VIEWMODEL",
     "VIEWMODEL_SAVEDSTATE",
     "LIVEDATA",
+    "TIMBER",
+    "MULTIDEX",
+    "BUGLY",
     "MMKV"
   ],
   "common": [

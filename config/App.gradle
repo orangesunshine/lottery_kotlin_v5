@@ -12,6 +12,7 @@ android {
         consumerProguardFiles 'proguard-rules.pro'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -47,6 +48,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi-v7a','x86_64'
+            universalApk true
+        }
+    }
+
     if (ktx) {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
@@ -56,7 +66,7 @@ android {
 
 def configSigning() {
 
-    File signPropertiesFile = file("${rootDir.path}/sign/keystore.properties")
+    File signPropertiesFile = file("${rootDir.path}/apk-signature/keystore.properties")
     if (!signPropertiesFile.exists()) return
 
     //GLog.d("${project.toString()} sign start...")
@@ -65,13 +75,23 @@ def configSigning() {
         properties.load(new FileInputStream(signPropertiesFile))
         signingConfigs {
             release {
-                storeFile new File(signPropertiesFile.getParent(), properties['keystore'])
-                storePassword properties['storePassword']
-                keyAlias properties['keyAlias']
-                keyPassword properties['keyPassword']
+                storeFile new File(signPropertiesFile.getParent(), properties['key.file'])
+                storePassword properties['store.password']
+                keyAlias properties['key.alias']
+                keyPassword properties['key.password']
             }
         }
         buildTypes.release.signingConfig signingConfigs.release
     }
     //GLog.d("${project.toString()} sign end...")
+}
+
+
+
+android.applicationVariants.all {
+    variant ->
+        variant.outputs.all {
+            //在这里修改apk文件名，引号内的字符串都可以随便定义
+            outputFileName = "${variant.name}-v${variant.versionName}.apk"
+        }
 }

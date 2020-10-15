@@ -13,25 +13,28 @@ import com.bdb.lottery.const.ITAG
 import com.bdb.lottery.extension.load
 import com.bdb.lottery.extension.statusbar
 import com.bdb.lottery.widget.LoadingLayout
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
 abstract class BaseActivity(var layoutId: Int) : AppCompatActivity() {
-    @Inject
-    lateinit var loading: LoadingDialog
+    //vars
     protected var statusbarLight = true;//状态栏是否半透明
     private var live_ = false;
-    protected val loadingLayout: LoadingLayout
-        get() = findViewById(R.id.id_common_loadinglayout)
-
-    val statusBar: ViewGroup
-        get() = findViewById(R.id.id_common_statusbar_layout)
-
     protected val isAlive
         //act是不是活的
         get() = live_ && !isFinishing
 
-    protected var mActivity: AppCompatActivity? = null//当前activity引用
+    //uis
+    @Inject
+    lateinit var loading: LoadingDialog
+    protected val loadingLayout: LoadingLayout
+        get() = findViewById(R.id.id_common_loadinglayout)
+    protected val content: ViewGroup
+        get() = findViewById(R.id.id_common_content_layout)
+    val statusBar: ViewGroup
+        get() = findViewById(R.id.id_common_statusbar_layout)
+    protected var mActivity: WeakReference<AppCompatActivity>? = null//当前activity引用
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +47,13 @@ abstract class BaseActivity(var layoutId: Int) : AppCompatActivity() {
         val content: FrameLayout = window.decorView.findViewById(android.R.id.content)
         attachView(content)
         statusbar(statusbarLight)
+        loadingLayoutWrap()
+    }
 
-        lifecycle.addObserver(loading)
+    private fun loadingLayoutWrap() {
+        content?.let {
+            LoadingLayout.wrap(content)
+        }
     }
 
     fun attachView(root: ViewGroup) {
@@ -55,12 +63,14 @@ abstract class BaseActivity(var layoutId: Int) : AppCompatActivity() {
 
     fun initVar(bundle: Bundle?) {
         live_ = true
-        mActivity = this
+        mActivity = WeakReference(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         live_ = false
+
+        mActivity?.clear()
         mActivity = null
     }
 

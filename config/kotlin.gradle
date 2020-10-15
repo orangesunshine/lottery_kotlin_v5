@@ -1,2 +1,0 @@
-apply from: "kotlin-android"
-apply from: "kotlin-android-extensions"

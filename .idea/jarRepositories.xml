@@ -736,5 +736,225 @@
       <option name="name" value="maven2" />
       <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@2ae4b738" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@27466c91" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@be3c104" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@186b698e" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@124a4760" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@50d6262f" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@13d1afbf" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@4e65683a" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@54b592a0" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@cb3033e" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@431097df" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@4c2cd721" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@496df65b" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@66f7b9f9" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@7cc6d011" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@53f71b5c" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@4707a2ee" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@1f4a8af5" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@7cec86a0" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@1c621050" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@3b51a358" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@e2e50b4" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@3b5ef5e8" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@343d152b" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@1baf4455" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@4a545d97" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@2f1253a2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@1ff3f2ed" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@5d9e8cc9" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@2416253d" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@2fbe39cd" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@3e9651ca" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@64a13c88" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@67d67bb" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@69070a67" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@3c8fc9ca" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@9f20bf2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@4834eace" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@2c015e7b" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@51cd4ca6" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@620be6c5" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@7ef27dfb" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@35560733" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven2" />
+      <option name="name" value="maven2" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@607c45b2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="file:$PROJECT_DIR$/app/org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactRepository_Decorated@7679ae92" />
+    </remote-repository>
   </component>
 </project>

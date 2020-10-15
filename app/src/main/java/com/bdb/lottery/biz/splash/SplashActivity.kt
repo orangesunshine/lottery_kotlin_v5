@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.View
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
-import com.bdb.lottery.extension.toast
-import com.bdb.lottery.utils.Devices
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_splash.*
 
@@ -14,7 +12,6 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        toast("deviceId: ${Devices.getDeviceUUid()}")
 
         splash_empty_tv.setOnClickListener(View.OnClickListener {
             empty()

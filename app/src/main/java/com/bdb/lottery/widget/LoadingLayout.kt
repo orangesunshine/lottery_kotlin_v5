@@ -62,9 +62,13 @@ class LoadingLayout @JvmOverloads constructor(
         return (resources.displayMetrics.density * dp).toInt()
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        id = R.id.id_common_loadinglayout
+    }
+
     override fun onFinishInflate() {
         super.onFinishInflate()
-        id = R.id.id_common_loadinglayout
         if (childCount == 0) {
             return
         }

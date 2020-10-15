@@ -9,11 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp" />
 
-    <com.bdb.lottery.widget.LoadingLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <LinearLayout
+            android:id="@id/id_common_content_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -46,6 +43,5 @@
                 android:gravity="center"
                 android:text="empt" />
         </LinearLayout>
-    </com.bdb.lottery.widget.LoadingLayout>
 
 </LinearLayout>
