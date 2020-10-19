@@ -17,7 +17,7 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
 //        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
 //        assertEquals("com.bdb.bdb", appContext.packageName)
-        val app = Apps.getApp()
-        println(app)
+//        val app = Apps.getApp()
+//        println(app)
     }
 }

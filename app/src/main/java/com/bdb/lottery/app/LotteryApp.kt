@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Process
 import androidx.multidex.MultiDex
 import com.bdb.lottery.BuildConfig
+import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.Devices
 import com.bdb.lottery.utils.Screens
 import com.bdb.lottery.utils.Sizes
@@ -41,12 +42,18 @@ class LotteryApp : Application() {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
                 getProcessName()
             } else {
+                Apps.getProcessName(Process.myPid())
             }
         // 设置是否为上报进程
         val strategy = CrashReport.UserStrategy(context)
         strategy.setUploadProcess(processName == null || processName == packageName)
         // 初始化Bugly
-        CrashReport.initCrashReport(context, "注册时申请的APPID", BuildConfig.DEBUG, strategy)
+        CrashReport.initCrashReport(
+            context,
+            BuildConfig.APPLICATION_ID,
+            BuildConfig.DEBUG,
+            strategy
+        )
     }
 
     private fun initThirdLibs() {
