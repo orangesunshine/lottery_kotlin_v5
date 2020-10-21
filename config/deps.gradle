@@ -216,7 +216,7 @@ def addRepos(RepositoryHandler handler) {
     handler.google()
     handler.jcenter()
     handler.mavenCentral()
-    println "younger__mavens: ${mavens}"
+    println "younger__deps__mavens: ${mavens}"
     if (null != mavens && !mavens.isEmpty()) {
         mavens.forEach {
             handler.maven { url "${it}" }

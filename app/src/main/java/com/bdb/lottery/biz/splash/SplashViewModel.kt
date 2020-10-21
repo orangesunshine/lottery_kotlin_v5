@@ -5,12 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.viewmodel.BaseViewModel
+import com.bdb.lottery.datasource.domain.DomainRepository
 
-class SplashViewModel @ViewModelInject constructor() : BaseViewModel() {
+class SplashViewModel @ViewModelInject constructor(var domainRepository: DomainRepository) :
+    BaseViewModel() {
     var ldDamain = LiveDataWraper<ViewState<String>>()
 
     fun mock() {
-
+        domainRepository.url()
         ldDamain.setData(ViewState("younger"))
     }
 }

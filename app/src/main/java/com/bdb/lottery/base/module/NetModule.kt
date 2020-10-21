@@ -21,13 +21,4 @@ class NetModule {
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
-
-    @Provides
-    fun retrofit(baseUrl: String): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-    }
 }

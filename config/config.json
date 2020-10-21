@@ -1,6 +1,7 @@
 {
   "app": [
     "GSON",
+    "OKHTTP3",
     "RETROFIT",
     "HILT",
     "HILT_VIEWMODEL",
