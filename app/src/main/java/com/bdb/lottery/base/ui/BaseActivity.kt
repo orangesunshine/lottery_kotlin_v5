@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
 import com.bdb.lottery.base.response.ViewState
-import com.bdb.lottery.const.ITAG
+import com.bdb.lottery.const.ITag
 import com.bdb.lottery.extension.load
 import com.bdb.lottery.extension.statusbar
 import com.bdb.lottery.widget.LoadingLayout
@@ -75,11 +75,12 @@ abstract class BaseActivity(var layoutId: Int) : AppCompatActivity() {
     }
 
     fun show() {
-        loading.show(supportFragmentManager, ITAG.COMMON_LOADING)
+        loading.show(supportFragmentManager, ITag.COMMON_LOADING)
     }
 
     fun hide() {
-        loading.dismissAllowingStateLoss()
+        if (loading.isAdded && !loading.isDetached)
+            loading.dismissAllowingStateLoss()
     }
 
     fun error() {
@@ -90,12 +91,22 @@ abstract class BaseActivity(var layoutId: Int) : AppCompatActivity() {
         loadingLayout.showEmpty()
     }
 
-    protected fun <D, T : ViewState<D>> observe(
-        data: LiveData<T>,
-        block: (D) -> Any
+    protected fun <D, T : ViewState<D>> observeWithLoading(
+        data: LiveData<T>?,
+        block: (D?) -> Any
     ) {
-        data.observe(this, Observer {
+        data?.observe(this, Observer {
             load(it.isLoading)
+            block(it.data)
+        })
+    }
+
+    protected fun <D, T : ViewState<D>> observe(
+        data: LiveData<T>?,
+        block: (D?) -> Any
+    ) {
+        data?.observe(this, Observer {
+            block(it.data)
         })
     }
 }

@@ -42,6 +42,13 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="empt" />
+
+            <Button
+                android:id="@+id/splash_play_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="play" />
         </LinearLayout>
 
 </LinearLayout>

@@ -7,6 +7,12 @@ def parseConfig() {
 
 ext.parseConfig = this.&parseConfig
 
+//读取模块配置信息
+def parseFlavors() {
+    return new JsonSlurper().parse(file("${rootDir.path}/config/flavors.json"))
+}
+
+ext.parseFlavors = this.&parseFlavors
 
 //单个dep获取对应依赖url
 def getSingleDep(String dep) {

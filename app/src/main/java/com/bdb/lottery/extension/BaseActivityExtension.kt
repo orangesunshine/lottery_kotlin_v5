@@ -8,7 +8,6 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -16,15 +15,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
-import com.bdb.lottery.const.ITAG
-import kotlinx.android.synthetic.main.activity_splash.*
 import kotlin.reflect.KProperty1
 
 fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_SHORT) {
     toast(getString(resId))
 }
 
-fun Context.toast(msg: String, length: Int = Toast.LENGTH_SHORT) {
+fun Context.toast(msg: String?, length: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, msg, length).show()
 }
 

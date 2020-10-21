@@ -3,6 +3,7 @@
     "GSON",
     "RETROFIT",
     "HILT",
+    "HILT_VIEWMODEL",
     "ACTIVITY",
     "FRAGMENT",
     "VIEWMODEL",

@@ -1,5 +1,11 @@
 package com.bdb.lottery.extension
 
-fun String.equals(str: String): Boolean {
-    return (null != this) && this.equals(str)
+import android.text.TextUtils
+
+fun String?.notNullEquals(str: String?): Boolean {
+    return (null != this) && TextUtils.equals(this, str)
+}
+
+fun String?.notEmptyEquals(str: String?): Boolean {
+    return !TextUtils.isEmpty(this) && TextUtils.equals(this, str)
 }

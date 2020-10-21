@@ -63,6 +63,32 @@ android {
             jvmTarget = JavaVersion.VERSION_1_8
         }
     }
+
+
+    if (null != flavors && flavors.size() > 0) {
+        flavorDimensions "default"
+        productFlavors {
+            flavors.each {
+                def flavorname = it.flavorname
+                def applicationIdCfg = it.applicationId
+                def manifestPlaceholdersCfg = it.manifestPlaceholders
+                def buildConfigFieldCfg = it.buildConfigField
+                "${flavorname}" {
+                    applicationId applicationIdCfg
+                    manifestPlaceholders = manifestPlaceholdersCfg
+                    if (null != buildConfigFieldCfg && buildConfigFieldCfg.size() > 0) {
+                        buildConfigFieldCfg.each {
+                            def key = it.key
+                            def value = it.value
+                            if (null != key && null != value && key.length() > 0 && value.length() > 0) {
+                                buildConfigField "String", key, "\"${value}\""
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 def configSigning() {
@@ -86,7 +112,6 @@ def configSigning() {
     }
     //GLog.d("${project.toString()} sign end...")
 }
-
 
 
 android.applicationVariants.all {

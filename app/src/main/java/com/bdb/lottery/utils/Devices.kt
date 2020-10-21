@@ -3,16 +3,9 @@ package com.bdb.lottery.utils
 import android.content.Context
 import android.provider.Settings
 import android.text.TextUtils
-import com.bdb.lottery.const.ICACHE
+import com.bdb.lottery.const.ICache
 import com.tencent.mmkv.MMKV
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
 object Devices {
     lateinit var context: Context
@@ -22,7 +15,7 @@ object Devices {
      * 获取设备uuid
      */
     fun getDeviceUUid(): String {
-        return (mmkv.getString(ICACHE.DEVICE_ID, null)) ?: let {
+        return (mmkv.getString(ICache.DEVICE_ID, null)) ?: let {
             val androidId = getAndroidId()
             saveUdid(if (TextUtils.isEmpty(androidId)) 9 else 2, androidId)
         }
@@ -35,7 +28,7 @@ object Devices {
 
     fun saveUdid(prifex: Int, id: String): String {
         val udid = getUdid(prifex, id)
-        mmkv.putString(ICACHE.DEVICE_ID, udid)
+        mmkv.putString(ICache.DEVICE_ID, udid)
         return udid
     }
 

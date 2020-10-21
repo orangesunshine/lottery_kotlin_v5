@@ -4,11 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.os.Process
 import androidx.multidex.MultiDex
-import com.bdb.lottery.BuildConfig
-import com.bdb.lottery.utils.Apps
-import com.bdb.lottery.utils.Devices
-import com.bdb.lottery.utils.Screens
-import com.bdb.lottery.utils.Sizes
+import com.bdb.lottery.utils.*
 import com.bdb.lottery.utils.timber.LogTree
 import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.mmkv.MMKV
@@ -50,8 +46,8 @@ class LotteryApp : Application() {
         // 初始化Bugly
         CrashReport.initCrashReport(
             context,
-            BuildConfig.APPLICATION_ID,
-            BuildConfig.DEBUG,
+            Configs.buglyAppId(),
+            Configs.isDebug(),
             strategy
         )
     }

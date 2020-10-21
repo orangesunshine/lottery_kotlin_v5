@@ -28,6 +28,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
+import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.R
 import java.util.*
 
