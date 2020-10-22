@@ -51,13 +51,20 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 //                it.onError(NullPointerException("null"))
                 Timber.d("younger__subscribe__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
             })
-                .subscribeOn(Schedulers.io())
                 .doOnSubscribe { Timber.d("younger__doOnSubscribe__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}") }
+                .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
-                .flatMap { Observable.fromArray(it + "orange") }
+                .flatMap {
+                    Timber.d("younger__flatMap__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
+                    Observable.fromArray(it + "orange") }
                 .observeOn(Schedulers.computation())
-                .map { it + "sunshine" }
+                .map {
+                    Timber.d("younger__map__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
+                    it + "sunshine" }
                 .observeOn(Schedulers.single())
+                .map{
+                    Timber.d("younger__map_haha__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
+                    it+"haha"}
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ Timber.d("younger__onNext__${it}__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}") },
                     { Timber.d("younger__onError__${it?.message}__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}") },
