@@ -1,4 +1,4 @@
-package com.bdb.lottery.utils.retrofit
+package com.bdb.lottery.utils.net.retrofit
 
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull

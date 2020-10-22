@@ -3,6 +3,7 @@ package com.bdb.lottery.const
 interface IConst {
     companion object {
         var BASE_URL: String = "http://good6789.com"
+        val DEFAULT_ERROR_CODE = -1
     }
 }
 
@@ -21,6 +22,7 @@ interface ICache {
 interface IDebugConfig {
     companion object {
         val BUGLY_APPID = "5c7c8170b8"
+        val BUGLY_CRASH_SCENE_Tag = 172035
         val URL_TEST_DOMAIN = "http://good6789.com"
     }
 }

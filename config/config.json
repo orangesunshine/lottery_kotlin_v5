@@ -3,6 +3,7 @@
     "GSON",
     "OKHTTP3",
     "RETROFIT",
+    "RXANDROID3",
     "HILT",
     "HILT_VIEWMODEL",
     "ACTIVITY",

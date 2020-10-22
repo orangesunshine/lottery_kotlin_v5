@@ -1,6 +1,6 @@
 package com.bdb.lottery
 
-import com.bdb.lottery.extension.notNullEquals
+import android.text.TextUtils
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -16,11 +16,13 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun String_equals_isCorrect(){
-        val str1:String? = null
-        val str2:String? = null
-        val ret = str1.notNullEquals(str2)
-        println("ret: ${ret}")
+    fun String_equals_isCorrect() {
+        val list = arrayOf("", "", "aaa")
+        val filter = list.filter { !isEmpty(it) }
+        println("list: ${list.asList()}, filer: ${filter}")
     }
 
+    fun isEmpty(str: String):Boolean {
+        return str == null || str.length == 0
+    }
 }

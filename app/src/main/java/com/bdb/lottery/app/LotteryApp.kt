@@ -14,6 +14,14 @@ import timber.log.Timber
 
 @HiltAndroidApp
 class LotteryApp : Application() {
+    companion object {
+        lateinit var context: Context
+
+        fun globalContext(): Context {
+            return context
+        }
+    }
+
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
         MultiDex.install(this)
@@ -21,6 +29,7 @@ class LotteryApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        context = applicationContext
 
         initThirdLibs()
 
@@ -30,7 +39,6 @@ class LotteryApp : Application() {
     }
 
     private fun initBugly() {
-        val context = applicationContext
         // 获取当前包名
         val packageName = context.packageName
         // 获取当前进程名
