@@ -9,6 +9,7 @@ import com.bdb.lottery.utils.timber.LogTree
 import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
+import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import timber.log.Timber
 
 
@@ -16,10 +17,6 @@ import timber.log.Timber
 class LotteryApp : Application() {
     companion object {
         lateinit var context: Context
-
-        fun globalContext(): Context {
-            return context
-        }
     }
 
     override fun attachBaseContext(base: Context?) {
@@ -36,6 +33,12 @@ class LotteryApp : Application() {
         initUtils()
 
         initBugly()
+
+        initRxjava()
+    }
+
+    private fun initRxjava() {
+        RxJavaPlugins.setErrorHandler { e: Throwable? -> }
     }
 
     private fun initBugly() {

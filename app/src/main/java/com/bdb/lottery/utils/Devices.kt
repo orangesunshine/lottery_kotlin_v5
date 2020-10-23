@@ -15,7 +15,7 @@ object Devices {
      * 获取设备uuid
      */
     fun getDeviceUUid(): String {
-        return (mmkv.getString(ICache.DEVICE_ID, null)) ?: let {
+        return (mmkv.getString(ICache.CHACHE_DEVICE_ID, null)) ?: let {
             val androidId = getAndroidId()
             saveUdid(if (TextUtils.isEmpty(androidId)) 9 else 2, androidId)
         }
@@ -28,7 +28,7 @@ object Devices {
 
     fun saveUdid(prifex: Int, id: String): String {
         val udid = getUdid(prifex, id)
-        mmkv.putString(ICache.DEVICE_ID, udid)
+        mmkv.putString(ICache.CHACHE_DEVICE_ID, udid)
         return udid
     }
 

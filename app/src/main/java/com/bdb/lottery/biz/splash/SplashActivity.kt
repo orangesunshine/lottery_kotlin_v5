@@ -6,13 +6,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.extension.toast
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.ObservableOnSubscribe
-import io.reactivex.rxjava3.functions.Function
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_splash.*
-import timber.log.Timber
 
 /**
  * observeOn() 只是在收到 onNext() 等消息的时候改变了从下一个开始的操作符的线程运行环境。
@@ -25,51 +19,23 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        splash_empty_tv.setOnClickListener({
+        splash_empty_tv.setOnClickListener {
             empty()
-        })
+        }
 
-        splash_error_tv.setOnClickListener({
+        splash_error_tv.setOnClickListener {
             error()
-        })
+        }
 
-        splash_hide_tv.setOnClickListener({
+        splash_hide_tv.setOnClickListener {
             hide()
-        })
+        }
 
-        splash_show_tv.setOnClickListener({
+        splash_show_tv.setOnClickListener {
             show()
-        })
+        }
 
-        splash_play_tv.setOnClickListener({
-//            viewModel.mock()
-
-            Observable.fromArray(arrayOf("1", "2", "3"))
-            Observable.create(ObservableOnSubscribe<String> {
-                val str: String = "orange"
-                it.onNext(str)
-//                it.onError(NullPointerException("null"))
-                Timber.d("younger__subscribe__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
-            })
-                .doOnSubscribe { Timber.d("younger__doOnSubscribe__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}") }
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.newThread())
-                .flatMap {
-                    Timber.d("younger__flatMap__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
-                    Observable.fromArray(it + "orange") }
-                .observeOn(Schedulers.computation())
-                .map {
-                    Timber.d("younger__map__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
-                    it + "sunshine" }
-                .observeOn(Schedulers.single())
-                .map{
-                    Timber.d("younger__map_haha__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}")
-                    it+"haha"}
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ Timber.d("younger__onNext__${it}__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}") },
-                    { Timber.d("younger__onError__${it?.message}__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}") },
-                    { Timber.d("younger__onComplete__thread__id: ${Thread.currentThread().id}, name: ${Thread.currentThread().name}") })
-        })
+        splash_play_tv.setOnClickListener { viewModel.mock() }
 
         observe(viewModel.ldDamain.getLiveData(), {
             toast(it)

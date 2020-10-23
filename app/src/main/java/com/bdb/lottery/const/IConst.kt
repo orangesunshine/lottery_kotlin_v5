@@ -3,7 +3,8 @@ package com.bdb.lottery.const
 interface IConst {
     companion object {
         var BASE_URL: String = "http://good6789.com"
-        val DEFAULT_ERROR_CODE = -1
+        val DEFAULT_ERROR_CODE = -1//自定义通用错误
+        val DOAMIN_ERROR_CODE = -2//自定义域名获取失败
     }
 }
 
@@ -15,7 +16,8 @@ interface ITag {
 
 interface ICache {
     companion object {
-        val DEVICE_ID = "device_id"
+        val CHACHE_DEVICE_ID = "chache_device_id"
+        val CACHE_FRONT_CONFIG = "cache_front_config"
     }
 }
 

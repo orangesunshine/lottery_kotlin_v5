@@ -1,8 +1,7 @@
 package com.bdb.lottery.utils.net.retrofit
 
-import android.text.TextUtils
 import com.bdb.lottery.const.IConst
-import com.bdb.lottery.extension.notEmpty
+import com.bdb.lottery.extension.nNullEmpty
 import com.bdb.lottery.utils.net.NetCallback
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -13,6 +12,7 @@ import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -23,7 +23,9 @@ object Retrofits {
     }).also {
         it.level = HttpLoggingInterceptor.Level.BODY
     }
-    val okClient = OkHttpClient.Builder().addInterceptor(logInterceptor)
+    val okClient = OkHttpClient.Builder()
+        .addInterceptor(logInterceptor)
+        .addInterceptor(HeadersInterceptor())
         .connectTimeout(15, TimeUnit.SECONDS)  //设置超时时间 15s
         .readTimeout(5, TimeUnit.SECONDS)     //设置读取超时时间
         .writeTimeout(5, TimeUnit.SECONDS).build()   //设置写入超时时间
@@ -35,6 +37,7 @@ object Retrofits {
 
     fun create(url: String): Retrofit {
         return Retrofit.Builder()
+            .addConverterFactory(ScalarsConverterFactory.create()) // 使用Gson作为数据转换器
             .addConverterFactory(GsonConverterFactory.create()) // 使用Gson作为数据转换器
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create()) // 使用RxJava作为回调适配器
             .client(okClient)
@@ -66,7 +69,7 @@ object Retrofits {
     fun msg(throwable: Throwable): String? {
         return throwable?.let {
             val message = it.message
-            return if (message.notEmpty()) message else it.cause?.message
+            return if (message.nNullEmpty()) message else it.cause?.message
         }
     }
 }

@@ -5,7 +5,7 @@ interface HttpConstUrl {
         /**
          * TXT域名
          */
-        val API_TXT_DOMAINS = arrayOf(
+        val DOMAINS_API_TXT = arrayOf(
             //阿里云
             "https://ythcoceanpark.net/",
             "https://dongfangyinfeng.com/",
@@ -15,5 +15,8 @@ interface HttpConstUrl {
             "http://oklznzb.com/",
             "https://o3rjctsi8.qnssl.com/"
         )
+
+        //前台配置
+        val URL_CONFIG_FRONT = "/system-config/front.mvc"
     }
 }

@@ -6,7 +6,7 @@ import com.tencent.bugly.crashreport.CrashReport
 
 object Buglys {
     fun nullPointReport(msg: String) {
-        CrashReport.setUserSceneTag(LotteryApp.globalContext(), BUGLY_CRASH_SCENE_Tag)
+        CrashReport.setUserSceneTag(LotteryApp.context, BUGLY_CRASH_SCENE_Tag)
         CrashReport.postCatchedException(NullPointerException(msg))
     }
 }

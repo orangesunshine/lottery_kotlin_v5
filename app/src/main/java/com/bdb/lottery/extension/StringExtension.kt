@@ -4,7 +4,7 @@ import android.net.Uri
 import android.text.TextUtils
 import java.util.regex.Pattern
 
-fun String?.notEmpty(): Boolean {
+fun String?.nNullEmpty(): Boolean {
     return this != null && this.length > 0
 }
 
@@ -13,7 +13,7 @@ fun String?.notNullEquals(str: String?): Boolean {
 }
 
 fun String?.notEmptyEquals(str: String?): Boolean {
-    return notEmpty() && TextUtils.equals(this, str)
+    return nNullEmpty() && TextUtils.equals(this, str)
 }
 
 fun String?.isNetUrl(): Boolean {

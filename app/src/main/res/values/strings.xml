@@ -2,4 +2,6 @@
     <string name="app_name">lottery_kotlin_v5</string>
     <!-- 域名Txt -->
     <string name="api_txt_path">lottery/tenant/bdb/domain/bdb.txt</string>
+    <!-- 内置Api域名 -->
+    <string name="local_http_url">http://bdb258.com/</string>
 </resources>

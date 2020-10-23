@@ -1,5 +1,6 @@
 package com.bdb.lottery.base.module
 
+import com.bdb.lottery.datasource.config.FrontConfig
 import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.Module
 import dagger.Provides
@@ -13,7 +14,7 @@ import javax.inject.Named
 class NetModule {
     @Provides
     fun retrofit(): Retrofit {
-        return Retrofits.create()
+        return Retrofits.create(FrontConfig.getDomain())
     }
 
     @Provides
