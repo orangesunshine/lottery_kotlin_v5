@@ -17,6 +17,12 @@ interface HttpConstUrl {
         )
 
         //前台配置
-        val URL_CONFIG_FRONT = "/system-config/front.mvc"
+        const val URL_CONFIG_FRONT = "/system-config/front.mvc"
+
+        //客服
+        const val URL_CUSTOM_SERVICE: String = "/login/kefuxian.mvc"
+
+        //客服
+        const val URL_APK_VERSION: String = "/login/apkversion.mvc"
     }
 }

@@ -14,7 +14,7 @@ import timber.log.Timber
 
 
 @HiltAndroidApp
-class LotteryApp : Application() {
+class BdbApp : Application() {
     companion object {
         lateinit var context: Context
     }
@@ -66,7 +66,6 @@ class LotteryApp : Application() {
     private fun initThirdLibs() {
         MMKV.initialize(this)
         Timber.plant(LogTree())
-        Timber.d("i am timber")
     }
 
     private fun initUtils() {

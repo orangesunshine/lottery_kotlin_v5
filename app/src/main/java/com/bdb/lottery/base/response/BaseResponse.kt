@@ -5,8 +5,14 @@ class BaseResponse<T> {
     var msg: String? = null
     var data: T? = null
 
+    //网络请求成功
     fun isSuccess(): Boolean {
         return null != code && code >= 200 && code < 300
+    }
+
+    //200code 成功获取数据
+    fun successData(): Boolean {
+        return null != code && 200 == code
     }
 
     override fun toString(): String {

@@ -10,7 +10,7 @@ import com.bdb.lottery.utils.Screens
 import com.bdb.lottery.utils.Sizes
 
 open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
-    private var rootView: ViewGroup? = null
+    private var rootView: View? = null
     var mDimAmount = 0.5f //背景昏暗度
     var mShowBottomEnable = false//是否底部显示
     var mMargin = 0f //左右边距
@@ -29,6 +29,7 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        rootView = super.onCreateView(inflater, container, savedInstanceState)
         if (null == rootView) {
             rootView = inflater.inflate(layoutId, null) as ViewGroup?
         }
@@ -88,7 +89,13 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
         if (!checkActivityIsActive(manager)) {
             return
         }
-        super.show(manager, tag)
+        if (!isAdded) {
+            super.show(manager, tag)
+        } else {
+            val ft = manager.beginTransaction()
+            ft.show(this)
+            ft.commit()
+        }
     }
 
     override fun dismiss() {

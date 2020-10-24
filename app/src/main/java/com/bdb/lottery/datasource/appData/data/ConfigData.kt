@@ -1,6 +1,6 @@
-package com.bdb.lottery.datasource.config
+package com.bdb.lottery.datasource.appData.data
 
-data class FrontConfigData(
+data class ConfigData(
     var WebMobileUrl: String,
     var androidAppDownloadUrl: String,
     var androidH5AppDownloadUrl: String,

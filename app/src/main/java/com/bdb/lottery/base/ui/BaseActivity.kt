@@ -101,12 +101,12 @@ abstract class BaseActivity(var layoutId: Int) : AppCompatActivity() {
         })
     }
 
-    protected fun <D, T : ViewState<D>> observe(
-        data: LiveData<T>?,
+    protected fun <D> observe(
+        data: LiveData<D>?,
         block: (D?) -> Any
     ) {
         data?.observe(this, Observer {
-            block(it.data)
+            block(it)
         })
     }
 }

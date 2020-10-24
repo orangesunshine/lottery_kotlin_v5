@@ -1,6 +1,5 @@
 package com.bdb.lottery.extension
 
-import android.net.Uri
 import android.text.TextUtils
 import java.util.regex.Pattern
 
@@ -8,14 +7,12 @@ fun String?.nNullEmpty(): Boolean {
     return this != null && this.length > 0
 }
 
-fun String?.notNullEquals(str: String?): Boolean {
-    return (null != this) && TextUtils.equals(this, str)
-}
-
-fun String?.notEmptyEquals(str: String?): Boolean {
+fun String?.nEmptyEquals(str: String?): Boolean {
     return nNullEmpty() && TextUtils.equals(this, str)
 }
 
-fun String?.isNetUrl(): Boolean {
-    return notEmptyEquals(this) && Pattern.matches("http(s)?", Uri.parse(this).scheme)
+fun String?.isDomainUrl(): Boolean {
+    val regex =
+        "((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(/)?"
+    return this.nNullEmpty() && Pattern.matches(regex, this)
 }

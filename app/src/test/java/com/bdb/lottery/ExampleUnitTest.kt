@@ -1,8 +1,11 @@
 package com.bdb.lottery
 
-import android.text.TextUtils
+import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -22,7 +25,32 @@ class ExampleUnitTest {
         println("list: ${list.asList()}, filer: ${filter}")
     }
 
-    fun isEmpty(str: String):Boolean {
+    fun isEmpty(str: String): Boolean {
         return str == null || str.length == 0
+    }
+
+    @Test
+    fun regexMatcher() {
+        // 要验证的字符串
+        val str = "s29360705@xsoftlab.net"
+        // 邮箱验证规则
+        val regEx = "\"^[0-9]+(.[0-9]{2})?\$\""
+//        val regEx = "[a-zA-Z_]{1,}[0-9]{0,}@(([a-zA-z0-9]-*){1,}\\.){1,3}[a-zA-z\\-]{1,}"
+        // 编译正则表达式
+        val pattern: Pattern = Pattern.compile(regEx)
+        // 忽略大小写的写法
+        // Pattern pat = Pattern.compile(regEx, Pattern.CASE_INSENSITIVE);
+        val matcher: Matcher = pattern.matcher(str)
+        // 字符串是否与正则表达式相匹配
+        val rs: Boolean = matcher.matches()
+        Assert.assertTrue(rs)
+    }
+
+    @Test
+    fun hasMomain() {
+        val url = "http://baidu.com"
+        val regex =
+            "((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(/)?"
+        assertTrue(Pattern.matches(regex, url))
     }
 }

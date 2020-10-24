@@ -1,6 +1,7 @@
 {
   "app": [
     "GSON",
+    "EVENTBUS",
     "OKHTTP3",
     "RETROFIT",
     "RXANDROID3",

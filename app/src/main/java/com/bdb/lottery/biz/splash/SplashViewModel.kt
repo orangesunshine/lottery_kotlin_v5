@@ -1,45 +1,61 @@
 package com.bdb.lottery.biz.splash
 
-import android.content.Context
-import android.text.TextUtils
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.bdb.lottery.base.response.ViewState
+import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.base.viewmodel.BaseViewModel
-import com.bdb.lottery.datasource.config.ConfigRemoteDataSource
-import com.bdb.lottery.datasource.config.FrontConfig.saveDomain
-import com.bdb.lottery.extension.isNetUrl
-import dagger.hilt.android.qualifiers.ActivityContext
-import timber.log.Timber
+import com.bdb.lottery.const.ICache
+import com.bdb.lottery.datasource.LiveDataWraper
+import com.bdb.lottery.datasource.appData.ConfigLocalDataSource.getDomain
+import com.bdb.lottery.datasource.appData.ConfigLocalDataSource.saveDomain
+import com.bdb.lottery.datasource.appData.ConfigRemoteDataSource
+import com.bdb.lottery.datasource.appData.data.CustomServiceData
+import com.bdb.lottery.extension.nNullEmpty
+import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.net.NetAdapter
 import javax.inject.Inject
 
 class SplashViewModel @ViewModelInject @Inject constructor(
-    @ActivityContext val context: Context,
-    val config: ConfigRemoteDataSource
+    private val config: ConfigRemoteDataSource
 ) : BaseViewModel() {
-    var ldDamain = LiveDataWraper<ViewState<String>>()
-    fun mock() {
+    val ldDialogOnDomainError = LiveDataWraper<Boolean>()
+
+    //初始化域名
+    fun initDomain() {
         config.getDomainNdCallback {
-            val scheme = it?.WebMobileUrl?.toUri()?.scheme
-            val host = it?.WebMobileUrl?.toUri()?.host
-            val authority = it?.WebMobileUrl?.toUri()?.authority
-            val domain = scheme + "://" + if (TextUtils.isEmpty(host)) authority else host
-            saveDomain(domain)
+            if (null == it) {
+                //获取域名失败
+                if (BuildConfig.SHOW_DOALOG_ON_DOMAIN_ERROR) {
+                    ldDialogOnDomainError.setData(true)
+                }
+
+                getDomain()
+            } else {
+                val scheme = it?.WebMobileUrl?.toUri()?.scheme
+                val host = it?.WebMobileUrl?.toUri()?.host
+                val authority = it?.WebMobileUrl?.toUri()?.authority
+                val domain = scheme + "://" + if (host.nNullEmpty()) host else authority
+                //保存并缓存域名
+                saveDomain(domain)
+            }
         }
     }
-}
 
-class LiveDataWraper<Data>() {
-    private val domainMld: MutableLiveData<Data> = MutableLiveData()
-    private val domainLd: LiveData<Data> = domainMld
-
-    fun setData(data: Data) {
-        domainMld.value = data
+    //获取客服
+    fun getCustomService() {
+        config.getCustomServiceUrl(object : NetAdapter<CustomServiceData>() {
+            override fun onSuccess(data: CustomServiceData?) {
+                //缓存客服线
+                data?.let {
+                    if (it.kefuxian.nNullEmpty())
+                        Cache.putString(ICache.CACHE_CUSTOM_SERVICE_URL, it.kefuxian)
+                }
+            }
+        })
     }
 
-    fun getLiveData(): LiveData<Data> {
-        return domainLd
+    //获取apk版本
+    fun getApkVersion() {
+
     }
 }

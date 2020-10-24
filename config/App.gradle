@@ -80,8 +80,12 @@ android {
                         buildConfigFieldCfg.each {
                             def key = it.key
                             def value = it.value
-                            if (null != key && null != value && key.length() > 0 && value.length() > 0) {
-                                buildConfigField "String", key, "\"${value}\""
+                            if (null != key && null != value && key.length() > 0) {
+                                if (value instanceof String && value.length() > 0) {
+                                    buildConfigField "String", key, "\"${value}\""
+                                } else {
+                                    buildConfigField "Boolean", key, "${value}"
+                                }
                             }
                         }
                     }

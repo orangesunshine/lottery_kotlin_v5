@@ -1,8 +1,8 @@
 package com.bdb.lottery.utils.net.retrofit
 
+import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.IConst
 import com.bdb.lottery.extension.nNullEmpty
-import com.bdb.lottery.utils.net.NetCallback
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -14,7 +14,10 @@ import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import timber.log.Timber
+import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
 
 
 object Retrofits {
@@ -23,9 +26,17 @@ object Retrofits {
     }).also {
         it.level = HttpLoggingInterceptor.Level.BODY
     }
+
+    fun getSSLSocketFactory(): SSLSocketFactory {
+        val sslContext: SSLContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, arrayOf(SsX509TrustManager), SecureRandom())
+        return sslContext.getSocketFactory()
+    }
+
     val okClient = OkHttpClient.Builder()
         .addInterceptor(logInterceptor)
         .addInterceptor(HeadersInterceptor())
+        .sslSocketFactory(getSSLSocketFactory(), SsX509TrustManager)
         .connectTimeout(15, TimeUnit.SECONDS)  //设置超时时间 15s
         .readTimeout(5, TimeUnit.SECONDS)     //设置读取超时时间
         .writeTimeout(5, TimeUnit.SECONDS).build()   //设置写入超时时间
@@ -46,15 +57,32 @@ object Retrofits {
             .build()
     }
 
-    fun <Data> observe(observable: Observable<Data>, callback: NetCallback<Data>) {
+    fun <Data> observe(
+        observable: Observable<BaseResponse<Data>>,
+        success: ((Data?) -> Any?)? = null,
+        error: ((code: Int, msg: String?) -> Any)? = null,
+        complete: (() -> Any?)? = null,
+    ) {
         observable?.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ callback?.onSuccess(it) },
+            .subscribe({
+                it?.run {
+                    if (!it.successData()) {
+                        if (error != null) {
+                            error(code, msg)
+                        }
+                        return@subscribe
+                    }
+                }
+                success?.run { this(it.data) }
+            },
                 {
-                    callback?.onError(code(it), msg(it))
-                    callback?.onComplete()
+                    error?.run { this(code(it), msg(it)) }
+                    complete?.run { this() }
                 },
-                { callback?.onComplete() })
+                {
+                    complete?.run { this() }
+                })
     }
 
     fun code(throwable: Throwable): Int {
