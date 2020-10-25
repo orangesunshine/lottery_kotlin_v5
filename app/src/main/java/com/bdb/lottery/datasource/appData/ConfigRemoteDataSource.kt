@@ -83,10 +83,10 @@ class ConfigRemoteDataSource @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Timber.d("online__onNext__response: ${it}")
                     //获取配置成功
                     if (it.isSuccess() && null != it && null != it.data) {
                         if (already.compareAndSet(false, true)) {
+                            Timber.d("online__onNext__response: ${it}")
                             //取消剩下网络请求
                             disposable?.let {
                                 try {
@@ -111,8 +111,10 @@ class ConfigRemoteDataSource @Inject constructor(
                     }
                 }, {
                     //获取域名失败
-                    Timber.d("online__onError：${it.msg}")
-                    error?.let { it() }
+                    if (!already.get()) {
+                        Timber.d("online__onError：${it.msg}")
+                        error?.let { it() }
+                    }
                 })
         }
     }
