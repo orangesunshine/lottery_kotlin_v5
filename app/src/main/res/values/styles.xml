@@ -5,6 +5,12 @@
         <item name="android:windowIsTranslucent">false</item>
     </style>
 
+    <!-- Splash使用透明背景 -->
+    <style name="SplashTheme" parent="Theme.AppCompat.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
     <style name="dialogTheme" parent="Theme.AppCompat.Dialog">
         <!-- 边框 -->
         <item name="android:windowFrame">@null</item>
@@ -28,4 +34,12 @@
         <!-- 灰色的百分比 0就是全透明了-->
         <item name="android:backgroundDimAmount">0.4</item>
     </style>
+
+    <style name="weight">
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+    </style>
+
+
 </resources>

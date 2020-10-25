@@ -18,7 +18,7 @@ import com.bdb.lottery.base.ui.BaseActivity
 import kotlin.reflect.KProperty1
 
 fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_SHORT) {
-    toast(getString(resId))
+    toast(getString(resId), length)
 }
 
 fun Context.toast(msg: String?, length: Int = Toast.LENGTH_SHORT) {
@@ -57,7 +57,7 @@ fun BaseActivity.load(show: Boolean) {
  * @param light:true 黑色，false：白色
  */
 fun BaseActivity.statusbar(light: Boolean) {
-    statusBar.let {
+    statusBar?.let {
         (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
             resources.getDimension(R.dimen.height_status_bar).toInt()
     }

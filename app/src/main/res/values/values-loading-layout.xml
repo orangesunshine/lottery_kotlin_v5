@@ -26,18 +26,18 @@
     <style name="LoadingLayout"></style>
 
     <style name="LoadingLayout.Style">
-        <item name="llEmptyResId">@layout/layout_common_empty</item>
-        <item name="llLoadingResId">@layout/layout_common_loading</item>
-        <item name="llErrorResId">@layout/layout_common_error</item>
+        <item name="llEmptyResId">@layout/empty_common_layout</item>
+        <item name="llLoadingResId">@layout/loading_common_layout</item>
+        <item name="llErrorResId">@layout/error_common_layout</item>
 
         <item name="llTextColor">#999999</item>
         <item name="llTextSize">16sp</item>
 
         <item name="llEmptyText">暂无数据...</item>
-        <item name="llEmptyImage">@drawable/ic_common_empty</item>
+        <item name="llEmptyImage">@drawable/common_empty_ic</item>
 
         <item name="llErrorText">网络连接出错，</item>
-        <item name="llErrorImage">@drawable/ic_common_neterror</item>
+        <item name="llErrorImage">@drawable/common_neterror_ic</item>
     </style>
 
 

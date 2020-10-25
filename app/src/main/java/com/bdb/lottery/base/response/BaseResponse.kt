@@ -7,12 +7,12 @@ class BaseResponse<T> {
 
     //网络请求成功
     fun isSuccess(): Boolean {
-        return null != code && code >= 200 && code < 300
+        return code >= 200 && code < 300
     }
 
     //200code 成功获取数据
     fun successData(): Boolean {
-        return null != code && 200 == code
+        return 200 == code
     }
 
     override fun toString(): String {

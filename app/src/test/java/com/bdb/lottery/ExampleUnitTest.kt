@@ -53,4 +53,24 @@ class ExampleUnitTest {
             "((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(/)?"
         assertTrue(Pattern.matches(regex, url))
     }
+
+    class A {
+        var age: Int? = null
+    }
+
+    class B {
+        var a: A? = null
+    }
+
+    class C {
+        var b: B? = null
+    }
+
+    @Test
+    fun assertNUll() {
+        val c = C()
+        val ret = c?.b?: null
+        println("ret: ${ret}")
+    }
+
 }

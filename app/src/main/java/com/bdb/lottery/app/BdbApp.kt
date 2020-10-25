@@ -10,6 +10,7 @@ import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
+import me.jessyan.autosize.AutoSizeConfig
 import timber.log.Timber
 
 
@@ -28,13 +29,25 @@ class BdbApp : Application() {
         super.onCreate()
         context = applicationContext
 
-        initThirdLibs()
+        //必须主线程
+        MMKV.initialize(this)
 
-        initUtils()
+        //可以子线程启动
+        Thread{
+            //设置线程的优先级，不与主线程抢资源
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+            Thread.sleep(50)
 
-        initBugly()
+            initThirdLibs()
+            initAutosize()
+            initBugly()
+            initRxjava()
+        }.start()
 
-        initRxjava()
+    }
+
+    private fun initAutosize() {
+        AutoSizeConfig.getInstance().setExcludeFontScale(true)
     }
 
     private fun initRxjava() {
@@ -42,18 +55,9 @@ class BdbApp : Application() {
     }
 
     private fun initBugly() {
-        // 获取当前包名
-        val packageName = context.packageName
-        // 获取当前进程名
-        val processName =
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                getProcessName()
-            } else {
-                Apps.getProcessName(Process.myPid())
-            }
         // 设置是否为上报进程
         val strategy = CrashReport.UserStrategy(context)
-        strategy.setUploadProcess(processName == null || processName == packageName)
+        strategy.setUploadProcess(Apps.isMainProcess())
         // 初始化Bugly
         CrashReport.initCrashReport(
             context,
@@ -64,14 +68,8 @@ class BdbApp : Application() {
     }
 
     private fun initThirdLibs() {
-        MMKV.initialize(this)
         Timber.plant(LogTree())
+        AutoSizeConfig.getInstance().setCustomFragment(true)
     }
 
-    private fun initUtils() {
-        Devices.context = applicationContext
-        Devices.mmkv = MMKV.defaultMMKV()
-        Screens.context = applicationContext
-        Sizes.context = applicationContext
-    }
 }

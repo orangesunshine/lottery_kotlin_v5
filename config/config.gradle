@@ -37,9 +37,12 @@ def navigation_version = "2.1.0"
 def mmkv_version = "1.2.2"
 def timber_version = "4.7.1"
 def multidex_version = "2.0.1"
-
+def lottie_version = "2.7.0"
 def gson_version = "2.8.0"
 def eventbus_version = "3.2.0"
+def autosize_version = "1.2.1"
+def viewpager2_version = "1.0.0"
+def baserecyclerviewadapterhelper_version = "3.0.4"
 
 def gradle_version = "4.0.1"
 
@@ -99,6 +102,9 @@ DEPS.put("RXJAVA3", "io.reactivex.rxjava3:rxjava:$rxjava3_version")
 
 DEPS.put("GSON", "com.google.code.gson:gson:$gson_version")
 DEPS.put("EVENTBUS", "org.greenrobot:eventbus:$eventbus_version")
+DEPS.put("LOTTIE", "com.airbnb.android:lottie:$lottie_version")
+DEPS.put("VIEWPAGER2", "androidx.viewpager2:viewpager2:$viewpager2_version")
+DEPS.put("BASERECYCLERVIEWADAPTERHELPER", "com.github.CymChad:BaseRecyclerViewAdapterHelper:$baserecyclerviewadapterhelper_version")
 
 if (ktx) {
     DEPS.put("ACTIVITY", "androidx.activity:activity-ktx:$activity_version")
@@ -127,6 +133,7 @@ DEPS.put("VIEWMODEL_SAVEDSTATE", "androidx.lifecycle:lifecycle-viewmodel-savedst
 DEPS.put("MMKV", "com.tencent:mmkv-static:$mmkv_version")
 DEPS.put("TIMBER", "com.jakewharton.timber:timber:$timber_version")
 DEPS.put("MULTIDEX", "androidx.multidex:multidex:$multidex_version")
+DEPS.put("AUTOSIZE", "me.jessyan:autosize:$autosize_version")
 
 def BUGLY = []
 DEPS.BUGLY = BUGLY

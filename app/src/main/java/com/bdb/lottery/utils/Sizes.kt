@@ -11,11 +11,11 @@ import dagger.hilt.android.components.ApplicationComponent
 
 object Sizes {
     lateinit var context: Context
-    inline fun scale(): Float {
+    fun scale(): Float {
         return context.resources.displayMetrics.density
     }
 
-    inline fun fontScale(): Float {
+    fun fontScale(): Float {
         return context.resources.displayMetrics.scaledDensity
     }
 
@@ -25,7 +25,7 @@ object Sizes {
      * @param dpValue The value of dp.
      * @return value of px
      */
-    fun dp2px(dpValue: Float): Int {
+    fun dp2px(dpValue: Float?): Int {
         dpValue?.let {
             return (it * scale() + 0.5f).toInt()
         }
@@ -38,7 +38,7 @@ object Sizes {
      * @param pxValue The value of px.
      * @return value of dp
      */
-    fun px2dp(pxValue: Float): Int {
+    fun px2dp(pxValue: Float?): Int {
         pxValue?.let {
             return (it / scale() + 0.5f).toInt()
         }
@@ -51,7 +51,7 @@ object Sizes {
      * @param spValue The value of sp.
      * @return value of px
      */
-    fun sp2px(spValue: Float): Int {
+    fun sp2px(spValue: Float?): Int {
         spValue?.let {
             return (it / fontScale() + 0.5f).toInt()
         }
@@ -64,7 +64,7 @@ object Sizes {
      * @param pxValue The value of px.
      * @return value of sp
      */
-    fun px2sp(pxValue: Float): Int {
+    fun px2sp(pxValue: Float?): Int {
         pxValue?.let {
             return (it / fontScale() + 0.5f).toInt()
         }

@@ -28,7 +28,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
-import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.R
 import java.util.*
 
@@ -181,21 +180,21 @@ class LoadingLayout @JvmOverloads constructor(
         mLayouts[layoutId] = layout
         if (layoutId == mEmptyLayoutId) {
             val img = layout.findViewById<View>(R.id.id_common_empty_image) as ImageView
-            img?.setImageResource(mEmptyImage)
+            img.setImageResource(mEmptyImage)
             val view = layout.findViewById<View>(R.id.id_common_empty_text) as TextView
-            if (view != null) {
-                view.text = mEmptyText
-                view.setTextColor(mTextColor)
-                view.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize.toFloat())
+            with(view) {
+                text = mEmptyText
+                setTextColor(mTextColor)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize.toFloat())
             }
         } else if (layoutId == mErrorLayoutId) {
             val img = layout.findViewById<View>(R.id.id_common_error_image) as ImageView
-            img?.setImageResource(mErrorImage)
+            img.setImageResource(mErrorImage)
             val txt = layout.findViewById<View>(R.id.id_common_error_text) as TextView
-            if (txt != null) {
-                txt.text = mErrorText
-                txt.setTextColor(mTextColor)
-                txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize.toFloat())
+            with(txt) {
+                text = mErrorText
+                setTextColor(mTextColor)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize.toFloat())
             }
             mRetryListener?.let { layout.setOnClickListener(it) }
         }
@@ -211,7 +210,7 @@ class LoadingLayout @JvmOverloads constructor(
     private fun image(layoutId: Int, ctrlId: Int, resId: Int) {
         if (mLayouts.containsKey(layoutId)) {
             val view = mLayouts[layoutId]?.findViewById<View>(ctrlId) as ImageView
-            view?.setImageResource(resId)
+            view.setImageResource(resId)
         }
     }
 
@@ -232,8 +231,8 @@ class LoadingLayout @JvmOverloads constructor(
             if (view == null) {
                 throw RuntimeException("content view can not be null")
             }
-            val parent = view.parent as ViewGroup
-            if (view == null) {
+            val parent = view.parent as ViewGroup?
+            if (parent == null) {
                 throw RuntimeException("parent view can not be null")
             }
             val lp = view.layoutParams
@@ -276,13 +275,13 @@ class LoadingLayout @JvmOverloads constructor(
         mTextColor = a.getColor(R.styleable.LoadingLayout_llTextColor, 0x333333)
         mTextSize = a.getDimensionPixelSize(R.styleable.LoadingLayout_llTextSize, dp2px(16f))
         mEmptyLayoutId =
-            a.getResourceId(R.styleable.LoadingLayout_llEmptyResId, R.layout.layout_common_empty)
+            a.getResourceId(R.styleable.LoadingLayout_llEmptyResId, R.layout.empty_common_layout)
         mLoadingLayoutId = a.getResourceId(
             R.styleable.LoadingLayout_llLoadingResId,
-            R.layout.layout_common_loading
+            R.layout.loading_common_layout
         )
         mErrorLayoutId =
-            a.getResourceId(R.styleable.LoadingLayout_llErrorResId, R.layout.layout_common_error)
+            a.getResourceId(R.styleable.LoadingLayout_llErrorResId, R.layout.error_common_layout)
         a.recycle()
     }
 }

@@ -5,7 +5,13 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="statusbar_gray">#440e0404</color>
 
+    <color name="color_white">#FFFFFF</color>
+
     <!-- 文字颜色 -->
     <color name="color_333333">#333333</color>
+    <color name="color_888888">#888888</color>
 
+    <color name="color_FF673A">#FF673A</color>
+    <color name="color_4E506E">#4e506e</color>
+    <color name="color_F7F8FF">#f7f8ff</color>
 </resources>

@@ -42,11 +42,24 @@ object Retrofits {
         .writeTimeout(5, TimeUnit.SECONDS).build()   //设置写入超时时间
 
 
+    /**
+     * 域名专用，超时6秒
+     */
     fun create(): Retrofit {
-        return create(IConst.BASE_URL)
+        val okClient = OkHttpClient.Builder()
+            .addInterceptor(logInterceptor)
+            .addInterceptor(HeadersInterceptor())
+            .sslSocketFactory(getSSLSocketFactory(), SsX509TrustManager)
+            .connectTimeout(6, TimeUnit.SECONDS)  //设置超时时间 6s
+            .readTimeout(5, TimeUnit.SECONDS)     //设置读取超时时间
+            .writeTimeout(5, TimeUnit.SECONDS).build()   //设置写入超时时间
+        return create(IConst.BASE_URL, okClient)
     }
 
-    fun create(url: String): Retrofit {
+    /**
+     * 公用
+     */
+    fun create(url: String, okHttpClient: OkHttpClient = okClient): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(ScalarsConverterFactory.create()) // 使用Gson作为数据转换器
             .addConverterFactory(GsonConverterFactory.create()) // 使用Gson作为数据转换器
@@ -57,13 +70,14 @@ object Retrofits {
             .build()
     }
 
+    //rxjava 简化
     fun <Data> observe(
         observable: Observable<BaseResponse<Data>>,
         success: ((Data?) -> Any?)? = null,
         error: ((code: Int, msg: String?) -> Any)? = null,
         complete: (() -> Any?)? = null,
     ) {
-        observable?.subscribeOn(Schedulers.io())
+        observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 it?.run {
@@ -85,7 +99,8 @@ object Retrofits {
                 })
     }
 
-    fun code(throwable: Throwable): Int {
+    //返回code
+    fun code(throwable: Throwable?): Int {
         throwable?.let {
             if (it is HttpException) {
                 return it.code()
@@ -94,7 +109,8 @@ object Retrofits {
         return IConst.DEFAULT_ERROR_CODE
     }
 
-    fun msg(throwable: Throwable): String? {
+    //错误信息
+    fun msg(throwable: Throwable?): String? {
         return throwable?.let {
             val message = it.message
             return if (message.nNullEmpty()) message else it.cause?.message

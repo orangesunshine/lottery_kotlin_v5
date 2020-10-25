@@ -1,0 +1,16 @@
+<resources>
+
+    <!-- 桌面应用名 -->
+    <string name="application_name">博定保</string>
+    <!-- 启动页展示的平台名称 -->
+    <string name="splash_app_name">博定保</string>
+    <string name="splash_app_sub_text">最懂你的娱乐平台</string>
+    <!-- 域名Txt -->
+    <string name="api_txt_path">lottery/tenant/bdb/domain/bdb.txt</string>
+    <!-- 内置Api域名 -->
+    <string name="local_http_url">http://bdb258.com/</string>
+
+    <!-- guide -->
+    <string name="guide_tologin">这就去登录</string>
+
+</resources>

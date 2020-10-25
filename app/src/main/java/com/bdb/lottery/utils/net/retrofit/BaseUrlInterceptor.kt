@@ -19,7 +19,7 @@ class BaseUrlInterceptor : Interceptor {
         val builder: Request.Builder = originalRequest.newBuilder()
         //获取头信息的集合如：manage,mdffx
         val urlnameList: List<String> = originalRequest.headers("urlname")
-        return if (urlnameList != null && urlnameList.size > 0) {
+        return if (urlnameList.size > 0) {
             //删除原有配置中的值,就是namesAndValues集合里的值
             builder.removeHeader("urlname")
             //获取头信息中配置的value,如：manage或者mdffx

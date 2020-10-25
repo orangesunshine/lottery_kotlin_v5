@@ -1,29 +1,26 @@
 package com.bdb.lottery.datasource.appData
 
 import android.content.Context
+import android.text.TextUtils
 import com.bdb.lottery.R
-import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.const.IConst
-import com.bdb.lottery.datasource.appData.data.ApkVersion
-import com.bdb.lottery.datasource.appData.data.ConfigData
-import com.bdb.lottery.datasource.appData.data.CustomServiceData
+import com.bdb.lottery.datasource.appData.data.DataApkVersion
+import com.bdb.lottery.datasource.appData.data.DataConfig
+import com.bdb.lottery.datasource.appData.data.DataCustomService
 import com.bdb.lottery.datasource.string.StringApi
 import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.extension.nNullEmpty
 import com.bdb.lottery.utils.cache.Cache
-import com.bdb.lottery.utils.net.NetCallback
 import com.bdb.lottery.utils.net.retrofit.Retrofits
-import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.greenrobot.eventbus.EventBus
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import timber.log.Timber
@@ -40,66 +37,56 @@ class ConfigRemoteDataSource @Inject constructor(
     val configApi = retrofit.create(ConfigApi::class.java)
 
     /**
-     * 获取域名并回调
+     * 线上服务器列表->域名配置->域名->前端配置
+     * @param domains: 域名配置
+     * @param success: 成功回调
+     * @param error: 失败回调
      */
-    fun getDomainNdCallback(block: (ConfigData?) -> Any) {
-        val domainPath = context.getString(R.string.api_txt_path)
-
-        if (domainPath.nNullEmpty()) {
-            val domainObservables = domainObservables(HttpConstUrl.DOMAINS_API_TXT)
-            getDomainNdCallbackReal(domainObservables, block, local = false)
-        }
-    }
-
-    /**
-     * @param domainObservables: 域名配置请求
-     * @param block: 回调
-     * @param local: 是否本地域名
-     */
-    fun getDomainNdCallbackReal(
-        domainObservables: Array<Observable<String>>,
-        success: ((ConfigData?) -> Any)? = null,
-        error: (() -> Any)? = null,
-        local: Boolean = false
+    fun getOnlineDomain(
+        success: ((DataConfig?) -> Any)? = null,
+        error: (() -> Any)? = null
     ) {
-        val already = AtomicBoolean(false)
-        var disposable: Disposable? = null
-        if (!domainObservables.isNullOrEmpty()) {
-            Observable.mergeArrayDelayError(*domainObservables)
+        Timber.d("getOnlineDomain")
+        val configPath = context.getString(R.string.api_txt_path)
+        val onlineObservables = mutableListOf<Observable<String>>()
+        val hosts = HttpConstUrl.DOMAINS_API_TXT
+        if (!hosts.isNullOrEmpty()) {
+            for (host in hosts) {
+                if (host.isDomainUrl()) {
+                    onlineObservables.add(stringApi.get(host + configPath))
+                }
+            }
+        }
+
+        if (!onlineObservables.isNullOrEmpty()) {
+            var disposable: Disposable? = null
+            val already = AtomicBoolean(false)
+            Observable.mergeArrayDelayError(*(onlineObservables.toTypedArray()))
                 .doOnSubscribe { disposable = it }
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .map {
-                    Timber.d("域名配置：${it}")
-                    it.split("@")
+                    Timber.d("online域名配置：${it}")
+                    if (it.nNullEmpty()) it.split("@") else null
                 }
                 .observeOn(Schedulers.io())
                 .flatMap {
-                    Timber.d("域名配置列表：${it}")
-                    Observable.fromIterable(it)
+                    Timber.d("online域名配置列表：${it}")
+                    if (!it.isNullOrEmpty()) Observable.fromIterable(it) else null
                 }
                 .observeOn(Schedulers.io())
                 .flatMap {
-                    Timber.d("域名：${it}")
-                    if (disposable?.isDisposed()
-                            ?: true
-                    ) null else configApi.config(it + HttpConstUrl.URL_CONFIG_FRONT)
-                }
-                .observeOn(Schedulers.io())
-                .onErrorReturn {
-                    Timber.d("域名错误：${it}")
-                    val response = BaseResponse<ConfigData>()
-                    response.code =
-                        if (null != it && it is HttpException) it.code() else IConst.DOAMIN_ERROR_CODE
-                    response.msg = it.msg
-                    response
+                    Timber.d("online域名：${it}")
+                    if (it.isDomainUrl()) configApi.config(
+                        it + HttpConstUrl.URL_CONFIG_FRONT
+                    ) else null
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    Timber.d("online__onNext__response: ${it}")
                     //获取配置成功
                     if (it.isSuccess() && null != it && null != it.data) {
                         if (already.compareAndSet(false, true)) {
-                            Timber.d("onNext__response: ${it}")
                             //取消剩下网络请求
                             disposable?.let {
                                 try {
@@ -109,84 +96,96 @@ class ConfigRemoteDataSource @Inject constructor(
                             }
 
                             //处理配置文件
-                            success?.run { this(it?.data) }
+                            success?.run { this(it.data) }
 
                             //保存rsa公钥
-                            it?.data?.rsaPublicKey?.let {
+                            it.data?.rsaPublicKey?.let {
                                 Cache.putString(ICache.CACHE_PUBLIC_RSA, it)
                             }
 
                             //保存plateform参数
-                            it?.data?.platform?.let {
+                            it.data?.platform?.let {
                                 Cache.putString(ICache.CACHE_PLATEFORM, it)
                             }
                         }
                     }
                 }, {
                     //获取域名失败
-                    Timber.d("onError：${it.msg}, local: ${local}")
+                    Timber.d("online__onError：${it.msg}")
                     error?.let { it() }
                 })
-        } else {
-            //获取域名失败
-            Timber.d("onError__local: ${local}")
-            error?.let { it() }
-        }
-    }
-
-    fun onError(block: (ConfigData?) -> Any, local: Boolean) {
-        if (local) {
-            //本地配置域名失败，回调
-            block(null)
-        } else {
-            //线上域名获取失败，读取本地域名配置
-            val domains = BdbApp.context.getString(R.string.api_txt_path)
-            if (domains.nNullEmpty()) {
-                getDomainNdCallbackReal(
-                    domainObservables(
-                        domains.split("@").toTypedArray()
-                    ), block, local = true
-                )
-            }
         }
     }
 
     /**
-     * 根据域名配置列表，生成域名请求observable
+     * 本地域名列表->域名->前端配置
+     * @param success: 成功回调
+     * @param error: 失败回调
      */
-    fun domainObservables(domains: Array<String>): Array<Observable<String>> {
-        val domainObservables = mutableListOf<Observable<String>>()
-        val domainPath = context.getString(R.string.api_txt_path)
-        if (domainPath.nNullEmpty()) {
+    fun getLocalDomain(
+        success: ((DataConfig?) -> Any)? = null,
+        error: (() -> Any)? = null
+    ) {
+        Timber.d("getLocalDomain")
+        val localDomain = context.getString(R.string.local_http_url)
+        if (!TextUtils.isEmpty(localDomain)) {
+            val domains = localDomain.split("@")
+            val localObservables = mutableListOf<Observable<BaseResponse<DataConfig>>>()
             if (!domains.isNullOrEmpty()) {
                 for (domain in domains) {
-                    if (domain.isDomainUrl()) {
-                        domainObservables.add(stringApi.get(domain + domainPath))
-                    }
+                    localObservables.add(configApi.config(domain + HttpConstUrl.URL_CONFIG_FRONT))
                 }
+                var disposable: Disposable? = null
+                val already = AtomicBoolean(false)
+                Observable.mergeArrayDelayError(*(localObservables.toTypedArray()))
+                    .doOnSubscribe { disposable = it }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        Timber.d("local__onNext__response: ${it}")
+                        //获取配置成功
+                        if (it.isSuccess() && null != it && null != it.data) {
+                            if (already.compareAndSet(false, true)) {
+                                //取消剩下网络请求
+                                disposable?.let {
+                                    try {
+                                        if (!it.isDisposed) it.dispose()
+                                    } catch (e: Exception) {
+                                    }
+                                }
+
+                                //处理配置文件
+                                success?.run { this(it.data) }
+
+                                //保存rsa公钥
+                                it.data?.rsaPublicKey?.let {
+                                    Cache.putString(ICache.CACHE_PUBLIC_RSA, it)
+                                }
+
+                                //保存plateform参数
+                                it.data?.platform?.let {
+                                    Cache.putString(ICache.CACHE_PLATEFORM, it)
+                                }
+                            }
+                        }
+                    }, {
+                        //获取域名失败
+                        Timber.d("local__onError：${it.msg}")
+                        error?.let { it() }
+                    })
             }
         }
-        return domainObservables?.toTypedArray()
     }
 
     //客服
-    fun getCustomServiceUrl(callback: NetCallback<CustomServiceData>) {
-        Retrofits.observe(configApi.customService(), success = {
-            it?.let {
-                if (it.kefuxian.nNullEmpty())
-                    Cache.putString(ICache.CACHE_CUSTOM_SERVICE_URL, it.kefuxian)
-            }
-        })
+    fun getCustomServiceUrl(success: ((DataCustomService?) -> Any?)? = null) {
+        Retrofits.observe(configApi.customService(), success)
     }
 
     //获取apk版本信息
-    fun getAPkVeresion(callback: NetCallback<ApkVersion>) {
-        Retrofits.observe(configApi.apkversion(), success = {
-            it?.let {
-                Cache.putString(ICache.CACHE_APK_VERSION, Gson().toJson(it))
-                //发送粘性事件，MainActivity打开处理
-                EventBus.getDefault().postSticky(it)
-            }
-        })
+    fun getAPkVeresion(success: ((DataApkVersion?) -> Any?)? = null) {
+        Retrofits.observe(configApi.apkversion(), success)
     }
+
 }

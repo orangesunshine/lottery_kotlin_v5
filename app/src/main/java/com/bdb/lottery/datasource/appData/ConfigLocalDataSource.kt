@@ -19,10 +19,15 @@ object ConfigLocalDataSource {
     fun getDomain(): String {
         if (!mSelectDomain.isDomainUrl()) {
             mSelectDomain = Cache.getString(
-                ICache.CACHE_PLATEFORM,
-                BdbApp.context.getString(R.string.local_http_url)
+                ICache.CACHE_CUSTOM_SERVICE_URL,
+                getFirstLocalDomain()
             )
         }
         return if (mSelectDomain.isDomainUrl()) mSelectDomain!! else BdbApp.context.getString(R.string.local_http_url)
+    }
+
+    fun getFirstLocalDomain(): String {
+        val local = BdbApp.context.getString(R.string.local_http_url)
+        return if (local.contains("@")) local.split("@")[0] else local
     }
 }

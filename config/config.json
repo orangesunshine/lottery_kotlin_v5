@@ -1,6 +1,8 @@
 {
   "app": [
     "GSON",
+    "AUTOSIZE",
+    "LOTTIE",
     "EVENTBUS",
     "OKHTTP3",
     "RETROFIT",
@@ -15,6 +17,8 @@
     "TIMBER",
     "MULTIDEX",
     "BUGLY",
+    "VIEWPAGER2",
+    "BASERECYCLERVIEWADAPTERHELPER",
     "MMKV"
   ],
   "common": [
