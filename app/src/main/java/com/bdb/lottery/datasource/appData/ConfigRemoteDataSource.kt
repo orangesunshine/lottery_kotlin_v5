@@ -86,7 +86,7 @@ class ConfigRemoteDataSource @Inject constructor(
                     //获取配置成功
                     if (it.isSuccess() && null != it && null != it.data) {
                         if (already.compareAndSet(false, true)) {
-                            Timber.d("online__onNext__response: ${it}")
+                            Timber.d("online__onNext__response: ${it}__")
                             //取消剩下网络请求
                             disposable?.let {
                                 try {
