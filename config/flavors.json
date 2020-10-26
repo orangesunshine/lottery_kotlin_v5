@@ -6,8 +6,7 @@
     },
     "buildConfigField": {
       "BUGLY_APPID": "3f83030598",
-      "SHOW_DOALOG_ON_DOMAIN_ERROR": true,
-      "DEFAULT_DOMAIN_URL": "http://bdb258.com"
+      "SHOW_DOALOG_ON_DOMAIN_ERROR": true
     }
   }
 ]

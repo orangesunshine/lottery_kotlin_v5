@@ -77,3 +77,8 @@
 -keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
     <init>(java.lang.Throwable);
 }
+
+#rxjava
+-dontwarn java.util.concurrent.Flow*
+
+-keep class com.bdb.lottery.base.response.BaseResponse{*;}

@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource.appData
+package com.bdb.lottery.datasource.domain
 
 import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
@@ -7,7 +7,7 @@ import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.utils.cache.Cache
 
 //内存、缓存配置
-object ConfigLocalDataSource {
+object DomainLocalDataSource {
     private var mSelectDomain: String? = null
     fun saveDomain(domain: String?) {
         if (domain.isDomainUrl()) {

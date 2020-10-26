@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource.appData
+package com.bdb.lottery.datasource.domain
 
 import android.content.Context
 import android.text.TextUtils
@@ -6,22 +6,18 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
-import com.bdb.lottery.const.IConst
-import com.bdb.lottery.datasource.appData.data.DataApkVersion
-import com.bdb.lottery.datasource.appData.data.DataConfig
-import com.bdb.lottery.datasource.appData.data.DataCustomService
-import com.bdb.lottery.datasource.string.StringApi
+import com.bdb.lottery.datasource.app.AppApi
+import com.bdb.lottery.datasource.app.data.DataConfig
+import com.bdb.lottery.datasource.common.string.CommonStringApi
 import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.extension.nNullEmpty
 import com.bdb.lottery.utils.cache.Cache
-import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import retrofit2.HttpException
 import retrofit2.Retrofit
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
@@ -29,18 +25,18 @@ import javax.inject.Inject
 import javax.inject.Named
 
 
-class ConfigRemoteDataSource @Inject constructor(
+class DomainRemoteDataSource @Inject constructor(
     @ApplicationContext private val context: Context,
     @Named("Url") private var retrofit: Retrofit
 ) {
-    val stringApi = retrofit.create(StringApi::class.java)
-    val configApi = retrofit.create(ConfigApi::class.java)
+    val stringApi = retrofit.create(CommonStringApi::class.java)
+    val configApi = retrofit.create(AppApi::class.java)
 
     /**
      * 线上服务器列表->域名配置->域名->前端配置
      * @param domains: 域名配置
      * @param success: 成功回调
-     * @param error: 失败回调
+     * @param error: 失败回调->对应平台配置local_http_url内置域名，调用getLocalDomain获取内置域名
      */
     fun getOnlineDomain(
         success: ((DataConfig?) -> Any)? = null,
@@ -83,10 +79,10 @@ class ConfigRemoteDataSource @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    Timber.d("online__onNext__response: ${it}")
                     //获取配置成功
                     if (it.isSuccess() && null != it && null != it.data) {
                         if (already.compareAndSet(false, true)) {
-                            Timber.d("online__onNext__response: ${it}__")
                             //取消剩下网络请求
                             disposable?.let {
                                 try {
@@ -113,6 +109,12 @@ class ConfigRemoteDataSource @Inject constructor(
                     //获取域名失败
                     if (!already.get()) {
                         Timber.d("online__onError：${it.msg}")
+                        error?.let { it() }
+                    }
+                }, {
+                    //数据解析问题
+                    if (!already.get()) {
+                        Timber.d("local__onComplete")
                         error?.let { it() }
                     }
                 })
@@ -145,8 +147,8 @@ class ConfigRemoteDataSource @Inject constructor(
                     .observeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({
-                        Timber.d("local__onNext__response: ${it}")
                         //获取配置成功
+                        Timber.d("local__onNext__response: ${it}")
                         if (it.isSuccess() && null != it && null != it.data) {
                             if (already.compareAndSet(false, true)) {
                                 //取消剩下网络请求
@@ -173,21 +175,18 @@ class ConfigRemoteDataSource @Inject constructor(
                         }
                     }, {
                         //获取域名失败
-                        Timber.d("local__onError：${it.msg}")
-                        error?.let { it() }
+                        if (!already.get()) {
+                            Timber.d("local__onError：${it.msg}")
+                            error?.let { it() }
+                        }
+                    }, {
+                        //数据解析问题
+                        if (!already.get()) {
+                            Timber.d("local__onComplete")
+                            error?.let { it() }
+                        }
                     })
             }
         }
     }
-
-    //客服
-    fun getCustomServiceUrl(success: ((DataCustomService?) -> Any?)? = null) {
-        Retrofits.observe(configApi.customService(), success)
-    }
-
-    //获取apk版本信息
-    fun getAPkVeresion(success: ((DataApkVersion?) -> Any?)? = null) {
-        Retrofits.observe(configApi.apkversion(), success)
-    }
-
 }

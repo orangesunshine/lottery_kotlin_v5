@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource.appData.data
+package com.bdb.lottery.datasource.app.data
 
 data class DataConfig(
     var WebMobileUrl: String,

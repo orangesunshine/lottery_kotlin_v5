@@ -1,6 +1,6 @@
 package com.bdb.lottery.base.module
 
-import com.bdb.lottery.datasource.appData.ConfigLocalDataSource
+import com.bdb.lottery.datasource.domain.DomainLocalDataSource
 import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.Module
 import dagger.Provides
@@ -16,7 +16,7 @@ class NetModule {
     @Provides
     @Singleton
     fun retrofit(): Retrofit {
-        return Retrofits.create(ConfigLocalDataSource.getDomain())
+        return Retrofits.create(DomainLocalDataSource.getDomain())
     }
 
     @Provides

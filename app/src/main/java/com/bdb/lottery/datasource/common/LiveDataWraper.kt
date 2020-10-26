@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource
+package com.bdb.lottery.datasource.common
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
