@@ -12,7 +12,7 @@ import javax.inject.Named
 
 class AppRemoteDataSource @Inject constructor(
     @ApplicationContext private val context: Context,
-    @Named("Url") private var retrofit: Retrofit
+    private var retrofit: Retrofit
 ) {
     val appApi = retrofit.create(AppApi::class.java)
 

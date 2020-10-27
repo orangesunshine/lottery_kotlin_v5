@@ -34,7 +34,7 @@
         android:layout_marginTop="40dp"
         android:text="@string/splash_app_name"
         android:textColor="@color/color_333333"
-        android:textSize="31sp" />
+        android:textSize="@dimen/text_30" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
         android:layout_marginTop="12dp"
         android:text="@string/splash_app_sub_text"
         android:textColor="@color/color_888888"
-        android:textSize="15sp" />
+        android:textSize="@dimen/text_15" />
 
     <View style="@style/weight" />
 
@@ -50,6 +50,7 @@
         android:id="@+id/splash_loading_lav"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        app:lottie_fileName="animation/splash/loading.json"
         android:layout_marginBottom="90dp"
         app:lottie_autoPlay="true"
         app:lottie_loop="true" />

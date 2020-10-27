@@ -3,15 +3,37 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="statusbar_gray">#440e0404</color>
-
     <color name="color_white">#FFFFFF</color>
 
-    <!-- 文字颜色 -->
+    <!-- 通用颜色 -->
+    <color name="color_transparent">#00000000</color>
+    <color name="color_000000">#000000</color>
+    <color name="color_111111">#111111</color>
+    <color name="color_222222">#222222</color>
     <color name="color_333333">#333333</color>
+    <color name="color_444444">#444444</color>
+    <color name="color_555555">#555555</color>
+    <color name="color_666666">#666666</color>
+    <color name="color_777777">#777777</color>
     <color name="color_888888">#888888</color>
-
+    <color name="color_999999">#999999</color>
+    <color name="color_aaaaaa">#aaaaaa</color>
+    <color name="color_bbbbbb">#bbbbbb</color>
+    <color name="color_cccccc">#cccccc</color>
+    <color name="color_dddddd">#dddddd</color>
+    <color name="color_ffffff">#ffffff</color>
+    <color name="color_f7f7f7">#f7f7f7</color>
+    <!-- 文字颜色 -->
     <color name="color_FF673A">#FF673A</color>
-    <color name="color_4E506E">#4e506e</color>
-    <color name="color_F7F8FF">#f7f8ff</color>
+    <color name="color_4E506E">#4E506E</color>
+    <color name="color_F7F8FF">#F7F8FF</color>
+
+    <!-- 分割线 -->
+    <color name="color_E6E8EA">#E6E8EA</color>
+
+    <!-- 状态栏 -->
+    <color name="color_440E0404">#440E0404</color>
+
+    <!-- 按钮 -->
+    <color name="color_147CE2">#147CE2</color>
 </resources>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/id_common_content_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/login_versionname_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:textColor="@color/color_999999"
+        android:textSize="@dimen/text_12" />
+
+    <ImageView
+        android:id="@+id/login_logo_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/login_logo_ic" />
+
+    <EditText
+        android:id="@+id/login_username_et"
+        style="@style/common_et_single"
+        android:layout_marginTop="20dp"
+        android:drawablePadding="10dp"
+        android:hint="@string/login_username_hint"
+        android:imeOptions="actionDone"
+        android:maxLength="16"
+        android:padding="12dp"
+        android:includeFontPadding="false"
+        android:shadowDx="1"
+        android:shadowDy="0"
+        android:shadowRadius="1.0"
+        android:textColor="@color/color_666666"
+        android:textColorHint="@color/color_aaaaaa"
+        android:textSize="@dimen/text_17"
+        app:drawableStartCompat="@drawable/login_username_et_ic" />
+
+    <View style="@style/line_horizontal" />
+
+    <EditText
+        android:id="@+id/login_pwd_et"
+        style="@style/common_et_single"
+        android:layout_marginTop="10dp"
+        android:drawablePadding="10dp"
+        android:hint="@string/login_pwd_hint"
+        android:maxLength="16"
+        android:padding="12dp"
+        android:shadowDx="10"
+        android:shadowDy="0"
+        android:shadowRadius="1.0"
+        android:textColor="@color/color_666666"
+        android:textColorHint="@color/color_aaaaaa"
+        android:textSize="@dimen/text_17"
+        app:drawableStartCompat="@drawable/login_pwd_et_ic" />
+
+    <View style="@style/line_horizontal" />
+
+    <EditText
+        android:id="@+id/login_verifycode_et"
+        style="@style/common_et_single"
+        android:layout_marginTop="10dp"
+        android:drawablePadding="10dp"
+        android:hint="@string/login_verifycode_hint"
+        android:maxLength="16"
+        android:padding="12dp"
+        android:shadowDx="20"
+        android:shadowDy="0"
+        android:shadowRadius="1.0"
+        android:textColor="@color/color_666666"
+        android:textColorHint="@color/color_aaaaaa"
+        android:textSize="@dimen/text_17"
+        app:drawableStartCompat="@drawable/login_verifycode_et_ic" />
+
+    <View style="@style/line_horizontal" />
+
+    <TextView
+        android:id="@+id/login_bt"
+        style="@style/big_bt"
+        android:layout_marginTop="20dp"
+        android:letterSpacing="1.5"
+        android:text="@string/login_text" />
+
+    <View style="@style/weight" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/login_toregister_bt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawablePadding="10dp"
+            android:gravity="center_horizontal"
+            android:text="@string/login_toregister"
+            app:drawableTopCompat="@drawable/login_toregister_ic" />
+
+        <TextView
+            android:id="@+id/login_trial_bt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawablePadding="10dp"
+            android:gravity="center_horizontal"
+            android:text="@string/login_trial"
+            app:drawableTopCompat="@drawable/login_trial_ic" />
+
+        <TextView
+            android:id="@+id/login_online_customservice_bt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawablePadding="10dp"
+            android:gravity="center_horizontal"
+            android:text="@string/login_online_customservice"
+            app:drawableTopCompat="@drawable/login_online_customservice_ic" />
+    </LinearLayout>
+</LinearLayout>

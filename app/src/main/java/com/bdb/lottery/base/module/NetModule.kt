@@ -7,22 +7,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import retrofit2.Retrofit
+import timber.log.Timber
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(ApplicationComponent::class)
 class NetModule {
-    @Provides
     @Singleton
+    @Provides
     fun retrofit(): Retrofit {
-        return Retrofits.create(DomainLocalDataSource.getDomain())
-    }
-
-    @Provides
-    @Singleton
-    @Named("Url")
-    fun retrofitWithUrl(): Retrofit {
-        return Retrofits.create()
+        val domain = DomainLocalDataSource.getDomain()
+        Timber.d("domain: ${domain}")
+        return Retrofits.create(domain)
     }
 }

@@ -2,6 +2,8 @@
 <resources>
     <item name="id_common_statusbar_layout" type="id" />
     <item name="id_common_actionbar_layout" type="id" />
+    <item name="id_common_actionbar_back_fl" type="id" />
+    <item name="id_common_actionbar_title_tv" type="id" />
     <item name="id_common_content_layout" type="id" />
     <item name="id_common_loadinglayout" type="id" />
     <item name="id_common_error_layout" type="id" />

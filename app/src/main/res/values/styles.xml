@@ -1,8 +1,15 @@
 <resources>
     <!--去掉系统Title-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">false</item>
+    </style>
+
+    <!--去掉系统Title-->
+    <style name="TransparentTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/color_transparent</item>
     </style>
 
     <!-- Splash使用透明背景 -->
@@ -35,11 +42,44 @@
         <item name="android:backgroundDimAmount">0.4</item>
     </style>
 
+    <!-- Xml布局文件 -->
+    <style name="mw">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="mm">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="weight">
         <item name="android:layout_weight">1</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
     </style>
 
+    <style name="line_horizontal">
+        <item name="android:background">@color/color_E6E8EA</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0.5dp</item>
+    </style>
 
+    <style name="common_et" parent="mw">
+        <item name="android:background">@null</item>
+    </style>
+
+    <style name="common_et_single" parent="mw">
+        <item name="android:background">@null</item>
+        <item name="android:lines">@null</item>
+    </style>
+
+    <style name="big_bt">
+        <item name="android:background">@drawable/shape_commn_big_bt</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textColor">@color/color_ffffff</item>
+        <item name="android:textSize">@dimen/text_18</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>

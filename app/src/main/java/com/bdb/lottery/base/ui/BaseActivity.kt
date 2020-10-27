@@ -2,8 +2,11 @@ package com.bdb.lottery.base.ui
 
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.LinearLayout.VERTICAL
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -17,7 +20,11 @@ import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-abstract class BaseActivity(var layoutId: Int, var wrapStatusbar: Boolean = true) :
+abstract class BaseActivity(
+    var layoutId: Int,
+    var attachStatusbar: Boolean = true,
+    var attachActionBar: Boolean = true
+) :
     AppCompatActivity() {
     //vars
     protected var statusbarLight = true;//状态栏是否半透明
@@ -33,7 +40,7 @@ abstract class BaseActivity(var layoutId: Int, var wrapStatusbar: Boolean = true
         get() = findViewById(R.id.id_common_loadinglayout)
     protected val content: ViewGroup?
         get() = findViewById(R.id.id_common_content_layout)
-    val statusBar: ViewGroup?
+    val statusBar: View?
         get() = findViewById(R.id.id_common_statusbar_layout)
     protected var mActivity: WeakReference<AppCompatActivity>? = null//当前activity引用
 
@@ -50,34 +57,55 @@ abstract class BaseActivity(var layoutId: Int, var wrapStatusbar: Boolean = true
         observe()
     }
 
-    /**
-     * observe livedata
-     */
-    protected open fun observe(){}
-
+    //emptyErrorRoot()/content 添加空布局、网络错误
     private fun loadingLayoutWrap() {
-        content?.let {
-            LoadingLayout.wrap(content)
+        emptyErrorRoot()?.let {
+            LoadingLayout.wrap(it)
         }
     }
 
     fun attachView(root: ViewGroup) {
         root.removeAllViews()
-        if (wrapStatusbar) {
-            //statusbar 嵌套
-            val wrapL: ViewGroup =
-                layoutInflater.inflate(
-                    R.layout.statusbar_wrap_common_layout,
-                    root,
-                    false
-                ) as ViewGroup
+        if (attachStatusbar || attachActionBar) {
+            var parent: ViewGroup? = null
+            var layout: ViewGroup = layoutInflater.inflate(layoutId, root, false) as ViewGroup
+            val verticalLinearLayout = layout is LinearLayout && layout.orientation == VERTICAL
+            if (verticalLinearLayout) {
+                parent = layout
+            } else {
+                parent = LinearLayout(this)
+                parent.orientation = VERTICAL
+            }
+            root.addView(
+                parent,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
 
-            root.addView(wrapL)
-            //添加布局文件
-            layoutInflater.inflate(layoutId, wrapL, true)
+            parent.run {
+                if (attachStatusbar) {
+                    //statusbar 嵌套
+                    addView(
+                        layoutInflater.inflate(
+                            R.layout.statusbar_common_layout,
+                            parent,
+                            false
+                        ),
+                        0
+                    )
+
+                    //actionbar 嵌套
+                    if (attachActionBar)
+                        addView(
+                            layoutInflater.inflate(getActionbarLayout(), parent, false),
+                            if (attachStatusbar) 1 else 0
+                        )
+
+                    if (!verticalLinearLayout) addView(layout)
+                }
+            }
+
         } else {
-
-            //添加布局文件
             layoutInflater.inflate(layoutId, root, true)
         }
     }
@@ -88,10 +116,10 @@ abstract class BaseActivity(var layoutId: Int, var wrapStatusbar: Boolean = true
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if(keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             onBack()
             return false
-        }else{
+        } else {
             return super.onKeyDown(keyCode, event)
         }
     }
@@ -141,5 +169,24 @@ abstract class BaseActivity(var layoutId: Int, var wrapStatusbar: Boolean = true
         data.observe(this, Observer {
             block(it)
         })
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // 子类覆盖方法
+    ///////////////////////////////////////////////////////////////////////////
+    /**
+     * observe livedata
+     */
+    protected open fun observe() {
+    }
+
+    //空、网络错误 覆盖根布局
+    protected fun emptyErrorRoot(): ViewGroup? {
+        return null
+    }
+
+    //actionbar样式
+    protected open fun getActionbarLayout(): Int {
+        return R.layout.actionbar_common_layout
     }
 }

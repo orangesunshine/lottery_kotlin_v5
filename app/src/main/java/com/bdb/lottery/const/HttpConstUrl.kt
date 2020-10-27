@@ -16,13 +16,17 @@ interface HttpConstUrl {
             "https://o3rjctsi8.qnssl.com/"
         )
 
-        //前台配置
-        const val URL_CONFIG_FRONT = "/system-config/front.mvc"
+        const val URL_CONFIG_FRONT = "/system-config/front.mvc"//前台配置
 
-        //客服
-        const val URL_CUSTOM_SERVICE: String = "/login/kefuxian.mvc"
+        const val URL_CUSTOM_SERVICE: String = "/login/kefuxian.mvc"//客服
 
-        //客服
-        const val URL_APK_VERSION: String = "/login/apkversion.mvc"
+        const val URL_APK_VERSION: String = "/login/apkversion.mvc"//版本信息
+
+        ///////////////////////////////////////////////////////////////////////////
+        // 登录
+        ///////////////////////////////////////////////////////////////////////////
+        const val URL_LOGIN: String = "/login/login.mvc"//登录
+
+        const val ULR_LOGIN_TRIAL:String = ""//试玩
     }
 }

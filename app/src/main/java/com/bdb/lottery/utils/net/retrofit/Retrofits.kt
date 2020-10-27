@@ -24,7 +24,7 @@ object Retrofits {
     val logInterceptor = HttpLoggingInterceptor({
         Timber.d(it)
     }).also {
-        it.level = HttpLoggingInterceptor.Level.BODY
+        it.level = HttpLoggingInterceptor.Level.BASIC
     }
 
     fun getSSLSocketFactory(): SSLSocketFactory {

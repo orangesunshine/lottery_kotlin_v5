@@ -65,7 +65,7 @@ fun BaseActivity.statusbar(light: Boolean) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //5.0及以上
         window.statusBarColor = if (light) ContextCompat.getColor(
             this,
-            R.color.statusbar_gray
+            R.color.color_440E0404
         ) else Color.TRANSPARENT
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE

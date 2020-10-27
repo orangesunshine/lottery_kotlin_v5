@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="height_status_bar" type="dimen">25dp</item>
-    <item name="text_10" type="dimen">10dp</item>
-    <item name="text_11" type="dimen">11dp</item>
-    <item name="text_12" type="dimen">12dp</item>
-    <item name="text_13" type="dimen">13dp</item>
-    <item name="text_14" type="dimen">14dp</item>
-    <item name="text_15" type="dimen">15dp</item>
-    <item name="text_16" type="dimen">16dp</item>
-    <item name="text_17" type="dimen">17dp</item>
-    <item name="text_18" type="dimen">18dp</item>
-    <item name="text_20" type="dimen">20dp</item>
+    <item name="text_10" type="dimen">10sp</item>
+    <item name="text_11" type="dimen">11sp</item>
+    <item name="text_12" type="dimen">12sp</item>
+    <item name="text_13" type="dimen">13sp</item>
+    <item name="text_14" type="dimen">14sp</item>
+    <item name="text_15" type="dimen">15sp</item>
+    <item name="text_16" type="dimen">16sp</item>
+    <item name="text_17" type="dimen">17sp</item>
+    <item name="text_18" type="dimen">18sp</item>
+    <item name="text_20" type="dimen">20sp</item>
+    <item name="text_30" type="dimen">30sp</item>
 </resources>

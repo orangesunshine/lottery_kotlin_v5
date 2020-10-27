@@ -1,11 +1,15 @@
 package com.bdb.lottery.const
 
+import android.content.res.Resources
+
 interface IConst {
     companion object {
         var BASE_URL: String = "http://good6789.com"
         var CODE_SUCCESSFUL: Int = 200
         val DEFAULT_ERROR_CODE = -1//自定义通用错误
         val DOAMIN_ERROR_CODE = -2//自定义域名获取失败
+        val HEIGHT_STATUS_BAR =
+            Resources.getSystem().getIdentifier("status_bar_height", "dimen", "android")
     }
 }
 

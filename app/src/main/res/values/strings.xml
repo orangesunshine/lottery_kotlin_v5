@@ -4,4 +4,28 @@
     <string name="api_txt_path">lottery/tenant/bdb/domain/bdb.txt</string>
     <!-- 内置Api域名 -->
     <string name="local_http_url">http://bdb258.com/</string>
+
+    <!-- 引导 -->
+    <string name="guide_tologin">这就去登录</string>
+    <string name="splash_app_sub_text">最懂你的娱乐平台</string>
+
+    <!-- 登录 -->
+    <string name="login_text">登录</string>
+    <string name="login_online_customservice">在线客服</string>
+    <string name="login_trial">马上试玩</string>
+    <string name="login_toregister">立即注册</string>
+    <string name="login_username_hint">请输入用户名</string>
+    <string name="login_pwd_hint">请输入密码</string>
+    <string name="login_verifycode_hint">请输入验证码</string>
+
+    <!-- 注册 -->
+    <string name="register_text">注册</string>
+    <string name="register_account">账号：</string>
+    <string name="register_pwd">密码：</string>
+    <string name="register_confirm_pwd">确认密码：</string>
+    <string name="register_verifycode">验证码：</string>
+    <string name="register_account_hint">必须在5–12字符之间</string>
+    <string name="register_pwd_hint">必须在6–16字符之间</string>
+    <string name="register_verifycode_hint">请输入正确验证码</string>
+
 </resources>

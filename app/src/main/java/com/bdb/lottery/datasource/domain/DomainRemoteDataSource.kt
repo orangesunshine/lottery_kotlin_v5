@@ -27,7 +27,7 @@ import javax.inject.Named
 
 class DomainRemoteDataSource @Inject constructor(
     @ApplicationContext private val context: Context,
-    @Named("Url") private var retrofit: Retrofit
+    private var retrofit: Retrofit
 ) {
     val stringApi = retrofit.create(CommonStringApi::class.java)
     val configApi = retrofit.create(AppApi::class.java)

@@ -7,15 +7,17 @@ import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.base.viewmodel.BaseViewModel
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.app.AppRemoteDataSource
+import com.bdb.lottery.datasource.app.data.DataConfig
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.domain.DomainLocalDataSource.saveDomain
 import com.bdb.lottery.datasource.domain.DomainRemoteDataSource
-import com.bdb.lottery.datasource.app.data.DataConfig
 import com.bdb.lottery.extension.nNullEmpty
+import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.cache.Cache
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ActivityContext
 import org.greenrobot.eventbus.EventBus
+import timber.log.Timber
 import javax.inject.Inject
 
 class SplashViewModel @ViewModelInject @Inject constructor(
@@ -67,17 +69,21 @@ class SplashViewModel @ViewModelInject @Inject constructor(
     fun onDomainSuccess(it: DataConfig?) {
         getCustomService()
         getApkVersion()
-        val scheme = it?.WebMobileUrl?.toUri()?.scheme
-        val host = it?.WebMobileUrl?.toUri()?.host
-        val authority = it?.WebMobileUrl?.toUri()?.authority
-        val domain = scheme + "://" + if (host.nNullEmpty()) host else authority
+        val toUri = it?.WebMobileUrl?.toUri()
+        val scheme = toUri?.scheme
+        val host = toUri?.host
+        val authority = toUri?.authority
+        val port = toUri?.port
+        val domain =
+            scheme + "://" + if (host.nNullEmpty()) host else authority + if (-1 != port) ":${port}" else ""
         //保存并缓存域名
+        Timber.d("domain: ${domain}")
         saveDomain(domain)
         ldDomainRet.setData(true)
     }
 
     //线上域名获取失败回调
-    fun onOnlineDomainError(){
+    fun onOnlineDomainError() {
         //本地域名配置
         val localDomainStringId = context.resources.getIdentifier(
             "local_http_url",

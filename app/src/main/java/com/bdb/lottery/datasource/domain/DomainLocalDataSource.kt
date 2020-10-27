@@ -23,7 +23,7 @@ object DomainLocalDataSource {
                 getFirstLocalDomain()
             )
         }
-        return if (mSelectDomain.isDomainUrl()) mSelectDomain!! else BdbApp.context.getString(R.string.local_http_url)
+        return if (mSelectDomain.isDomainUrl()) mSelectDomain!! else getFirstLocalDomain()
     }
 
     fun getFirstLocalDomain(): String {

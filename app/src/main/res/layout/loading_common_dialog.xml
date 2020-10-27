@@ -5,7 +5,8 @@
     android:layout_gravity="center"
     android:clickable="true"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true">
 
     <ProgressBar
         android:layout_width="30dp"

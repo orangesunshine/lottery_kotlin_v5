@@ -6,8 +6,8 @@ import androidx.activity.viewModels
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
+import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.MainActivity
-import com.bdb.lottery.const.IAnim
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.extension.toast
@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.splash_activity.*
 
 @AndroidEntryPoint
-class SplashActivity : BaseActivity(R.layout.splash_activity, false) {
+class SplashActivity : BaseActivity(R.layout.splash_activity, false, false) {
     private val splashViewModel by viewModels<SplashViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,6 @@ class SplashActivity : BaseActivity(R.layout.splash_activity, false) {
 
     fun showLoading() {
         splash_loading_lav.visible(true)
-        splash_loading_lav.setAnimation(IAnim.SPLASH_LOADING)
         splash_loading_lav.playAnimation()
     }
 
@@ -53,7 +52,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity, false) {
                 //获取域名成功
                 dismissLoading()
                 if (Cache.getBoolean(ICache.CACHE_GUIDE)) {
-                    start<MainActivity>()
+                    start<LoginActivity>()
                 } else {
                     //首次进入
                     start<GuideActivity>()

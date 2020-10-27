@@ -73,4 +73,13 @@ class ExampleUnitTest {
         println("ret: ${ret}")
     }
 
+    @Test
+    fun assertLet(){
+        var a = ""
+        a?.let{
+            println("let")
+            return
+        }
+        println("testLet")
+    }
 }

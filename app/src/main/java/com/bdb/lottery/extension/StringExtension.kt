@@ -13,6 +13,6 @@ fun String?.nEmptyEquals(str: String?): Boolean {
 
 fun CharSequence?.isDomainUrl(): Boolean {
     val regex =
-        "((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(/)?"
+        "((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(:[0-9]{2,5})?(/)?"
     return this.nNullEmpty() && Pattern.matches(regex, this)
 }

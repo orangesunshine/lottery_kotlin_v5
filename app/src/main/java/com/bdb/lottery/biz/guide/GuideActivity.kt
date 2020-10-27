@@ -16,7 +16,7 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import kotlinx.android.synthetic.main.guide_activity.*
 
 
-class GuideActivity : BaseActivity(R.layout.guide_activity, false) {
+class GuideActivity : BaseActivity(R.layout.guide_activity, false, false) {
     override fun initVar() {
         super.initVar()
         statusbarLight = false
