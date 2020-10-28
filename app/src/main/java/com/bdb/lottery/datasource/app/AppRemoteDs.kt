@@ -1,8 +1,11 @@
 package com.bdb.lottery.datasource.app
 
 import android.content.Context
+import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.datasource.app.data.ApkVersionData
+import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.datasource.app.data.CustomServiceData
+import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -11,9 +14,18 @@ import javax.inject.Inject
 
 class AppRemoteDs @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val domainLocalDs: DomainLocalDs,
     private var retrofit: Retrofit
 ) {
     val appApi = retrofit.create(AppApi::class.java)
+
+    //获取平台参数
+    fun getPlateformParams(success: ((ConfigData?) -> Any?)? = null) {
+        Retrofits.observe(
+            appApi.plateformParams(domainLocalDs.getDomain() + HttpConstUrl.URL_CONFIG_FRONT),
+            success
+        )
+    }
 
     //客服
     fun getCustomServiceUrl(success: ((CustomServiceData?) -> Any?)? = null) {

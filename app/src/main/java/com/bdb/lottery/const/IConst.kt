@@ -23,16 +23,16 @@ interface ITag {
 
 interface ICache {
     companion object {
-        val CACHE_DEVICE_ID = "cache_device_id"//设备号
-        val CACHE_PLATEFORM = "cache_plateform"//平台
-        val CACHE_DOMAIN_URL = "cache_domain_url"//域名
-        val CACHE_PUBLIC_RSA = "cache_public_rsa"//公钥
-        val CACHE_CUSTOM_SERVICE_URL = "cache_custom_service_url"//客服url
-        val CACHE_APK_VERSION = "cache_apk_version"//apk版本信息
-        val CACHE_GUIDE = "cache_guide"//splash引导
-        val CACHE_LOGIN_REMEMBER_PWD = "cache_login_remember_pwd"//是否记住密码
-        val CACHE_LOGIN_USERNAME = "cache_login_username"//用户名
-        val CACHE_LOGIN_PWD = "cache_login_pwd"//密码
+        val DEVICE_ID_CACHE = "DEVICE_ID_CACHE"//设备号
+        val PLATEFORM_CACHE = "PLATEFORM_CACHE"//平台
+        val DOMAIN_URL_CACHE = "DOMAIN_URL_CACHE"//域名
+        val PUBLIC_RSA_CACHE = "PUBLIC_RSA_CACHE"//公钥
+        val CUSTOM_SERVICE_URL_CACHE = "CUSTOM_SERVICE_URL_CACHE"//客服url
+        val APK_VERSION_CACHE = "APK_VERSION_CACHE"//apk版本信息
+        val GUIDE_CACHE = "GUIDE_CACHE"//splash引导
+        val LOGIN_REMEMBER_PWD_CACHE = "LOGIN_REMEMBER_PWD_CACHE"//是否记住密码
+        val LOGIN_USERNAME_CACHE = "LOGIN_USERNAME_CACHE"//用户名
+        val LOGIN_PWD_CACHE = "LOGIN_PWD_CACHE"//密码
     }
 }
 

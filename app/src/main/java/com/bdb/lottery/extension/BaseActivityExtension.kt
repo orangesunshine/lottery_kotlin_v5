@@ -18,11 +18,11 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.const.IConst
 import kotlin.reflect.KProperty1
 
-fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_SHORT) {
+fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_LONG) {
     toast(getString(resId), length)
 }
 
-fun Context.toast(msg: String?, length: Int = Toast.LENGTH_SHORT) {
+fun Context.toast(msg: String?, length: Int = Toast.LENGTH_LONG) {
     Toast.makeText(this, msg, length).show()
 }
 

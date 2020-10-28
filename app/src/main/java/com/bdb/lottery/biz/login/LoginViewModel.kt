@@ -5,19 +5,19 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.const.ICache
-import com.bdb.lottery.const.IConst
 import com.bdb.lottery.datasource.account.AccountRemoteDs
+import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
-import com.bdb.lottery.datasource.common.ValidateCodeData
+import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.cache.Cache
-import com.google.gson.Gson
+import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.hilt.android.qualifiers.ActivityContext
-import java.util.*
 import javax.inject.Inject
 
 class LoginViewModel @ViewModelInject @Inject constructor(
     @ActivityContext private val context: Context,
-    private val accountRemoteDs: AccountRemoteDs
+    private val accountRemoteDs: AccountRemoteDs,
+    private val appRemoteDs: AppRemoteDs
 ) : ViewModel() {
     val validateLd = LiveDataWraper<Boolean>()
     val needValidated = LiveDataWraper<Boolean>()
@@ -33,15 +33,17 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         val appVersionCode = BuildConfig.VERSION_NAME //APP版本号
         accountRemoteDs.login(username, pwd, pushClientId, verifyCode, appVersionCode, {
             //登录成功保存用户名、密码、是否记住密码
-            Cache.putBoolean(ICache.CACHE_LOGIN_REMEMBER_PWD, rememberPwd)
-            Cache.putString(ICache.CACHE_LOGIN_USERNAME, username)
-            Cache.putString(ICache.CACHE_LOGIN_PWD, if (rememberPwd) pwd else "")
+            Cache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
+            Cache.putString(ICache.LOGIN_USERNAME_CACHE, username)
+            Cache.putString(ICache.LOGIN_PWD_CACHE, if (rememberPwd) pwd else "")
         }, { code, msg ->
-            error?.let { it(msg) }
-            Cache.putString(ICache.CACHE_LOGIN_PWD, "")
-            Cache.putBoolean(ICache.CACHE_LOGIN_REMEMBER_PWD, false)
-            val needValidate = needValidate(msg)
-            if (needValidate) validateLd.setData(true)
+            Cache.putString(ICache.LOGIN_PWD_CACHE, "")
+            Cache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, false)
+            Retrofits.msg2Error<Boolean>(
+                msg,
+                { error?.run { this(it) } },
+                { if (null != it && it) needValidated.setData(it) })
+
         })
     }
 
@@ -70,26 +72,13 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     }
 
     fun plateformParasms() {
-
+        appRemoteDs.getPlateformParams {
+            context.toast(it?.rsaPublicKey)
+            Cache.putString(ICache.PUBLIC_RSA_CACHE, it?.rsaPublicKey)
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
     // 工具方法
     ///////////////////////////////////////////////////////////////////////////
-    fun needValidate(msg: String?): Boolean {
-        msg?.let {
-            if (it.contains(IConst.DATA_SPLIT_SYM)) {
-                it.split(IConst.DATA_SPLIT_SYM)?.let {
-                    if (it.size > 1) {
-                        val validate = it[1]
-                        if (!validate.isBlank()) {
-                            val validate = Gson().fromJson(validate, ValidateCodeData::class.java)
-                            return validate?.needValidateCode ?: false
-                        }
-                    }
-                }
-            }
-        }
-        return false
-    }
 }

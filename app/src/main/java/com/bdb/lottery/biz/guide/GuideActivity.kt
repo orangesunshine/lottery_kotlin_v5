@@ -37,7 +37,7 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
 
         //去登录
         guide_tologin_tv.setOnClickListener({
-            Cache.putBoolean(ICache.CACHE_GUIDE, true)
+            Cache.putBoolean(ICache.GUIDE_CACHE, true)
             start<MainActivity>()
             finish()
         })

@@ -50,7 +50,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
             if (null != it && it) {
                 //获取域名成功
                 dismissLoading()
-                if (Cache.getBoolean(ICache.CACHE_GUIDE)) {
+                if (Cache.getBoolean(ICache.GUIDE_CACHE)) {
                     start<LoginActivity>()
                 } else {
                     //首次进入

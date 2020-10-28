@@ -2,6 +2,7 @@
   "app": [
     "GSON",
     "AUTOSIZE",
+    "COMMONS-CODEC",
     "GLIDE",
     "LOTTIE",
     "EVENTBUS",

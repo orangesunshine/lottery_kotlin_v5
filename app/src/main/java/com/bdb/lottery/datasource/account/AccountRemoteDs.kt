@@ -1,13 +1,11 @@
 package com.bdb.lottery.datasource.account
 
 import android.content.Context
-import android.util.Base64
-import android.util.Base64.DEFAULT
 import com.bdb.lottery.const.ICache
-import com.bdb.lottery.utils.Apps
+import com.bdb.lottery.const.IConst
+import com.bdb.lottery.utils.Encrypts
 import com.bdb.lottery.utils.cache.Cache
 import com.bdb.lottery.utils.net.retrofit.Retrofits
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import retrofit2.Retrofit
@@ -36,14 +34,28 @@ class AccountRemoteDs @Inject constructor(
         params.put("pushClientId", clientId)
         params.put("validate", verifycode)
         params.put("browserInfo", browserInfo)
-        val toJson = GsonBuilder().create().toJson(params)
-        val rsa = Cache.getString(ICache.CACHE_PUBLIC_RSA, "")
-        val encrypRsa = Apps.encrypRsa(Base64.decode(toJson, DEFAULT), Base64.decode(rsa, DEFAULT))
+        val paramsJson = GsonBuilder().create().toJson(params)
+        val key = Cache.getString(ICache.PUBLIC_RSA_CACHE, "")
+        if (null == key) {
+            error?.let { it(IConst.DEFAULT_ERROR_CODE, "加密失败") }
+            return
+        }
 
+        val encrypRsa = Encrypts.rsaEncryptPublicKey(paramsJson, key)
+
+        if (null == encrypRsa) {
+            error?.let { it(IConst.DEFAULT_ERROR_CODE, "加密失败") }
+            return
+        }
         Retrofits.observe(
-            accountApi.login(Base64.encodeToString(encrypRsa, DEFAULT)),
+            accountApi.login(encrypRsa),
             success,
-            error
+            { code, msg ->
+                Retrofits.msg2Error<String>(
+                    msg,
+                    { error?.run { this(code, it) } },
+                    { Cache.putString(ICache.PUBLIC_RSA_CACHE, it) })
+            }
         )
     }
 

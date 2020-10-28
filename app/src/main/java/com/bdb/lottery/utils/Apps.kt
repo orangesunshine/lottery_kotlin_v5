@@ -2,13 +2,13 @@ package com.bdb.lottery.utils
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Process
 import android.text.TextUtils
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.extension.equalsNSpace
 import timber.log.Timber
 import java.io.BufferedReader
+import java.io.ByteArrayOutputStream
 import java.io.FileReader
 import java.io.IOException
 import java.security.Key
@@ -128,40 +128,25 @@ object Apps {
             return null
         }
         try {
-            val rsaKey: Key
-            val keyFactory: KeyFactory
-            keyFactory = if (Build.VERSION.SDK_INT < 28) {
-                KeyFactory.getInstance("RSA", "BC")
-            } else {
-                KeyFactory.getInstance("RSA")
-            }
-            rsaKey = keyFactory.generatePublic(X509EncodedKeySpec(key))
-
-            if (rsaKey == null) return null
-            val cipher = Cipher.getInstance("DES/CBC/PKCS1Padding")
-            cipher.init(Cipher.ENCRYPT_MODE, rsaKey)
+            val keyFactory = KeyFactory.getInstance("RSA")
+            val publicK: Key = keyFactory.generatePublic(X509EncodedKeySpec(key))
+            val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
+            cipher.init(Cipher.ENCRYPT_MODE, publicK)
+            var offset = 0
             val len = data.size
-            var maxLen = key.size / 8
-            val count = len / maxLen
-            return if (count > 0) {
-                var ret = ByteArray(0)
-                var buff = ByteArray(maxLen)
-                var index = 0
-                for (i in 0 until count) {
-                    System.arraycopy(data, index, buff, 0, maxLen)
-                    ret = joins(ret, cipher.doFinal(buff))
-                    index += maxLen
+            val baos = ByteArrayOutputStream()
+            while (len - offset > 0) {
+                var cache = if (len - offset > 117) {
+                    cipher.doFinal(data, offset, 117)
+                } else {
+                    cipher.doFinal(data, offset, len - offset)
                 }
-                if (index != len) {
-                    val restLen = len - index
-                    buff = ByteArray(restLen)
-                    System.arraycopy(data, index, buff, 0, restLen)
-                    ret = joins(ret, cipher.doFinal(buff))
-                }
-                ret
-            } else {
-                cipher.doFinal(data)
+                baos.write(cache)
+                offset += 117
             }
+            val ret = baos.toByteArray()
+            baos.close()
+            return ret
         } catch (e: Exception) {
         }
         return null

@@ -1,8 +1,12 @@
 package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
+import com.bdb.lottery.const.ICache
 import com.bdb.lottery.const.IConst
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.utils.cache.Cache
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -74,7 +78,7 @@ object Retrofits {
     fun <Data> observe(
         observable: Observable<BaseResponse<Data>>,
         success: ((Data?) -> Any?)? = null,
-        error: ((code: Int, msg: String?) -> Any)? = null,
+        error: ((code: Int, msg: String?) -> Any?)? = null,
         complete: (() -> Any?)? = null,
     ) {
         observable.subscribeOn(Schedulers.io())
@@ -83,6 +87,10 @@ object Retrofits {
                 it?.run {
                     if (!it.successData()) {
                         if (error != null) {
+                            if (null != it) {
+                                msg += IConst.DATA_SPLIT_SYM
+                                msg += GsonBuilder().create().toJson(it.data)
+                            }
                             error(code, msg)
                         }
                         return@subscribe
@@ -115,5 +123,29 @@ object Retrofits {
             val message = it.message
             return if (message.isSpace()) message else it.cause?.message
         }
+    }
+
+    inline fun <reified T> msg2Error(
+        msg: String?,
+        msgBlock: ((String?) -> Any?),
+        errorBlock: (T?) -> Any?
+    ) {
+        msg?.let {
+            if (it.contains(IConst.DATA_SPLIT_SYM)) {
+                it.split(IConst.DATA_SPLIT_SYM)?.let {
+                    if (it.size > 0) {
+                        msgBlock(it[0])
+                    }
+                    if (it.size > 1) {
+                        val validate = it[1]
+                        if (!validate.isBlank()) {
+                            val error = Gson().fromJson(validate, T::class.java)
+                            errorBlock(error)
+                        }
+                    }
+                }
+            }
+        }
+        msgBlock(msg)
     }
 }

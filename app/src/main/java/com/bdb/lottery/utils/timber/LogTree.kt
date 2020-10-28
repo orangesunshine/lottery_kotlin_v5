@@ -9,7 +9,7 @@ class LogTree : Timber.DebugTree() {
     val tags = listOf("LOTTERY")
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         if (BuildConfig.DEBUG || (tags.contains(tag) && Log.isLoggable(tag, Log.DEBUG))) {
-            super.log(priority, "younger__", message, t)
+            super.log(priority, tag, message, t)
         }
     }
 }

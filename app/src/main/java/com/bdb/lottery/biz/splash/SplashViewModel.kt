@@ -30,7 +30,9 @@ class SplashViewModel @ViewModelInject @Inject constructor(
 
     //初始化域名
     fun initDomain() {
+        Timber.d("initDomain")
         if (Configs.isDebug()) {
+            Timber.d("isDebug")
             remoteDomainDs.getDebugFrontConfig({
                 //线上域名获取成功
                 onDomainSuccess(it)
@@ -55,7 +57,7 @@ class SplashViewModel @ViewModelInject @Inject constructor(
         appDs.getCustomServiceUrl {
             it?.let {
                 if (it.kefuxian.isSpace())
-                    Cache.putString(ICache.CACHE_CUSTOM_SERVICE_URL, it.kefuxian)
+                    Cache.putString(ICache.CUSTOM_SERVICE_URL_CACHE, it.kefuxian)
             }
         }
     }
@@ -65,7 +67,7 @@ class SplashViewModel @ViewModelInject @Inject constructor(
         appDs.getAPkVeresion {
             it?.let {
                 //缓存apk版本信息
-                Cache.putString(ICache.CACHE_APK_VERSION, Gson().toJson(it))
+                Cache.putString(ICache.APK_VERSION_CACHE, Gson().toJson(it))
                 //发送粘性事件，MainActivity打开处理
                 EventBus.getDefault().postSticky(it)
             }
@@ -87,7 +89,7 @@ class SplashViewModel @ViewModelInject @Inject constructor(
         val domain =
             scheme + "://" + if (host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
         //保存并缓存域名
-        Timber.d("domain: ${domain}")
+        Timber.d("onDomainSuccess__domain: ${domain}")
         localDomainDs.saveDomain(domain)
         ldDomainRet.setData(true)
     }

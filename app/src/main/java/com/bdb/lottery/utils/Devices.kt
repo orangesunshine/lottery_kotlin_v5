@@ -12,7 +12,7 @@ object Devices {
      * 获取设备uuid
      */
     fun getDeviceUUid(): String {
-        return (Cache.getString(ICache.CACHE_DEVICE_ID, null)) ?: let {
+        return (Cache.getString(ICache.DEVICE_ID_CACHE, null)) ?: let {
             val androidId = getAndroidId()
             saveUdid(if (TextUtils.isEmpty(androidId)) 9 else 2, androidId)
         }
@@ -26,7 +26,7 @@ object Devices {
 
     fun saveUdid(prifex: Int, id: String): String {
         val udid = getUdid(prifex, id)
-        Cache.putString(ICache.CACHE_DEVICE_ID, udid)
+        Cache.putString(ICache.DEVICE_ID_CACHE, udid)
         return udid
     }
 

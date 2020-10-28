@@ -61,7 +61,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
         //在线客服
         login_online_customservice_bt.setOnClickListener({
-            if (Cache.getString(ICache.CACHE_CUSTOM_SERVICE_URL).isSpace()) {
+            if (Cache.getString(ICache.CUSTOM_SERVICE_URL_CACHE).isSpace()) {
                 //缓存
             } else {
                 vm.getCustomService()
@@ -88,7 +88,6 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
         })
 
         vm.plateformParasms()
-
     }
 
     //验证码

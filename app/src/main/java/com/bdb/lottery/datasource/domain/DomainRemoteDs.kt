@@ -7,6 +7,7 @@ import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.const.IDebugConfig
+import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.extension.isSpace
@@ -28,6 +29,7 @@ class DomainRemoteDs @Inject constructor(
     private var retrofit: Retrofit
 ) {
     val domainApi = retrofit.create(DomainApi::class.java)
+    val appApi = retrofit.create(AppApi::class.java)
 
     /**
      * 获取前端配置
@@ -36,7 +38,7 @@ class DomainRemoteDs @Inject constructor(
         success: ((ConfigData?) -> Any)? = null,
         error: ((String?) -> Any)? = null
     ) {
-        domainApi.config(
+        appApi.plateformParams(
             IDebugConfig.URL_TEST_DOMAIN + HttpConstUrl.URL_CONFIG_FRONT
         ).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -50,23 +52,18 @@ class DomainRemoteDs @Inject constructor(
 
                     //保存rsa公钥
                     it.data?.rsaPublicKey?.let {
-                        Cache.putString(ICache.CACHE_PUBLIC_RSA, it)
+                        Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
                     }
 
                     //保存plateform参数
                     it.data?.platform?.let {
-                        Cache.putString(ICache.CACHE_PLATEFORM, it)
+                        Cache.putString(ICache.PLATEFORM_CACHE, it)
                     }
                 }
             }, {
                 //获取域名失败
                 Timber.d("online__onError：${it.msg}")
                 error?.run { this(it.msg) }
-
-            }, {
-                //数据解析问题
-                Timber.d("local__onComplete")
-                error?.run { this("数据异常") }
 
             })
     }
@@ -112,7 +109,7 @@ class DomainRemoteDs @Inject constructor(
                 .observeOn(Schedulers.io())
                 .flatMap {
                     Timber.d("online域名：${it}")
-                    if (it.isDomainUrl()) domainApi.config(
+                    if (it.isDomainUrl()) appApi.plateformParams(
                         it + HttpConstUrl.URL_CONFIG_FRONT
                     ) else null
                 }
@@ -135,12 +132,12 @@ class DomainRemoteDs @Inject constructor(
 
                             //保存rsa公钥
                             it.data?.rsaPublicKey?.let {
-                                Cache.putString(ICache.CACHE_PUBLIC_RSA, it)
+                                Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
                             }
 
                             //保存plateform参数
                             it.data?.platform?.let {
-                                Cache.putString(ICache.CACHE_PLATEFORM, it)
+                                Cache.putString(ICache.PLATEFORM_CACHE, it)
                             }
                         }
                     }
@@ -176,7 +173,7 @@ class DomainRemoteDs @Inject constructor(
             val localObservables = mutableListOf<Observable<BaseResponse<ConfigData>>>()
             if (!domains.isNullOrEmpty()) {
                 for (domain in domains) {
-                    localObservables.add(domainApi.config(domain + HttpConstUrl.URL_CONFIG_FRONT))
+                    localObservables.add(appApi.plateformParams(domain + HttpConstUrl.URL_CONFIG_FRONT))
                 }
                 var disposable: Disposable? = null
                 val already = AtomicBoolean(false)
@@ -203,12 +200,12 @@ class DomainRemoteDs @Inject constructor(
 
                                 //保存rsa公钥
                                 it.data?.rsaPublicKey?.let {
-                                    Cache.putString(ICache.CACHE_PUBLIC_RSA, it)
+                                    Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
                                 }
 
                                 //保存plateform参数
                                 it.data?.platform?.let {
-                                    Cache.putString(ICache.CACHE_PLATEFORM, it)
+                                    Cache.putString(ICache.PLATEFORM_CACHE, it)
                                 }
                             }
                         }

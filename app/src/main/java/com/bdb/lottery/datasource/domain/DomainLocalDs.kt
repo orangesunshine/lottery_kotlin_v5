@@ -15,14 +15,14 @@ class DomainLocalDs @Inject constructor() {
     fun saveDomain(domain: String?) {
         if (domain.isDomainUrl()) {
             mSelectDomain = domain!!
-            Cache.putString(ICache.CACHE_DOMAIN_URL, domain)
+            Cache.putString(ICache.DOMAIN_URL_CACHE, domain)
         }
     }
 
     fun getDomain(): String {
         if (!mSelectDomain.isDomainUrl()) {
             mSelectDomain = Cache.getString(
-                ICache.CACHE_CUSTOM_SERVICE_URL,
+                ICache.CUSTOM_SERVICE_URL_CACHE,
                 getFirstLocalDomain()
             )
         }
