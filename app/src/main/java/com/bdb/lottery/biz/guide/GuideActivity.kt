@@ -16,7 +16,7 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import kotlinx.android.synthetic.main.guide_activity.*
 
 
-class GuideActivity : BaseActivity(R.layout.guide_activity, false, false) {
+class GuideActivity : BaseActivity(R.layout.guide_activity) {
     override fun initVar() {
         super.initVar()
         statusbarLight = false
@@ -85,5 +85,13 @@ class GuideActivity : BaseActivity(R.layout.guide_activity, false, false) {
     fun dimissTologinBt() {
         guide_dot_ll.alphaVisible(true)
         guide_tologin_tv.alphaVisible(false)
+    }
+
+    override fun attachStatusBar(): Boolean {
+        return false
+    }
+
+    override fun attachActionBar(): Boolean {
+        return false
     }
 }

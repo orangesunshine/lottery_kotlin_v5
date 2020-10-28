@@ -1,6 +1,6 @@
 package com.bdb.lottery.base.module
 
-import com.bdb.lottery.datasource.domain.DomainLocalDataSource
+import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.Module
 import dagger.Provides
@@ -8,7 +8,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import retrofit2.Retrofit
 import timber.log.Timber
-import javax.inject.Named
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
@@ -16,9 +16,7 @@ import javax.inject.Singleton
 class NetModule {
     @Singleton
     @Provides
-    fun retrofit(): Retrofit {
-        val domain = DomainLocalDataSource.getDomain()
-        Timber.d("domain: ${domain}")
-        return Retrofits.create(domain)
+    fun retrofit(localDomainDs: DomainLocalDs): Retrofit {
+        return Retrofits.create(localDomainDs.getDomain())
     }
 }

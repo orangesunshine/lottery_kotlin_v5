@@ -1,12 +1,10 @@
 package com.bdb.lottery.utils
 
-import android.content.Context
 import android.provider.Settings
 import android.text.TextUtils
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.utils.cache.Cache
-import com.tencent.mmkv.MMKV
 import java.util.*
 
 object Devices {
@@ -14,7 +12,7 @@ object Devices {
      * 获取设备uuid
      */
     fun getDeviceUUid(): String {
-        return (Cache.getString(ICache.CHACHE_DEVICE_ID, null)) ?: let {
+        return (Cache.getString(ICache.CACHE_DEVICE_ID, null)) ?: let {
             val androidId = getAndroidId()
             saveUdid(if (TextUtils.isEmpty(androidId)) 9 else 2, androidId)
         }
@@ -28,7 +26,7 @@ object Devices {
 
     fun saveUdid(prifex: Int, id: String): String {
         val udid = getUdid(prifex, id)
-        Cache.putString(ICache.CHACHE_DEVICE_ID, udid)
+        Cache.putString(ICache.CACHE_DEVICE_ID, udid)
         return udid
     }
 

@@ -1,6 +1,6 @@
 package com.bdb.lottery.datasource.app.data
 
-data class DataApkVersion(
+data class ApkVersionData(
     var apkUrl: String,
     var isForce: Boolean,
     var updateContent: String,

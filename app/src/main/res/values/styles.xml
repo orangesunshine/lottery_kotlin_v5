@@ -1,13 +1,15 @@
 <resources>
     <!--去掉系统Title-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
         <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <!--去掉系统Title-->
-    <style name="TransparentTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="TransparentTheme" parent="Theme.AppCompat.Light">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@color/color_transparent</item>
     </style>
@@ -15,6 +17,7 @@
     <!-- Splash使用透明背景 -->
     <style name="SplashTheme" parent="Theme.AppCompat.Light">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
         <item name="android:windowDisablePreview">true</item>
     </style>
 
@@ -67,11 +70,12 @@
 
     <style name="common_et" parent="mw">
         <item name="android:background">@null</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 
     <style name="common_et_single" parent="mw">
         <item name="android:background">@null</item>
-        <item name="android:lines">@null</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <style name="big_bt">

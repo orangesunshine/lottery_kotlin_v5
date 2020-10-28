@@ -30,10 +30,10 @@
         android:layout_marginTop="20dp"
         android:drawablePadding="10dp"
         android:hint="@string/login_username_hint"
-        android:imeOptions="actionDone"
+        android:includeFontPadding="false"
+        android:inputType="textPersonName"
         android:maxLength="16"
         android:padding="12dp"
-        android:includeFontPadding="false"
         android:shadowDx="1"
         android:shadowDy="0"
         android:shadowRadius="1.0"
@@ -44,39 +44,77 @@
 
     <View style="@style/line_horizontal" />
 
-    <EditText
-        android:id="@+id/login_pwd_et"
-        style="@style/common_et_single"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:drawablePadding="10dp"
-        android:hint="@string/login_pwd_hint"
-        android:maxLength="16"
-        android:padding="12dp"
-        android:shadowDx="10"
-        android:shadowDy="0"
-        android:shadowRadius="1.0"
-        android:textColor="@color/color_666666"
-        android:textColorHint="@color/color_aaaaaa"
-        android:textSize="@dimen/text_17"
-        app:drawableStartCompat="@drawable/login_pwd_et_ic" />
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/login_pwd_et"
+            style="@style/common_et_single"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:drawablePadding="10dp"
+            android:hint="@string/login_pwd_hint"
+            android:inputType="textPassword"
+            android:maxLength="16"
+            android:padding="12dp"
+            android:shadowDx="10"
+            android:shadowDy="0"
+            android:shadowRadius="1.0"
+            android:textColor="@color/color_666666"
+            android:textColorHint="@color/color_aaaaaa"
+            android:textSize="@dimen/text_17"
+            app:drawableStartCompat="@drawable/login_pwd_et_ic" />
+
+        <ImageView
+            android:id="@+id/login_pwd_cipher_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@drawable/login_pwd_cipher_ic"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <View style="@style/line_horizontal" />
 
-    <EditText
-        android:id="@+id/login_verifycode_et"
-        style="@style/common_et_single"
+    <LinearLayout
+        android:id="@+id/login_verifycode_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:drawablePadding="10dp"
-        android:hint="@string/login_verifycode_hint"
-        android:maxLength="16"
-        android:padding="12dp"
-        android:shadowDx="20"
-        android:shadowDy="0"
-        android:shadowRadius="1.0"
-        android:textColor="@color/color_666666"
-        android:textColorHint="@color/color_aaaaaa"
-        android:textSize="@dimen/text_17"
-        app:drawableStartCompat="@drawable/login_verifycode_et_ic" />
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/login_verifycode_et"
+            style="@style/common_et_single"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:digits="0123456789"
+            android:drawablePadding="10dp"
+            android:hint="@string/login_verifycode_hint"
+            android:includeFontPadding="false"
+            android:maxLength="16"
+            android:padding="12dp"
+            android:shadowDx="20"
+            android:shadowDy="0"
+            android:shadowRadius="1.0"
+            android:textColor="@color/color_666666"
+            android:textColorHint="@color/color_aaaaaa"
+            android:textSize="@dimen/text_17"
+            app:drawableStartCompat="@drawable/login_verifycode_et_ic" />
+
+        <ImageView
+            android:id="@+id/login_verifycode_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <View style="@style/line_horizontal" />
 
@@ -105,7 +143,7 @@
             app:drawableTopCompat="@drawable/login_toregister_ic" />
 
         <TextView
-            android:id="@+id/login_trial_bt"
+            android:id="@+id/login_trial_play_bt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

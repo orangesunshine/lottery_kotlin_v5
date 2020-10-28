@@ -2,6 +2,7 @@
   "app": [
     "GSON",
     "AUTOSIZE",
+    "GLIDE",
     "LOTTIE",
     "EVENTBUS",
     "OKHTTP3",

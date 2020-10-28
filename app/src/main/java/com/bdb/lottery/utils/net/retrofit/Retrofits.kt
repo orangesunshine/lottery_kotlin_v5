@@ -2,7 +2,7 @@ package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.IConst
-import com.bdb.lottery.extension.nNullEmpty
+import com.bdb.lottery.extension.isSpace
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -113,7 +113,7 @@ object Retrofits {
     fun msg(throwable: Throwable?): String? {
         return throwable?.let {
             val message = it.message
-            return if (message.nNullEmpty()) message else it.cause?.message
+            return if (message.isSpace()) message else it.cause?.message
         }
     }
 }

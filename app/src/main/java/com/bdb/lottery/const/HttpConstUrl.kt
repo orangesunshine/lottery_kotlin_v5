@@ -27,6 +27,10 @@ interface HttpConstUrl {
         ///////////////////////////////////////////////////////////////////////////
         const val URL_LOGIN: String = "/login/login.mvc"//登录
 
-        const val ULR_LOGIN_TRIAL:String = ""//试玩
+        const val ULR_LOGIN_TRIAL: String = "/login/shiwangAdd.mvc"//试玩
+
+        const val URL_GET_VERIFYCODE = "/verifyCode"//验证码
+
+        const val URL_NEED_VALIDATE_CODE = "/login/need-validate-code.mvc"//首次进入登录是否需要验证码
     }
 }

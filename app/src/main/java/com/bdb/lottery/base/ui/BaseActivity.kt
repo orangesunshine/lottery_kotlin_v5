@@ -20,18 +20,12 @@ import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-abstract class BaseActivity(
-    var layoutId: Int,
-    var attachStatusbar: Boolean = true,
-    var attachActionBar: Boolean = true
+open class BaseActivity(
+    var layoutId: Int
 ) :
     AppCompatActivity() {
     //vars
     protected var statusbarLight = true;//状态栏是否半透明
-    private var live_ = false;
-    protected val isAlive
-        //act是不是活的
-        get() = live_ && !isFinishing
 
     //uis
     @Inject
@@ -66,7 +60,7 @@ abstract class BaseActivity(
 
     fun attachView(root: ViewGroup) {
         root.removeAllViews()
-        if (attachStatusbar || attachActionBar) {
+        if (attachStatusBar() || attachStatusBar()) {
             var parent: ViewGroup? = null
             var layout: ViewGroup = layoutInflater.inflate(layoutId, root, false) as ViewGroup
             val verticalLinearLayout = layout is LinearLayout && layout.orientation == VERTICAL
@@ -83,7 +77,7 @@ abstract class BaseActivity(
             )
 
             parent.run {
-                if (attachStatusbar) {
+                if (attachStatusBar()) {
                     //statusbar 嵌套
                     addView(
                         layoutInflater.inflate(
@@ -95,10 +89,10 @@ abstract class BaseActivity(
                     )
 
                     //actionbar 嵌套
-                    if (attachActionBar)
+                    if (attachActionBar())
                         addView(
                             layoutInflater.inflate(getActionbarLayout(), parent, false),
-                            if (attachStatusbar) 1 else 0
+                            if (attachStatusBar()) 1 else 0
                         )
 
                     if (!verticalLinearLayout) addView(layout)
@@ -111,7 +105,6 @@ abstract class BaseActivity(
     }
 
     open fun initVar() {
-        live_ = true
         mActivity = WeakReference(this)
     }
 
@@ -130,7 +123,6 @@ abstract class BaseActivity(
 
     override fun onDestroy() {
         super.onDestroy()
-        live_ = false
         mActivity?.clear()
         mActivity = null
     }
@@ -164,7 +156,7 @@ abstract class BaseActivity(
 
     protected fun <D> observe(
         data: LiveData<D>,
-        block: (D?) -> Any
+        block: (D?) -> Any?
     ) {
         data.observe(this, Observer {
             block(it)
@@ -185,8 +177,18 @@ abstract class BaseActivity(
         return null
     }
 
+    //是否注入actionbar
+    protected open fun attachActionBar(): Boolean {
+        return true
+    }
+
     //actionbar样式
     protected open fun getActionbarLayout(): Int {
         return R.layout.actionbar_common_layout
+    }
+
+    //是否注入statusbar（顶部margin）
+    protected open fun attachStatusBar(): Boolean {
+        return true
     }
 }

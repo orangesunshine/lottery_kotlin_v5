@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
+import com.bdb.lottery.const.IConst
 import kotlin.reflect.KProperty1
 
 fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_SHORT) {
@@ -58,8 +59,7 @@ fun BaseActivity.load(show: Boolean) {
  */
 fun BaseActivity.statusbar(light: Boolean) {
     statusBar?.let {
-        (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-            resources.getDimension(R.dimen.height_status_bar).toInt()
+        (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin = IConst.HEIGHT_STATUS_BAR
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //5.0及以上

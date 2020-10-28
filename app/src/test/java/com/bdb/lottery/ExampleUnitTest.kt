@@ -1,5 +1,6 @@
 package com.bdb.lottery
 
+import com.bdb.lottery.extension.isSpace
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -69,17 +70,29 @@ class ExampleUnitTest {
     @Test
     fun assertNUll() {
         val c = C()
-        val ret = c?.b?: null
+        val ret = c?.b ?: null
         println("ret: ${ret}")
     }
 
     @Test
-    fun assertLet(){
+    fun assertLet() {
         var a = ""
-        a?.let{
+        a?.let {
             println("let")
             return
         }
         println("testLet")
+    }
+
+    @Test
+    fun assertIsSpace() {
+        val a: String? = null
+        val b: String? = ""
+        val c: String? = " "
+        val d: String? = "  "
+        println("a.isSpace()" + a.isSpace())
+        println("a.isSpace()" + b.isSpace())
+        println("a.isSpace()" + c.isSpace())
+        println("a.isSpace()" + d.isSpace())
     }
 }

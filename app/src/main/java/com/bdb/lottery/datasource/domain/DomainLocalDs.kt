@@ -5,9 +5,12 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.utils.cache.Cache
+import javax.inject.Inject
+import javax.inject.Singleton
 
 //内存、缓存配置
-object DomainLocalDataSource {
+@Singleton
+class DomainLocalDs @Inject constructor() {
     private var mSelectDomain: String? = null
     fun saveDomain(domain: String?) {
         if (domain.isDomainUrl()) {

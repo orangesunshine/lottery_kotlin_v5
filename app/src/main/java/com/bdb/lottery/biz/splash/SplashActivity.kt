@@ -7,7 +7,6 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
-import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.extension.toast
@@ -18,8 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.splash_activity.*
 
 @AndroidEntryPoint
-class SplashActivity : BaseActivity(R.layout.splash_activity, false, false) {
-    private val splashViewModel by viewModels<SplashViewModel>()
+class SplashActivity : BaseActivity(R.layout.splash_activity) {
+    private val vm by viewModels<SplashViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +26,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity, false, false) {
         showLoading()
         loadingAnim()
 
-        splashViewModel.initDomain()
+        vm.initDomain()
     }
 
     private fun loadingAnim() {
@@ -47,7 +46,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity, false, false) {
     }
 
     override fun observe() {
-        observe(splashViewModel.ldDomainRet.getLiveData(), {
+        observe(vm.ldDomainRet.getLiveData(), {
             if (null != it && it) {
                 //获取域名成功
                 dismissLoading()
@@ -66,5 +65,13 @@ class SplashActivity : BaseActivity(R.layout.splash_activity, false, false) {
 
     override fun onBack() {
         Apps.killApp()
+    }
+
+    override fun attachStatusBar(): Boolean {
+        return false
+    }
+
+    override fun attachActionBar(): Boolean {
+        return false
     }
 }

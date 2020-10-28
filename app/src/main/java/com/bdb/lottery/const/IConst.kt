@@ -4,12 +4,14 @@ import android.content.res.Resources
 
 interface IConst {
     companion object {
-        var BASE_URL: String = "http://good6789.com"
-        var CODE_SUCCESSFUL: Int = 200
-        val DEFAULT_ERROR_CODE = -1//自定义通用错误
-        val DOAMIN_ERROR_CODE = -2//自定义域名获取失败
-        val HEIGHT_STATUS_BAR =
+        const val BASE_URL: String = "http://good6789.com"
+        const val CODE_SUCCESSFUL: Int = 200
+        const val DEFAULT_ERROR_CODE = -1//自定义通用错误
+        const val DOAMIN_ERROR_CODE = -2//自定义域名获取失败
+        var HEIGHT_STATUS_BAR = Resources.getSystem().getDimensionPixelSize(
             Resources.getSystem().getIdentifier("status_bar_height", "dimen", "android")
+        )
+        const val DATA_SPLIT_SYM = "%￥#"//接口错误解析拼接
     }
 }
 
@@ -21,13 +23,16 @@ interface ITag {
 
 interface ICache {
     companion object {
-        val CHACHE_DEVICE_ID = "chache_device_id"//设备号
+        val CACHE_DEVICE_ID = "cache_device_id"//设备号
         val CACHE_PLATEFORM = "cache_plateform"//平台
         val CACHE_DOMAIN_URL = "cache_domain_url"//域名
         val CACHE_PUBLIC_RSA = "cache_public_rsa"//公钥
         val CACHE_CUSTOM_SERVICE_URL = "cache_custom_service_url"//客服url
         val CACHE_APK_VERSION = "cache_apk_version"//apk版本信息
-        val CACHE_GUIDE = "cache_guide"
+        val CACHE_GUIDE = "cache_guide"//splash引导
+        val CACHE_LOGIN_REMEMBER_PWD = "cache_login_remember_pwd"//是否记住密码
+        val CACHE_LOGIN_USERNAME = "cache_login_username"//用户名
+        val CACHE_LOGIN_PWD = "cache_login_pwd"//密码
     }
 }
 
