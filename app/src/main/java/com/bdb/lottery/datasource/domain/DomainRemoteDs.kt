@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import retrofit2.Retrofit
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -86,6 +87,8 @@ class DomainRemoteDs @Inject constructor(
             var disposable: Disposable? = null
             val already = AtomicBoolean(false)
             Retrofits.observe(Observable.mergeArrayDelayError(*(onlineObservables.toTypedArray()))
+                .doOnSubscribe { disposable = it }
+                .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .map {
                     Timber.d("online域名配置：${it}")
@@ -102,7 +105,7 @@ class DomainRemoteDs @Inject constructor(
                     if (it.isDomainUrl()) appApi.plateformParams(
                         it + HttpConstUrl.URL_CONFIG_FRONT
                     ) else null
-                }.doOnSubscribe { disposable = it }, {
+                }, {
                 //获取配置成功
                 Timber.d("online__onNext__response: ${it}")
                 it?.let {

@@ -3,8 +3,11 @@ package com.bdb.lottery.app
 import android.app.Application
 import android.content.Context
 import android.os.Process
+import android.os.SystemClock
+import android.util.Log
 import androidx.multidex.MultiDex
-import com.bdb.lottery.utils.*
+import com.bdb.lottery.utils.Apps
+import com.bdb.lottery.utils.Configs
 import com.bdb.lottery.utils.timber.LogTree
 import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.mmkv.MMKV
@@ -21,6 +24,7 @@ class BdbApp : Application() {
     }
 
     override fun attachBaseContext(base: Context?) {
+        Log.e("BdbApp", "time1: " + SystemClock.elapsedRealtime())
         super.attachBaseContext(base)
         MultiDex.install(this)
     }
@@ -33,7 +37,7 @@ class BdbApp : Application() {
         MMKV.initialize(this)
 
         //可以子线程启动
-        Thread{
+        Thread {
             //设置线程的优先级，不与主线程抢资源
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             Thread.sleep(50)
@@ -43,7 +47,6 @@ class BdbApp : Application() {
             initBugly()
             initRxjava()
         }.start()
-
     }
 
     private fun initAutosize() {

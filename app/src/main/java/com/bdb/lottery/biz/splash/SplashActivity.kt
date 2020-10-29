@@ -1,6 +1,8 @@
 package com.bdb.lottery.biz.splash
 
 import android.os.Bundle
+import android.os.SystemClock
+import android.util.Log
 import android.view.animation.AlphaAnimation
 import androidx.activity.viewModels
 import com.bdb.lottery.R
@@ -26,7 +28,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
         showLoading()
         loadingAnim()
 
-        vm.initDomain()
+        id_common_content_layout.postDelayed({vm.initDomain()},1000)
     }
 
     private fun loadingAnim() {
@@ -46,7 +48,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
     }
 
     override fun observe() {
-        observe(vm.ldDomainRet.getLiveData(), {
+        observe(vm.ldDomainRet.getLiveData()) {
             if (null != it && it) {
                 //获取域名成功
                 dismissLoading()
@@ -60,7 +62,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
             } else {
                 toast("获取域名失败")
             }
-        })
+        }
     }
 
     override fun onBack() {

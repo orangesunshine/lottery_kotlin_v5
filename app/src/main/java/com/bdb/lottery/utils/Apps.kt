@@ -4,17 +4,12 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Process
 import android.text.TextUtils
+import android.util.Log
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.extension.equalsNSpace
-import timber.log.Timber
 import java.io.BufferedReader
-import java.io.ByteArrayOutputStream
 import java.io.FileReader
 import java.io.IOException
-import java.security.Key
-import java.security.KeyFactory
-import java.security.spec.X509EncodedKeySpec
-import javax.crypto.Cipher
 
 
 object Apps {
@@ -27,13 +22,6 @@ object Apps {
         val packageName = BdbApp.context.packageName
         // 获取当前进程名
         val processName = getProcessName(Process.myPid())
-        Timber.d(
-            "packageName: ${packageName}, processName: ${processName}, isMainProcess: ${
-                processName.equalsNSpace(
-                    packageName
-                )
-            }"
-        )
         return processName.equalsNSpace(packageName)
     }
 
