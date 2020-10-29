@@ -11,7 +11,6 @@ object Encrypts {
     //rsa加密
     fun rsaEncryptPublicKey(plainText: String, publicKey: String): String? {
         return encryptByPublicKey(plainText.toByteArray(), publicKey)?.run { base64Encode(this) }
-            ?: null
     }
 
 

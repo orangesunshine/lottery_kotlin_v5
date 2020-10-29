@@ -66,7 +66,6 @@ class LoginViewModel @ViewModelInject @Inject constructor(
 
     fun plateformParasms() {
         appRemoteDs.getPlateformParams {
-            context.toast(it?.rsaPublicKey)
             Cache.putString(ICache.PUBLIC_RSA_CACHE, it?.rsaPublicKey)
         }
     }
