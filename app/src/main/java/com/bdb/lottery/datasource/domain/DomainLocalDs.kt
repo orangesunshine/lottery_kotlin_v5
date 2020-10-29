@@ -5,6 +5,7 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.utils.cache.Cache
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,8 +13,10 @@ import javax.inject.Singleton
 @Singleton
 class DomainLocalDs @Inject constructor() {
     private var mSelectDomain: String? = null
+    val alreadySave: AtomicBoolean = AtomicBoolean(false);
     fun saveDomain(domain: String?) {
         if (domain.isDomainUrl()) {
+            alreadySave.set(true)
             mSelectDomain = domain!!
             Cache.putString(ICache.DOMAIN_URL_CACHE, domain)
         }

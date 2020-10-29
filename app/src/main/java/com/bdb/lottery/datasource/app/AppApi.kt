@@ -21,7 +21,7 @@ interface AppApi {
     @POST(URL_CUSTOM_SERVICE)
     fun customservice(): Observable<BaseResponse<CustomServiceData>>
 
-    //客服
+    //版本信息
     @POST(URL_APK_VERSION)
     @FormUrlEncoded
     fun apkversion(

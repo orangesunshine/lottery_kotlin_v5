@@ -1,6 +1,6 @@
-package com.bdb.lottery.datasource.common
+package com.bdb.lottery.datasource.account.data
 
 //登录失败，下次是否需要验证码
-data class ValidateCodeData(
+data class VerifycodeData(
     val needValidateCode: Boolean
 )

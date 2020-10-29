@@ -7,6 +7,7 @@ import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.datasource.app.data.CustomServiceData
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.utils.Apps
+import com.bdb.lottery.utils.net.retrofit.RetrofitModule
 import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.hilt.android.qualifiers.ApplicationContext
 import retrofit2.Retrofit
@@ -15,9 +16,8 @@ import javax.inject.Inject
 class AppRemoteDs @Inject constructor(
     @ApplicationContext private val context: Context,
     private val domainLocalDs: DomainLocalDs,
-    private var retrofit: Retrofit
+    private val appApi: AppApi
 ) {
-    val appApi = retrofit.create(AppApi::class.java)
 
     //获取平台参数
     fun getPlateformParams(success: ((ConfigData?) -> Any?)? = null) {

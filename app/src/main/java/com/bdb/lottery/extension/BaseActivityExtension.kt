@@ -45,7 +45,7 @@ inline fun <reified T : AppCompatActivity> Context.startActivity(
     startActivity(intent)
 }
 
-fun BaseActivity.load(show: Boolean) {
+fun BaseActivity.loading(show: Boolean) {
     if (show) {
         show()
     } else {

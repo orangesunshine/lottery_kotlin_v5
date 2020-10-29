@@ -14,7 +14,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.const.ITag
-import com.bdb.lottery.extension.load
+import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.statusbar
 import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
@@ -149,7 +149,7 @@ open class BaseActivity(
         block: (D?) -> Any
     ) {
         data?.observe(this, Observer {
-            load(it.isLoading)
+            loading(it.isLoading)
             block(it.data)
         })
     }

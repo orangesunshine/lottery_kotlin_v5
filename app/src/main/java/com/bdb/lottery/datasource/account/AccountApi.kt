@@ -17,13 +17,15 @@ interface AccountApi {
         @Field("jsonString") params: String
     ): Observable<BaseResponse<String>>
 
-    //是否需要验证码
-    @GET(HttpConstUrl.URL_NEED_VALIDATE_CODE)
-    fun needvalidate(
-    ): Observable<BaseResponse<Boolean>>
 
     //试玩
     @POST(HttpConstUrl.URL_LOGIN)
     fun trialPlay(
     ): Observable<BaseResponse<TokenData>>
+
+
+    //是否需要验证码
+    @GET(HttpConstUrl.URL_NEED_VALIDATE_CODE)
+    fun needvalidate(
+    ): Observable<BaseResponse<Boolean>>
 }

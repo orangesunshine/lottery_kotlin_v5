@@ -11,10 +11,10 @@ import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.net.retrofit.RetrofitModule
+import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -26,10 +26,9 @@ import javax.inject.Inject
 
 class DomainRemoteDs @Inject constructor(
     @ApplicationContext private val context: Context,
-    private var retrofit: Retrofit
+    private val domainApi: DomainApi,
+    private val appApi: AppApi,
 ) {
-    val domainApi = retrofit.create(DomainApi::class.java)
-    val appApi = retrofit.create(AppApi::class.java)
 
     /**
      * 获取前端配置
@@ -38,34 +37,27 @@ class DomainRemoteDs @Inject constructor(
         success: ((ConfigData?) -> Any)? = null,
         error: ((String?) -> Any)? = null
     ) {
-        appApi.plateformParams(
+        Retrofits.observe(appApi.plateformParams(
             IDebugConfig.URL_TEST_DOMAIN + HttpConstUrl.URL_CONFIG_FRONT
-        ).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                Timber.d("online__onNext__response: ${it}")
-                //获取配置成功
-                if (it.isSuccess() && null != it && null != it.data) {
+        ), {
+            Timber.d("online__onNext__response: ${it}")
+            //获取配置成功
+            success?.run { this(it) }
 
-                    //处理配置文件
-                    success?.run { this(it.data) }
+            //保存rsa公钥
+            it?.rsaPublicKey?.let {
+                Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
+            }
 
-                    //保存rsa公钥
-                    it.data?.rsaPublicKey?.let {
-                        Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-                    }
-
-                    //保存plateform参数
-                    it.data?.platform?.let {
-                        Cache.putString(ICache.PLATEFORM_CACHE, it)
-                    }
-                }
-            }, {
-                //获取域名失败
-                Timber.d("online__onError：${it.msg}")
-                error?.run { this(it.msg) }
-
-            })
+            //保存plateform参数
+            it?.platform?.let {
+                Cache.putString(ICache.PLATEFORM_CACHE, it)
+            }
+        }, { code, msg ->
+            //获取域名失败
+            Timber.d("online__onError：${msg}")
+            error?.run { this(msg) }
+        })
     }
 
     /**
@@ -93,9 +85,7 @@ class DomainRemoteDs @Inject constructor(
         if (!onlineObservables.isNullOrEmpty()) {
             var disposable: Disposable? = null
             val already = AtomicBoolean(false)
-            Observable.mergeArrayDelayError(*(onlineObservables.toTypedArray()))
-                .doOnSubscribe { disposable = it }
-                .subscribeOn(Schedulers.io())
+            Retrofits.observe(Observable.mergeArrayDelayError(*(onlineObservables.toTypedArray()))
                 .observeOn(Schedulers.io())
                 .map {
                     Timber.d("online域名配置：${it}")
@@ -112,48 +102,45 @@ class DomainRemoteDs @Inject constructor(
                     if (it.isDomainUrl()) appApi.plateformParams(
                         it + HttpConstUrl.URL_CONFIG_FRONT
                     ) else null
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Timber.d("online__onNext__response: ${it}")
-                    //获取配置成功
-                    if (it.isSuccess() && null != it && null != it.data) {
-                        if (already.compareAndSet(false, true)) {
-                            //取消剩下网络请求
-                            disposable?.let {
-                                try {
-                                    if (!it.isDisposed) it.dispose()
-                                } catch (e: Exception) {
-                                }
-                            }
-
-                            //处理配置文件
-                            success?.run { this(it.data) }
-
-                            //保存rsa公钥
-                            it.data?.rsaPublicKey?.let {
-                                Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-                            }
-
-                            //保存plateform参数
-                            it.data?.platform?.let {
-                                Cache.putString(ICache.PLATEFORM_CACHE, it)
+                }.doOnSubscribe { disposable = it }, {
+                //获取配置成功
+                Timber.d("online__onNext__response: ${it}")
+                it?.let {
+                    if (already.compareAndSet(false, true)) {
+                        //取消剩下网络请求
+                        disposable?.let {
+                            try {
+                                if (!it.isDisposed) it.dispose()
+                            } catch (e: Exception) {
                             }
                         }
+
+                        //处理配置文件
+                        success?.run { this(it) }
+
+                        //保存rsa公钥
+                        it?.rsaPublicKey?.let {
+                            Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
+                        }
+
+                        //保存plateform参数
+                        it?.platform?.let {
+                            Cache.putString(ICache.PLATEFORM_CACHE, it)
+                        }
                     }
-                }, {
-                    //获取域名失败
-                    if (!already.get()) {
-                        Timber.d("online__onError：${it.msg}")
-                        error?.run { this(it.msg) }
-                    }
-                }, {
-                    //数据解析问题
-                    if (!already.get()) {
-                        Timber.d("local__onComplete")
-                        error?.run { this("数据异常") }
-                    }
-                })
+                }
+            }, { code, msg ->
+                //获取域名失败
+                if (!already.get()) {
+                    Timber.d("online__onError：${msg}")
+                }
+            }, {
+                //数据解析问题
+                if (!already.get()) {
+                    Timber.d("local__onComplete")
+                    error?.run { this("数据异常") }
+                }
+            })
         }
     }
 
@@ -177,51 +164,47 @@ class DomainRemoteDs @Inject constructor(
                 }
                 var disposable: Disposable? = null
                 val already = AtomicBoolean(false)
-                Observable.mergeArrayDelayError(*(localObservables.toTypedArray()))
-                    .doOnSubscribe { disposable = it }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        //获取配置成功
-                        Timber.d("local__onNext__response: ${it}")
-                        if (it.isSuccess() && null != it && null != it.data) {
-                            if (already.compareAndSet(false, true)) {
-                                //取消剩下网络请求
-                                disposable?.let {
-                                    try {
-                                        if (!it.isDisposed) it.dispose()
-                                    } catch (e: Exception) {
-                                    }
-                                }
-
-                                //处理配置文件
-                                success?.run { this(it.data) }
-
-                                //保存rsa公钥
-                                it.data?.rsaPublicKey?.let {
-                                    Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-                                }
-
-                                //保存plateform参数
-                                it.data?.platform?.let {
-                                    Cache.putString(ICache.PLATEFORM_CACHE, it)
+                Retrofits.observe(Observable.mergeArrayDelayError(*(localObservables.toTypedArray()))
+                    .doOnSubscribe { disposable = it }, {
+                    //获取配置成功
+                    Timber.d("local__onNext__response: ${it}")
+                    it?.let {
+                        if (already.compareAndSet(false, true)) {
+                            //取消剩下网络请求
+                            disposable?.let {
+                                try {
+                                    if (!it.isDisposed) it.dispose()
+                                } catch (e: Exception) {
                                 }
                             }
+
+                            //处理配置文件
+                            success?.run { this(it) }
+
+                            //保存rsa公钥
+                            it?.rsaPublicKey?.let {
+                                Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
+                            }
+
+                            //保存plateform参数
+                            it?.platform?.let {
+                                Cache.putString(ICache.PLATEFORM_CACHE, it)
+                            }
                         }
-                    }, {
-                        //获取域名失败
-                        if (!already.get()) {
-                            Timber.d("local__onError：${it.msg}")
-                            error?.let { it() }
-                        }
-                    }, {
-                        //数据解析问题
-                        if (!already.get()) {
-                            Timber.d("local__onComplete")
-                            error?.let { it() }
-                        }
-                    })
+                    }
+
+                }, { code, msg ->
+                    //获取域名失败
+                    if (!already.get()) {
+                        Timber.d("local__onError：${msg}")
+                    }
+                }, complete = {
+                    //数据解析问题
+                    if (!already.get()) {
+                        Timber.d("local__onComplete")
+                        error?.let { it() }
+                    }
+                })
             }
         }
     }

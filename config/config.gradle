@@ -75,7 +75,7 @@ DEPS.RETROFIT = RETROFIT
 RETROFIT << "com.squareup.retrofit2:retrofit:$retrofit_version"
 RETROFIT << "com.squareup.retrofit2:converter-scalars:$retrofit_version"
 RETROFIT << "com.squareup.retrofit2:adapter-rxjava3:$retrofit_version"
-RETROFIT << "com.squareup.retrofit2:converter-gson:$retrofit_version"
+//RETROFIT << "com.squareup.retrofit2:converter-gson:$retrofit_version"
 
 def OKHTTP3 = []
 DEPS.OKHTTP3 = OKHTTP3

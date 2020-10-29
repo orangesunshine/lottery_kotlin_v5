@@ -12,6 +12,7 @@ import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.datasource.domain.DomainRemoteDs
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.Configs
 import com.bdb.lottery.utils.cache.Cache
 import com.google.gson.Gson
@@ -79,8 +80,6 @@ class SplashViewModel @ViewModelInject @Inject constructor(
     ///////////////////////////////////////////////////////////////////////////
     //域名获取成功回调
     fun onDomainSuccess(it: ConfigData?) {
-        getCustomService()
-        getApkVersion()
         val toUri = it?.WebMobileUrl?.toUri()
         val scheme = toUri?.scheme
         val host = toUri?.host
@@ -89,9 +88,11 @@ class SplashViewModel @ViewModelInject @Inject constructor(
         val domain =
             scheme + "://" + if (host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
         //保存并缓存域名
-        Timber.d("onDomainSuccess__domain: ${domain}")
+        context.toast("onDomainSuccess__domain: \n${domain}")
         localDomainDs.saveDomain(domain)
         ldDomainRet.setData(true)
+        getCustomService()
+        getApkVersion()
     }
 
     //线上域名获取失败回调

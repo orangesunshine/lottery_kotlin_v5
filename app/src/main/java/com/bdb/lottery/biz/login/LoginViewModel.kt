@@ -10,7 +10,6 @@ import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.cache.Cache
-import com.bdb.lottery.utils.net.retrofit.Retrofits
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
@@ -26,8 +25,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         username: String,
         pwd: String,
         rememberPwd: Boolean,
-        verifyCode: String,
-        error: (String?) -> Any
+        verifyCode: String
     ) {
         val pushClientId = ""
         val appVersionCode = BuildConfig.VERSION_NAME //APP版本号
@@ -36,14 +34,9 @@ class LoginViewModel @ViewModelInject @Inject constructor(
             Cache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
             Cache.putString(ICache.LOGIN_USERNAME_CACHE, username)
             Cache.putString(ICache.LOGIN_PWD_CACHE, if (rememberPwd) pwd else "")
-        }, { code, msg ->
-            Cache.putString(ICache.LOGIN_PWD_CACHE, "")
-            Cache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, false)
-            Retrofits.msg2Error<Boolean>(
-                msg,
-                { error?.run { this(it) } },
-                { if (null != it && it) needValidated.setData(it) })
-
+            it?.let { if (!it.isBlank()) Cache.putString(ICache.TOKEN_CACHE, it) }
+        }, { validate ->
+            validateLd.setData(validate)
         })
     }
 
@@ -77,8 +70,4 @@ class LoginViewModel @ViewModelInject @Inject constructor(
             Cache.putString(ICache.PUBLIC_RSA_CACHE, it?.rsaPublicKey)
         }
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // 工具方法
-    ///////////////////////////////////////////////////////////////////////////
 }
