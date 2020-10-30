@@ -1,23 +1,20 @@
 package com.bdb.lottery.biz.login
 
-import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.bdb.lottery.BuildConfig
+import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
-import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.cache.Cache
-import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class LoginViewModel @ViewModelInject @Inject constructor(
-    @ActivityContext private val context: Context,
     private val accountRemoteDs: AccountRemoteDs,
     private val appRemoteDs: AppRemoteDs
-) : ViewModel() {
+) : BaseViewModel() {
     val validateLd = LiveDataWraper<Boolean>()
     val needValidated = LiveDataWraper<Boolean>()
 
@@ -25,43 +22,40 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         username: String,
         pwd: String,
         rememberPwd: Boolean,
-        verifyCode: String
+        verifyCode: String,
+        success: () -> Any?
     ) {
         val pushClientId = ""
         val appVersionCode = BuildConfig.VERSION_NAME //APP版本号
         accountRemoteDs.login(username, pwd, pushClientId, verifyCode, appVersionCode, {
+            success()
             //登录成功保存用户名、密码、是否记住密码
             Cache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
             Cache.putString(ICache.LOGIN_USERNAME_CACHE, username)
             Cache.putString(ICache.LOGIN_PWD_CACHE, if (rememberPwd) pwd else "")
-            it?.let { if (!it.isBlank()) Cache.putString(ICache.TOKEN_CACHE, it) }
         }, { validate ->
             validateLd.setData(validate)
-        })
+        }, viewState = viewStatus)
     }
 
     fun getCustomService() {
-
+        appRemoteDs.getAPkVeresion()
     }
 
     fun getApkVersion() {
-
+        appRemoteDs.getAPkVeresion()
     }
 
-    fun trialPlay() {
-
+    fun trialPlay(success: () -> Any?) {
+        accountRemoteDs.trialPlay(success, viewStatus)
     }
 
     fun userInfo() {
-
     }
 
-    fun verifyCode() {
-
-    }
-
+    //进入登录页面是否需要显示验证码
     fun validate() {
-
+        accountRemoteDs.needValidate { it?.let { if (it) validateLd.setData(true) } }
     }
 
     fun plateformParasms() {

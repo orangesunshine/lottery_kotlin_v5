@@ -5,6 +5,7 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.bdb.lottery.BuildConfig
+import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.app.data.ConfigData
@@ -26,31 +27,32 @@ class SplashViewModel @ViewModelInject @Inject constructor(
     private val remoteDomainDs: DomainRemoteDs,
     private val localDomainDs: DomainLocalDs,
     private val appDs: AppRemoteDs
-) : ViewModel() {
+) : BaseViewModel() {
     val ldDomainRet = LiveDataWraper<Boolean>()
 
     //初始化域名
     fun initDomain() {
         Timber.d("initDomain")
-        if (Configs.isDebug()) {
-            Timber.d("isDebug")
-            remoteDomainDs.getDebugFrontConfig({
-                //线上域名获取成功
-                onDomainSuccess(it)
-            }, {
-                onOnlineDomainError()
-            })
-        } else {
-            /**
-             * 1.读取阿里云，七牛云域名撇脂文件，@拆分域名
-             */
-            remoteDomainDs.getOnlineDomain({
-                //线上域名获取成功
-                onDomainSuccess(it)
-            }, {
-                onOnlineDomainError()
-            })
-        }
+//        if (Configs.isDebug()) {
+//            Timber.d("isDebug")
+//            remoteDomainDs.getDebugFrontConfig({
+//                //线上域名获取成功
+//                onDomainSuccess(it)
+//            }, {
+//                onOnlineDomainError()
+//            })
+//        } else {
+//
+//        }
+        /**
+         * 1.读取阿里云，七牛云域名撇脂文件，@拆分域名
+         */
+        remoteDomainDs.getOnlineDomain({
+            //线上域名获取成功
+            onDomainSuccess(it)
+        }, {
+            onOnlineDomainError()
+        })
     }
 
     //获取客服

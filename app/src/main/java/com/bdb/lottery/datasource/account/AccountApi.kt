@@ -19,7 +19,7 @@ interface AccountApi {
 
 
     //试玩
-    @POST(HttpConstUrl.URL_LOGIN)
+    @POST(HttpConstUrl.ULR_LOGIN_TRIAL)
     fun trialPlay(
     ): Observable<BaseResponse<TokenData>>
 

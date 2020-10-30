@@ -1,6 +1,7 @@
 package com.bdb.lottery.base.response
 
 import com.bdb.lottery.const.ICode
+import com.bdb.lottery.extension.isSpace
 import com.google.gson.GsonBuilder
 
 open class BaseResponse<T>(
@@ -21,4 +22,15 @@ open class BaseResponse<T>(
     override fun toString(): String {
         return "BaseResponse(code=$code, msg=$msg, data=$data)"
     }
+}
+
+inline fun <reified T> BaseResponse<*>.errorData(): T? {
+    try {
+        val data = this.data
+        data?.let {
+            if (it is T) return it
+        }
+    } catch (e: Exception) {
+    }
+    return null
 }

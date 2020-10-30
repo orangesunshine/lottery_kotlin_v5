@@ -239,6 +239,7 @@ class LoadingLayout @JvmOverloads constructor(
             val index = parent.indexOfChild(view)
             val weight = lp is LinearLayout.LayoutParams && lp.weight > 0
             val layout = LoadingLayout(view.context)
+            layout.id = R.id.id_common_loadinglayout
             parent.removeView(view)
             parent.addView(
                 layout,

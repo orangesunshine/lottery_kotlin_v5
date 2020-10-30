@@ -36,4 +36,7 @@
 
     <!-- 按钮 -->
     <color name="color_147CE2">#147CE2</color>
+
+    <!-- 背景 -->
+    <color name="color_f2f4f5">#f2f4f5</color>
 </resources>

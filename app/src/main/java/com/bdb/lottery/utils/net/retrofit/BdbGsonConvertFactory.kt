@@ -1,11 +1,11 @@
 package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
+import com.bdb.lottery.const.ICode
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
-import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -63,29 +63,36 @@ internal class BdbGsonResponseBodyConverter<T>(
     @Throws(IOException::class)
     override fun convert(value: ResponseBody): T {
         var string: String? = null
+        var bufferedReader: BufferedReader? = null
         return try {
             string = value.string()
-            val jsonReader =
-                gson.newJsonReader(BufferedReader(InputStreamReader(ByteArrayInputStream(string.toByteArray()))))
-            val result = adapter.read(jsonReader)
-            if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
-                throw JsonIOException("JSON document was not fully consumed.")
+            val jsonObject = JsonParser().parse(string).asJsonObject
+            val code = jsonObject.get("code").asInt
+            if (ICode.CODE_SUCCESSFUL == code) {
+                bufferedReader =
+                    BufferedReader(InputStreamReader(ByteArrayInputStream(string.toByteArray())))
+                val jsonReader =
+                    gson.newJsonReader(bufferedReader)
+                val result = adapter.read(jsonReader)
+                if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
+                    throw JsonIOException("JSON document was not fully consumed.")
+                }
+                return result
+            } else {
+                throw ApiException(
+                    GsonBuilder().create().fromJson(string, BaseResponse::class.java)
+                )
             }
-            return result
         } catch (e: Exception) {
             Timber.d("BdbGsonRequestBodyConverter: ${e}")
             //ApiException返回自定义
-            throw try {
-                ApiException(
-                    GsonBuilder().create().fromJson(
-                        string,
-                        BaseResponse::class.java
-                    )
-                )
-            } catch (e: Exception) {
+            throw if (e !is ApiException) {
                 ApiException(BaseResponse(e.code, e.msg, string))
+            } else {
+                e
             }
         } finally {
+            bufferedReader?.close()
             value.close()
         }
     }

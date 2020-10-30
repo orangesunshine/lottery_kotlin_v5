@@ -1,8 +1,6 @@
 package com.bdb.lottery.biz.splash
 
 import android.os.Bundle
-import android.os.SystemClock
-import android.util.Log
 import android.view.animation.AlphaAnimation
 import androidx.activity.viewModels
 import com.bdb.lottery.R
@@ -10,6 +8,7 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.ICache
+import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.extension.visible
@@ -24,7 +23,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        version_name_tv.text = Apps.getAppVersionName(this)
+        splash_version_name_tv.text = Apps.getAppVersionName(this)
         showLoading()
         loadingAnim()
 
@@ -48,7 +47,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
     }
 
     override fun observe() {
-        observe(vm.ldDomainRet.getLiveData()) {
+        ob(vm.ldDomainRet.getLiveData()) {
             if (null != it && it) {
                 //获取域名成功
                 dismissLoading()

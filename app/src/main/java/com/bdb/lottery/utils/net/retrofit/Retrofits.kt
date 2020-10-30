@@ -2,6 +2,8 @@ package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
+import com.bdb.lottery.base.response.ViewState
+import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.extension.toast
@@ -16,9 +18,17 @@ object Retrofits {
         observable: Observable<BaseResponse<Data>>,
         success: ((Data?) -> Any?)? = null,
         error: ((code: Int, msg: String?) -> Any?)? = null,
-        complete: (() -> Any?)? = null
+        onStart: (() -> Any?)? = null,
+        complete: (() -> Any?)? = null,
+        viewState: LiveDataWraper<ViewState>? = null
     ): Disposable {
-        return observable.subscribeOn(Schedulers.io())
+        return observable
+            .subscribeOn(Schedulers.io())
+            .doOnSubscribe {
+                onStart?.invoke()
+                viewState?.setData(ViewState(true))
+            }
+            .subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (it.isSuccess()) {
@@ -31,9 +41,11 @@ object Retrofits {
                 {
 
                     error?.run { this(it.code, it.msg) }
+                    viewState?.setData(ViewState(false))
                     complete?.run { this() }
                 },
                 {
+                    viewState?.setData(ViewState(false))
                     complete?.run { this() }
                 })
     }
@@ -43,9 +55,16 @@ object Retrofits {
         observable: Observable<BaseResponse<Data>>,
         success: ((Data?) -> Any?)? = null,
         error: ((BaseResponse<*>) -> Any?)? = null,
+        onStart: (() -> Any?)? = null,
         complete: (() -> Any?)? = null,
+        viewState: LiveDataWraper<ViewState>? = null
     ): Disposable {
         return observable.subscribeOn(Schedulers.io())
+            .doOnSubscribe {
+                onStart?.invoke()
+                viewState?.setData(ViewState(true))
+            }
+            .subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (it.isSuccess()) {
@@ -62,9 +81,11 @@ object Retrofits {
                     } else {
                         error?.run { this(BaseResponse(it.code, it.msg, null)) }
                     }
+                    viewState?.setData(ViewState(false))
                     complete?.run { this() }
                 },
                 {
+                    viewState?.setData(ViewState(false))
                     complete?.run { this() }
                 })
     }

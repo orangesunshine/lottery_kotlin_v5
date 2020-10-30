@@ -13,8 +13,10 @@ import androidx.lifecycle.Observer
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
 import com.bdb.lottery.base.response.ViewState
+import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.ITag
 import com.bdb.lottery.extension.loading
+import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.statusbar
 import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
@@ -30,7 +32,7 @@ open class BaseActivity(
     //uis
     @Inject
     lateinit var loading: LoadingDialog
-    protected val loadingLayout: LoadingLayout
+    protected val loadingLayout: LoadingLayout?
         get() = findViewById(R.id.id_common_loadinglayout)
     protected val content: ViewGroup?
         get() = findViewById(R.id.id_common_content_layout)
@@ -48,6 +50,7 @@ open class BaseActivity(
         attachView(content)
         statusbar(statusbarLight)
         loadingLayoutWrap()
+        obLoadingLayout()
         observe()
     }
 
@@ -136,31 +139,19 @@ open class BaseActivity(
             loading.dismissAllowingStateLoss()
     }
 
-    fun error() {
-        loadingLayout.showError()
-    }
-
-    fun empty() {
-        loadingLayout.showEmpty()
-    }
-
-    protected fun <D, T : ViewState<D>> observeWithLoading(
-        data: LiveData<T>?,
-        block: (D?) -> Any
-    ) {
-        data?.observe(this, Observer {
-            loading(it.isLoading)
-            block(it.data)
-        })
-    }
-
-    protected fun <D> observe(
-        data: LiveData<D>,
-        block: (D?) -> Any?
-    ) {
-        data.observe(this, Observer {
-            block(it)
-        })
+    fun obLoadingLayout() {
+        ob(getVm()?.viewStatus?.getLiveData()) {
+            it?.let {
+                loading(it.isLoading)
+                if (it.isError) {
+                    loadingLayout?.showError()
+                } else if (it.isEmpty) {
+                    loadingLayout?.showEmpty()
+                } else {
+                    loadingLayout?.showContent()
+                }
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -170,6 +161,10 @@ open class BaseActivity(
      * observe livedata
      */
     protected open fun observe() {
+    }
+
+    protected open fun getVm(): BaseViewModel? {
+        return null
     }
 
     //空、网络错误 覆盖根布局

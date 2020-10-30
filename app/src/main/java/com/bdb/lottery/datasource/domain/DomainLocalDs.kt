@@ -25,7 +25,7 @@ class DomainLocalDs @Inject constructor() {
     fun getDomain(): String {
         if (!mSelectDomain.isDomainUrl()) {
             mSelectDomain = Cache.getString(
-                ICache.CUSTOM_SERVICE_URL_CACHE,
+                ICache.DOMAIN_URL_CACHE,
                 getFirstLocalDomain()
             )
         }

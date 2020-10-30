@@ -137,7 +137,7 @@ class DomainRemoteDs @Inject constructor(
                 if (!already.get()) {
                     Timber.d("online__onError：${msg}")
                 }
-            }, {
+            }, complete = {
                 //数据解析问题
                 if (!already.get()) {
                     Timber.d("local__onComplete")

@@ -1,22 +1,18 @@
 package com.bdb.lottery.utils
 
-import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import com.bdb.lottery.app.BdbApp
 
 object Sizes {
-    lateinit var context: Context
     fun scale(): Float {
-        return context.resources.displayMetrics.density
+        return BdbApp.context.resources.displayMetrics.density
     }
 
     fun fontScale(): Float {
-        return context.resources.displayMetrics.scaledDensity
+        return BdbApp.context.resources.displayMetrics.scaledDensity
     }
 
     /**
@@ -101,7 +97,7 @@ object Sizes {
      * metrics depending on its unit.
      */
     fun applyDimension(value: Float, unit: Int): Float {
-        context.resources.displayMetrics.let {
+        BdbApp.context.resources.displayMetrics.let {
             when (unit) {
                 TypedValue.COMPLEX_UNIT_PX -> return value
                 TypedValue.COMPLEX_UNIT_DIP -> return value * it.density
