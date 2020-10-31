@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager
 import com.bdb.lottery.R
 import com.bdb.lottery.utils.Screens
 import com.bdb.lottery.utils.Sizes
+import timber.log.Timber
 
 open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     private var rootView: View? = null
@@ -18,6 +19,9 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     var mOutCancel = true //点击外部取消
     var mWidth = 0f
     var mHeight = 0f
+
+    //vars
+    protected var statusbarLight = true;//状态栏是否半透明
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +35,7 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     ): View? {
         rootView = super.onCreateView(inflater, container, savedInstanceState)
         if (null == rootView) {
-            rootView = inflater.inflate(layoutId, null) as ViewGroup?
+            rootView = inflater.inflate(layoutId, container, false)
         }
         return rootView
     }
@@ -99,6 +103,7 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     }
 
     override fun dismiss() {
+        Timber.d("dismiss")
         dismissAllowingStateLoss()
     }
 }

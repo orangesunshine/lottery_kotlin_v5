@@ -7,12 +7,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.LinearLayout.VERTICAL
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
-import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.ITag
 import com.bdb.lottery.extension.loading
@@ -24,8 +22,8 @@ import javax.inject.Inject
 
 open class BaseActivity(
     var layoutId: Int
-) :
-    AppCompatActivity() {
+) : AppCompatActivity() {
+
     //vars
     protected var statusbarLight = true;//状态栏是否半透明
 
@@ -38,6 +36,14 @@ open class BaseActivity(
         get() = findViewById(R.id.id_common_content_layout)
     val statusBar: View?
         get() = findViewById(R.id.id_common_statusbar_layout)
+
+    //actionbar
+    val actbarLeft: ViewGroup?
+        get() = findViewById(R.id.id_common_actionbar_left)
+    val actbarRight: ViewGroup?
+        get() = findViewById(R.id.id_common_actionbar_right)
+    val actbarCenter: View?
+        get() = findViewById(R.id.id_common_actionbar_center)
     protected var mActivity: WeakReference<AppCompatActivity>? = null//当前activity引用
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +55,16 @@ open class BaseActivity(
         val content: FrameLayout = window.decorView.findViewById(android.R.id.content)
         attachView(content)
         statusbar(statusbarLight)
+        actbar()
         loadingLayoutWrap()
         obLoadingLayout()
         observe()
+    }
+
+    private fun actbar() {
+        actbarLeft?.let { actbarLeft().invoke(it) }
+        actbarCenter?.let { actbarCenter().invoke(it) }
+        actbarRight?.let { actbarRight().invoke(it) }
     }
 
     //emptyErrorRoot()/content 添加空布局、网络错误
@@ -64,7 +77,7 @@ open class BaseActivity(
     fun attachView(root: ViewGroup) {
         root.removeAllViews()
         if (attachStatusBar() || attachStatusBar()) {
-            var parent: ViewGroup? = null
+            var parent: ViewGroup?
             var layout: ViewGroup = layoutInflater.inflate(layoutId, root, false) as ViewGroup
             val verticalLinearLayout = layout is LinearLayout && layout.orientation == VERTICAL
             if (verticalLinearLayout) {
@@ -163,6 +176,7 @@ open class BaseActivity(
     protected open fun observe() {
     }
 
+    //需要loading时候
     protected open fun getVm(): BaseViewModel? {
         return null
     }
@@ -185,5 +199,22 @@ open class BaseActivity(
     //是否注入statusbar（顶部margin）
     protected open fun attachStatusBar(): Boolean {
         return true
+    }
+
+    //获取title(actionbar)
+    protected open fun actbarTitle(): String {
+        return ""
+    }
+
+    protected open fun actbarCenter(): (View?) -> Any? {
+        return { it?.let { if (it is TextView) it.text = actbarTitle() } }
+    }
+
+    protected open fun actbarLeft(): (ViewGroup?) -> Any? {
+        return { it?.setOnClickListener { onBack() } }
+    }
+
+    protected open fun actbarRight(): (ViewGroup?) -> Any? {
+        return {}
     }
 }

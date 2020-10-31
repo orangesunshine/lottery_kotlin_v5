@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_gravity="center"
+    android:layout_height="wrap_content"
     android:clickable="true"
-    android:gravity="center"
-    android:orientation="vertical"
     android:focusable="true">
 
-    <ProgressBar
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/common_loading_lav"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center"
-        android:progress="80" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="加载中..."
-        android:textColor="#999999"
-        android:textSize="16sp" />
-</LinearLayout>
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="animation/loading/loading.json"
+        app:lottie_loop="true" />
+</FrameLayout>

@@ -13,10 +13,13 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.bdb.lottery.R
+import com.bdb.lottery.app.BdbApp
+import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.const.IConst
 import kotlin.reflect.KProperty1

@@ -11,6 +11,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import timber.log.Timber
 
 object Retrofits {
     //rxjava 简化
@@ -39,7 +40,7 @@ object Retrofits {
                 }
             },
                 {
-
+                    Timber.d("observe__onError__throwable: ${it}")
                     error?.run { this(it.code, it.msg) }
                     viewState?.setData(ViewState(false))
                     complete?.run { this() }
@@ -75,6 +76,7 @@ object Retrofits {
                 }
             },
                 {
+                    Timber.d("observe__onError__throwable: ${it}")
                     BdbApp.context.toast(it.msg)
                     if (it is ApiException) {
                         error?.run { this(it.response) }

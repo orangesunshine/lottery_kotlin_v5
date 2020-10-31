@@ -4,7 +4,7 @@
     android:layout_height="?actionBarSize">
 
     <FrameLayout
-        android:id="@id/id_common_actionbar_back_fl"
+        android:id="@id/id_common_actionbar_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
@@ -15,11 +15,10 @@
     </FrameLayout>
 
     <TextView
-        android:id="@id/id_common_actionbar_title_tv"
+        android:id="@id/id_common_actionbar_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="注册"
         android:textColor="@color/color_000000"
         android:textSize="@dimen/text_18" />
 </FrameLayout>
