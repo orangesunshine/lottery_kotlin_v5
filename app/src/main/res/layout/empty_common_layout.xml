@@ -10,7 +10,7 @@
         android:layout_width="98dp"
         android:layout_height="56dp"
         android:layout_marginTop="163dp"
-        android:src="@drawable/common_empty_ic" />
+        android:src="@drawable/empty_common_ic" />
 
     <TextView
         android:id="@id/id_common_empty_text"

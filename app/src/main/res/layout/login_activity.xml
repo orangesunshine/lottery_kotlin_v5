@@ -141,29 +141,29 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableTop="@drawable/login_toregister_ic"
             android:drawablePadding="10dp"
             android:gravity="center_horizontal"
-            android:text="@string/login_toregister"
-            app:drawableTopCompat="@drawable/login_toregister_ic" />
+            android:text="@string/login_toregister" />
 
         <TextView
             android:id="@+id/login_trial_play_bt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableTop="@drawable/login_trial_ic"
             android:drawablePadding="10dp"
             android:gravity="center_horizontal"
-            android:text="@string/login_trial"
-            app:drawableTopCompat="@drawable/login_trial_ic" />
+            android:text="@string/login_trial" />
 
         <TextView
             android:id="@+id/login_online_customservice_bt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:drawableTop="@drawable/login_online_customservice_ic"
             android:drawablePadding="10dp"
             android:gravity="center_horizontal"
-            android:text="@string/login_online_customservice"
-            app:drawableTopCompat="@drawable/login_online_customservice_ic" />
+            android:text="@string/login_online_customservice" />
     </LinearLayout>
 </LinearLayout>

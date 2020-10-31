@@ -39,4 +39,8 @@
 
     <!-- 背景 -->
     <color name="color_f2f4f5">#f2f4f5</color>
+
+    <!--home 首页-->
+    <color name="color_969696">#969696</color>
+    <color name="color_ff535a">#ff535a</color>
 </resources>

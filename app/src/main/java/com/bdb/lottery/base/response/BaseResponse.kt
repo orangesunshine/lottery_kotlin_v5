@@ -1,7 +1,6 @@
 package com.bdb.lottery.base.response
 
 import com.bdb.lottery.const.ICode
-import com.bdb.lottery.extension.isSpace
 import com.google.gson.GsonBuilder
 
 open class BaseResponse<T>(
@@ -11,7 +10,7 @@ open class BaseResponse<T>(
 ) {
     //网络请求成功
     fun isSuccess(): Boolean {
-        return code == ICode.CODE_SUCCESSFUL
+        return code == ICode.NET_SUCCESSFUL_CODE
     }
 
     //T类型Response转String

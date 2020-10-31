@@ -47,9 +47,9 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
         super.onCreate(savedInstanceState)
         login_versionname_tv.text = Apps.getAppVersionName(this)//显示版本信息
 
-        login_toregister_bt.setOnClickListener { start<RegisterActivity>() }//立即注册
+        login_toregister_bt.setOnClickListener { startNdFinish<RegisterActivity>() }//立即注册
 
-        login_trial_play_bt.setOnClickListener { vm.trialPlay { start<MainActivity>() } }//立即试玩
+        login_trial_play_bt.setOnClickListener { vm.trialPlay { startNdFinish<MainActivity>() } }//立即试玩
 
         //在线客服
         login_online_customservice_bt.setOnClickListener {
@@ -82,7 +82,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
             //校验验证码
             val verifycode: String = login_verifycode_et.text.toString()
 
-            vm.login(username, pwd, rememberPwd, verifycode, { start<MainActivity>() })
+            vm.login(username, pwd, rememberPwd, verifycode, { startNdFinish<MainActivity>() })
         }
 
         //密码清空按钮

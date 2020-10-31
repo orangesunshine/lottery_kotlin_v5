@@ -34,10 +34,10 @@
         <item name="llTextSize">16sp</item>
 
         <item name="llEmptyText">暂无数据...</item>
-        <item name="llEmptyImage">@drawable/common_empty_ic</item>
+        <item name="llEmptyImage">@drawable/empty_common_ic</item>
 
         <item name="llErrorText">网络连接出错，</item>
-        <item name="llErrorImage">@drawable/common_neterror_ic</item>
+        <item name="llErrorImage">@drawable/neterror_common_ic</item>
     </style>
 
 

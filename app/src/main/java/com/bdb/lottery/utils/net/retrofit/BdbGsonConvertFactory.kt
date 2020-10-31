@@ -68,7 +68,7 @@ internal class BdbGsonResponseBodyConverter<T>(
             string = value.string()
             val jsonObject = JsonParser().parse(string).asJsonObject
             val code = jsonObject.get("code").asInt
-            if (ICode.CODE_SUCCESSFUL == code) {
+            if (ICode.NET_SUCCESSFUL_CODE == code) {
                 bufferedReader =
                     BufferedReader(InputStreamReader(ByteArrayInputStream(string.toByteArray())))
                 val jsonReader =

@@ -8,7 +8,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
 import com.bdb.lottery.biz.base.BaseViewModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
 
 open class BaseActivity(
     var layoutId: Int
-) : AppCompatActivity() {
+) : FragmentActivity() {
 
     //vars
     protected var statusbarLight = true;//状态栏是否半透明
@@ -44,11 +44,10 @@ open class BaseActivity(
         get() = findViewById(R.id.id_common_actionbar_right)
     val actbarCenter: View?
         get() = findViewById(R.id.id_common_actionbar_center)
-    protected var mActivity: WeakReference<AppCompatActivity>? = null//当前activity引用
+    protected var mActivity: WeakReference<FragmentActivity>? = null//当前activity引用
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar?.hide()
         //初始化变量
         initVar()
         //解析布局文件
@@ -144,7 +143,7 @@ open class BaseActivity(
     }
 
     fun show() {
-        loading.show(supportFragmentManager, ITag.COMMON_LOADING)
+        loading.show(supportFragmentManager, ITag.COMMON_LOADING_TAG)
     }
 
     fun hide() {
@@ -182,7 +181,7 @@ open class BaseActivity(
     }
 
     //空、网络错误 覆盖根布局
-    protected fun emptyErrorRoot(): ViewGroup? {
+    protected open fun emptyErrorRoot(): ViewGroup? {
         return null
     }
 

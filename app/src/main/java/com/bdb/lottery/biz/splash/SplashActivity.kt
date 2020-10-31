@@ -8,10 +8,8 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.ICache
-import com.bdb.lottery.extension.ob
+import com.bdb.lottery.extension.*
 import com.bdb.lottery.extension.start
-import com.bdb.lottery.extension.toast
-import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.cache.Cache
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +25,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
         showLoading()
         loadingAnim()
 
-        id_common_content_layout.postDelayed({vm.initDomain()},1000)
+        id_common_content_layout.postDelayed({ vm.initDomain() }, 500)
     }
 
     private fun loadingAnim() {
@@ -52,12 +50,11 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
                 //获取域名成功
                 dismissLoading()
                 if (Cache.getBoolean(ICache.GUIDE_CACHE)) {
-                    start<LoginActivity>()
+                    startNdFinish<LoginActivity>()
                 } else {
                     //首次进入
-                    start<GuideActivity>()
+                    startNdFinish<GuideActivity>()
                 }
-                finish()
             } else {
                 toast("获取域名失败")
             }

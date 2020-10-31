@@ -31,4 +31,10 @@
     <string name="register_pwd_hint">必须在6–16字符之间</string>
     <string name="register_verifycode_hint">请输入正确验证码</string>
 
+    <!-- main -->
+    <string name="main_nav_lottery_hall">彩票大厅</string>
+    <string name="main_nav_promotion">优惠</string>
+    <string name="main_nav_find">发现</string>
+    <string name="main_nav_user">我的</string>
+
 </resources>

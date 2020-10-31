@@ -13,14 +13,13 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.bdb.lottery.R
-import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.base.ui.BaseActivity
+import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.const.IConst
 import kotlin.reflect.KProperty1
 
@@ -33,13 +32,25 @@ fun Context.toast(msg: String?, length: Int = Toast.LENGTH_LONG) {
 }
 
 inline fun <reified T : Activity> Activity.start() {
-    this.startActivity(Intent(this, T::class.java))
+    startActivity(Intent(this, T::class.java))
+}
+
+inline fun <reified T : Activity> Activity.startNdFinish() {
+    startActivity(Intent(this, T::class.java))
+    finish()
 }
 
 inline fun <reified T : Activity> Activity.startWithArgs(block: (Intent) -> Any) {
     var intent = Intent(this, T::class.java)
     block(intent)
-    this.startActivity(intent)
+    startActivity(intent)
+}
+
+inline fun <reified T : Activity> Activity.startNdFinishWithArgs(block: (Intent) -> Any) {
+    var intent = Intent(this, T::class.java)
+    block(intent)
+    startActivity(intent)
+    finish()
 }
 
 inline fun <reified T : AppCompatActivity> Context.startActivity(
@@ -59,14 +70,23 @@ fun BaseActivity.loading(show: Boolean) {
     }
 }
 
+fun BaseFragment.loading(show: Boolean) {
+    if (show) {
+        show()
+    } else {
+        hide()
+    }
+}
+
 /**
  * 设置状态栏文字是否黑色
  * @param light:true 黑色，false：白色
  */
-fun BaseActivity.statusbar(light: Boolean) {
-    statusBar?.let {
-        (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin = IConst.HEIGHT_STATUS_BAR
-    }
+fun Activity.statusbar(light: Boolean) {
+    if (this is BaseActivity)
+        statusBar?.let {
+            (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin = IConst.HEIGHT_STATUS_BAR
+        }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //5.0及以上
         window.statusBarColor = if (light) ContextCompat.getColor(

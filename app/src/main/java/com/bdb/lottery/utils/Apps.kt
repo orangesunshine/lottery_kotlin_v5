@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Process
 import android.text.TextUtils
-import android.util.Log
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.extension.equalsNSpace
 import java.io.BufferedReader

@@ -1,7 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/id_common_content_layout"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"></LinearLayout>
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/main_content_fl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="47dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="67dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/home_nav_bg"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:paddingBottom="4dp">
+
+        <RadioButton
+            android:id="@+id/main_home_rb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:button="@null"
+            android:drawableTop="@drawable/home_nav_selector"
+            android:gravity="center"
+            android:text="@string/main_nav_lottery_hall"
+            android:textColor="@color/main_nav_text_colorselector"
+            android:textSize="@dimen/text_11" />
+
+
+        <RadioButton
+            android:id="@+id/main_promotion_rb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:button="@null"
+            android:drawableTop="@drawable/selector_btn_main_promotion"
+            android:gravity="center"
+            android:text="@string/main_nav_promotion"
+            android:textColor="@color/main_nav_text_colorselector"
+            android:textSize="@dimen/text_11" />
+
+        <FrameLayout
+            android:id="@+id/fl_shotcut_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1">
+
+            <RadioButton
+                android:id="@+id/main_btn_shotcut"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:button="@null"
+                android:drawableBottom="@drawable/main_nav_shortcut_selector"
+                android:gravity="center" />
+        </FrameLayout>
+
+        <RadioButton
+            android:id="@+id/main_find_rb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:button="@null"
+            android:drawableTop="@drawable/selector_btn_main_find"
+            android:gravity="center"
+            android:text="@string/main_nav_find"
+            android:textColor="@color/main_nav_text_colorselector"
+            android:textSize="@dimen/text_11" />
+
+        <RadioButton
+            android:id="@+id/main_user_rb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:button="@null"
+            android:drawableTop="@drawable/selector_btn_main_user"
+            android:gravity="center"
+            android:text="@string/main_nav_user"
+            android:textColor="@color/main_nav_text_colorselector"
+            android:textSize="@dimen/text_11" />
+
+    </LinearLayout>
+</FrameLayout>

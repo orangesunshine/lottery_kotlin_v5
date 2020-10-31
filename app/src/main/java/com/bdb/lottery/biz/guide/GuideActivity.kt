@@ -8,6 +8,7 @@ import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.alphaVisible
 import com.bdb.lottery.extension.start
+import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.cache.Cache
@@ -36,11 +37,10 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
         }
 
         //去登录
-        guide_tologin_tv.setOnClickListener({
+        guide_tologin_tv.setOnClickListener {
             Cache.putBoolean(ICache.GUIDE_CACHE, true)
-            start<MainActivity>()
-            finish()
-        })
+            startNdFinish<MainActivity>()
+        }
 
         //guide页
         guide_banner_vp2.apply {

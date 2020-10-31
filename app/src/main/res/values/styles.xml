@@ -4,7 +4,8 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@color/color_f2f4f5</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowBackground">@color/color_ffffff</item>
     </style>
 
     <!--去掉系统Title-->
@@ -12,6 +13,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowDisablePreview">true</item>
         <item name="android:windowBackground">@color/color_transparent</item>
     </style>
 
@@ -80,7 +82,7 @@
     </style>
 
     <style name="big_bt">
-        <item name="android:background">@drawable/shape_commn_big_bt</item>
+        <item name="android:background">@drawable/bt_common_big_shape</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">50dp</item>
         <item name="android:textColor">@color/color_ffffff</item>

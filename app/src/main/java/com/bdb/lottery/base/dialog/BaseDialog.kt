@@ -34,10 +34,7 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         rootView = super.onCreateView(inflater, container, savedInstanceState)
-        if (null == rootView) {
-            rootView = inflater.inflate(layoutId, container, false)
-        }
-        return rootView
+        return if (null != rootView) rootView else inflater.inflate(layoutId, container, false)
     }
 
     override fun onStart() {

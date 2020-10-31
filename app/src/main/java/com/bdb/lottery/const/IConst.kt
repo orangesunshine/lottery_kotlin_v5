@@ -13,7 +13,7 @@ interface IConst {
 
 interface ICode {
     companion object {
-        const val CODE_SUCCESSFUL: Int = 200
+        const val NET_SUCCESSFUL_CODE: Int = 200
         const val DEFAULT_ERROR_CODE = -1//自定义通用错误
         const val DOAMIN_ERROR_CODE = -2//自定义域名获取失败
         const val JSONSYNTAX_ERROR_CODE = -3//解析数据错误
@@ -22,7 +22,11 @@ interface ICode {
 
 interface ITag {
     companion object {
-        val COMMON_LOADING: String = "tag_common_loading"
+        val COMMON_LOADING_TAG: String = "COMMON_LOADING_TAG"
+        val HOME_FRAGMENT_TAG: String = "HOME_FRAGMENT_TAG"
+        val PROMOTION_FRAGMENT_TAG: String = "PROMOTION_FRAGMENT_TAG"
+        val FIND_FRAGMENT_TAG: String = "FIND_FRAGMENT_TAG"
+        val USER_FRAGMENT_TAG: String = "USER_FRAGMENT_TAG"
     }
 }
 
@@ -46,7 +50,7 @@ interface ICache {
 interface IDebugConfig {
     companion object {
         val BUGLY_APPID = "5c7c8170b8"
-        val BUGLY_CRASH_SCENE_Tag = 172035
+        val BUGLY_CRASH_SCENE_TAG = 172035
         val URL_TEST_DOMAIN = "http://good6789.com"
     }
 }
