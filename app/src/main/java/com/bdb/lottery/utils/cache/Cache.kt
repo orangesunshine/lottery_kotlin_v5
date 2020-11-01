@@ -12,8 +12,8 @@ object Cache {
         mmkv.putString(cacheKey, cacheValue)
     }
 
-    fun getString(cacheKey: String, default: String? = ""): String? {
-        return mmkv.getString(cacheKey, default)
+    fun getString(cacheKey: String, default: String? = ""): String {
+        return mmkv.getString(cacheKey, default)!!
     }
 
     fun putBoolean(cacheKey: String, cacheValue: Boolean) {

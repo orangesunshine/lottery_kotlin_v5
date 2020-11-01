@@ -9,7 +9,6 @@ import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.*
-import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.cache.Cache
 import dagger.hilt.android.AndroidEntryPoint

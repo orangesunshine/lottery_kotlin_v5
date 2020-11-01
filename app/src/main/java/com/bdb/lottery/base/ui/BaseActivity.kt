@@ -153,15 +153,13 @@ open class BaseActivity(
 
     fun obLoadingLayout() {
         ob(getVm()?.viewStatus?.getLiveData()) {
-            it?.let {
-                loading(it.isLoading)
-                if (it.isError) {
-                    loadingLayout?.showError()
-                } else if (it.isEmpty) {
-                    loadingLayout?.showEmpty()
-                } else {
-                    loadingLayout?.showContent()
-                }
+            loading(it.isLoading)
+            if (it.isError) {
+                loadingLayout?.showError()
+            } else if (it.isEmpty) {
+                loadingLayout?.showEmpty()
+            } else {
+                loadingLayout?.showContent()
             }
         }
     }
@@ -205,15 +203,15 @@ open class BaseActivity(
         return ""
     }
 
-    protected open fun actbarCenter(): (View?) -> Any? {
+    protected open fun actbarCenter(): (View?) -> Unit {
         return { it?.let { if (it is TextView) it.text = actbarTitle() } }
     }
 
-    protected open fun actbarLeft(): (ViewGroup?) -> Any? {
+    protected open fun actbarLeft(): (ViewGroup?) -> Unit {
         return { it?.setOnClickListener { onBack() } }
     }
 
-    protected open fun actbarRight(): (ViewGroup?) -> Any? {
+    protected open fun actbarRight(): (ViewGroup?) -> Unit {
         return {}
     }
 }

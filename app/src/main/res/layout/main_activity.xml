@@ -54,11 +54,11 @@
 
             <RadioButton
                 android:id="@+id/main_btn_shotcut"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center_horizontal"
                 android:button="@null"
-                android:drawableBottom="@drawable/main_nav_shortcut_selector"
+                android:drawableBottom="@drawable/main_nav_shortcut_ic"
                 android:gravity="center" />
         </FrameLayout>
 

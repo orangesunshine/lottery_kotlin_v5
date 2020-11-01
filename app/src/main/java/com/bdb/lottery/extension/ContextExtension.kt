@@ -109,7 +109,7 @@ fun Activity.statusbar(light: Boolean) {
 
 inline fun <reified D> LifecycleOwner.ob(
     data: LiveData<D>?,
-    crossinline block: (D?) -> Any?
+    crossinline block: (D) -> Unit
 ) {
     data?.let {
         data.observe(this, Observer { block(it) })

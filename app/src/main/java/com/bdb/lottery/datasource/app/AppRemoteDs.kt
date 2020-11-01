@@ -20,7 +20,7 @@ class AppRemoteDs @Inject constructor(
 ) {
 
     //获取平台参数
-    fun getPlateformParams(success: ((ConfigData?) -> Any?)? = null) {
+    fun getPlateformParams(success: ((ConfigData?) ->Unit)? = null) {
         Retrofits.observe(
             appApi.plateformParams(domainLocalDs.getDomain() + HttpConstUrl.URL_CONFIG_FRONT),
             success
@@ -28,12 +28,12 @@ class AppRemoteDs @Inject constructor(
     }
 
     //客服
-    fun getCustomServiceUrl(success: ((CustomServiceData?) -> Any?)? = null) {
+    fun getCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
         Retrofits.observe(appApi.customservice(), success)
     }
 
     //获取apk版本信息
-    fun getAPkVeresion(success: ((ApkVersionData?) -> Any?)? = null) {
+    fun getAPkVeresion(success: ((ApkVersionData?) -> Unit)? = null) {
         Retrofits.observe(appApi.apkversion("android", Apps.getAppVersionCode(context)), success)
     }
 }

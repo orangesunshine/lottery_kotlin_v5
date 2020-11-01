@@ -1,6 +1,7 @@
 package com.bdb.lottery
 
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.money
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -94,5 +95,13 @@ class ExampleUnitTest {
         println("a.isSpace()" + b.isSpace())
         println("a.isSpace()" + c.isSpace())
         println("a.isSpace()" + d.isSpace())
+    }
+
+    @Test
+    fun assertMoney() {
+        val money2: Double = 0.010
+        val money3: Double = 346211313.001
+        println(money2.money())
+        println(money3.money())
     }
 }

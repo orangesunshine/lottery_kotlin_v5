@@ -111,7 +111,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
             if (it) {
                 login_verifycode_ll.visible(true)
                 val url =
-                    domainLocalDs.getDomain() + HttpConstUrl.URL_GET_VERIFYCODE + "?" + Math.random()
+                    domainLocalDs.getDomain() + HttpConstUrl.URL_VERIFYCODE + "?" + Math.random()
                 val gliderUrl = GlideUrl(
                     url
                 ) {

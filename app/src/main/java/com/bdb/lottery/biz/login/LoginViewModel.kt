@@ -1,7 +1,6 @@
 package com.bdb.lottery.biz.login
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.ViewModel
 import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.ICache
@@ -23,12 +22,13 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         pwd: String,
         rememberPwd: Boolean,
         verifyCode: String,
-        success: () -> Any?
+        success: () -> Unit
     ) {
         val pushClientId = ""
         val appVersionCode = BuildConfig.VERSION_NAME //APP版本号
         accountRemoteDs.login(username, pwd, pushClientId, verifyCode, appVersionCode, {
             success()
+            userInfo()//获取用户信息
             //登录成功保存用户名、密码、是否记住密码
             Cache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
             Cache.putString(ICache.LOGIN_USERNAME_CACHE, username)
@@ -46,11 +46,15 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         appRemoteDs.getAPkVeresion()
     }
 
-    fun trialPlay(success: () -> Any?) {
-        accountRemoteDs.trialPlay(success, viewStatus)
+    fun trialPlay(success: () -> Unit) {
+        accountRemoteDs.trialPlay({
+            success()
+            userInfo()//获取用户信息
+        }, viewStatus)
     }
 
     fun userInfo() {
+        accountRemoteDs.loginInfo()
     }
 
     //进入登录页面是否需要显示验证码

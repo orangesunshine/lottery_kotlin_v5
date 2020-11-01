@@ -6,6 +6,7 @@ import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
+import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.domain.DomainLocalDs
@@ -34,8 +35,8 @@ class AccountRemoteDs @Inject constructor(
         clientId: String,
         verifycode: String,
         browserInfo: String,
-        success: ((String?) -> Any?)? = null,
-        error: (validate: Boolean) -> Any?,
+        success: () -> Unit,
+        error: (validate: Boolean) -> Unit,
         viewState: LiveDataWraper<ViewState>
     ) {
         val key = Cache.getString(ICache.PUBLIC_RSA_CACHE, "")
@@ -64,8 +65,12 @@ class AccountRemoteDs @Inject constructor(
                     }, {
                     //缓存用户已登录
                     accountLocalDs.saveIsLogin(true)
-                    it?.let { if (!it.isBlank()) Cache.putString(ICache.TOKEN_CACHE, it) }
-                    success
+                    it?.let {
+                        if (!it.isBlank()) {
+                            Cache.putString(ICache.TOKEN_CACHE, it)
+                        }
+                    }
+                    success()
                 },
                 { response ->
                     //缓存用户未登录
@@ -76,7 +81,7 @@ class AccountRemoteDs @Inject constructor(
             )
         } else {
             loginReal(
-                key!!,
+                key,
                 username,
                 pwd,
                 clientId,
@@ -97,8 +102,8 @@ class AccountRemoteDs @Inject constructor(
         clientId: String,
         verifycode: String,
         browserInfo: String,
-        success: ((String?) -> Any?)? = null,
-        error: (validate: Boolean) -> Any?,
+        success: () -> Unit,
+        error: (validate: Boolean) -> Unit,
         viewState: LiveDataWraper<ViewState>
     ) {
         val params = HashMap<String, Any>()
@@ -112,7 +117,16 @@ class AccountRemoteDs @Inject constructor(
             Encrypts.rsaEncryptPublicKey(paramsJson, key)?.let {
                 Retrofits.observeErrorData(
                     accountApi.login(it),
-                    success,
+                    {
+                        //缓存用户已登录
+                        accountLocalDs.saveIsLogin(true)
+                        it?.let {
+                            if (!it.isBlank()) {
+                                Cache.putString(ICache.TOKEN_CACHE, it)
+                            }
+                        }
+                        success()
+                    },
                     { response ->
                         response.errorData<Map<String, Boolean>>()
                             ?.let { error(it.get("needValidateCode") ?: false) }
@@ -127,12 +141,12 @@ class AccountRemoteDs @Inject constructor(
 
 
     //是否需要显示验证码
-    fun needValidate(success: (Boolean?) -> Any?) {
+    fun needValidate(success: (Boolean?) -> Unit) {
         Retrofits.observe(accountApi.needvalidate(), success)
     }
 
     //试玩
-    fun trialPlay(success: () -> Any?,viewState: LiveDataWraper<ViewState>) {
+    fun trialPlay(success: () -> Unit, viewState: LiveDataWraper<ViewState>) {
         Retrofits.observe(accountApi.trialPlay(), {
             success()
             //缓存用户已登录
@@ -144,11 +158,19 @@ class AccountRemoteDs @Inject constructor(
         }, { code, msg ->
             //缓存用户未登录
             accountLocalDs.saveIsLogin(false)
-        },viewState = viewState)
+        }, viewState = viewState)
     }
 
     //用户信息
     fun loginInfo() {
+        Retrofits.observe(accountApi.userinfo(), {
+            //缓存用户登录信息
+            it?.let { Cache.putString(ICache.USERINFO_CACHE, GsonBuilder().create().toJson(it)) }
+        })
+    }
 
+    //余额
+    fun balance(success: (BalanceData?) -> Unit) {
+        Retrofits.observe(accountApi.balance(), success)
     }
 }

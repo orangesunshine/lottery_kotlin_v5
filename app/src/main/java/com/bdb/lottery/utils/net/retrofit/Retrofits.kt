@@ -17,10 +17,10 @@ object Retrofits {
     //rxjava 简化
     fun <Data> observe(
         observable: Observable<BaseResponse<Data>>,
-        success: ((Data?) -> Any?)? = null,
-        error: ((code: Int, msg: String?) -> Any?)? = null,
-        onStart: (() -> Any?)? = null,
-        complete: (() -> Any?)? = null,
+        success: ((Data?) -> Unit)? = null,
+        error: ((code: Int, msg: String?) ->Unit)? = null,
+        onStart: (() -> Unit)? = null,
+        complete: (() -> Unit)? = null,
         viewState: LiveDataWraper<ViewState>? = null
     ): Disposable {
         return observable
@@ -54,10 +54,10 @@ object Retrofits {
     //错误返回有用数据
     fun <Data> observeErrorData(
         observable: Observable<BaseResponse<Data>>,
-        success: ((Data?) -> Any?)? = null,
-        error: ((BaseResponse<*>) -> Any?)? = null,
-        onStart: (() -> Any?)? = null,
-        complete: (() -> Any?)? = null,
+        success: ((Data?) -> Unit)? = null,
+        error: ((BaseResponse<*>) -> Unit)? = null,
+        onStart: (() -> Unit)? = null,
+        complete: (() -> Unit)? = null,
         viewState: LiveDataWraper<ViewState>? = null
     ): Disposable {
         return observable.subscribeOn(Schedulers.io())

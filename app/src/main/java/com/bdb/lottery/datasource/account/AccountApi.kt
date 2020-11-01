@@ -2,7 +2,9 @@ package com.bdb.lottery.datasource.account
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.HttpConstUrl
+import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.account.data.TokenData
+import com.bdb.lottery.datasource.account.data.UserInfoData
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -28,4 +30,14 @@ interface AccountApi {
     @GET(HttpConstUrl.URL_NEED_VALIDATE_CODE)
     fun needvalidate(
     ): Observable<BaseResponse<Boolean>>
+
+    //余额
+    @POST(HttpConstUrl.ULR_BALANCE)
+    fun balance(
+    ): Observable<BaseResponse<BalanceData>>
+
+    //用户信息
+    @POST(HttpConstUrl.URL_USERINFO)
+    fun userinfo(
+    ): Observable<BaseResponse<UserInfoData>>
 }
