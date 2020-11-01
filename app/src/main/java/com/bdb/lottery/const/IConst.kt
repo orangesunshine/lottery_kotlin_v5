@@ -44,6 +44,7 @@ interface ICache {
         val LOGIN_PWD_CACHE = "LOGIN_PWD_CACHE"//密码
         val TOKEN_CACHE = "TOKEN_CACHE"//token
         val ISLOGIN_CACHE = "ISLOGIN_CACHE"//是否登录
+        val LAST_UPDATE_TIME_CACHE = "LAST_UPDATE_TIME_CACHE"//refresh上次更新时间
     }
 }
 

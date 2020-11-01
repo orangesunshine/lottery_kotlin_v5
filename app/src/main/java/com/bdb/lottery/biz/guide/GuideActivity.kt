@@ -7,7 +7,6 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.alphaVisible
-import com.bdb.lottery.extension.start
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.Apps
@@ -46,7 +45,7 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
         guide_banner_vp2.apply {
             adapter =
                 object :
-                    BaseQuickAdapter<Int, BaseViewHolder>(R.layout.img_common_item_layout, imgs) {
+                    BaseQuickAdapter<Int, BaseViewHolder>(R.layout.img_item_common_layout, imgs) {
                     override fun convert(holder: BaseViewHolder, item: Int) {
                         holder.setImageResource(R.id.img_common_iv, item)
                     }

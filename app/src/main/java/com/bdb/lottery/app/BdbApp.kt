@@ -9,6 +9,14 @@ import androidx.multidex.MultiDex
 import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.Configs
 import com.bdb.lottery.utils.timber.LogTree
+import com.bdb.lottery.widget.CustomHeader
+import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.scwang.smart.refresh.layout.api.RefreshFooter
+import com.scwang.smart.refresh.layout.api.RefreshHeader
+import com.scwang.smart.refresh.layout.api.RefreshLayout
+import com.scwang.smart.refresh.layout.listener.DefaultRefreshFooterCreator
+import com.scwang.smart.refresh.layout.listener.DefaultRefreshHeaderCreator
 import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
@@ -21,10 +29,30 @@ import timber.log.Timber
 class BdbApp : Application() {
     companion object {
         lateinit var context: Context
+        //static代码段可以防止内存泄露，设置默认刷新和加载样式
+        //设置全局的Header构建器
+        init {
+            SmartRefreshLayout.setDefaultRefreshHeaderCreator(object :DefaultRefreshHeaderCreator{
+                override fun createRefreshHeader(
+                    context: Context,
+                    layout: RefreshLayout
+                ): RefreshHeader {
+                    return CustomHeader(context);//.setTimeFormat(new DynamicTimeFormat("更新于 %s"));//指定为经典Header，默认是 贝塞尔雷达Header
+                }
+            })
+
+            SmartRefreshLayout.setDefaultRefreshFooterCreator(object : DefaultRefreshFooterCreator {
+                override fun createRefreshFooter(
+                    context: Context,
+                    layout: RefreshLayout
+                ): RefreshFooter {
+                    return ClassicsFooter(context).setDrawableSize(20F);
+                }
+            })
+        }
     }
 
     override fun attachBaseContext(base: Context?) {
-        Log.e("BdbApp", "time1: " + SystemClock.elapsedRealtime())
         super.attachBaseContext(base)
         MultiDex.install(this)
     }

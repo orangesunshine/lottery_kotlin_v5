@@ -1,43 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/id_common_content_layout"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- 标题栏 -->
+    <LinearLayout
+        android:id="@+id/home_title"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textNoSuggestions"
-        android:padding="20dp"
-        android:text="彩票大厅" />
+        <ImageView
+            android:id="@+id/home_logo_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/home_logo_ic" />
 
-    <TextView
-        android:id="@+id/home_show"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textNoSuggestions"
-        android:padding="20dp"
-        android:text="show" />
+        <TextView
+            android:id="@+id/home_domain_select_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="17dp"
+            android:background="@drawable/home_domain_select_bg"
+            android:drawableLeft="@drawable/home_domain_good_ic"
+            android:drawablePadding="4dp"
+            android:gravity="center"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:text="@string/home_main_route"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/text_11" />
 
-    <TextView
-        android:id="@+id/home_empty"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textNoSuggestions"
-        android:padding="20dp"
-        android:text="empty" />
+        <View style="@style/weight" />
 
-    <TextView
-        android:id="@+id/home_error"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textNoSuggestions"
-        android:padding="20dp"
-        android:text="error" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:text="@string/balance"
+            android:textColor="#333333"
+            android:textSize="@dimen/text_14" />
 
-    <FrameLayout
-        android:id="@+id/home_loadinglayout_fl"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/home_balance_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="#333333"
+            android:textSize="@dimen/text_13"
+            tools:text="99999.000" />
+
+        <ImageView
+            android:id="@+id/home_money_img"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/home_money_show" />
+
+    </LinearLayout>
+
+    <com.scwang.smart.refresh.layout.SmartRefreshLayout
+        android:id="@+id/home_refreshLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/home_title">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical">
+
+            <com.youth.banner.Banner
+                app:layout_constraintDimensionRatio="3:1"
+                android:id="@+id/home_banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:banner_radius="8dp" />
+
+            <!-- 上分割线 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#DDE0E4" />
+
+            <!-- 公告栏 -->
+            <LinearLayout
+                android:id="@+id/home_notice_layout"
+                android:layout_width="match_parent"
+                android:layout_height="28dp"
+                android:background="#f2f4f5"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginRight="6dp"
+                    android:src="@drawable/home_notice_ic" />
+
+
+                <com.sunfusheng.marqueeview.MarqueeView
+                    android:id="@+id/home_notice_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginRight="6dp"
+                    android:layout_weight="1"
+                    android:ellipsize="marquee"
+                    android:gravity="left|center_vertical"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
+                    android:textColor="#6a6a6a"
+                    android:textSize="@dimen/text_12" />
+
+                <View
+                    android:layout_width="10dp"
+                    android:layout_height="8dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/home_notice_more_ic"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <!-- 下分割线 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#DDE0E4" />
+
+            <!-- 推荐收藏、全部彩种、综合娱乐 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:orientation="vertical">
+
+
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/home_game_tl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp" />
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/home_game_vp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.scwang.smart.refresh.layout.SmartRefreshLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

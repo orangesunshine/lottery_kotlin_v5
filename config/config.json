@@ -1,9 +1,14 @@
 {
   "app": [
     "GSON",
+    "BANNER",
+    "REFRESH",
+    "MARQUEE",
     "AUTOSIZE",
+    "MATERIAL",
     "COMMONS-CODEC",
     "IMMERSIONBAR",
+    "CONSTRAINTLAYOUT",
     "GLIDE",
     "LOTTIE",
     "EVENTBUS",
