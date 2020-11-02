@@ -21,7 +21,7 @@ class DomainInterceptor @Inject constructor(val domainLocalDs: DomainLocalDs) :
         Timber.d("domain: ${domain}")
         return chain.proceed(
             if (domain.isDomainUrl() && domainLocalDs.alreadySave.get()) {
-                val domainUrl = domain.toHttpUrl()
+                val domainUrl = domain!!.toHttpUrl()
                 Timber.d("requestUrl: ${request.url}, domainUrl: ${domainUrl}")
                 chain.request().newBuilder().url(
                     request.url.newBuilder()

@@ -3,7 +3,6 @@ package com.bdb.lottery.biz.splash
 import android.content.Context
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.ViewModel
 import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.ICache
@@ -32,27 +31,12 @@ class SplashViewModel @ViewModelInject @Inject constructor(
 
     //初始化域名
     fun initDomain() {
-        Timber.d("initDomain")
-//        if (Configs.isDebug()) {
-//            Timber.d("isDebug")
-//            remoteDomainDs.getDebugFrontConfig({
-//                //线上域名获取成功
-//                onDomainSuccess(it)
-//            }, {
-//                onOnlineDomainError()
-//            })
-//        } else {
-//
-//        }
-        /**
-         * 1.读取阿里云，七牛云域名撇脂文件，@拆分域名
-         */
-        remoteDomainDs.getOnlineDomain({
-            //线上域名获取成功
-            onDomainSuccess(it)
-        }, {
-            onOnlineDomainError()
-        })
+        remoteDomainDs.getDomain {
+            //获取域名成功
+            ldDomainRet.setData(true)
+            getCustomService()
+            getApkVersion()
+        }
     }
 
     //获取客服
@@ -74,50 +58,6 @@ class SplashViewModel @ViewModelInject @Inject constructor(
                 //发送粘性事件，MainActivity打开处理
                 EventBus.getDefault().postSticky(it)
             }
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // 辅助方法
-    ///////////////////////////////////////////////////////////////////////////
-    //域名获取成功回调
-    fun onDomainSuccess(it: ConfigData?) {
-        val toUri = it?.WebMobileUrl?.toUri()
-        val scheme = toUri?.scheme
-        val host = toUri?.host
-        val authority = toUri?.authority
-        val port = toUri?.port
-        val domain =
-            scheme + "://" + if (host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
-        //保存并缓存域名
-        context.toast("onDomainSuccess__domain: \n${domain}")
-        localDomainDs.saveDomain(domain)
-        ldDomainRet.setData(true)
-        getCustomService()
-        getApkVersion()
-    }
-
-    //线上域名获取失败回调
-    fun onOnlineDomainError() {
-        //本地域名配置
-        val localDomainStringId = context.resources.getIdentifier(
-            "local_http_url",
-            "string",
-            BuildConfig.APPLICATION_ID
-        )
-        if (localDomainStringId > 0) {
-            //读取本地域名配置
-            remoteDomainDs.getLocalDomain(
-                { onDomainSuccess(it) },
-                {
-                    //本地域名获取失败
-                    if (BuildConfig.SHOW_DOALOG_ON_DOMAIN_ERROR) ldDomainRet.setData(
-                        false
-                    )
-                })
-        } else {
-            //线上域名获取失败，没有配置本地域名，提示
-            if (BuildConfig.SHOW_DOALOG_ON_DOMAIN_ERROR) ldDomainRet.setData(false)
         }
     }
 }

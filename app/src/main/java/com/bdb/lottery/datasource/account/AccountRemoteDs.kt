@@ -6,6 +6,7 @@ import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
+import com.bdb.lottery.datasource.BaseRemoteDs
 import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWraper
@@ -14,7 +15,6 @@ import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.Encrypts
 import com.bdb.lottery.utils.cache.Cache
-import com.bdb.lottery.utils.net.retrofit.Retrofits
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.qualifiers.ActivityContext
 import io.reactivex.rxjava3.core.Observable
@@ -26,7 +26,7 @@ class AccountRemoteDs @Inject constructor(
     private val appApi: AppApi,
     private val domainLocalDs: DomainLocalDs,
     private val accountLocalDs: AccountLocalDs
-) {
+) : BaseRemoteDs() {
 
     //登录
     fun login(
@@ -41,7 +41,7 @@ class AccountRemoteDs @Inject constructor(
     ) {
         val key = Cache.getString(ICache.PUBLIC_RSA_CACHE, "")
         if (key.isSpace()) {
-            Retrofits.observeErrorData(
+            retrofitWrapper.observeErrorData(
                 appApi.plateformParams(domainLocalDs.getDomain() + HttpConstUrl.URL_CONFIG_FRONT)
                     .flatMap {
                         var observable: Observable<BaseResponse<String>>? = null
@@ -115,7 +115,7 @@ class AccountRemoteDs @Inject constructor(
         val paramsJson = GsonBuilder().create().toJson(params)
         try {
             Encrypts.rsaEncryptPublicKey(paramsJson, key)?.let {
-                Retrofits.observeErrorData(
+                retrofitWrapper.observeErrorData(
                     accountApi.login(it),
                     {
                         //缓存用户已登录
@@ -142,12 +142,12 @@ class AccountRemoteDs @Inject constructor(
 
     //是否需要显示验证码
     fun needValidate(success: (Boolean?) -> Unit) {
-        Retrofits.observe(accountApi.needvalidate(), success)
+        retrofitWrapper.observe(accountApi.needvalidate(), success)
     }
 
     //试玩
     fun trialPlay(success: () -> Unit, viewState: LiveDataWraper<ViewState>) {
-        Retrofits.observe(accountApi.trialPlay(), {
+        retrofitWrapper.observe(accountApi.trialPlay(), {
             success()
             //缓存用户已登录
             accountLocalDs.saveIsLogin(true)
@@ -163,7 +163,7 @@ class AccountRemoteDs @Inject constructor(
 
     //用户信息
     fun loginInfo() {
-        Retrofits.observe(accountApi.userinfo(), {
+        retrofitWrapper.observe(accountApi.userinfo(), {
             //缓存用户登录信息
             it?.let { Cache.putString(ICache.USERINFO_CACHE, GsonBuilder().create().toJson(it)) }
         })
@@ -171,6 +171,6 @@ class AccountRemoteDs @Inject constructor(
 
     //余额
     fun balance(success: (BalanceData?) -> Unit) {
-        Retrofits.observe(accountApi.balance(), success)
+        retrofitWrapper.observe(accountApi.balance(), success)
     }
 }

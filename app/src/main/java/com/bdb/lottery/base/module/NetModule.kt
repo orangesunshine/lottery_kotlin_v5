@@ -3,14 +3,15 @@ package com.bdb.lottery.base.module
 import com.bdb.lottery.datasource.account.AccountApi
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.domain.DomainApi
+import com.bdb.lottery.datasource.game.GameApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ApplicationComponent
 import retrofit2.Retrofit
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(ApplicationComponent::class)
 class NetModule {
 
     ///////////////////////////////////////////////////////////////////////////
@@ -35,5 +36,13 @@ class NetModule {
     @Provides
     fun domainApi(retrofit: Retrofit): DomainApi {
         return retrofit.create(DomainApi::class.java)
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // 游戏：初始化、全部、大类每个、三方平台、其他平台
+    ///////////////////////////////////////////////////////////////////////////
+    @Provides
+    fun gameApi(retrofit: Retrofit): GameApi {
+        return retrofit.create(GameApi::class.java)
     }
 }

@@ -5,12 +5,13 @@ import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.extension.money
 import javax.inject.Inject
 
 class HomeViewModel @ViewModelInject @Inject constructor(
     private val accountRemoteDs: AccountRemoteDs,
-    private val appRemoteDs: AppRemoteDs
+    private val gameRemoteDs: GameRemoteDs
 ) : BaseViewModel() {
     val balanceLd = LiveDataWraper<String>()//余额
 

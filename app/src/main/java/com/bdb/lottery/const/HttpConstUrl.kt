@@ -18,9 +18,13 @@ interface HttpConstUrl {
 
         const val URL_CONFIG_FRONT = "/system-config/front.mvc"//前台配置
 
+        const val URL_PUSH_CONFIG = "/system-config/message/push-config.mvc"//推送配置
+
         const val URL_CUSTOM_SERVICE: String = "/login/kefuxian.mvc"//客服
 
         const val URL_APK_VERSION: String = "/login/apkversion.mvc"//版本信息
+
+        const val URL_NOTICE = "/notice/notice.mvc"//通知
 
         ///////////////////////////////////////////////////////////////////////////
         // 登录
@@ -39,5 +43,25 @@ interface HttpConstUrl {
         const val ULR_BALANCE = "/userInfo/getBalance.mvc"//余额
 
         const val URL_USERINFO = "/userInfo/simple-info.mvc"//用户信息
+
+        ///////////////////////////////////////////////////////////////////////////
+        // 注册
+        ///////////////////////////////////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////////////////////////////
+        // 游戏
+        ///////////////////////////////////////////////////////////////////////////
+        const val URL_THIRD_PLATFORM = "/thirdPartyBetRecords/getThirdPartyPlatform.mvc"//三方游戏列表
+
+        const val URL_OTHER_PLATFORM = "/thirdUserAdd/getPlatform.mvc"//其他平台游戏列表
+
+        const val URL_INIT_GAME = "/gameType/initGameType.mvc"//init
+
+        const val URL_ALL_GAME = "/gameType/getAllGame.mvc"//all game
+
+        const val URL_GAME_BY_GENRES = "/gameType/getGameByGenres.mvc"//获取彩种大类每个才会总信息
+
+        const val URL_LOTTERY_FAVORITES =
+            "/userInfo/lottery/favorites/getLotteryFavorites.mvc"//收藏彩种
     }
 }

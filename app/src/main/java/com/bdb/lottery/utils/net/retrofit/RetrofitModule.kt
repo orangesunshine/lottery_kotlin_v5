@@ -14,7 +14,6 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import timber.log.Timber
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
-import javax.inject.Named
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocketFactory
@@ -86,7 +85,9 @@ class RetrofitModule {
      * 域名修改
      */
     @Provides
-    fun provideDomainInterceptor(domainLocalDs: DomainLocalDs): DomainInterceptor {
+    fun provideDomainInterceptor(
+        domainLocalDs: DomainLocalDs
+    ): DomainInterceptor {
         return DomainInterceptor(domainLocalDs)
     }
 }
