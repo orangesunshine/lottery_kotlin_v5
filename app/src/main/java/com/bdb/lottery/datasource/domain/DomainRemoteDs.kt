@@ -15,12 +15,12 @@ import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.*
-import com.bdb.lottery.utils.Configs
 import com.bdb.lottery.utils.cache.Cache
 import com.bdb.lottery.utils.net.retrofit.ApiException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableOnSubscribe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
@@ -40,39 +40,156 @@ class DomainRemoteDs @Inject constructor(
     }
 
     //获取域名
-    fun getDomain(domainSuccess: () -> Unit) {
-        if (domainLocalDs.alreadySave.get()) {
-            //已缓存域名
-            domainSuccess()
-        } else {
-            //获取服务器域名
-            val domainSave: (ConfigData?) -> Boolean = {
-                val toUri = it?.WebMobileUrl?.toUri()
+    fun getDomain(domainSuccess: (String) -> Unit) {
+        val configPath = context.getString(R.string.api_txt_path)
+        val onlineObservables = mutableListOf<Observable<String>>()
+        val hosts = HttpConstUrl.DOMAINS_API_TXT
+        if (!hosts.isNullOrEmpty()) {
+            for (host in hosts) {
+                if (host.isDomainUrl()) {
+                    onlineObservables.add(domainApi.get(host + configPath))
+                }
+            }
+        }
+        val online = Observable.mergeArrayDelayError(*(onlineObservables.toTypedArray()))
+            .observeOn(Schedulers.io())
+            .map {
+                Timber.d("online域名配置：${it}")
+                if (it.isSpace()) it.split("@") else null
+            }
+            .observeOn(Schedulers.io())
+            .flatMap {
+                Timber.d("online域名配置列表：${it}")
+                if (!it.isNullOrEmpty()) Observable.fromIterable(it) else null
+            }
+            .observeOn(Schedulers.io())
+            .flatMap {
+                Timber.d("online域名：${it}")
+                if (it.isDomainUrl()) appApi.plateformParams(
+                    it + HttpConstUrl.URL_CONFIG_FRONT
+                ) else null
+            }.observeOn(Schedulers.io())
+            .map {
+                //保存rsa公钥
+                it.data?.rsaPublicKey?.let {
+                    Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
+                }
+                //保存plateform参数
+                it.data?.platform?.let {
+                    Cache.putString(ICache.PLATEFORM_CACHE, it)
+                }
+                val toUri = it.data?.WebMobileUrl?.toUri()
                 val scheme = toUri?.scheme
                 val host = toUri?.host
                 val authority = toUri?.authority
                 val port = toUri?.port
-                val domain =
-                    scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
-                domainLocalDs.saveDomain(domain)
+                scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
             }
 
-            val onlineDomainError = {
-                //本地域名配置
-                val localDomainStringId = context.resources.getIdentifier(
-                    "local_http_url",
-                    "string",
-                    BuildConfig.APPLICATION_ID
-                )
-
-                if (localDomainStringId > 0) {
-                    localDomain({
-                        if (domainSave(it)) domainSuccess() else domainError()
-                    }) {
-                        domainError()
+        //本地域名配置
+        val localDomainStringId = context.resources.getIdentifier(
+            "local_http_url",
+            "string",
+            BuildConfig.APPLICATION_ID
+        )
+        val localObservables = mutableListOf<Observable<String>>()
+        if (localDomainStringId > 0) {
+            val localDomain = context.getString(localDomainStringId)
+            if (!TextUtils.isEmpty(localDomain)) {
+                val domains = localDomain.split("@")
+                if (!domains.isNullOrEmpty()) {
+                    for (domain in domains) {
+                        localObservables.add(appApi.plateformParams(domain + HttpConstUrl.URL_CONFIG_FRONT)
+                            .observeOn(Schedulers.io())
+                            .map {
+                                //保存rsa公钥
+                                it.data?.rsaPublicKey?.let {
+                                    Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
+                                }
+                                //保存plateform参数
+                                it.data?.platform?.let {
+                                    Cache.putString(ICache.PLATEFORM_CACHE, it)
+                                }
+                                val toUri = it.data?.WebMobileUrl?.toUri()
+                                val scheme = toUri?.scheme
+                                val host = toUri?.host
+                                val authority = toUri?.authority
+                                val port = toUri?.port
+                                scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
+                            })
                     }
                 }
             }
+        }
+        val local = Observable.mergeArrayDelayError(*(localObservables.toTypedArray()))
+
+        var disposable: Disposable? = null
+        val already = AtomicBoolean(false)
+        val cache = Observable.create(ObservableOnSubscribe<String> {
+            if (domainLocalDs.alreadySave.get() && domainLocalDs.getDomain().isDomainUrl()) {
+                it.onNext(domainLocalDs.getDomain())
+                disposable?.dispose()
+            } else {
+                it.onComplete()
+            }
+        })
+        Observable.concatArrayDelayError(cache, online, local)
+            .doOnSubscribe { disposable = it }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                //域名获取成功
+                if (already.compareAndSet(false, true)) {
+                    //取消剩下网络请求
+                    disposable?.let {
+                        try {
+                            if (!it.isDisposed) it.dispose()
+                        } catch (e: Exception) {
+                        }
+                    }
+                    if (domainLocalDs.saveDomain(it)) domainSuccess(it) else domainError()
+                }
+            }, {
+                //域名获取失败
+                if (!already.get()) {
+                    domainError()
+                }
+            })
+
+
+//        if (domainLocalDs.alreadySave.get()) {
+//            //已缓存域名
+//            domainSuccess()
+//        } else {
+//            //获取服务器域名
+//            val domainSave: (ConfigData?) -> Boolean = {
+//                val toUri = it?.WebMobileUrl?.toUri()
+//                val scheme = toUri?.scheme
+//                val host = toUri?.host
+//                val authority = toUri?.authority
+//                val port = toUri?.port
+//                val domain =
+//                    scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
+//                domainLocalDs.saveDomain(domain)
+//            }
+//
+//            val onlineDomainError = {
+//                //本地域名配置
+//                val localDomainStringId = context.resources.getIdentifier(
+//                    "local_http_url",
+//                    "string",
+//                    BuildConfig.APPLICATION_ID
+//                )
+//
+//                if (localDomainStringId > 0) {
+//                    localDomain({
+//                        if (domainSave(it)) domainSuccess() else domainError()
+//                    }) {
+//                        domainError()
+//                    }
+//                }
+//            }
+
 
 //            if (Configs.isDebug()) {
 //                debugDomain({
@@ -86,13 +203,13 @@ class DomainRemoteDs @Inject constructor(
 //                 * 1.读取阿里云，七牛云域名配置文件，@拆分域名
 //                 */
 //            }
-                onlineDomain({
-                    //线上域名获取成功
-                    if (domainSave(it)) domainSuccess() else onlineDomainError()
-                }, {
-                    onlineDomainError()
-                })
-        }
+//                onlineDomain({
+//                    //线上域名获取成功
+//                    if (domainSave(it)) domainSuccess() else onlineDomainError()
+//                }, {
+//                    onlineDomainError()
+//                })
+//        }
     }
 
 
@@ -251,12 +368,12 @@ class DomainRemoteDs @Inject constructor(
                                 success?.run { this(it) }
 
                                 //保存rsa公钥
-                                it?.rsaPublicKey?.let {
+                                it.rsaPublicKey.let {
                                     Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
                                 }
 
                                 //保存plateform参数
-                                it?.platform?.let {
+                                it.platform.let {
                                     Cache.putString(ICache.PLATEFORM_CACHE, it)
                                 }
                             }
