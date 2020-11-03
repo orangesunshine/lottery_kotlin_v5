@@ -19,6 +19,7 @@ import com.bdb.lottery.utils.Devices
 import com.bdb.lottery.utils.cache.Cache
 import com.bumptech.glide.load.model.GlideUrl
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.login_activity.*
 import javax.inject.Inject
 

@@ -49,7 +49,7 @@ def gradle_version = "4.0.1"
 def banner_version = "2.1.0"
 def refresh_version = "2.0.1"
 def marquee_version = "1.4.1"
-def material_version = "1.0.0"
+def material_version = "1.2.0"
 def constraintlayout_version = "2.0.4"
 
 def DEPS = [:]

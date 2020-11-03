@@ -23,7 +23,7 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 ) : BaseViewModel() {
     val balanceLd = LiveDataWraper<String>()//余额
     val bannerLd = LiveDataWraper<List<BannerMapper>?>()//轮播图
-    val noticeLd = LiveDataWraper<List<String>>()//公告
+    val noticeLd = LiveDataWraper<String>()//公告
 
     //余额
     fun getBalance() {
@@ -75,11 +75,10 @@ class HomeViewModel @ViewModelInject @Inject constructor(
                 }.map {
                     it.content
                 }.let {
-                    noticeLd.setData(it)
-                    it.joinToString { it }
+                    noticeLd.setData(it.joinToString { it })
+
                 }
             }
-            BdbApp.context.toast(joinString)
         }
     }
 

@@ -70,7 +70,8 @@
         android:id="@+id/home_refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        app:srlEnableLoadMore="false">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -123,18 +124,15 @@
                     android:src="@drawable/home_notice_ic" />
 
 
-                <com.sunfusheng.marqueeview.MarqueeView
-                    android:id="@+id/home_notice_mqv"
+                <com.bdb.lottery.widget.MarqueeTextView
+                    android:id="@+id/home_notice_tv"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="6dp"
                     android:layout_marginRight="6dp"
                     android:layout_weight="1"
-                    android:ellipsize="marquee"
                     android:gravity="left|center_vertical"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
-                    android:textColor="#6a6a6a"
+                    android:textColor="@color/color_6a6a6a"
                     android:textSize="@dimen/text_12" />
 
                 <View
@@ -171,8 +169,11 @@
                     android:id="@+id/home_game_tl"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp" />
+                    app:tabIndicator="@drawable/home_game_tab_indicator"
+                    app:tabIndicatorColor="@color/color_147CE2"
+                    app:tabIndicatorFullWidth="false"
+                    app:tabIndicatorGravity="bottom"
+                    app:tabMode="fixed" />
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/home_game_vp"

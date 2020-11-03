@@ -1,20 +1,33 @@
 package com.bdb.lottery.biz.main.home
 
+import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bdb.lottery.R
+import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.login.LoginActivity
+import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.datasource.home.data.BannerMapper
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.start
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.sunfusheng.marqueeview.MarqueeView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.youth.banner.adapter.BannerImageAdapter
 import com.youth.banner.holder.BannerImageHolder
 import com.youth.banner.indicator.RectangleIndicator
@@ -23,16 +36,82 @@ import com.youth.banner.util.BannerUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.home_fragment.*
 
+
 //彩票大厅
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.home_fragment) {
     private val vm by viewModels<HomeViewModel>()
+    val tabs = arrayOf("推荐收藏", "全部彩种", "综合娱乐")
+    private lateinit var mediator: TabLayoutMediator
+    private val changeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            //可以来设置选中时tab的大小
+            val tabCount: Int = home_game_tl.getTabCount()
+            for (i in 0 until tabCount) {
+                val tab: TabLayout.Tab? = home_game_tl.getTabAt(i)
+                tab?.let {
+                    val tabView = it.customView as TextView
+                    val selected = it.position == position
+                    tabView.textSize = if (selected) 17F else 14F
+                    tabView.setTypeface(if (selected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT)
+                }
+            }
+        }
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initVp()//game viewpager设置
+    }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        vm.noticeData()//公告
         vm.bannerData()//轮播图
         vm.getBalance()//获取余额
+    }
+
+    private fun initVp() {
+        //禁用预加载
+        home_game_vp.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT;
+
+        //Adapter
+        home_game_vp.setAdapter(object : FragmentStateAdapter(childFragmentManager, lifecycle) {
+            override fun getItemCount(): Int {
+                return tabs.size
+            }
+
+            override fun createFragment(position: Int): Fragment {
+                return PromotionFragment()
+            }
+        })
+
+        mediator = TabLayoutMediator(
+            home_game_tl,
+            home_game_vp
+        ) { tab: TabLayout.Tab, position: Int ->
+            //这里可以自定义TabView
+            val tabView = TextView(context)
+            val states = arrayOfNulls<IntArray>(2)
+            states[0] = intArrayOf(android.R.attr.state_selected)
+            states[1] = intArrayOf()
+            val colors = intArrayOf(
+                ContextCompat.getColor(BdbApp.context, R.color.color_333333),
+                ContextCompat.getColor(
+                    BdbApp.context,
+                    R.color.color_999999
+                )
+            )
+            val colorStateList = ColorStateList(states, colors)
+            tabView.text = tabs[position]
+            tabView.textSize = 14F
+            tabView.setTextColor(colorStateList)
+            tabView.gravity = Gravity.CENTER_HORIZONTAL
+            tab.customView = tabView
+        }
+        //要执行这一句才是真正将两者绑定起来
+        mediator.attach()
+        home_game_vp.registerOnPageChangeCallback(changeCallback)
     }
 
     override fun observe() {
@@ -42,14 +121,14 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
             loadBanner(list)
         }
         ob(vm.noticeLd.getLiveData()) {
-            (home_notice_mqv as MarqueeView<String>).startWithList(it)
+            home_notice_tv.text = it
         }
     }
 
     fun loadBanner(list: List<BannerMapper>) {
         home_banner?.run {
             setBannerGalleryEffect(18, 10)
-            setIndicator(RectangleIndicator(context))
+            indicator = RectangleIndicator(context)
             setIndicatorSelectedWidth(BannerUtils.dp2px(20f).toInt())
             setIndicatorSpace(BannerUtils.dp2px(4f).toInt())
             setIndicatorRadius(0)
@@ -92,5 +171,11 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
                 }
             })
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediator.detach();
+        home_game_vp.unregisterOnPageChangeCallback(changeCallback)
     }
 }
