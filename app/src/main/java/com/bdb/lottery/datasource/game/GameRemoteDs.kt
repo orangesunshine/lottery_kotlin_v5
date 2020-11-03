@@ -1,11 +1,12 @@
 package com.bdb.lottery.datasource.game
 
-import com.bdb.lottery.datasource.BaseRemoteDs
+import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import javax.inject.Inject
 
 class GameRemoteDs @Inject constructor(
+    val retrofitWrapper: RetrofitWrapper,
     private val gameApi: GameApi
-) : BaseRemoteDs() {
+) {
     fun initGame() {
         retrofitWrapper.observe(gameApi.initGame())
     }

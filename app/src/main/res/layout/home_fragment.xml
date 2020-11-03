@@ -81,6 +81,9 @@
                 android:id="@+id/home_banner"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_margin="10dp"
+                app:banner_indicator_normal_color="@android:color/white"
+                app:banner_indicator_selected_color="@color/colorPrimary"
                 app:banner_radius="8dp"
                 app:layout_constraintDimensionRatio="2.56:1"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -92,6 +95,7 @@
                 android:id="@+id/home_top_divide_view"
                 android:layout_width="0dp"
                 android:layout_height="0.5dp"
+                android:layout_marginTop="10dp"
                 android:background="#DDE0E4"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -120,7 +124,7 @@
 
 
                 <com.sunfusheng.marqueeview.MarqueeView
-                    android:id="@+id/home_notice_tv"
+                    android:id="@+id/home_notice_mqv"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="6dp"

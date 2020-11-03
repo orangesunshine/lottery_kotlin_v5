@@ -8,15 +8,15 @@ import com.tencent.mmkv.MMKV
 object Cache {
     val mmkv = MMKV.defaultMMKV()
 
-    fun putString(cacheKey: String, cacheValue: String?) {
+    fun putString(cacheKey: String, cacheValue: String? = null) {
         mmkv.putString(cacheKey, cacheValue)
     }
 
-    fun getString(cacheKey: String, default: String? = ""): String {
-        return mmkv.getString(cacheKey, default)!!
+    fun getString(cacheKey: String, default: String? = null): String? {
+        return mmkv.getString(cacheKey, default)
     }
 
-    fun putBoolean(cacheKey: String, cacheValue: Boolean) {
+    fun putBoolean(cacheKey: String, cacheValue: Boolean = false) {
         mmkv.putBoolean(cacheKey, cacheValue)
     }
 
@@ -25,7 +25,7 @@ object Cache {
     }
 
 
-    fun putLong(cacheKey: String, cacheValue: Long) {
+    fun putLong(cacheKey: String, cacheValue: Long = -1) {
         mmkv.putLong(cacheKey, cacheValue)
     }
 

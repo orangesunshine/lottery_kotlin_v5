@@ -2,6 +2,7 @@ package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.const.IConst
 import com.bdb.lottery.datasource.domain.DomainLocalDs
+import com.bdb.lottery.utils.Devices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +28,6 @@ class RetrofitModule {
      * 公用
      */
     @Provides
-    @Singleton
     fun create(
         logInterceptor: HttpLoggingInterceptor,
         headersInterceptor: HeadersInterceptor,
@@ -54,6 +54,7 @@ class RetrofitModule {
      * 日志拦截器
      */
     @Provides
+    @Singleton
     fun provideHttpLogIntercept(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor {
             Timber.d(it)
@@ -67,6 +68,7 @@ class RetrofitModule {
      * ssl tls
      */
     @Provides
+    @Singleton
     fun getSSLSocketFactory(): SSLSocketFactory {
         val sslContext: SSLContext = SSLContext.getInstance("TLS")
         sslContext.init(null, arrayOf(SsX509TrustManager), SecureRandom())
@@ -77,14 +79,19 @@ class RetrofitModule {
      * 头部header修改
      */
     @Provides
-    fun provideHeadersInterceptor(domainLocalDs: DomainLocalDs): HeadersInterceptor {
-        return HeadersInterceptor(domainLocalDs)
+    @Singleton
+    fun provideHeadersInterceptor(
+        domainLocalDs: DomainLocalDs,
+        devices: Devices
+    ): HeadersInterceptor {
+        return HeadersInterceptor(domainLocalDs, devices)
     }
 
     /**
      * 域名修改
      */
     @Provides
+    @Singleton
     fun provideDomainInterceptor(
         domainLocalDs: DomainLocalDs
     ): DomainInterceptor {

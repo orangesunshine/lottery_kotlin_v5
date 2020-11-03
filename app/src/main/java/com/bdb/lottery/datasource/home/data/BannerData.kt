@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource.app.data
+package com.bdb.lottery.datasource.home.data
 
 data class BannerData(
     var list: List<BannerItemData>,
@@ -16,3 +16,5 @@ data class BannerItemData(
     var timeend: Long,
     var type: Int
 )
+
+data class BannerMapper(val imgurl: String, val needJump: Boolean, val jumpTitle: String?)

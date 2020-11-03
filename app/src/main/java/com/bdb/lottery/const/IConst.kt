@@ -45,7 +45,8 @@ interface ICache {
         val APK_VERSION_CACHE = "APK_VERSION_CACHE"//apk版本信息
         val DEVICE_ID_CACHE = "DEVICE_ID_CACHE"//设备号
         val PLATEFORM_CACHE = "PLATEFORM_CACHE"//平台
-        val PUBLIC_RSA_CACHE = "PUBLIC_RSA_CACHE"//公钥
+        val PUBLIC_RSA_KEY_CACHE = "PUBLIC_RSA_KEY_CACHE"//公钥
+        val IMG_URL_CACHE = "IMG_URL_CACHE"//图片服务器地址
 
         ///////////////////////////////////////////////////////////////////////////
         // login

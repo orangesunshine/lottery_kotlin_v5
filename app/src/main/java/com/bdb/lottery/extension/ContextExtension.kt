@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -31,26 +32,48 @@ fun Context.toast(msg: String?, length: Int = Toast.LENGTH_LONG) {
     Toast.makeText(this, msg, length).show()
 }
 
-inline fun <reified T : Activity> Activity.start() {
+inline fun <reified T : Activity> Context.start() {
     startActivity(Intent(this, T::class.java))
 }
 
-inline fun <reified T : Activity> Activity.startNdFinish() {
+inline fun <reified T : Activity> Context.startNdFinish() {
     startActivity(Intent(this, T::class.java))
-    finish()
+    if (this is Activity) finish()
 }
 
-inline fun <reified T : Activity> Activity.startWithArgs(block: (Intent) -> Any) {
+inline fun <reified T : Activity> Context.startWithArgs(block: (Intent) -> Any) {
     var intent = Intent(this, T::class.java)
     block(intent)
     startActivity(intent)
 }
 
-inline fun <reified T : Activity> Activity.startNdFinishWithArgs(block: (Intent) -> Any) {
+inline fun <reified T : Activity> Context.startNdFinishWithArgs(block: (Intent) -> Any) {
     var intent = Intent(this, T::class.java)
     block(intent)
     startActivity(intent)
-    finish()
+    if (this is Activity) finish()
+}
+
+inline fun <reified T : Activity> Fragment.start() {
+    startActivity(Intent(this.activity, T::class.java))
+}
+
+inline fun <reified T : Activity> Fragment.startNdFinish() {
+    startActivity(Intent(this.activity, T::class.java))
+    if (this is Activity) finish()
+}
+
+inline fun <reified T : Activity> Fragment.startWithArgs(block: (Intent) -> Any) {
+    var intent = Intent(this.activity, T::class.java)
+    block(intent)
+    startActivity(intent)
+}
+
+inline fun <reified T : Activity> Fragment.startNdFinishWithArgs(block: (Intent) -> Any) {
+    var intent = Intent(this.activity, T::class.java)
+    block(intent)
+    startActivity(intent)
+    if (this is Activity) finish()
 }
 
 inline fun <reified T : AppCompatActivity> Context.startActivity(

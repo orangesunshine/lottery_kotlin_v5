@@ -121,17 +121,3 @@ internal class BdbGsonRequestBodyConverter<T>(
 }
 
 class ApiException(val response: BaseResponse<*>) : RuntimeException()
-
-//错误结果解析
-//inline fun <reified T> ApiException.parseErrorData(): T? {
-//    return response?.let {
-//        it.data?.let {
-//            return GsonBuilder().create().fromJson(it, T::class.java)
-//        }
-//    }
-//}
-//
-////登录验证码
-//inline fun ApiException.needValidate(): VerifycodeData? {
-//    return parseErrorData<VerifycodeData>()
-//}

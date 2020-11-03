@@ -13,7 +13,6 @@ class DomainLocalDs @Inject constructor() {
     private var mSelectDomain: String? = null
     var alreadySave: AtomicBoolean = AtomicBoolean(false)
 
-
     fun saveDomain(domain: String): Boolean {
         return domain.isDomainUrl().apply {
             alreadySave.set(this)
@@ -26,10 +25,14 @@ class DomainLocalDs @Inject constructor() {
 
     fun getDomain(): String? {
         if (!mSelectDomain.isDomainUrl() && alreadySave.get()) {
-            mSelectDomain = Cache.getString(
-                ICache.DOMAIN_URL_CACHE, null
-            )
+            mSelectDomain = Cache.getString(ICache.DOMAIN_URL_CACHE)
         }
         return mSelectDomain
+    }
+
+    fun clearDomain() {
+        alreadySave.set(false)
+        mSelectDomain = null
+        Cache.putString(ICache.DOMAIN_URL_CACHE)
     }
 }

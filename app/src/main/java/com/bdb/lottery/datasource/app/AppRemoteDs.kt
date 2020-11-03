@@ -1,9 +1,8 @@
 package com.bdb.lottery.datasource.app
 
-import android.content.Context
+import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
-import com.bdb.lottery.datasource.BaseRemoteDs
 import com.bdb.lottery.datasource.app.data.ApkVersionData
 import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.datasource.app.data.CustomServiceData
@@ -11,14 +10,14 @@ import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.cache.Cache
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import javax.inject.Inject
 
 class AppRemoteDs @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val domainLocalDs: DomainLocalDs,
+    val retrofitWrapper: RetrofitWrapper,
     private val appApi: AppApi
-) : BaseRemoteDs() {
+) {
 
     //获取平台参数
     fun getPlateformParams(success: ((ConfigData?) -> Unit)? = null) {
@@ -48,7 +47,7 @@ class AppRemoteDs @Inject constructor(
     //获取apk版本信息
     fun getAPkVeresion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.observe(
-            appApi.apkversion("android", Apps.getAppVersionCode(context)),
+            appApi.apkversion("android", Apps.getAppVersionCode(BdbApp.context)),
             success
         )
     }

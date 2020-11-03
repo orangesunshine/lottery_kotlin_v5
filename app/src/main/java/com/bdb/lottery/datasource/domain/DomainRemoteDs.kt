@@ -1,7 +1,7 @@
 package com.bdb.lottery.datasource.domain
 
-import android.content.Context
 import android.text.TextUtils
+import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.R
@@ -15,201 +15,99 @@ import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.*
+import com.bdb.lottery.utils.Configs
 import com.bdb.lottery.utils.cache.Cache
-import com.bdb.lottery.utils.net.retrofit.ApiException
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.ObservableOnSubscribe
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-
 class DomainRemoteDs @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val domainApi: DomainApi,
     private val domainLocalDs: DomainLocalDs,
     private val appApi: AppApi,
 ) {
+    val cache = { config: ConfigData? ->
+        config?.let {
+            //保存rsa公钥
+            it.rsaPublicKey.let {
+                Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it)
+            }
 
-    val domainError = {
-        if (BuildConfig.SHOW_DOALOG_ON_DOMAIN_ERROR) context.toast("获取服务器域名失败")
+            //保存图片服务器地址
+            it.imgurl.let {
+                Cache.putString(ICache.IMG_URL_CACHE, it)
+            }
+
+            //保存plateform参数
+            it.platform.let {
+                Cache.putString(ICache.PLATEFORM_CACHE, it)
+            }
+        }
     }
 
     //获取域名
-    fun getDomain(domainSuccess: (String) -> Unit) {
-        val configPath = context.getString(R.string.api_txt_path)
-        val onlineObservables = mutableListOf<Observable<String>>()
-        val hosts = HttpConstUrl.DOMAINS_API_TXT
-        if (!hosts.isNullOrEmpty()) {
-            for (host in hosts) {
-                if (host.isDomainUrl()) {
-                    onlineObservables.add(domainApi.get(host + configPath))
-                }
+    fun getDomain(domainSuccess: () -> Unit) {
+        if (domainLocalDs.alreadySave.get() && domainLocalDs.getDomain().isDomainUrl()) {
+            //已缓存域名
+            domainSuccess()
+        } else {
+            val domainError = {
+                if (BuildConfig.SHOW_DOALOG_ON_DOMAIN_ERROR) BdbApp.context.toast("获取服务器域名失败")
             }
-        }
-        val online = Observable.mergeArrayDelayError(*(onlineObservables.toTypedArray()))
-            .observeOn(Schedulers.io())
-            .map {
-                Timber.d("online域名配置：${it}")
-                if (it.isSpace()) it.split("@") else null
-            }
-            .observeOn(Schedulers.io())
-            .flatMap {
-                Timber.d("online域名配置列表：${it}")
-                if (!it.isNullOrEmpty()) Observable.fromIterable(it) else null
-            }
-            .observeOn(Schedulers.io())
-            .flatMap {
-                Timber.d("online域名：${it}")
-                if (it.isDomainUrl()) appApi.plateformParams(
-                    it + HttpConstUrl.URL_CONFIG_FRONT
-                ) else null
-            }.observeOn(Schedulers.io())
-            .map {
-                //保存rsa公钥
-                it.data?.rsaPublicKey?.let {
-                    Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-                }
-                //保存plateform参数
-                it.data?.platform?.let {
-                    Cache.putString(ICache.PLATEFORM_CACHE, it)
-                }
-                val toUri = it.data?.WebMobileUrl?.toUri()
+
+            //获取服务器域名
+            val domainSave: (ConfigData?) -> Boolean = {
+                val toUri = it?.WebMobileUrl?.toUri()
                 val scheme = toUri?.scheme
                 val host = toUri?.host
                 val authority = toUri?.authority
                 val port = toUri?.port
-                scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
+                val domain =
+                    scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
+                domainLocalDs.saveDomain(domain)
             }
 
-        //本地域名配置
-        val localDomainStringId = context.resources.getIdentifier(
-            "local_http_url",
-            "string",
-            BuildConfig.APPLICATION_ID
-        )
-        val localObservables = mutableListOf<Observable<String>>()
-        if (localDomainStringId > 0) {
-            val localDomain = context.getString(localDomainStringId)
-            if (!TextUtils.isEmpty(localDomain)) {
-                val domains = localDomain.split("@")
-                if (!domains.isNullOrEmpty()) {
-                    for (domain in domains) {
-                        localObservables.add(appApi.plateformParams(domain + HttpConstUrl.URL_CONFIG_FRONT)
-                            .observeOn(Schedulers.io())
-                            .map {
-                                //保存rsa公钥
-                                it.data?.rsaPublicKey?.let {
-                                    Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-                                }
-                                //保存plateform参数
-                                it.data?.platform?.let {
-                                    Cache.putString(ICache.PLATEFORM_CACHE, it)
-                                }
-                                val toUri = it.data?.WebMobileUrl?.toUri()
-                                val scheme = toUri?.scheme
-                                val host = toUri?.host
-                                val authority = toUri?.authority
-                                val port = toUri?.port
-                                scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
-                            })
+            val onlineDomainError = {
+                //本地域名配置
+                val localDomainStringId = BdbApp.context.resources.getIdentifier(
+                    "local_http_url",
+                    "string",
+                    BuildConfig.APPLICATION_ID
+                )
+
+                if (localDomainStringId > 0) {
+                    localDomain(localDomainStringId, {
+                        if (domainSave(it)) domainSuccess() else domainError()
+                    }) {
+                        domainError()
                     }
                 }
+            }
+
+
+            if (Configs.isDebug()) {
+                debugDomain({
+                    //线上域名获取成功
+                    if (domainSave(it)) domainSuccess() else onlineDomainError()
+                }, {
+                    onlineDomainError()
+                })
+            } else {
+                /**
+                 * 1.读取阿里云，七牛云域名配置文件，@拆分域名
+                 */
+                onlineDomain({
+                    //线上域名获取成功
+                    if (domainSave(it)) domainSuccess() else onlineDomainError()
+                }, {
+                    onlineDomainError()
+                })
             }
         }
-        val local = Observable.mergeArrayDelayError(*(localObservables.toTypedArray()))
-
-        var disposable: Disposable? = null
-        val already = AtomicBoolean(false)
-        val cache = Observable.create(ObservableOnSubscribe<String> {
-            if (domainLocalDs.alreadySave.get() && domainLocalDs.getDomain().isDomainUrl()) {
-                it.onNext(domainLocalDs.getDomain())
-                disposable?.dispose()
-            } else {
-                it.onComplete()
-            }
-        })
-        Observable.concatArrayDelayError(cache, online, local)
-            .doOnSubscribe { disposable = it }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                //域名获取成功
-                if (already.compareAndSet(false, true)) {
-                    //取消剩下网络请求
-                    disposable?.let {
-                        try {
-                            if (!it.isDisposed) it.dispose()
-                        } catch (e: Exception) {
-                        }
-                    }
-                    if (domainLocalDs.saveDomain(it)) domainSuccess(it) else domainError()
-                }
-            }, {
-                //域名获取失败
-                if (!already.get()) {
-                    domainError()
-                }
-            })
-
-
-//        if (domainLocalDs.alreadySave.get()) {
-//            //已缓存域名
-//            domainSuccess()
-//        } else {
-//            //获取服务器域名
-//            val domainSave: (ConfigData?) -> Boolean = {
-//                val toUri = it?.WebMobileUrl?.toUri()
-//                val scheme = toUri?.scheme
-//                val host = toUri?.host
-//                val authority = toUri?.authority
-//                val port = toUri?.port
-//                val domain =
-//                    scheme + "://" + if (!host.isSpace()) host else authority + if (-1 != port) ":${port}" else ""
-//                domainLocalDs.saveDomain(domain)
-//            }
-//
-//            val onlineDomainError = {
-//                //本地域名配置
-//                val localDomainStringId = context.resources.getIdentifier(
-//                    "local_http_url",
-//                    "string",
-//                    BuildConfig.APPLICATION_ID
-//                )
-//
-//                if (localDomainStringId > 0) {
-//                    localDomain({
-//                        if (domainSave(it)) domainSuccess() else domainError()
-//                    }) {
-//                        domainError()
-//                    }
-//                }
-//            }
-
-
-//            if (Configs.isDebug()) {
-//                debugDomain({
-//                    //线上域名获取成功
-//                    if (domainSave(it)) domainSuccess() else onlineDomainError()
-//                }, {
-//                    onlineDomainError()
-//                })
-//            } else {
-//                /**
-//                 * 1.读取阿里云，七牛云域名配置文件，@拆分域名
-//                 */
-//            }
-//                onlineDomain({
-//                    //线上域名获取成功
-//                    if (domainSave(it)) domainSuccess() else onlineDomainError()
-//                }, {
-//                    onlineDomainError()
-//                })
-//        }
     }
 
 
@@ -227,15 +125,8 @@ class DomainRemoteDs @Inject constructor(
             //获取配置成功
             success?.run { this(it) }
 
-            //保存rsa公钥
-            it?.rsaPublicKey?.let {
-                Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-            }
-
-            //保存plateform参数
-            it?.platform?.let {
-                Cache.putString(ICache.PLATEFORM_CACHE, it)
-            }
+            //缓存
+            cache.invoke(it)
         }, { code, msg ->
             //获取域名失败
             Timber.d("online__onError：${msg}")
@@ -254,7 +145,7 @@ class DomainRemoteDs @Inject constructor(
         error: ((String?) -> Any)? = null
     ) {
         Timber.d("getOnlineDomain")
-        val configPath = context.getString(R.string.api_txt_path)
+        val configPath = BdbApp.context.getString(R.string.api_txt_path)
         val onlineObservables = mutableListOf<Observable<String>>()
         val hosts = HttpConstUrl.DOMAINS_API_TXT
         if (!hosts.isNullOrEmpty()) {
@@ -272,7 +163,7 @@ class DomainRemoteDs @Inject constructor(
                 .observeOn(Schedulers.io())
                 .map {
                     Timber.d("online域名配置：${it}")
-                    if (it.isSpace()) it.split("@") else null
+                    if (!it.isSpace()) it.split("@") else null
                 }
                 .observeOn(Schedulers.io())
                 .flatMap {
@@ -301,15 +192,8 @@ class DomainRemoteDs @Inject constructor(
                         //处理配置文件
                         success?.run { this(it) }
 
-                        //保存rsa公钥
-                        it?.rsaPublicKey?.let {
-                            Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-                        }
-
-                        //保存plateform参数
-                        it?.platform?.let {
-                            Cache.putString(ICache.PLATEFORM_CACHE, it)
-                        }
+                        //缓存
+                        cache.invoke(it)
                     }
                 }
             }, { code, msg ->
@@ -322,7 +206,7 @@ class DomainRemoteDs @Inject constructor(
                 {
                     //数据解析问题
                     if (!already.get()) {
-                        Timber.d("local__onComplete")
+                        Timber.d("online__onComplete")
                         error?.run { this("数据异常") }
                     }
                 })
@@ -335,11 +219,12 @@ class DomainRemoteDs @Inject constructor(
      * @param error: 失败回调
      */
     fun localDomain(
+        @StringRes localDomainStringId: Int,
         success: ((ConfigData?) -> Any)? = null,
         error: (() -> Any)? = null
     ) {
         Timber.d("getLocalDomain")
-        val localDomain = context.getString(R.string.local_http_url)
+        val localDomain = BdbApp.context.getString(localDomainStringId)
         if (!TextUtils.isEmpty(localDomain)) {
             val domains = localDomain.split("@")
             val localObservables = mutableListOf<Observable<BaseResponse<ConfigData>>>()
@@ -367,15 +252,8 @@ class DomainRemoteDs @Inject constructor(
                                 //处理配置文件
                                 success?.run { this(it) }
 
-                                //保存rsa公钥
-                                it.rsaPublicKey.let {
-                                    Cache.putString(ICache.PUBLIC_RSA_CACHE, it)
-                                }
-
-                                //保存plateform参数
-                                it.platform.let {
-                                    Cache.putString(ICache.PLATEFORM_CACHE, it)
-                                }
+                                //缓存
+                                cache.invoke(it)
                             }
                         }
 
@@ -400,7 +278,6 @@ class DomainRemoteDs @Inject constructor(
     ///////////////////////////////////////////////////////////////////////////
     // 工具方法
     ///////////////////////////////////////////////////////////////////////////
-
     //rxjava 简化
     fun <Data> observe(
         observable: Observable<BaseResponse<Data>>,
@@ -410,12 +287,6 @@ class DomainRemoteDs @Inject constructor(
         complete: (() -> Unit)? = null,
         viewState: LiveDataWraper<ViewState>? = null
     ) {
-        if (domainLocalDs.alreadySave.get() && domainLocalDs.getDomain().isDomainUrl()) {
-
-        } else {
-
-        }
-
         observable
             .subscribeOn(Schedulers.io())
             .doOnSubscribe {
@@ -444,44 +315,4 @@ class DomainRemoteDs @Inject constructor(
                 })
     }
 
-    //错误返回有用数据
-    fun <Data> observeErrorData(
-        observable: Observable<BaseResponse<Data>>,
-        success: ((Data?) -> Unit)? = null,
-        error: ((BaseResponse<*>) -> Unit)? = null,
-        onStart: ((Disposable) -> Unit)? = null,
-        complete: (() -> Unit)? = null,
-        viewState: LiveDataWraper<ViewState>? = null
-    ) {
-        observable.subscribeOn(Schedulers.io())
-            .doOnSubscribe {
-                onStart?.invoke(it)
-                viewState?.setData(ViewState(true))
-            }
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (it.isSuccess()) {
-                    success?.run { this(it.data) }
-                } else {
-                    BdbApp.context.toast(it.msg)
-                    error?.run { this(it.mappStringResponse()) }
-                }
-            },
-                {
-                    Timber.d("observe__onError__throwable: ${it}")
-                    BdbApp.context.toast(it.msg)
-                    if (it is ApiException) {
-                        error?.run { this(it.response) }
-                    } else {
-                        error?.run { this(BaseResponse(it.code, it.msg, null)) }
-                    }
-                    viewState?.setData(ViewState(false))
-                    complete?.run { this() }
-                },
-                {
-                    viewState?.setData(ViewState(false))
-                    complete?.run { this() }
-                })
-    }
 }

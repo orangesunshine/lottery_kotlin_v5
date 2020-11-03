@@ -6,8 +6,11 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.utils.cache.Cache
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object Devices {
+@Singleton
+class Devices @Inject constructor() {
     /**
      * 获取设备uuid
      */

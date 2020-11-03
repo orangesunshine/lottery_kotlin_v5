@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource.app.data
+package com.bdb.lottery.datasource.home.data
 
 data class NoticeData(
     var roll: List<Roll>

@@ -1,12 +1,11 @@
 package com.bdb.lottery.datasource.account
 
-import android.content.Context
+import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
-import com.bdb.lottery.datasource.BaseRemoteDs
 import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWraper
@@ -15,18 +14,18 @@ import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.Encrypts
 import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import com.google.gson.GsonBuilder
-import dagger.hilt.android.qualifiers.ActivityContext
 import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
 
 class AccountRemoteDs @Inject constructor(
-    @ActivityContext private val context: Context,
     private val accountApi: AccountApi,
     private val appApi: AppApi,
     private val domainLocalDs: DomainLocalDs,
-    private val accountLocalDs: AccountLocalDs
-) : BaseRemoteDs() {
+    private val accountLocalDs: AccountLocalDs,
+    private val retrofitWrapper: RetrofitWrapper
+) {
 
     //登录
     fun login(
@@ -39,7 +38,7 @@ class AccountRemoteDs @Inject constructor(
         error: (validate: Boolean) -> Unit,
         viewState: LiveDataWraper<ViewState>
     ) {
-        val key = Cache.getString(ICache.PUBLIC_RSA_CACHE, "")
+        val key = Cache.getString(ICache.PUBLIC_RSA_KEY_CACHE, "")
         if (key.isSpace()) {
             retrofitWrapper.observeErrorData(
                 appApi.plateformParams(domainLocalDs.getDomain() + HttpConstUrl.URL_CONFIG_FRONT)
@@ -81,7 +80,7 @@ class AccountRemoteDs @Inject constructor(
             )
         } else {
             loginReal(
-                key,
+                key!!,
                 username,
                 pwd,
                 clientId,
@@ -132,10 +131,10 @@ class AccountRemoteDs @Inject constructor(
                             ?.let { error(it.get("needValidateCode") ?: false) }
                     }, viewState = viewState
                 )
-            } ?: let { context.toast("加密失败") }
+            } ?: let { BdbApp.context.toast("加密失败") }
 
         } catch (e: Exception) {
-            context.toast("加密失败")
+            BdbApp.context.toast("加密失败")
         }
     }
 

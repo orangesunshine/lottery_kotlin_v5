@@ -1,30 +1,24 @@
 package com.bdb.lottery.biz.splash
 
 import android.content.Context
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.ViewModelInject
-import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.biz.base.BaseViewModel
+import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.app.AppRemoteDs
-import com.bdb.lottery.datasource.app.data.ConfigData
 import com.bdb.lottery.datasource.common.LiveDataWraper
-import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.datasource.domain.DomainRemoteDs
 import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.extension.toast
-import com.bdb.lottery.utils.Configs
+import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.cache.Cache
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ActivityContext
 import org.greenrobot.eventbus.EventBus
-import timber.log.Timber
 import javax.inject.Inject
 
 class SplashViewModel @ViewModelInject @Inject constructor(
-    @ActivityContext private val context: Context,
+    @ActivityContext val context: Context,
     private val remoteDomainDs: DomainRemoteDs,
-    private val localDomainDs: DomainLocalDs,
     private val appDs: AppRemoteDs
 ) : BaseViewModel() {
     val ldDomainRet = LiveDataWraper<Boolean>()

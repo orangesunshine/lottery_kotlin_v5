@@ -28,6 +28,8 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
     @Inject
     lateinit var domainLocalDs: DomainLocalDs
+    @Inject
+    lateinit var devices: Devices
 
     private var mPwdVisible = false
 
@@ -117,7 +119,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
                 ) {
                     val header: MutableMap<String, String> = HashMap()
                     header["C"] = "a"
-                    header["D"] = Devices.getDeviceUUid()
+                    header["D"] = devices.getDeviceUUid()
                     header
                 }
                 login_verifycode_iv.loadImageUrl(gliderUrl)

@@ -7,9 +7,9 @@ import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.datasource.domain.DomainRemoteDs
 import com.bdb.lottery.extension.code
-import com.bdb.lottery.extension.isDomainUrl
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.extension.toast
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -18,8 +18,9 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
+@ActivityRetainedScoped
 class RetrofitWrapper @Inject constructor(
+    private val domainLocalDs: DomainLocalDs,
     private val domainRemoteDs: DomainRemoteDs
 ) {
     //rxjava 简化
@@ -41,16 +42,15 @@ class RetrofitWrapper @Inject constructor(
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    if (it.isSuccess()) {
-                        success?.run { this(it.data) }
-                    } else {
-                        BdbApp.context.toast(it.msg)
-                        error?.run { this(it.code, it.msg) }
-                    }
+                    success?.run { this(it.data) }
                 },
                     {
                         Timber.d("observe__onError__throwable: ${it}")
-                        error?.run { this(it.code, it.msg) }
+                        val code = it.code
+                        val msg = it.msg
+                        BdbApp.context.toast(msg)
+                        error?.run { this(code, msg) }
+                        if(code>=500)domainLocalDs.clearDomain()
                         viewState?.setData(ViewState(false))
                         complete?.run { this() }
                     },
@@ -79,12 +79,7 @@ class RetrofitWrapper @Inject constructor(
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    if (it.isSuccess()) {
-                        success?.run { this(it.data) }
-                    } else {
-                        BdbApp.context.toast(it.msg)
-                        error?.run { this(it.mappStringResponse()) }
-                    }
+                    success?.run { this(it.data) }
                 },
                     {
                         Timber.d("observe__onError__throwable: ${it}")

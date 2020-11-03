@@ -1,5 +1,6 @@
 package com.bdb.lottery.biz.login
 
+import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.biz.base.BaseViewModel
@@ -8,9 +9,11 @@ import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.utils.cache.Cache
+import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class LoginViewModel @ViewModelInject @Inject constructor(
+    @ActivityContext val context: Context,
     private val accountRemoteDs: AccountRemoteDs,
     private val appRemoteDs: AppRemoteDs
 ) : BaseViewModel() {
@@ -64,7 +67,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
 
     fun plateformParasms() {
         appRemoteDs.getPlateformParams {
-            Cache.putString(ICache.PUBLIC_RSA_CACHE, it?.rsaPublicKey)
+            Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it?.rsaPublicKey)
         }
     }
 }
