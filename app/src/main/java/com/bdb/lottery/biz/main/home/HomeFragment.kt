@@ -19,6 +19,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.login.LoginActivity
+import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
 import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.datasource.home.data.BannerMapper
 import com.bdb.lottery.extension.ob
@@ -34,14 +35,16 @@ import com.youth.banner.indicator.RectangleIndicator
 import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.util.BannerUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.home_fragment.*
+import kotlinx.android.synthetic.main.main_home_fragment.*
 
 
 //彩票大厅
 @AndroidEntryPoint
-class HomeFragment : BaseFragment(R.layout.home_fragment) {
+class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     private val vm by viewModels<HomeViewModel>()
     val tabs = arrayOf("推荐收藏", "全部彩种", "综合娱乐")
+    val fragments =
+        arrayOf(HomeCollectionFragment(), HomeCollectionFragment(), HomeCollectionFragment())
     private lateinit var mediator: TabLayoutMediator
     private val changeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -82,7 +85,7 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
             }
 
             override fun createFragment(position: Int): Fragment {
-                return PromotionFragment()
+                return fragments[position]
             }
         })
 
@@ -108,6 +111,7 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
             tabView.setTextColor(colorStateList)
             tabView.gravity = Gravity.CENTER_HORIZONTAL
             tab.customView = tabView
+            tab.view.background = null//默认点击效果去掉
         }
         //要执行这一句才是真正将两者绑定起来
         mediator.attach()
@@ -117,15 +121,14 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
     override fun observe() {
         ob(vm.balanceLd.getLiveData()) { home_balance_tv.text = it }
         ob(vm.bannerLd.getLiveData()) {
-            val list: List<BannerMapper> = it ?: listOf()
-            loadBanner(list)
+            loadBanner(it)
         }
         ob(vm.noticeLd.getLiveData()) {
             home_notice_tv.text = it
         }
     }
 
-    fun loadBanner(list: List<BannerMapper>) {
+    fun loadBanner(list: List<BannerMapper>?) {
         home_banner?.run {
             setBannerGalleryEffect(18, 10)
             indicator = RectangleIndicator(context)

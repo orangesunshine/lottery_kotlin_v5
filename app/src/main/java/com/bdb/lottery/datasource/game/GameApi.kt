@@ -11,7 +11,7 @@ interface GameApi {
 
     //获取全部游戏
     @POST(HttpConstUrl.URL_ALL_GAME)
-    fun allGame(): Observable<BaseResponse<List<AllGameDataItemData>>>
+    fun allGame(): Observable<BaseResponse<MutableList<AllGameDataItemData>>>
 
     //彩种大类每个游戏
     @POST(HttpConstUrl.URL_GAME_BY_GENRES)
@@ -29,7 +29,7 @@ interface GameApi {
     @POST(HttpConstUrl.URL_THIRD_PLATFORM)
     fun thirdPlatform(): Observable<BaseResponse<List<ThirdPlatformDataItem>>>
 
-    //三方平台
+    //收藏
     @POST(HttpConstUrl.URL_LOTTERY_FAVORITES)
     fun getLotteryFavorites(): Observable<BaseResponse<LotteryFavoritesData>>
 }

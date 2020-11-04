@@ -30,7 +30,7 @@ class RetrofitWrapper @Inject constructor(
         error: ((code: Int, msg: String?) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
-        viewState: LiveDataWraper<ViewState>? = null
+        viewState: LiveDataWraper<ViewState?>? = null
     ) {
         domainRemoteDs.getDomain {
             observable
@@ -50,7 +50,7 @@ class RetrofitWrapper @Inject constructor(
                         val msg = it.msg
                         BdbApp.context.toast(msg)
                         error?.run { this(code, msg) }
-                        if(code>=500)domainLocalDs.clearDomain()
+                        if (code >= 500) domainLocalDs.clearDomain()
                         viewState?.setData(ViewState(false))
                         complete?.run { this() }
                     },
@@ -68,7 +68,7 @@ class RetrofitWrapper @Inject constructor(
         error: ((BaseResponse<*>) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
-        viewState: LiveDataWraper<ViewState>? = null
+        viewState: LiveDataWraper<ViewState?>? = null
     ) {
         domainRemoteDs.getDomain {
             observable.subscribeOn(Schedulers.io())
@@ -84,11 +84,14 @@ class RetrofitWrapper @Inject constructor(
                     {
                         Timber.d("observe__onError__throwable: ${it}")
                         BdbApp.context.toast(it.msg)
+                        val code = it.code
+                        val msg = it.msg
                         if (it is ApiException) {
                             error?.run { this(it.response) }
                         } else {
-                            error?.run { this(BaseResponse(it.code, it.msg, null)) }
+                            error?.run { this(BaseResponse(code, msg, null)) }
                         }
+                        if (code >= 500) domainLocalDs.clearDomain()
                         viewState?.setData(ViewState(false))
                         complete?.run { this() }
                     },

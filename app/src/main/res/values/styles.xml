@@ -89,4 +89,9 @@
         <item name="android:textSize">@dimen/text_18</item>
         <item name="android:gravity">center</item>
     </style>
+
+    <declare-styleable name="AspectRatioImageView">
+        <!-- 空布局资源id -->
+        <attr name="aspectRatio" format="float" />
+    </declare-styleable>
 </resources>

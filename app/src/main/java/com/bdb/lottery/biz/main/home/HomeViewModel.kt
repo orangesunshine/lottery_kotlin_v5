@@ -1,25 +1,20 @@
 package com.bdb.lottery.biz.main.home
 
 import androidx.hilt.lifecycle.ViewModelInject
-import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
+import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
-import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.home.HomeRemoteDs
 import com.bdb.lottery.datasource.home.data.BannerMapper
-import com.bdb.lottery.datasource.home.data.Roll
-import com.bdb.lottery.datasource.img.ImgRemoteDs
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
-import com.bdb.lottery.extension.toast
 import javax.inject.Inject
 
 class HomeViewModel @ViewModelInject @Inject constructor(
     private val accountRemoteDs: AccountRemoteDs,
     private val homeAppRemoteDs: HomeRemoteDs,
-    private val imgRemoteDs: ImgRemoteDs,
-    private val gameRemoteDs: GameRemoteDs
+    private val appRemoteDs: AppRemoteDs
 ) : BaseViewModel() {
     val balanceLd = LiveDataWraper<String>()//余额
     val bannerLd = LiveDataWraper<List<BannerMapper>?>()//轮播图
@@ -68,7 +63,7 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     //公告
     fun noticeData() {
         homeAppRemoteDs.notice {
-            val joinString = it?.let {
+            it?.let {
                 it.roll.filter {
                     val type = it.type
                     !type.isSpace() && ("1".equals(type) || "2".equals(type))
@@ -103,8 +98,8 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 
                 val serverUrl = it.serverUrl
                 if (serverUrl.isSpace()) {
-                    imgRemoteDs.platformParams {
-                        mapper(it)
+                    appRemoteDs.cachePlatformParams() {
+                        mapper(it?.imgurl ?: "")
                     }
                 } else {
                     mapper(serverUrl)

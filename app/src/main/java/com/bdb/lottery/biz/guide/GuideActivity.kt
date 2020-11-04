@@ -42,7 +42,7 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
         }
 
         //guide页
-        guide_banner_vp2.apply {
+        guide_banner_vp2.run {
             adapter =
                 object :
                     BaseQuickAdapter<Int, BaseViewHolder>(R.layout.img_item_common_layout, imgs) {

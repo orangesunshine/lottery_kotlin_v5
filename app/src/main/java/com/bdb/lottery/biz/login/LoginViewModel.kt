@@ -65,8 +65,8 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         accountRemoteDs.needValidate { it?.let { if (it) validateLd.setData(true) } }
     }
 
-    fun plateformParasms() {
-        appRemoteDs.getPlateformParams {
+    fun platformParams() {
+        appRemoteDs.getPlatformParams {
             Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it?.rsaPublicKey)
         }
     }

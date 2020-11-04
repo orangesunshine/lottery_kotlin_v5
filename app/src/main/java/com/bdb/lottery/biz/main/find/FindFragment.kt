@@ -6,6 +6,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 //发现
 @AndroidEntryPoint
-class FindFragment : BaseFragment(R.layout.find_fragment) {
+class FindFragment : BaseFragment(R.layout.main_find_fragment) {
 
 }

@@ -5,5 +5,5 @@ import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.datasource.common.LiveDataWraper
 
 open class BaseViewModel : ViewModel() {
-    val viewStatus = LiveDataWraper<ViewState>()
+    val viewStatus = LiveDataWraper<ViewState?>()
 }

@@ -2,6 +2,7 @@ package com.bdb.lottery
 
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
+import com.google.gson.GsonBuilder
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -103,5 +104,12 @@ class ExampleUnitTest {
         val money3: Double = 346211313.001
         println(money2.money())
         println(money3.money())
+    }
+
+    @Test
+    fun assertGson(){
+        val a:Int? = null
+        val gson = GsonBuilder().create().toJson(a)
+        println(gson)
     }
 }

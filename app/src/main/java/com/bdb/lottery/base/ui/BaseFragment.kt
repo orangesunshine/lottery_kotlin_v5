@@ -83,7 +83,7 @@ open class BaseFragment(
             loading.dismissAllowingStateLoss()
     }
 
-    fun obLoadingLayout() {
+    private fun obLoadingLayout() {
         ob(getVm()?.viewStatus?.getLiveData()) {
             it?.let {
                 loading(it.isLoading)

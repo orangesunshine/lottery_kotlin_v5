@@ -1,5 +1,7 @@
 package com.bdb.lottery.datasource.game
 
+import com.bdb.lottery.datasource.game.data.AllGameDataItemData
+import com.bdb.lottery.datasource.game.data.LotteryFavoritesData
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import javax.inject.Inject
 
@@ -11,8 +13,8 @@ class GameRemoteDs @Inject constructor(
         retrofitWrapper.observe(gameApi.initGame())
     }
 
-    fun allGame() {
-        retrofitWrapper.observe(gameApi.allGame())
+    fun allGame(success: (MutableList<AllGameDataItemData>?) -> Unit) {
+        retrofitWrapper.observe(gameApi.allGame(), success)
     }
 
     fun gameByGenres(genres: String) {
@@ -25,5 +27,9 @@ class GameRemoteDs @Inject constructor(
 
     fun thirdPlatform() {
         retrofitWrapper.observe(gameApi.thirdPlatform())
+    }
+
+    fun getLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
+        retrofitWrapper.observe(gameApi.getLotteryFavorites(), success)
     }
 }

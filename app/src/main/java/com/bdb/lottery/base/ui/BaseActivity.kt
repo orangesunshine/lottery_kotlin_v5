@@ -151,15 +151,17 @@ open class BaseActivity(
             loading.dismissAllowingStateLoss()
     }
 
-    fun obLoadingLayout() {
+    private fun obLoadingLayout() {
         ob(getVm()?.viewStatus?.getLiveData()) {
-            loading(it.isLoading)
-            if (it.isError) {
-                loadingLayout?.showError()
-            } else if (it.isEmpty) {
-                loadingLayout?.showEmpty()
-            } else {
-                loadingLayout?.showContent()
+            it?.let {
+                loading(it.isLoading)
+                if (it.isError) {
+                    loadingLayout?.showError()
+                } else if (it.isEmpty) {
+                    loadingLayout?.showEmpty()
+                } else {
+                    loadingLayout?.showContent()
+                }
             }
         }
     }

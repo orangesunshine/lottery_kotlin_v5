@@ -4,7 +4,6 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
-import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.app.AppApi
@@ -32,26 +31,26 @@ class AccountRemoteDs @Inject constructor(
         username: String,
         pwd: String,
         clientId: String,
-        verifycode: String,
+        validate: String,
         browserInfo: String,
         success: () -> Unit,
         error: (validate: Boolean) -> Unit,
-        viewState: LiveDataWraper<ViewState>
+        viewState: LiveDataWraper<ViewState?>
     ) {
         val key = Cache.getString(ICache.PUBLIC_RSA_KEY_CACHE, "")
         if (key.isSpace()) {
             retrofitWrapper.observeErrorData(
-                appApi.plateformParams(domainLocalDs.getDomain() + HttpConstUrl.URL_CONFIG_FRONT)
+                appApi.platformParams()
                     .flatMap {
                         var observable: Observable<BaseResponse<String>>? = null
                         it.data?.rsaPublicKey?.let {
                             if (!it.isSpace()) {
                                 val params = HashMap<String, Any>()
-                                params.put("username", username)
-                                params.put("password", pwd)
-                                params.put("pushClientId", clientId)
-                                params.put("validate", verifycode)
-                                params.put("browserInfo", browserInfo)
+                                params["username"] = username
+                                params["password"] = pwd
+                                params["pushClientId"] = clientId
+                                params["validate"] = validate
+                                params["browserInfo"] = browserInfo
                                 val paramsJson = GsonBuilder().create().toJson(params)
                                 try {
                                     Encrypts.rsaEncryptPublicKey(paramsJson, it)
@@ -84,7 +83,7 @@ class AccountRemoteDs @Inject constructor(
                 username,
                 pwd,
                 clientId,
-                verifycode,
+                validate,
                 browserInfo,
                 success,
                 error,
@@ -94,23 +93,23 @@ class AccountRemoteDs @Inject constructor(
 
     }
 
-    fun loginReal(
+    private fun loginReal(
         key: String,
         username: String,
         pwd: String,
         clientId: String,
-        verifycode: String,
+        validate: String,
         browserInfo: String,
         success: () -> Unit,
         error: (validate: Boolean) -> Unit,
-        viewState: LiveDataWraper<ViewState>
+        viewState: LiveDataWraper<ViewState?>
     ) {
         val params = HashMap<String, Any>()
-        params.put("username", username)
-        params.put("password", pwd)
-        params.put("pushClientId", clientId)
-        params.put("validate", verifycode)
-        params.put("browserInfo", browserInfo)
+        params["username"] = username
+        params["password"] = pwd
+        params["pushClientId"] = clientId
+        params["validate"] = validate
+        params["browserInfo"] = browserInfo
         val paramsJson = GsonBuilder().create().toJson(params)
         try {
             Encrypts.rsaEncryptPublicKey(paramsJson, key)?.let {
@@ -145,7 +144,7 @@ class AccountRemoteDs @Inject constructor(
     }
 
     //试玩
-    fun trialPlay(success: () -> Unit, viewState: LiveDataWraper<ViewState>) {
+    fun trialPlay(success: () -> Unit, viewState: LiveDataWraper<ViewState?>) {
         retrofitWrapper.observe(accountApi.trialPlay(), {
             success()
             //缓存用户已登录

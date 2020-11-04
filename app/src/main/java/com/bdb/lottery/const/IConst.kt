@@ -46,7 +46,6 @@ interface ICache {
         val DEVICE_ID_CACHE = "DEVICE_ID_CACHE"//设备号
         val PLATEFORM_CACHE = "PLATEFORM_CACHE"//平台
         val PUBLIC_RSA_KEY_CACHE = "PUBLIC_RSA_KEY_CACHE"//公钥
-        val IMG_URL_CACHE = "IMG_URL_CACHE"//图片服务器地址
 
         ///////////////////////////////////////////////////////////////////////////
         // login

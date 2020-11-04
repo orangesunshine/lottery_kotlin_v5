@@ -19,7 +19,6 @@ import com.bdb.lottery.utils.Devices
 import com.bdb.lottery.utils.cache.Cache
 import com.bumptech.glide.load.model.GlideUrl
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.login_activity.*
 import javax.inject.Inject
 
@@ -98,7 +97,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
 
         vm.validate()//进入判断是否显示验证码
-        vm.plateformParasms()//刷新rsa公钥
+        vm.platformParams()//刷新rsa公钥
     }
 
     //切换明文、密文

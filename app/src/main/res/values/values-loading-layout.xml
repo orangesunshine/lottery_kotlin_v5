@@ -23,7 +23,7 @@
 
     <attr name="styleLoadingLayout" format="reference" />
 
-    <style name="LoadingLayout"></style>
+    <style name="LoadingLayout" />
 
     <style name="LoadingLayout.Style">
         <item name="llEmptyResId">@layout/empty_common_layout</item>

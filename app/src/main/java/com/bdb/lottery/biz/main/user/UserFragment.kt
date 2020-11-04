@@ -6,6 +6,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 //我的
 @AndroidEntryPoint
-class UserFragment : BaseFragment(R.layout.user_fragment) {
+class UserFragment : BaseFragment(R.layout.main_user_fragment) {
 
 }

@@ -34,17 +34,17 @@ class SplashViewModel @ViewModelInject @Inject constructor(
     }
 
     //获取客服
-    fun getCustomService() {
+    private fun getCustomService() {
         appDs.getCustomServiceUrl {
             it?.let {
-                if (it.kefuxian.isSpace())
-                    Cache.putString(ICache.CUSTOM_SERVICE_URL_CACHE, it.kefuxian)
+                if (!it.isSpace())
+                    Cache.putString(ICache.CUSTOM_SERVICE_URL_CACHE, it)
             }
         }
     }
 
     //获取apk版本
-    fun getApkVersion() {
+    private fun getApkVersion() {
         appDs.getAPkVeresion {
             it?.let {
                 //缓存apk版本信息
