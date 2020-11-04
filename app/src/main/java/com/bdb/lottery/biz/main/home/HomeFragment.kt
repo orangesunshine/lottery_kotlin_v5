@@ -19,8 +19,8 @@ import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.login.LoginActivity
+import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
-import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.datasource.home.data.BannerMapper
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.start
@@ -44,7 +44,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     private val vm by viewModels<HomeViewModel>()
     val tabs = arrayOf("推荐收藏", "全部彩种", "综合娱乐")
     val fragments =
-        arrayOf(HomeCollectionFragment(), HomeCollectionFragment(), HomeCollectionFragment())
+        arrayOf(HomeCollectionFragment(), HomeAllGameFragment(), HomeCollectionFragment())
     private lateinit var mediator: TabLayoutMediator
     private val changeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -176,9 +176,13 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        home_game_vp.unregisterOnPageChangeCallback(changeCallback)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mediator.detach();
-        home_game_vp.unregisterOnPageChangeCallback(changeCallback)
     }
 }
