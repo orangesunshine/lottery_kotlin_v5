@@ -29,24 +29,7 @@ class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
             home_collection_rv.run {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 setPadding(Sizes.dp2px(4f))
-                adapter =
-                    object : BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(
-                        R.layout.home_allgame_item, it
-                    ) {
-                        override fun convert(holder: BaseViewHolder, item: AllGameDataMapper) {
-                            if (item.leftGameType > 0)
-                                holder.setImageResource(
-                                    R.id.home_allgame_left_ariv,
-                                    Games.gameTypeDrawable(item.leftGameType)
-                                )
-
-                            if (item.rightGameType > 0)
-                                holder.setImageResource(
-                                    R.id.home_allgame_right_ariv,
-                                    Games.gameTypeDrawable(item.rightGameType)
-                                )
-                        }
-                    }
+                adapter = HomeAllGameAdapter(it)
             }
         }
     }

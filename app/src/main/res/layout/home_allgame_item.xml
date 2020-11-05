@@ -31,7 +31,7 @@
     </LinearLayout>
 
     <net.cachapa.expandablelayout.ExpandableLayout
-        android:id="@+id/lottery_expandable_layout"
+        android:id="@+id/home_allgame_item_epdl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:el_duration="230"
