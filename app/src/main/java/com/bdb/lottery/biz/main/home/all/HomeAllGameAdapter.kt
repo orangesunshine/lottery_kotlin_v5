@@ -1,30 +1,39 @@
 package com.bdb.lottery.biz.main.home.all
 
+import android.util.Log
 import android.util.SparseArray
 import android.view.View
-import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
+import android.widget.ImageView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
+import com.bdb.lottery.datasource.game.data.AllGameDataItemData
 import com.bdb.lottery.datasource.game.data.AllGameDataMapper
 import com.bdb.lottery.utils.Games
 import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.listener.OnItemChildClickListener
+import com.chad.library.adapter.base.listener.OnItemClickListener
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import net.cachapa.expandablelayout.ExpandableLayout
 
 class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
-    BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(R.layout.home_allgame_item, datas) {
+    BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(R.layout.home_allgame_item, datas),
+    OnItemChildClickListener, OnItemClickListener {
     private var expandIndex = -1
     private var isLeft = true
     private var expandLayouts = SparseArray<ExpandableLayout>()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        val holder = super.onCreateViewHolder(parent, viewType)
-        val adapterPosition = holder.adapterPosition
-        expandLayouts.put(adapterPosition, holder.getView(R.id.home_allgame_item_epdl))
-        return holder
-    }
+    private var imageViews = SparseArray<ImageView>()
+    private var recyclerViews = SparseArray<RecyclerView>()
 
     override fun convert(holder: BaseViewHolder, item: AllGameDataMapper) {
         val position = holder.adapterPosition
+        val expandableLayout = holder.getView<ExpandableLayout>(R.id.home_allgame_item_epdl)
+        val imageView = holder.getView<ImageView>(R.id.home_allgame_divide_iv)
+        val recyclerView = holder.getView<RecyclerView>(R.id.home_allgame_rv)
+        expandLayouts.put(position, expandableLayout)
+        imageViews.put(position, imageView)
+        recyclerViews.put(position, recyclerView)
         if (item.leftGameType > 0)
             holder.setImageResource(
                 R.id.home_allgame_left_ariv,
@@ -37,41 +46,62 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
                 Games.gameTypeDrawable(item.rightGameType)
             )
 
-
+        if (null == recyclerView.adapter) {
+            recyclerView.setHasFixedSize(true)
+            recyclerView.adapter =
+                HomeAllGameItemAdapter(null).apply {
+                    setOnItemClickListener(this@HomeAllGameAdapter)
+                }
+        }
     }
 
     init {
-        addChildClickViewIds(R.id.home_allgame_left_ariv,R.id.home_allgame_right_ariv)
-        setOnItemChildClickListener { adapter: BaseQuickAdapter<*, *>, view: View, position: Int ->
-            val left = view.id == R.id.home_allgame_left_ariv
-            val right = view.id == R.id.home_allgame_right_ariv
-            if (left || right) {
-                //ExpandableLayout
-                if (expandIndex == position) {
-                    if ((isLeft && left) || (!isLeft && right)) {
-                        //关闭
-                        expandLayouts[position].collapse(true)
-                    } else if (left) {
-                        //右侧改左侧
-                        isLeft = true
-                    } else if (right) {
-                        //左侧改右侧
-                        isLeft = false
-                    }
-                } else {
-                    isLeft == left
-                    //关闭之前expandIndex(expandIndex>=0)
-                    if (expandIndex >= 0) {
-                        expandLayouts[expandIndex].collapse()
-                    }
+        addChildClickViewIds(R.id.home_allgame_left_ariv, R.id.home_allgame_right_ariv)
+        setOnItemChildClickListener(this)
+    }
 
-                    //打开现在position
-                    expandLayouts[position].expand()
-                    expandIndex = position
+    override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
+        val expandableLayout = expandLayouts[position]
+        val imageView = imageViews[position]
+        val recyclerView = recyclerViews[position]
+        val left = view.id == R.id.home_allgame_left_ariv
+        val right = view.id == R.id.home_allgame_right_ariv
+        if (left || right) {
+            //ExpandableLayout
+            if (expandIndex == position) {
+                if ((isLeft && left) || (!isLeft && right)) {
+                    //关闭
+                    expandableLayout.collapse(true)
+                    expandIndex = -1
+                } else if (left) {
+                    //右侧改左侧
+                    isLeft = true
+                } else if (right) {
+                    //左侧改右侧
+                    isLeft = false
                 }
             } else {
-                //彩种跳转
+                isLeft = left
+                //关闭之前expandIndex(expandIndex>=0)
+                if (expandIndex >= 0) {
+                    expandLayouts[expandIndex].collapse()
+                }
+
+                //打开现在position
+                expandableLayout.clearAnimation()
+                expandableLayout.expand(true)
+                recyclerView.layoutManager = GridLayoutManager(context, 2)
+                (recyclerView.adapter as BaseQuickAdapter<AllGameDataItemData, BaseViewHolder>).setList(
+                    data.get(position).run { if (isLeft) leftDatas else rightDatas }
+                        ?.toMutableList())
+                imageView.setImageResource(if (isLeft) R.drawable.home_allgame_divide_left else R.drawable.home_allgame_divide_right)
+                expandableLayout.setInterpolator(LinearInterpolator())
+                expandIndex = position
             }
         }
+    }
+
+    override fun onItemClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
+        Log.e("younger", "onItemClick")
     }
 }

@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:el_duration="230"
-        app:el_expanded="true">
+        app:el_expanded="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,13 +46,14 @@
                 android:id="@+id/home_allgame_divide_iv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/home_allgame_divide_left"
-                android:visibility="gone" />
+                android:background="@drawable/home_allgame_divide_left" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/home_allgame_rv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2" />
         </LinearLayout>
 
     </net.cachapa.expandablelayout.ExpandableLayout>
