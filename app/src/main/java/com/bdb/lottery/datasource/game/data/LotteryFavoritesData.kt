@@ -2,7 +2,6 @@ package com.bdb.lottery.datasource.game.data
 
 import android.text.TextUtils
 import androidx.annotation.DrawableRes
-import androidx.constraintlayout.widget.Placeholder
 import com.bdb.lottery.R
 import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.extension.isSpace
@@ -25,7 +24,7 @@ data class FavoritesGameType(
         var homeImgUrl: String? = null
         var placeholder = R.drawable.home_img_add_bg
         if (TextUtils.equals("0", collectType)) {
-            placeholder = R.drawable.home_img_placeholder_bg
+            placeholder = R.drawable.home_placeholder_round_img_ic
             //彩票
             homeImgUrl = StringBuilder().append(platform?.imgurl)
                 .append(platform?.lotteryFileImgSquare)
@@ -33,7 +32,7 @@ data class FavoritesGameType(
                 .append(".png")
                 .append(platform?.imgFlushSuffix).toString()
         } else if (TextUtils.equals("1", collectType)) {
-            placeholder = R.drawable.home_img_placeholder_bg
+            placeholder = R.drawable.home_placeholder_round_img_ic
             //第三方游戏
             homeImgUrl = StringBuilder().append(platform?.imgurl)
                 .append(thirdGameInfo?.appImgUrlSquare)

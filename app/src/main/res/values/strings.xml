@@ -39,6 +39,7 @@
 
     <!-- home -->
     <string name="home_main_route">主线路</string>
+    <string name="home_allgame_item_frequency">频率：</string>
     <string name="balance">余额</string>
     <string name="home_recommend_collection">推荐收藏</string>
     <string name="home_all_lotterytype">全部彩种</string>

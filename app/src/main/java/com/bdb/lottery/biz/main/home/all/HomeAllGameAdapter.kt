@@ -5,11 +5,11 @@ import android.util.SparseArray
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
-import com.bdb.lottery.datasource.game.data.AllGameDataItemData
 import com.bdb.lottery.datasource.game.data.AllGameDataMapper
+import com.bdb.lottery.datasource.game.data.AllGameItemData
 import com.bdb.lottery.utils.Games
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
@@ -18,7 +18,10 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import net.cachapa.expandablelayout.ExpandableLayout
 
 class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
-    BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(R.layout.home_allgame_item, datas),
+    BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(
+        R.layout.home_allgame_lotterytype_item,
+        datas
+    ),
     OnItemChildClickListener, OnItemClickListener {
     private var expandIndex = -1
     private var isLeft = true
@@ -73,12 +76,9 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
                     //关闭
                     expandableLayout.collapse(true)
                     expandIndex = -1
-                } else if (left) {
-                    //右侧改左侧
-                    isLeft = true
-                } else if (right) {
-                    //左侧改右侧
-                    isLeft = false
+                } else if (left || right) {
+                    isLeft = !isLeft
+                    renderRecyclerView(imageView, recyclerView, position, isLeft)
                 }
             } else {
                 isLeft = left
@@ -90,11 +90,7 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
                 //打开现在position
                 expandableLayout.clearAnimation()
                 expandableLayout.expand(true)
-                recyclerView.layoutManager = GridLayoutManager(context, 2)
-                (recyclerView.adapter as BaseQuickAdapter<AllGameDataItemData, BaseViewHolder>).setList(
-                    data.get(position).run { if (isLeft) leftDatas else rightDatas }
-                        ?.toMutableList())
-                imageView.setImageResource(if (isLeft) R.drawable.home_allgame_divide_left else R.drawable.home_allgame_divide_right)
+                renderRecyclerView(imageView, recyclerView, position, isLeft)
                 expandableLayout.setInterpolator(LinearInterpolator())
                 expandIndex = position
             }
@@ -103,5 +99,19 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
 
     override fun onItemClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
         Log.e("younger", "onItemClick")
+    }
+
+    fun renderRecyclerView(
+        imageView: ImageView,
+        recyclerView: RecyclerView,
+        position: Int,
+        isleft: Boolean
+    ) {
+        imageView.setImageResource(if (isLeft) R.drawable.home_allgame_divide_left else R.drawable.home_allgame_divide_right)
+        recyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        (recyclerView.adapter as BaseQuickAdapter<AllGameItemData, BaseViewHolder>).setList(
+            data.get(position).run { if (isleft) leftData else rightData }
+                ?.toMutableList())
     }
 }

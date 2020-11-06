@@ -6,12 +6,14 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -76,11 +78,16 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
 
     private fun initVp() {
         //禁用预加载
+        val recyclerView = (home_game_vp.javaClass.getDeclaredField("mRecyclerView")?.apply { isAccessible = true }
+            .get(home_game_vp) as RecyclerView)
+        recyclerView.setScrollingTouchSlop(ViewConfiguration.get(context).scaledPagingTouchSlop*100)
+
         home_game_vp.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT;
 
         //Adapter
         home_game_vp.setAdapter(object : FragmentStateAdapter(childFragmentManager, lifecycle) {
             override fun getItemCount(): Int {
+
                 return tabs.size
             }
 

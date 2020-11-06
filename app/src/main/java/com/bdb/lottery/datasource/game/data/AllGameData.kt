@@ -1,6 +1,6 @@
 package com.bdb.lottery.datasource.game.data
 
-data class AllGameDataItemData(
+data class AllGameItemData(
     var deep: Int,
     var gameId: Int,
     var gameKind: Int,
@@ -11,7 +11,7 @@ data class AllGameDataItemData(
     var numMin: Int,
     var ptEnable: Boolean,
     var recommendSort: Int,
-    var recommendType: String,
+    var recommendType: String?,
     var remark: String?,
     var sumbigNum: Int,
     var wtEnable: Boolean
@@ -23,12 +23,12 @@ data class AllGameDataItemData(
         get() {
             return if (11 == gameKind) 5 else gameKind
         }
-
+    var imgUrl = ""
 }
 
 class AllGameDataMapper() {
     var leftGameType: Int = -1
-    var leftDatas: List<AllGameDataItemData>? = null
+    var leftData: List<AllGameItemData>? = null
     var rightGameType: Int = -1
-    var rightDatas: List<AllGameDataItemData>? = null
+    var rightData: List<AllGameItemData>? = null
 }

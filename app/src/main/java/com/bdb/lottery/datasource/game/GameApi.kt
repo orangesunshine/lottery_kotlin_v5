@@ -11,7 +11,7 @@ interface GameApi {
 
     //获取全部游戏
     @POST(HttpConstUrl.URL_ALL_GAME)
-    fun allGame(): Observable<BaseResponse<MutableList<AllGameDataItemData>>>
+    fun allGame(): Observable<BaseResponse<MutableList<AllGameItemData>>>
 
     //彩种大类每个游戏
     @POST(HttpConstUrl.URL_GAME_BY_GENRES)

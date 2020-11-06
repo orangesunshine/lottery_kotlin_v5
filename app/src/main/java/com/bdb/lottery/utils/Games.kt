@@ -21,7 +21,7 @@ object Games {
 
 
     fun gameTypeDrawable(gameType: Int): Int {
-        var drawable: Int = R.drawable.home_img_placeholder_bg
+        var drawable: Int = R.drawable.home_placeholder_round_img_ic
         when (gameType) {
             GAMEKIND_SSC -> drawable =
                 R.drawable.home_allgame_type_ssc

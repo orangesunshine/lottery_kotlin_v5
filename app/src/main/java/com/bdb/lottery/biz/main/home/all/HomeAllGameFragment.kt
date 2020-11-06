@@ -6,12 +6,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
-import com.bdb.lottery.datasource.game.data.AllGameDataMapper
 import com.bdb.lottery.extension.ob
-import com.bdb.lottery.utils.Games
 import com.bdb.lottery.utils.Sizes
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.single_recyclerview_layout.*
 

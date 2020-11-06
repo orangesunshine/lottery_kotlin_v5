@@ -1,6 +1,6 @@
 package com.bdb.lottery.datasource.game
 
-import com.bdb.lottery.datasource.game.data.AllGameDataItemData
+import com.bdb.lottery.datasource.game.data.AllGameItemData
 import com.bdb.lottery.datasource.game.data.LotteryFavoritesData
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import javax.inject.Inject
@@ -13,7 +13,7 @@ class GameRemoteDs @Inject constructor(
         retrofitWrapper.observe(gameApi.initGame())
     }
 
-    fun allGame(success: (MutableList<AllGameDataItemData>?) -> Unit) {
+    fun allGame(success: (MutableList<AllGameItemData>?) -> Unit) {
         retrofitWrapper.observe(gameApi.allGame(), success)
     }
 
