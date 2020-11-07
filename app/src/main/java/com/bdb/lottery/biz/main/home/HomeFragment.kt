@@ -6,14 +6,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -21,7 +19,6 @@ import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.login.LoginActivity
-import com.bdb.lottery.biz.main.home.all.Callback
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
 import com.bdb.lottery.datasource.home.data.BannerMapper
@@ -75,12 +72,6 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         vm.noticeData()//公告
         vm.bannerData()//轮播图
         vm.getBalance()//获取余额
-
-        (fragments[1] as HomeAllGameFragment).setCallback(callback = object : Callback {
-            override fun call(canVertical: Boolean) {
-                home_refreshLayout.setEnableRefresh(!canVertical)
-            }
-        })
     }
 
     private fun initVp() {
