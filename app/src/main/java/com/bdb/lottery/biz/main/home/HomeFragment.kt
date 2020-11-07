@@ -21,6 +21,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.login.LoginActivity
+import com.bdb.lottery.biz.main.home.all.Callback
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
 import com.bdb.lottery.datasource.home.data.BannerMapper
@@ -74,14 +75,16 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         vm.noticeData()//公告
         vm.bannerData()//轮播图
         vm.getBalance()//获取余额
+
+        (fragments[1] as HomeAllGameFragment).setCallback(callback = object : Callback {
+            override fun call(canVertical: Boolean) {
+                home_refreshLayout.setEnableRefresh(!canVertical)
+            }
+        })
     }
 
     private fun initVp() {
         //禁用预加载
-        val recyclerView = (home_game_vp.javaClass.getDeclaredField("mRecyclerView")?.apply { isAccessible = true }
-            .get(home_game_vp) as RecyclerView)
-        recyclerView.setScrollingTouchSlop(ViewConfiguration.get(context).scaledPagingTouchSlop*100)
-
         home_game_vp.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT;
 
         //Adapter

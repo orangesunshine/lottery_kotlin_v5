@@ -1,6 +1,10 @@
 package com.bdb.lottery.biz.main.home.all
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.core.view.setPadding
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,9 +19,23 @@ import kotlinx.android.synthetic.main.single_recyclerview_layout.*
 class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
     private val vm by viewModels<HomeAllGameViewModel>()
 
+    private var callback: Callback? = null
+    fun setCallback(callback: Callback) {
+        this.callback = callback
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.allGame()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        home_collection_rv.setOnScrollChangeListener { view: View, i: Int, i1: Int, i2: Int, i3: Int ->
+            val canScrollVertically = home_collection_rv.canScrollVertically(-1)
+            callback?.call(canScrollVertically)
+        }
     }
 
     override fun observe() {
@@ -29,4 +47,8 @@ class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
             }
         }
     }
+}
+
+interface Callback {
+    fun call(canVertical: Boolean)
 }
