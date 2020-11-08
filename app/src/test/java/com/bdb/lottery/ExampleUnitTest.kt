@@ -1,8 +1,11 @@
 package com.bdb.lottery
 
+import com.bdb.lottery.datasource.game.data.AllGameDataMapper
+import com.bdb.lottery.datasource.game.data.AllGameItemData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -107,9 +110,10 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun assertGson(){
-        val a:Int? = null
+    fun assertGson() {
+        val a: Int? = null
         val gson = GsonBuilder().create().toJson(a)
         println(gson)
     }
+
 }

@@ -1,5 +1,7 @@
 package com.bdb.lottery.datasource.app.data
 
+import com.bdb.lottery.datasource.game.data.AllGameItemData
+
 data class PlatformData(
     var WebMobileUrl: String,
     var androidAppDownloadUrl: String,
@@ -40,5 +42,13 @@ data class PlatformData(
     var sysMinRebate: Double,
     var userHeadImgNum: String,
     var verifyCapitalPassword: String,
-    var wtChatWebConfig: String
-)
+    var wtChatWebConfig: String,
+) {
+    fun lotteryFileImgRound(allGameItemData: AllGameItemData) {
+        allGameItemData.imgUrl = StringBuilder().append(imgurl)
+            .append(lotteryFileImgRound)
+            .append(allGameItemData.gameId)
+            .append(".png")
+            .append(imgFlushSuffix).toString()
+    }
+}

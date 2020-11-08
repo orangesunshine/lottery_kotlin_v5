@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.main.home.all
+package com.bdb.lottery.biz.main.home.other
 
 import android.util.Log
 import android.util.SparseArray
@@ -17,7 +17,7 @@ import com.chad.library.adapter.base.listener.OnItemClickListener
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import net.cachapa.expandablelayout.ExpandableLayout
 
-class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
+class HomeOtherGameAdapter(datas: MutableList<AllGameDataMapper>?) :
     BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(
         R.layout.home_allgame_lotterytype_item,
         datas
@@ -52,8 +52,8 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
         if (null == recyclerView.adapter) {
             recyclerView.setHasFixedSize(true)
             recyclerView.adapter =
-                HomeAllGameItemAdapter(null).apply {
-                    setOnItemClickListener(this@HomeAllGameAdapter)
+                HomeOtherGameItemAdapter(null).apply {
+                    setOnItemClickListener(this@HomeOtherGameAdapter)
                 }
         }
     }

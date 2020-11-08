@@ -7,6 +7,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
+import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startNdFinish
@@ -32,11 +33,11 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
 
     //重启app清空cache
     private fun resetCache() {
-        Cache.putString(ICache.DOMAIN_URL_CACHE, null)//域名
-        Cache.putString(ICache.PLATEFORM_CACHE, null)//平台
-        Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE, null)//公钥
-        Cache.putString(ICache.CUSTOM_SERVICE_URL_CACHE, null)//客服线
-        Cache.putString(ICache.APK_VERSION_CACHE, null)//版本信息
+        Cache.putString(ICache.DOMAIN_URL_CACHE)//域名
+        Cache.putString(HttpConstUrl.URL_PLATFORM_PARAMS)//平台
+        Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE)//公钥
+        Cache.putString(HttpConstUrl.URL_CUSTOM_SERVICE)//客服线
+        Cache.putString(HttpConstUrl.URL_APK_VERSION)//版本信息
     }
 
     private fun loadingAnim() {

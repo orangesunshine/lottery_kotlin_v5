@@ -4,6 +4,7 @@ import com.bdb.lottery.const.ICode
 import com.bdb.lottery.utils.net.retrofit.ApiException
 import com.google.gson.JsonSyntaxException
 import retrofit2.HttpException
+import java.lang.ClassCastException
 
 var Throwable?.msg: String?
     get() = this?.let {
@@ -15,10 +16,13 @@ var Throwable?.msg: String?
                 message = "服务器错误"
             else if (it.code() >= 400)
                 message = "请求错误"
+        } else if (it is ClassCastException) {
+            message = "数据异常"
         } else if (it is ApiException) {
             message = it.response.msg
-        } else if (it.message.isSpace()) {
-            message = it.cause?.message
+        } else {
+            val msg = it.message
+            message = if (msg.isSpace()) it.cause?.message else msg
         }
         message
     }

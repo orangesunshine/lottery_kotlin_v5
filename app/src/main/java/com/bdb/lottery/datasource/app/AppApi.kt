@@ -15,18 +15,18 @@ import retrofit2.http.POST
 interface AppApi {
 
     //获取前端配置
-    @POST(HttpConstUrl.URL_CONFIG_FRONT)
-    fun platformParams(): Observable<BaseResponse<PlatformData>>
+    @POST(HttpConstUrl.URL_PLATFORM_PARAMS)
+    fun platformParams(): Observable<BaseResponse<PlatformData?>>
 
     //客服
     @POST(URL_CUSTOM_SERVICE)
-    fun customservice(): Observable<BaseResponse<CustomServiceData>>
+    fun customservice(): Observable<BaseResponse<CustomServiceData?>>
 
     //版本信息
     @POST(URL_APK_VERSION)
     @FormUrlEncoded
-    fun apkversion(
+    fun apkVersion(
         @Field("packageName") packageName: String,
         @Field("version") versionCode: Int
-    ): Observable<BaseResponse<ApkVersionData>>
+    ): Observable<BaseResponse<ApkVersionData?>>
 }

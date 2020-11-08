@@ -8,7 +8,6 @@ import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWraper
-import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.Encrypts
@@ -21,7 +20,6 @@ import javax.inject.Inject
 class AccountRemoteDs @Inject constructor(
     private val accountApi: AccountApi,
     private val appApi: AppApi,
-    private val domainLocalDs: DomainLocalDs,
     private val accountLocalDs: AccountLocalDs,
     private val retrofitWrapper: RetrofitWrapper
 ) {
@@ -42,7 +40,7 @@ class AccountRemoteDs @Inject constructor(
             retrofitWrapper.observeErrorData(
                 appApi.platformParams()
                     .flatMap {
-                        var observable: Observable<BaseResponse<String>>? = null
+                        var observable: Observable<BaseResponse<String?>>? = null
                         it.data?.rsaPublicKey?.let {
                             if (!it.isSpace()) {
                                 val params = HashMap<String, Any>()

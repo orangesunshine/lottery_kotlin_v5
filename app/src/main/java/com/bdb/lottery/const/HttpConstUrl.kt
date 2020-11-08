@@ -16,7 +16,7 @@ interface HttpConstUrl {
             "https://o3rjctsi8.qnssl.com/"
         )
 
-        const val URL_CONFIG_FRONT = "/system-config/front.mvc"//前台配置
+        const val URL_PLATFORM_PARAMS = "/system-config/front.mvc"//前台配置
 
         const val URL_PUSH_CONFIG = "/system-config/message/push-config.mvc"//推送配置
 
@@ -57,9 +57,9 @@ interface HttpConstUrl {
         ///////////////////////////////////////////////////////////////////////////
         // 游戏
         ///////////////////////////////////////////////////////////////////////////
-        const val URL_THIRD_PLATFORM = "/thirdPartyBetRecords/getThirdPartyPlatform.mvc"//三方游戏列表
+        const val URL_THIRD_GAME = "/thirdPartyBetRecords/getThirdPartyPlatform.mvc"//三方游戏列表
 
-        const val URL_OTHER_PLATFORM = "/thirdUserAdd/getPlatform.mvc"//其他平台游戏列表
+        const val URL_OTHER_GAME = "/thirdUserAdd/getPlatform.mvc"//其他平台游戏列表
 
         const val URL_INIT_GAME = "/gameType/initGameType.mvc"//init
 

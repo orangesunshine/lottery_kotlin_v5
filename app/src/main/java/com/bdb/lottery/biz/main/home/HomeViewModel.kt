@@ -2,23 +2,34 @@ package com.bdb.lottery.biz.main.home
 
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
+import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.home.HomeRemoteDs
 import com.bdb.lottery.datasource.home.data.BannerMapper
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
+import com.bdb.lottery.utils.cache.Cache
 import javax.inject.Inject
 
 class HomeViewModel @ViewModelInject @Inject constructor(
     private val accountRemoteDs: AccountRemoteDs,
     private val homeAppRemoteDs: HomeRemoteDs,
+    private val gameRemoteDs: GameRemoteDs,
     private val appRemoteDs: AppRemoteDs
 ) : BaseViewModel() {
     val balanceLd = LiveDataWraper<String>()//余额
     val bannerLd = LiveDataWraper<List<BannerMapper>?>()//轮播图
     val noticeLd = LiveDataWraper<String>()//公告
+
+    //预加载
+    fun preload() {
+        gameRemoteDs.preloadLotteryFavorites()
+        gameRemoteDs.preloadAllGame()
+        gameRemoteDs.preloadOtherGame()
+    }
 
     //余额
     fun getBalance() {
@@ -98,7 +109,7 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 
                 val serverUrl = it.serverUrl
                 if (serverUrl.isSpace()) {
-                    appRemoteDs.cachePlatformParams() {
+                    appRemoteDs.cacheBeforePlatformParams() {
                         mapper(it?.imgurl ?: "")
                     }
                 } else {

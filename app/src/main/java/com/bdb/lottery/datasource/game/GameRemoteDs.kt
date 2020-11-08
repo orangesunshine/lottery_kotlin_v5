@@ -1,35 +1,61 @@
 package com.bdb.lottery.datasource.game
 
+import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.datasource.game.data.AllGameItemData
+import com.bdb.lottery.datasource.game.data.GenresGameDataItem
 import com.bdb.lottery.datasource.game.data.LotteryFavoritesData
+import com.bdb.lottery.datasource.game.data.OtherPlatformData
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
+import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 
 class GameRemoteDs @Inject constructor(
     val retrofitWrapper: RetrofitWrapper,
-    private val gameApi: GameApi
+    private val gameApi: GameApi,
 ) {
     fun initGame() {
         retrofitWrapper.observe(gameApi.initGame())
     }
 
-    fun allGame(success: (MutableList<AllGameItemData>?) -> Unit) {
-        retrofitWrapper.observe(gameApi.allGame(), success)
+    //region 全部Game
+    fun preloadAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
+        retrofitWrapper.preload(HttpConstUrl.URL_ALL_GAME, gameApi.allGame(), success)
     }
+
+    fun cacheBeforeAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
+        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_ALL_GAME, gameApi.allGame(), success, object :TypeToken<List<GenresGameDataItem>?>(){}.type)
+    }
+    //endregion
 
     fun gameByGenres(genres: String) {
         retrofitWrapper.observe(gameApi.gameByGenres(genres))
     }
 
-    fun otherPlatform() {
-        retrofitWrapper.observe(gameApi.otherPlatform())
+    //region othergame
+    fun preloadOtherGame() {
+        retrofitWrapper.preload(HttpConstUrl.URL_OTHER_GAME, gameApi.otherGame())
     }
 
-    fun thirdPlatform() {
-        retrofitWrapper.observe(gameApi.thirdPlatform())
+    fun cacheBeforeOtherGame(success: (OtherPlatformData?) -> Unit) {
+        retrofitWrapper.inlineCacheBeforeLoad(HttpConstUrl.URL_OTHER_GAME, gameApi.otherGame(), success)
+    }
+    //endregion
+
+    fun thirdGame() {
+        retrofitWrapper.observe(gameApi.thirdGame())
     }
 
-    fun getLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
-        retrofitWrapper.observe(gameApi.getLotteryFavorites(), success)
+    //region 收藏
+    fun preloadLotteryFavorites() {
+        retrofitWrapper.preload(HttpConstUrl.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
     }
+
+    fun cacheBeforeLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
+        retrofitWrapper.inlineCacheBeforeLoad(
+            HttpConstUrl.URL_LOTTERY_FAVORITES,
+            gameApi.lotteryFavorites(),
+            success
+        )
+    }
+    //endregion
 }

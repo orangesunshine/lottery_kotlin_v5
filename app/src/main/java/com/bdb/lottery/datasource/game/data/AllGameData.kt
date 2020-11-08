@@ -14,12 +14,9 @@ data class AllGameItemData(
     var recommendType: String?,
     var remark: String?,
     var sumbigNum: Int,
-    var wtEnable: Boolean
+    var wtEnable: Boolean,
 ) {
     var gameType: Int = gameKind
-        set(value) {
-            field = value
-        }
         get() {
             return if (11 == gameKind) 5 else gameKind
         }
@@ -31,4 +28,7 @@ class AllGameDataMapper() {
     var leftData: List<AllGameItemData>? = null
     var rightGameType: Int = -1
     var rightData: List<AllGameItemData>? = null
+    override fun toString(): String {
+        return "AllGameDataMapper(leftGameType=$leftGameType, leftData=$leftData, rightGameType=$rightGameType, rightData=$rightData)"
+    }
 }

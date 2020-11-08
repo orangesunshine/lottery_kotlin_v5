@@ -11,12 +11,10 @@ import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.biz.register.RegisterActivity
 import com.bdb.lottery.const.HttpConstUrl
-import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.Apps
 import com.bdb.lottery.utils.Devices
-import com.bdb.lottery.utils.cache.Cache
 import com.bumptech.glide.load.model.GlideUrl
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.login_activity.*
@@ -55,11 +53,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
         //在线客服
         login_online_customservice_bt.setOnClickListener {
-            if (Cache.getString(ICache.CUSTOM_SERVICE_URL_CACHE).isSpace()) {
-                //缓存
-            } else {
-                vm.getCustomService()
-            }
+            vm.cacheBeforeCustomServiceUrl()
         }
 
         //登录
@@ -97,7 +91,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
 
         vm.validate()//进入判断是否显示验证码
-        vm.platformParams()//刷新rsa公钥
+        vm.refreshRsaKey()//刷新rsa公钥
     }
 
     //切换明文、密文

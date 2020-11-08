@@ -2,7 +2,6 @@ package com.bdb.lottery.biz.main.home.collection
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.NonNull
 import androidx.core.view.setPadding
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,7 +27,7 @@ class HomeCollectionFragment : BaseFragment(R.layout.single_recyclerview_layout)
 
     override fun observe() {
         ob(vm.favouritesLd.getLiveData()) {
-            home_collection_rv.run {
+            home_single_rv.run {
                 layoutManager = GridLayoutManager(context, 2)
                 setPadding(Sizes.dp2px(4f))
                 adapter =

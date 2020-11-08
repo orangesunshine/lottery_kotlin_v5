@@ -9,7 +9,6 @@ import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.game.data.HomeFavoritesMapper
 import com.bdb.lottery.datasource.game.data.LotteryFavoritesData
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
@@ -21,7 +20,7 @@ class HomeCollectionViewModel @ViewModelInject @Inject constructor(
 
     //获取收藏列表
     fun getLotteryFavourites() {
-        gameRemoteDs.getLotteryFavorites {
+        gameRemoteDs.cacheBeforeLotteryFavorites {
             //加号➕
             val collectionEnter = HomeFavoritesMapper(
                 R.drawable.home_img_add_bg,
@@ -32,7 +31,7 @@ class HomeCollectionViewModel @ViewModelInject @Inject constructor(
                 null
             )
             it?.let { data: LotteryFavoritesData ->
-                appRemoteDs.cachePlatformParams { platform: PlatformData? ->
+                appRemoteDs.cacheBeforePlatformParams { platform: PlatformData? ->
                     favouritesLd.setData(
                         (data.gameTypeList ?: data.defaultList)?.map { it.homeMapper(platform) }
                             ?.toMutableList()?.apply { add(collectionEnter) } ?: mutableListOf(

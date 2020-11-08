@@ -32,7 +32,7 @@ class DomainRemoteDs @Inject constructor(
     val cache = { platform: PlatformData? ->
         platform?.let {
             //保存配置
-            Cache.putString(ICache.PLATEFORM_CACHE, GsonBuilder().create().toJson(it))
+            Cache.putString(HttpConstUrl.URL_PLATFORM_PARAMS, GsonBuilder().create().toJson(it))
 
             //保存rsa公钥
             it.rsaPublicKey.let {
@@ -45,8 +45,10 @@ class DomainRemoteDs @Inject constructor(
     fun getDomain(domainSuccess: () -> Unit) {
         if (domainLocalDs.alreadySave.get() && domainLocalDs.getDomain().isDomainUrl()) {
             //已缓存域名
+            Timber.d("getDomain->cache")
             domainSuccess()
         } else {
+            Timber.d("getDomain->net")
             val domainError = {
                 if (BuildConfig.SHOW_DOALOG_ON_DOMAIN_ERROR) BdbApp.context.toast("获取服务器域名失败")
             }
@@ -111,7 +113,7 @@ class DomainRemoteDs @Inject constructor(
         error: ((String?) -> Any)? = null
     ) {
         observe(domainApi.urlPlatformParams(
-            IDebugConfig.URL_TEST_DOMAIN + HttpConstUrl.URL_CONFIG_FRONT
+            IDebugConfig.URL_TEST_DOMAIN + HttpConstUrl.URL_PLATFORM_PARAMS
         ), {
             Timber.d("online__onNext__response: ${it}")
             //获取配置成功
@@ -166,7 +168,7 @@ class DomainRemoteDs @Inject constructor(
                 .flatMap {
                     Timber.d("online域名：${it}")
                     if (it.isDomainUrl()) domainApi.urlPlatformParams(
-                        it + HttpConstUrl.URL_CONFIG_FRONT
+                        it + HttpConstUrl.URL_PLATFORM_PARAMS
                     ) else null
                 }, {
                 //获取配置成功
@@ -222,7 +224,7 @@ class DomainRemoteDs @Inject constructor(
             val localObservables = mutableListOf<Observable<BaseResponse<PlatformData>>>()
             if (!domains.isNullOrEmpty()) {
                 for (domain in domains) {
-                    localObservables.add(domainApi.urlPlatformParams(domain + HttpConstUrl.URL_CONFIG_FRONT))
+                    localObservables.add(domainApi.urlPlatformParams(domain + HttpConstUrl.URL_PLATFORM_PARAMS))
                 }
                 var disposable: Disposable? = null
                 val already = AtomicBoolean(false)

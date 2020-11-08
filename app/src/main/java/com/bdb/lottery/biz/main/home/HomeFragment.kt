@@ -21,7 +21,9 @@ import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
+import com.bdb.lottery.biz.main.home.other.HomeOtherGameFragment
 import com.bdb.lottery.datasource.home.data.BannerMapper
+import com.bdb.lottery.extension.noFlingUnbindRecyclerView
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.start
 import com.bumptech.glide.Glide
@@ -36,15 +38,18 @@ import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.util.BannerUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_home_fragment.*
+import kotlinx.android.synthetic.main.single_recyclerview_layout.*
 
 
-//彩票大厅
+//主页home
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     private val vm by viewModels<HomeViewModel>()
     val tabs = arrayOf("推荐收藏", "全部彩种", "综合娱乐")
     val fragments =
-        arrayOf(HomeCollectionFragment(), HomeAllGameFragment(), HomeCollectionFragment())
+        arrayOf(HomeCollectionFragment(), HomeAllGameFragment(), HomeOtherGameFragment())
+
+    //region viewpager2 tablayout
     private lateinit var mediator: TabLayoutMediator
     private val changeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
@@ -65,13 +70,6 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initVp()//game viewpager设置
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        vm.noticeData()//公告
-        vm.bannerData()//轮播图
-        vm.getBalance()//获取余额
     }
 
     private fun initVp() {
@@ -119,6 +117,41 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         home_game_vp.registerOnPageChangeCallback(changeCallback)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mediator.detach();
+    }
+    //endregion
+
+    //region smartrefreshlayout nofling
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        (fragments[1] as HomeAllGameFragment).setNoFling {
+            home_refreshLayout.noFlingUnbindRecyclerView(
+                it
+            )
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        home_game_vp?.unregisterOnPageChangeCallback(changeCallback)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+    }
+    //endregion
+
+    //region 轮播图，通知、余额、预加载（收藏、全部game、娱乐）
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        vm.noticeData()//公告
+        vm.bannerData()//轮播图
+        vm.getBalance()//获取余额
+        vm.preload()//预加载 收藏、全部game、娱乐
+    }
+
     override fun observe() {
         ob(vm.balanceLd.getLiveData()) { home_balance_tv.text = it }
         ob(vm.bannerLd.getLiveData()) {
@@ -157,7 +190,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
                     holder: BannerImageHolder?,
                     data: BannerMapper?,
                     position: Int,
-                    size: Int
+                    size: Int,
                 ) {
                     Glide.with(holder!!.itemView)
                         .load(data?.imgurl)
@@ -176,14 +209,5 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
             })
         }
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        home_game_vp.unregisterOnPageChangeCallback(changeCallback)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mediator.detach();
-    }
+    //endregion
 }

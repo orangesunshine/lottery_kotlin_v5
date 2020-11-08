@@ -8,30 +8,28 @@ import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.game.data.AllGameDataMapper
 import com.bdb.lottery.datasource.game.data.AllGameItemData
-import com.bdb.lottery.extension.isSpace
+import timber.log.Timber
 import javax.inject.Inject
 
 class HomeAllGameViewModel @ViewModelInject @Inject constructor(
     private val gameRemoteDs: GameRemoteDs,
-    private val appRemoteDs: AppRemoteDs
+    private val appRemoteDs: AppRemoteDs,
 ) : BaseViewModel() {
     val allgameLd = LiveDataWraper<MutableList<AllGameDataMapper>?>()
 
     //全部彩种
     fun allGame() {
-        gameRemoteDs.allGame {
-            appRemoteDs.cachePlatformParams() { platform: PlatformData? ->
-                it?.let {
-                    it.asSequence().map { data: AllGameItemData ->
-                        data.imgUrl = StringBuilder().append(platform?.imgurl)
-                            .append(platform?.lotteryFileImgRound)
-                            .append(data.gameId)
-                            .append(".png")
-                            .append(platform?.imgFlushSuffix).toString()
+        gameRemoteDs.cacheBeforeAllGame {
+            it?.let { list: MutableList<AllGameItemData> ->
+                appRemoteDs.cacheBeforePlatformParams { platform: PlatformData? ->
+                    list.asSequence().map { data: AllGameItemData ->
+                        platform?.lotteryFileImgRound(data)
                         data
-                    }.groupBy { it.gameType }.filter { !it.value.isNullOrEmpty() }
+                    }.groupBy {
+                        it.gameType
+                    }.filter { !it.value.isNullOrEmpty() }
                         .run {
-                            val list = mutableListOf<AllGameDataMapper>()
+                            val datalist = mutableListOf<AllGameDataMapper>()
                             val iterator = this.iterator()
                             var i = 0
                             var mapper: AllGameDataMapper? = null
@@ -39,7 +37,7 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
                                 val next = iterator.next()
                                 if (i % 2 == 0) {
                                     mapper = AllGameDataMapper()
-                                    list.add(mapper)
+                                    datalist.add(mapper)
                                     mapper.leftGameType = next.key
                                     mapper.leftData = next.value
                                 } else {
@@ -48,10 +46,10 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
                                 }
                                 i++
                             }
-                            allgameLd.setData(list)
+                            allgameLd.setData(datalist)
                         }
-                } ?: allgameLd.setData(null)
-            }
+                }
+            } ?: allgameLd.setData(null)
         }
     }
 }

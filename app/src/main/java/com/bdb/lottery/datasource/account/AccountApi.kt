@@ -17,27 +17,27 @@ interface AccountApi {
     @FormUrlEncoded
     fun login(
         @Field("jsonString") params: String
-    ): Observable<BaseResponse<String>>
+    ): Observable<BaseResponse<String?>>
 
 
     //试玩
     @POST(HttpConstUrl.ULR_LOGIN_TRIAL)
     fun trialPlay(
-    ): Observable<BaseResponse<TokenData>>
+    ): Observable<BaseResponse<TokenData?>>
 
 
     //是否需要验证码
     @GET(HttpConstUrl.URL_NEED_VALIDATE_CODE)
     fun needvalidate(
-    ): Observable<BaseResponse<Boolean>>
+    ): Observable<BaseResponse<Boolean?>>
 
     //余额
     @POST(HttpConstUrl.ULR_BALANCE)
     fun balance(
-    ): Observable<BaseResponse<BalanceData>>
+    ): Observable<BaseResponse<BalanceData?>>
 
     //用户信息
     @POST(HttpConstUrl.URL_USERINFO)
     fun userinfo(
-    ): Observable<BaseResponse<UserInfoData>>
+    ): Observable<BaseResponse<UserInfoData?>>
 }

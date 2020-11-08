@@ -41,12 +41,12 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         }, viewState = viewStatus)
     }
 
-    fun getCustomService() {
-        appRemoteDs.getAPkVeresion()
+    fun cacheBeforeCustomServiceUrl() {
+        appRemoteDs.cacheBeforeCustomServiceUrl()
     }
 
-    fun getApkVersion() {
-        appRemoteDs.getAPkVeresion()
+    fun cacheBeforeApkVersion() {
+        appRemoteDs.cacheBeforeApkVersion()
     }
 
     fun trialPlay(success: () -> Unit) {
@@ -65,8 +65,9 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         accountRemoteDs.needValidate { it?.let { if (it) validateLd.setData(true) } }
     }
 
-    fun platformParams() {
-        appRemoteDs.getPlatformParams {
+    //刷新公钥
+    fun refreshRsaKey() {
+        appRemoteDs.platformParams {
             Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it?.rsaPublicKey)
         }
     }
