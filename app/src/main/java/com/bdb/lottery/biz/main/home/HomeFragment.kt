@@ -23,7 +23,8 @@ import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
 import com.bdb.lottery.biz.main.home.other.HomeOtherGameFragment
 import com.bdb.lottery.datasource.home.data.BannerMapper
-import com.bdb.lottery.extension.noFlingUnbindRecyclerView
+import com.bdb.lottery.extension.bindNoFlingRecyclerView
+import com.bdb.lottery.extension.unbindNoFlingRecyclerView
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.start
 import com.bumptech.glide.Glide
@@ -38,7 +39,6 @@ import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.util.BannerUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_home_fragment.*
-import kotlinx.android.synthetic.main.single_recyclerview_layout.*
 
 
 //主页home
@@ -117,6 +117,11 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         home_game_vp.registerOnPageChangeCallback(changeCallback)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        home_game_vp?.unregisterOnPageChangeCallback(changeCallback)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mediator.detach();
@@ -126,20 +131,17 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     //region smartrefreshlayout nofling
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (fragments[1] as HomeAllGameFragment).setNoFling {
-            home_refreshLayout.noFlingUnbindRecyclerView(
+        (fragments[1] as HomeAllGameFragment).bindNoFling {
+            home_refreshLayout.bindNoFlingRecyclerView(
                 it
             )
         }
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        home_game_vp?.unregisterOnPageChangeCallback(changeCallback)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
+        (fragments[1] as HomeAllGameFragment).unbindNoFling {
+            home_refreshLayout.unbindNoFlingRecyclerView(
+                it
+            )
+        }
     }
     //endregion
 

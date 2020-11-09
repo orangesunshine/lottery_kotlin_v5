@@ -11,23 +11,35 @@ import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.utils.Sizes
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.home_allgame_lotterytype_item.*
 import kotlinx.android.synthetic.main.single_recyclerview_layout.*
 
 @AndroidEntryPoint
 class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
     private val vm by viewModels<HomeAllGameViewModel>()
-    private var noFling: ((RecyclerView) -> Unit)? = null
+    private var bindNoFling: ((RecyclerView) -> Unit)? = null
+    private var unbindNoFling: ((RecyclerView) -> Unit)? = null
 
-    fun setNoFling(noFling: (RecyclerView) -> Unit) {
-        this.noFling = noFling
+    //region fling 惯性处理
+    fun bindNoFling(noFling: (RecyclerView) -> Unit) {
+        this.bindNoFling = noFling
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        noFling?.invoke(home_single_rv)
+        bindNoFling?.invoke(home_single_rv)
     }
 
+    fun unbindNoFling(noFling: (RecyclerView) -> Unit) {
+        this.unbindNoFling = noFling
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        unbindNoFling?.invoke(home_single_rv)
+    }
+    //endregion
+
+    //region 全部game
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.allGame()
@@ -42,4 +54,5 @@ class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
             }
         }
     }
+    //endregion
 }

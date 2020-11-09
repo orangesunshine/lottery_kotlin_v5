@@ -12,6 +12,7 @@ import com.bdb.lottery.extension.msg
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.cache.Cache
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -134,7 +135,7 @@ class RetrofitWrapper @Inject constructor(
     }
 
     //优先读取缓存，无缓存网络请求
-    inline fun <reified Data> inlineCacheBeforeLoad(
+    inline fun <reified Data> cacheBeforeLoad(
         cacheKey: String,
         observable: Observable<BaseResponse<Data?>>,
         noinline success: ((Data?) -> Unit)? = null,
@@ -144,47 +145,8 @@ class RetrofitWrapper @Inject constructor(
         Timber.d("cache: ${cache}")
         if (!cache.isSpace()) {
             try {
-                val fromJson: Data = GsonBuilder().create().fromJson(cache, Data::class.java)
-                Timber.d("cacheKey: ${cacheKey}==>success: ${fromJson}")
-                success?.invoke(fromJson)
-            } catch (e: Exception) {
-                Timber.d("cacheKey: ${cacheKey}==>error:${e.msg}")
-                observe(observable, {
-                    it?.let {
-                        Cache.putString(
-                            cacheKey,
-                            GsonBuilder().create().toJson(it)
-                        )
-                        success?.invoke(it)
-                    }
-                })
-            }
-        } else {
-            observe(observable, {
-                it?.let {
-                    Cache.putString(
-                        cacheKey,
-                        GsonBuilder().create().toJson(it)
-                    )
-                    success?.invoke(it)
-                }
-            })
-        }
-    }
-
-    //优先读取缓存，无缓存网络请求
-    fun <Data> cacheBeforeLoad(
-        cacheKey: String,
-        observable: Observable<BaseResponse<Data?>>,
-        success: ((Data?) -> Unit)? = null,
-        type: Type? = null,
-    ) {
-        //优先缓存
-        val cache = Cache.getString(cacheKey)
-        Timber.d("cache: ${cache}")
-        if (!cache.isSpace()) {
-            try {
-                val fromJson: Data = GsonBuilder().create().fromJson(cache, type)
+                val fromJson: Data =
+                    GsonBuilder().create().fromJson(cache, object : TypeToken<Data>() {}.type)
                 Timber.d("cacheKey: ${cacheKey}==>success: ${fromJson}")
                 success?.invoke(fromJson)
             } catch (e: Exception) {

@@ -10,6 +10,7 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.lang.ref.WeakReference
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -116,4 +117,32 @@ class ExampleUnitTest {
         println(gson)
     }
 
+    class Name(var name: String){
+        override fun toString(): String {
+            return "Name(name='$name')"
+        }
+    }
+
+    class WrapperData(var age: MutableList<Name>)
+
+    class Wrapper<T>(var data: T)
+
+    private inline fun <reified T> cast(wrapper: Wrapper<T>) {
+        val json ="[{\"name\":\"younger1\"},{\"name\":\"younger2\"}, {\"name\":\"younger3\"}]"
+        println(T::class.java.name)
+        val fromJson:MutableList<Name> = GsonBuilder().create().fromJson<MutableList<Name>>(json, T::class.java)
+        val iterator = fromJson.iterator()
+        println("it")
+    }
+
+    class Ref() {
+        lateinit var ref: MutableList<WrapperData>
+    }
+
+    @Test
+    fun reifiedFunTest() {
+        var ref = Ref()
+        val list = mutableListOf(Name("haha"))
+        cast(Wrapper(list))
+    }
 }

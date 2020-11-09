@@ -28,7 +28,7 @@ class AppRemoteDs @Inject constructor(
 
     //缓存优先
     fun cacheBeforePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
-        retrofitWrapper.inlineCacheBeforeLoad(HttpConstUrl.URL_PLATFORM_PARAMS,
+        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_PLATFORM_PARAMS,
             appApi.platformParams(),
             success)
     }
@@ -44,7 +44,7 @@ class AppRemoteDs @Inject constructor(
 
     //优先缓存，网络请求
     fun cacheBeforeCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
-        retrofitWrapper.inlineCacheBeforeLoad(
+        retrofitWrapper.cacheBeforeLoad(
             HttpConstUrl.URL_CUSTOM_SERVICE,
             appApi.customservice(),
             success
@@ -62,7 +62,7 @@ class AppRemoteDs @Inject constructor(
     }
 
     fun cacheBeforeApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
-        retrofitWrapper.inlineCacheBeforeLoad(
+        retrofitWrapper.cacheBeforeLoad(
             HttpConstUrl.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode(BdbApp.context)), success
         )

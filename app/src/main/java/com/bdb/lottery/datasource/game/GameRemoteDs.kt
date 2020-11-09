@@ -23,7 +23,7 @@ class GameRemoteDs @Inject constructor(
     }
 
     fun cacheBeforeAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
-        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_ALL_GAME, gameApi.allGame(), success, object :TypeToken<List<GenresGameDataItem>?>(){}.type)
+        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_ALL_GAME, gameApi.allGame(), success)
     }
     //endregion
 
@@ -37,7 +37,7 @@ class GameRemoteDs @Inject constructor(
     }
 
     fun cacheBeforeOtherGame(success: (OtherPlatformData?) -> Unit) {
-        retrofitWrapper.inlineCacheBeforeLoad(HttpConstUrl.URL_OTHER_GAME, gameApi.otherGame(), success)
+        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_OTHER_GAME, gameApi.otherGame(), success)
     }
     //endregion
 
@@ -51,7 +51,7 @@ class GameRemoteDs @Inject constructor(
     }
 
     fun cacheBeforeLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
-        retrofitWrapper.inlineCacheBeforeLoad(
+        retrofitWrapper.cacheBeforeLoad(
             HttpConstUrl.URL_LOTTERY_FAVORITES,
             gameApi.lotteryFavorites(),
             success
