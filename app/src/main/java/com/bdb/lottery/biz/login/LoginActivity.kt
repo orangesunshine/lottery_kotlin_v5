@@ -53,7 +53,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
         //在线客服
         login_online_customservice_bt.setOnClickListener {
-            vm.cacheBeforeCustomServiceUrl()
+            vm.cachePriCustomServiceUrl()
         }
 
         //登录

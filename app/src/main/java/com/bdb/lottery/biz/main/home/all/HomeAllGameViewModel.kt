@@ -8,20 +8,19 @@ import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.game.data.AllGameDataMapper
 import com.bdb.lottery.datasource.game.data.AllGameItemData
-import timber.log.Timber
 import javax.inject.Inject
 
 class HomeAllGameViewModel @ViewModelInject @Inject constructor(
     private val gameRemoteDs: GameRemoteDs,
     private val appRemoteDs: AppRemoteDs,
 ) : BaseViewModel() {
-    val allgameLd = LiveDataWraper<MutableList<AllGameDataMapper>?>()
+    val allGameLd = LiveDataWraper<MutableList<AllGameDataMapper>?>()
 
     //全部彩种
     fun allGame() {
-        gameRemoteDs.cacheBeforeAllGame {
+        gameRemoteDs.cachePriAllGame {
             it?.let { list: MutableList<AllGameItemData> ->
-                appRemoteDs.cacheBeforePlatformParams { platform: PlatformData? ->
+                appRemoteDs.cachePriPlatformParams { platform: PlatformData? ->
                     list.asSequence().map { data: AllGameItemData ->
                         platform?.lotteryFileImgRound(data)
                         data
@@ -46,10 +45,10 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
                                 }
                                 i++
                             }
-                            allgameLd.setData(datalist)
+                            allGameLd.setData(datalist)
                         }
                 }
-            } ?: allgameLd.setData(null)
+            } ?: allGameLd.setData(null)
         }
     }
 }

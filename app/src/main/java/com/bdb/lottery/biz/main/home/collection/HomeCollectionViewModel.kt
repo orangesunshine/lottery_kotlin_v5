@@ -20,7 +20,7 @@ class HomeCollectionViewModel @ViewModelInject @Inject constructor(
 
     //获取收藏列表
     fun getLotteryFavourites() {
-        gameRemoteDs.cacheBeforeLotteryFavorites {
+        gameRemoteDs.cachePriLotteryFavorites {
             //加号➕
             val collectionEnter = HomeFavoritesMapper(
                 R.drawable.home_img_add_bg,
@@ -31,7 +31,7 @@ class HomeCollectionViewModel @ViewModelInject @Inject constructor(
                 null
             )
             it?.let { data: LotteryFavoritesData ->
-                appRemoteDs.cacheBeforePlatformParams { platform: PlatformData? ->
+                appRemoteDs.cachePriPlatformParams { platform: PlatformData? ->
                     favouritesLd.setData(
                         (data.gameTypeList ?: data.defaultList)?.map { it.homeMapper(platform) }
                             ?.toMutableList()?.apply { add(collectionEnter) } ?: mutableListOf(

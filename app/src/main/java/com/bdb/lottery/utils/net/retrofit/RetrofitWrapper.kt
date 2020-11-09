@@ -135,7 +135,7 @@ class RetrofitWrapper @Inject constructor(
     }
 
     //优先读取缓存，无缓存网络请求
-    inline fun <reified Data> cacheBeforeLoad(
+    inline fun <reified Data> cachePriLoad(
         cacheKey: String,
         observable: Observable<BaseResponse<Data?>>,
         noinline success: ((Data?) -> Unit)? = null,

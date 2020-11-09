@@ -2,11 +2,9 @@ package com.bdb.lottery.datasource.game
 
 import com.bdb.lottery.const.HttpConstUrl
 import com.bdb.lottery.datasource.game.data.AllGameItemData
-import com.bdb.lottery.datasource.game.data.GenresGameDataItem
 import com.bdb.lottery.datasource.game.data.LotteryFavoritesData
 import com.bdb.lottery.datasource.game.data.OtherPlatformData
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
-import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 
 class GameRemoteDs @Inject constructor(
@@ -18,12 +16,12 @@ class GameRemoteDs @Inject constructor(
     }
 
     //region 全部Game
-    fun preloadAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
+    fun preAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
         retrofitWrapper.preload(HttpConstUrl.URL_ALL_GAME, gameApi.allGame(), success)
     }
 
-    fun cacheBeforeAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
-        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_ALL_GAME, gameApi.allGame(), success)
+    fun cachePriAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
+        retrofitWrapper.cachePriLoad(HttpConstUrl.URL_ALL_GAME, gameApi.allGame(), success)
     }
     //endregion
 
@@ -32,12 +30,12 @@ class GameRemoteDs @Inject constructor(
     }
 
     //region othergame
-    fun preloadOtherGame() {
+    fun preOtherGame() {
         retrofitWrapper.preload(HttpConstUrl.URL_OTHER_GAME, gameApi.otherGame())
     }
 
-    fun cacheBeforeOtherGame(success: (OtherPlatformData?) -> Unit) {
-        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_OTHER_GAME, gameApi.otherGame(), success)
+    fun cachePriOtherGame(success: (OtherPlatformData?) -> Unit) {
+        retrofitWrapper.cachePriLoad(HttpConstUrl.URL_OTHER_GAME, gameApi.otherGame(), success)
     }
     //endregion
 
@@ -46,12 +44,12 @@ class GameRemoteDs @Inject constructor(
     }
 
     //region 收藏
-    fun preloadLotteryFavorites() {
+    fun preLotteryFavorites() {
         retrofitWrapper.preload(HttpConstUrl.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
     }
 
-    fun cacheBeforeLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
-        retrofitWrapper.cacheBeforeLoad(
+    fun cachePriLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
+        retrofitWrapper.cachePriLoad(
             HttpConstUrl.URL_LOTTERY_FAVORITES,
             gameApi.lotteryFavorites(),
             success

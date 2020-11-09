@@ -16,10 +16,11 @@ import kotlinx.android.synthetic.main.single_recyclerview_layout.*
 @AndroidEntryPoint
 class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
     private val vm by viewModels<HomeAllGameViewModel>()
+
+    //region fling 惯性处理
     private var bindNoFling: ((RecyclerView) -> Unit)? = null
     private var unbindNoFling: ((RecyclerView) -> Unit)? = null
 
-    //region fling 惯性处理
     fun bindNoFling(noFling: (RecyclerView) -> Unit) {
         this.bindNoFling = noFling
     }
@@ -46,7 +47,7 @@ class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
     }
 
     override fun observe() {
-        ob(vm.allgameLd.getLiveData()) {
+        ob(vm.allGameLd.getLiveData()) {
             home_single_rv.run {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 setPadding(Sizes.dp2px(4f))

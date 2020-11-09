@@ -8,8 +8,8 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
-import com.bdb.lottery.datasource.game.data.AllGameDataMapper
-import com.bdb.lottery.datasource.game.data.AllGameItemData
+import com.bdb.lottery.datasource.game.data.OtherGameDataMapper
+import com.bdb.lottery.datasource.game.data.OtherPlatformMIR
 import com.bdb.lottery.utils.Games
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
@@ -17,8 +17,8 @@ import com.chad.library.adapter.base.listener.OnItemClickListener
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import net.cachapa.expandablelayout.ExpandableLayout
 
-class HomeOtherGameAdapter(datas: MutableList<AllGameDataMapper>?) :
-    BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(
+class HomeOtherGameAdapter(datas: MutableList<OtherGameDataMapper>?) :
+    BaseQuickAdapter<OtherGameDataMapper, BaseViewHolder>(
         R.layout.home_allgame_lotterytype_item,
         datas
     ),
@@ -29,7 +29,7 @@ class HomeOtherGameAdapter(datas: MutableList<AllGameDataMapper>?) :
     private var imageViews = SparseArray<ImageView>()
     private var recyclerViews = SparseArray<RecyclerView>()
 
-    override fun convert(holder: BaseViewHolder, item: AllGameDataMapper) {
+    override fun convert(holder: BaseViewHolder, item: OtherGameDataMapper) {
         val position = holder.adapterPosition
         val expandableLayout = holder.getView<ExpandableLayout>(R.id.home_allgame_item_epdl)
         val imageView = holder.getView<ImageView>(R.id.home_allgame_divide_iv)
@@ -37,16 +37,16 @@ class HomeOtherGameAdapter(datas: MutableList<AllGameDataMapper>?) :
         expandLayouts.put(position, expandableLayout)
         imageViews.put(position, imageView)
         recyclerViews.put(position, recyclerView)
-        if (item.leftGameType > 0)
+        if (item.leftSubPlatform > 0)
             holder.setImageResource(
                 R.id.home_allgame_left_ariv,
-                Games.gameTypeDrawable(item.leftGameType)
+                item.leftSubPlatformDrawable()
             )
 
-        if (item.rightGameType > 0)
+        if (item.rightSubPlatform > 0)
             holder.setImageResource(
                 R.id.home_allgame_right_ariv,
-                Games.gameTypeDrawable(item.rightGameType)
+                item.rightSubPlatformDrawable()
             )
 
         if (null == recyclerView.adapter) {
@@ -110,7 +110,7 @@ class HomeOtherGameAdapter(datas: MutableList<AllGameDataMapper>?) :
     ) {
         imageView.setImageResource(if (isLeft) R.drawable.home_allgame_divide_left else R.drawable.home_allgame_divide_right)
         recyclerView.layoutManager = GridLayoutManager(context, 2)
-        (recyclerView.adapter as BaseQuickAdapter<AllGameItemData, BaseViewHolder>).setList(
+        (recyclerView.adapter as BaseQuickAdapter<OtherPlatformMIR, BaseViewHolder>).setList(
             data.get(position).run { if (isLeft) leftData else rightData }
                 ?.toMutableList().apply {
                     expandableLayout?.duration = this?.let {

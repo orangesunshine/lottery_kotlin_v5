@@ -1,6 +1,10 @@
 package com.bdb.lottery.datasource.app.data
 
 import com.bdb.lottery.datasource.game.data.AllGameItemData
+import com.bdb.lottery.datasource.game.data.GameInfo
+import com.bdb.lottery.datasource.game.data.OtherPlatformMIR
+import com.bdb.lottery.datasource.game.data.ThirdGameInfo
+import com.bdb.lottery.extension.isSpace
 
 data class PlatformData(
     var WebMobileUrl: String,
@@ -44,11 +48,40 @@ data class PlatformData(
     var verifyCapitalPassword: String,
     var wtChatWebConfig: String,
 ) {
-    fun lotteryFileImgRound(allGameItemData: AllGameItemData) {
-        allGameItemData.imgUrl = StringBuilder().append(imgurl)
-            .append(lotteryFileImgRound)
-            .append(allGameItemData.gameId)
+    //彩票圆形
+    fun lotteryFileImgRound(allGameItemData: AllGameItemData?) {
+        allGameItemData?.let {
+            it.imgUrl = StringBuilder().append(imgurl)
+                .append(lotteryFileImgRound)
+                .append(it.gameId)
+                .append(".png")
+                .append(imgFlushSuffix).toString()
+        }
+    }
+
+    //彩票圆角
+    fun lotteryFileImgSquare(gameInfo: GameInfo?): String {
+        return StringBuilder().append(imgurl)
+            .append(lotteryFileImgSquare)
+            .append(gameInfo?.recommendType?.let { if (!it.isSpace()) gameInfo.gameId.toString() + "_" + it else gameInfo.gameId }
+                ?: gameInfo?.gameId)
             .append(".png")
             .append(imgFlushSuffix).toString()
+    }
+
+    //三方游戏
+    fun thirdGameImgUrl(thirdGameInfo: ThirdGameInfo?): String {
+        return StringBuilder().append(imgurl)
+            .append(thirdGameInfo?.appImgUrlSquare)
+            .append("?")
+            .append(imgFlushSuffix).toString()
+    }
+
+    //娱乐
+    fun otherGameImgUrl(other: OtherPlatformMIR?) {
+        other?.let {
+            it.imgUrl = StringBuilder().append(imgurl)
+                .append(other?.appImgUrl).toString()
+        }
     }
 }

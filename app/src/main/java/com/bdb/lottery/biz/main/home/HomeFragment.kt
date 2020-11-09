@@ -131,6 +131,18 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     //region smartrefreshlayout nofling
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (fragments[0] as HomeCollectionFragment).bindNoFling {
+            home_refreshLayout.bindNoFlingRecyclerView(
+                it
+            )
+        }
+
+        (fragments[0] as HomeCollectionFragment).unbindNoFling {
+            home_refreshLayout.unbindNoFlingRecyclerView(
+                it
+            )
+        }
+
         (fragments[1] as HomeAllGameFragment).bindNoFling {
             home_refreshLayout.bindNoFlingRecyclerView(
                 it
@@ -138,6 +150,18 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         }
 
         (fragments[1] as HomeAllGameFragment).unbindNoFling {
+            home_refreshLayout.unbindNoFlingRecyclerView(
+                it
+            )
+        }
+
+        (fragments[2] as HomeOtherGameFragment).bindNoFling {
+            home_refreshLayout.bindNoFlingRecyclerView(
+                it
+            )
+        }
+
+        (fragments[2] as HomeOtherGameFragment).unbindNoFling {
             home_refreshLayout.unbindNoFlingRecyclerView(
                 it
             )

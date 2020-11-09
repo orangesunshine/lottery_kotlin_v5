@@ -41,12 +41,12 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         }, viewState = viewStatus)
     }
 
-    fun cacheBeforeCustomServiceUrl() {
-        appRemoteDs.cacheBeforeCustomServiceUrl()
+    fun cachePriCustomServiceUrl() {
+        appRemoteDs.cachePriCustomServiceUrl()
     }
 
-    fun cacheBeforeApkVersion() {
-        appRemoteDs.cacheBeforeApkVersion()
+    fun cachePriApkVersion() {
+        appRemoteDs.cachePriApkVersion()
     }
 
     fun trialPlay(success: () -> Unit) {

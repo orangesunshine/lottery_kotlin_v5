@@ -22,20 +22,20 @@ class AppRemoteDs @Inject constructor(
     }
 
     //预加载
-    fun preloadPlatformParams(success: ((PlatformData?) -> Unit)? = null) {
+    fun prePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
         retrofitWrapper.preload(HttpConstUrl.URL_PLATFORM_PARAMS, appApi.platformParams(), success)
     }
 
     //缓存优先
-    fun cacheBeforePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
-        retrofitWrapper.cacheBeforeLoad(HttpConstUrl.URL_PLATFORM_PARAMS,
+    fun cachePriPlatformParams(success: ((PlatformData?) -> Unit)? = null) {
+        retrofitWrapper.cachePriLoad(HttpConstUrl.URL_PLATFORM_PARAMS,
             appApi.platformParams(),
             success)
     }
     //endregion
 
     //region 客服线
-    fun preloadCustomServiceUrl() {
+    fun preCustomServiceUrl() {
         retrofitWrapper.preload(
             HttpConstUrl.URL_CUSTOM_SERVICE,
             appApi.customservice()
@@ -43,8 +43,8 @@ class AppRemoteDs @Inject constructor(
     }
 
     //优先缓存，网络请求
-    fun cacheBeforeCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
-        retrofitWrapper.cacheBeforeLoad(
+    fun cachePriCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
+        retrofitWrapper.cachePriLoad(
             HttpConstUrl.URL_CUSTOM_SERVICE,
             appApi.customservice(),
             success
@@ -54,15 +54,15 @@ class AppRemoteDs @Inject constructor(
 
     //region apk版本信息
     //预加载
-    fun preloadApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
+    fun preApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.preload(
             HttpConstUrl.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode(BdbApp.context)), success
         )
     }
 
-    fun cacheBeforeApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
-        retrofitWrapper.cacheBeforeLoad(
+    fun cachePriApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
+        retrofitWrapper.cachePriLoad(
             HttpConstUrl.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode(BdbApp.context)), success
         )
