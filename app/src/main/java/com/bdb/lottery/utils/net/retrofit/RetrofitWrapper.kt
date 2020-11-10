@@ -1,6 +1,6 @@
 package com.bdb.lottery.utils.net.retrofit
 
-import com.bdb.lottery.app.BdbApp
+import android.content.Context
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.datasource.common.LiveDataWraper
@@ -13,17 +13,16 @@ import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.cache.Cache
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import dagger.hilt.android.scopes.ActivityRetainedScoped
+import dagger.hilt.android.qualifiers.ActivityContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
-import java.lang.reflect.Type
 import javax.inject.Inject
 
-@ActivityRetainedScoped
 class RetrofitWrapper @Inject constructor(
+    @ActivityContext private val context: Context,
     private val domainLocalDs: DomainLocalDs,
     private val domainRemoteDs: DomainRemoteDs,
 ) {
@@ -55,7 +54,7 @@ class RetrofitWrapper @Inject constructor(
                     val code = it.code
                     val msg = it.msg
                     Timber.d("observe__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
-                    BdbApp.context.toast(msg)
+                    context.toast(msg)
                     error?.invoke(code, msg)
                     if (code >= 500) domainLocalDs.clearDomain()
                     viewState?.setData(ViewState(false))
@@ -97,7 +96,7 @@ class RetrofitWrapper @Inject constructor(
                         val code = it.code
                         val msg = it.msg
                         Timber.d("observeErrorData__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
-                        BdbApp.context.toast(msg)
+                        context.toast(msg)
                         if (it is ApiException) {
                             error?.invoke(it.response)
                         } else {

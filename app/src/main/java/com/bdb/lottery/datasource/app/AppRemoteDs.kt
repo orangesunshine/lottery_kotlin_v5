@@ -10,7 +10,7 @@ import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import javax.inject.Inject
 
 class AppRemoteDs @Inject constructor(
-    val retrofitWrapper: RetrofitWrapper,
+    private val retrofitWrapper: RetrofitWrapper,
     private val appApi: AppApi,
 ) {
     //region 获取平台参数

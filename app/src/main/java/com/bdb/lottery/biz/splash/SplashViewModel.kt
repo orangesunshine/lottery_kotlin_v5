@@ -1,17 +1,14 @@
 package com.bdb.lottery.biz.splash
 
-import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.domain.DomainRemoteDs
-import dagger.hilt.android.qualifiers.ActivityContext
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 class SplashViewModel @ViewModelInject @Inject constructor(
-    @ActivityContext val context: Context,
     private val remoteDomainDs: DomainRemoteDs,
     private val appDs: AppRemoteDs
 ) : BaseViewModel() {
