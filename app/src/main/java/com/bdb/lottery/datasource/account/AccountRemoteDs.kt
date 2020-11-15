@@ -10,16 +10,18 @@ import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.toast
-import com.bdb.lottery.utils.Encrypts
-import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.TEncrypt
+import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
 
 class AccountRemoteDs @Inject constructor(
-    private val accountApi: AccountApi,
+    private val tCache: TCache,
     private val appApi: AppApi,
+    private val tEncrypt: TEncrypt,
+    private val accountApi: AccountApi,
     private val accountLocalDs: AccountLocalDs,
     private val retrofitWrapper: RetrofitWrapper
 ) {
@@ -35,7 +37,7 @@ class AccountRemoteDs @Inject constructor(
         error: (validate: Boolean) -> Unit,
         viewState: LiveDataWraper<ViewState?>
     ) {
-        val key = Cache.getString(ICache.PUBLIC_RSA_KEY_CACHE, "")
+        val key = tCache.getString(ICache.PUBLIC_RSA_KEY_CACHE, "")
         if (key.isSpace()) {
             retrofitWrapper.observeErrorData(
                 appApi.platformParams()
@@ -51,7 +53,7 @@ class AccountRemoteDs @Inject constructor(
                                 params["browserInfo"] = browserInfo
                                 val paramsJson = GsonBuilder().create().toJson(params)
                                 try {
-                                    Encrypts.rsaEncryptPublicKey(paramsJson, it)
+                                    tEncrypt.rsaEncryptPublicKey(paramsJson, it)
                                         ?.let { observable = accountApi.login(it) }
                                 } catch (e: Exception) {
                                 }
@@ -63,7 +65,7 @@ class AccountRemoteDs @Inject constructor(
                     accountLocalDs.saveIsLogin(true)
                     it?.let {
                         if (!it.isBlank()) {
-                            Cache.putString(ICache.TOKEN_CACHE, it)
+                            tCache.putString(ICache.TOKEN_CACHE, it)
                         }
                     }
                     success()
@@ -110,7 +112,7 @@ class AccountRemoteDs @Inject constructor(
         params["browserInfo"] = browserInfo
         val paramsJson = GsonBuilder().create().toJson(params)
         try {
-            Encrypts.rsaEncryptPublicKey(paramsJson, key)?.let {
+            tEncrypt.rsaEncryptPublicKey(paramsJson, key)?.let {
                 retrofitWrapper.observeErrorData(
                     accountApi.login(it),
                     {
@@ -118,7 +120,7 @@ class AccountRemoteDs @Inject constructor(
                         accountLocalDs.saveIsLogin(true)
                         it?.let {
                             if (!it.isBlank()) {
-                                Cache.putString(ICache.TOKEN_CACHE, it)
+                                tCache.putString(ICache.TOKEN_CACHE, it)
                             }
                         }
                         success()
@@ -149,7 +151,7 @@ class AccountRemoteDs @Inject constructor(
             accountLocalDs.saveIsLogin(true)
             it?.let {
                 val token = it.token
-                if (!token.isSpace()) Cache.putString(ICache.TOKEN_CACHE, token)
+                if (!token.isSpace()) tCache.putString(ICache.TOKEN_CACHE, token)
             }
         }, { code, msg ->
             //缓存用户未登录
@@ -161,7 +163,7 @@ class AccountRemoteDs @Inject constructor(
     fun loginInfo() {
         retrofitWrapper.observe(accountApi.userinfo(), {
             //缓存用户登录信息
-            it?.let { Cache.putString(ICache.USERINFO_CACHE, GsonBuilder().create().toJson(it)) }
+            it?.let { tCache.putString(ICache.USERINFO_CACHE, GsonBuilder().create().toJson(it)) }
         })
     }
 

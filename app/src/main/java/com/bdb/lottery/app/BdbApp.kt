@@ -3,52 +3,51 @@ package com.bdb.lottery.app
 import android.app.Application
 import android.content.Context
 import android.os.Process
-import android.os.SystemClock
-import android.util.Log
 import androidx.multidex.MultiDex
-import com.bdb.lottery.utils.Apps
-import com.bdb.lottery.utils.Configs
+import com.bdb.lottery.utils.ui.TApp
+import com.bdb.lottery.utils.TConfig
 import com.bdb.lottery.utils.timber.LogTree
+import com.bdb.lottery.utils.ui.TActivityLifecycle
 import com.bdb.lottery.widget.CustomHeader
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import com.scwang.smart.refresh.layout.api.RefreshFooter
-import com.scwang.smart.refresh.layout.api.RefreshHeader
-import com.scwang.smart.refresh.layout.api.RefreshLayout
-import com.scwang.smart.refresh.layout.listener.DefaultRefreshFooterCreator
-import com.scwang.smart.refresh.layout.listener.DefaultRefreshHeaderCreator
 import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.mmkv.MMKV
 import dagger.hilt.android.HiltAndroidApp
 import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import me.jessyan.autosize.AutoSizeConfig
 import timber.log.Timber
+import javax.inject.Inject
 
 
 @HiltAndroidApp
 class BdbApp : Application() {
+    @Inject
+    lateinit var tApp: TApp
+
+    @Inject
+    lateinit var logTree: LogTree
+
+    @Inject
+    lateinit var tConfig: TConfig
+
+    @Inject
+    lateinit var tActivityLifecycle: TActivityLifecycle
+
     companion object {
         lateinit var context: Context
+        lateinit var sApp: Application
+
         //static代码段可以防止内存泄露，设置默认刷新和加载样式
         //设置全局的Header构建器
         init {
-            SmartRefreshLayout.setDefaultRefreshHeaderCreator(object :DefaultRefreshHeaderCreator{
-                override fun createRefreshHeader(
-                    context: Context,
-                    layout: RefreshLayout
-                ): RefreshHeader {
-                    return CustomHeader(context);//.setTimeFormat(new DynamicTimeFormat("更新于 %s"));//指定为经典Header，默认是 贝塞尔雷达Header
-                }
-            })
+            SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, layout ->
+                CustomHeader(context);//.setTimeFormat(new DynamicTimeFormat("更新于 %s"));//指定为经典Header，默认是 贝塞尔雷达Header
+            }
 
-            SmartRefreshLayout.setDefaultRefreshFooterCreator(object : DefaultRefreshFooterCreator {
-                override fun createRefreshFooter(
-                    context: Context,
-                    layout: RefreshLayout
-                ): RefreshFooter {
-                    return ClassicsFooter(context).setDrawableSize(20F);
-                }
-            })
+            SmartRefreshLayout.setDefaultRefreshFooterCreator { context, layout ->
+                ClassicsFooter(context).setDrawableSize(20F);
+            }
         }
     }
 
@@ -59,7 +58,9 @@ class BdbApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        sApp = this
         context = applicationContext
+        registerActivityLifecycleCallbacks(tActivityLifecycle)
 
         //必须主线程
         MMKV.initialize(this)
@@ -88,18 +89,18 @@ class BdbApp : Application() {
     private fun initBugly() {
         // 设置是否为上报进程
         val strategy = CrashReport.UserStrategy(context)
-        strategy.setUploadProcess(Apps.isMainProcess())
+        strategy.setUploadProcess(tApp.isMainProcess())
         // 初始化Bugly
         CrashReport.initCrashReport(
             context,
-            Configs.buglyAppId(),
-            Configs.isDebug(),
+            tConfig.buglyAppId(),
+            tConfig.isDebug(),
             strategy
         )
     }
 
     private fun initThirdLibs() {
-        Timber.plant(LogTree())
+        Timber.plant(logTree)
         AutoSizeConfig.getInstance().setCustomFragment(true)
     }
 

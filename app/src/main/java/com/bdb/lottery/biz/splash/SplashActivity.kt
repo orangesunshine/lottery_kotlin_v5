@@ -7,24 +7,29 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
-import com.bdb.lottery.const.HttpConstUrl
+import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
-import com.bdb.lottery.utils.Apps
-import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.ui.TApp
+import com.bdb.lottery.utils.cache.TCache
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.splash_activity.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity(R.layout.splash_activity) {
     private val vm by viewModels<SplashViewModel>()
+    @Inject
+    lateinit var tApp: TApp
+    @Inject
+    lateinit var tCache: TCache
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resetCache()//重置cache
-        splash_version_name_tv.text = Apps.getAppVersionName(this)
+        splash_version_name_tv.text = tApp.getAppVersionName()
         showLoading()
         loadingAnim()
 
@@ -33,11 +38,11 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
 
     //重启app清空cache
     private fun resetCache() {
-        Cache.putString(ICache.DOMAIN_URL_CACHE)//域名
-        Cache.putString(HttpConstUrl.URL_PLATFORM_PARAMS)//平台
-        Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE)//公钥
-        Cache.putString(HttpConstUrl.URL_CUSTOM_SERVICE)//客服线
-        Cache.putString(HttpConstUrl.URL_APK_VERSION)//版本信息
+        tCache.putString(ICache.DOMAIN_URL_CACHE)//域名
+        tCache.putString(IUrl.URL_PLATFORM_PARAMS)//平台
+        tCache.putString(ICache.PUBLIC_RSA_KEY_CACHE)//公钥
+        tCache.putString(IUrl.URL_CUSTOM_SERVICE)//客服线
+        tCache.putString(IUrl.URL_APK_VERSION)//版本信息
     }
 
     private fun loadingAnim() {
@@ -61,7 +66,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
             if (it) {
                 //获取域名成功
                 dismissLoading()
-                if (Cache.getBoolean(ICache.GUIDE_CACHE)) {
+                if (tCache.getBoolean(ICache.GUIDE_CACHE)) {
                     startNdFinish<LoginActivity>()
                 } else {
                     //首次进入
@@ -72,7 +77,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
     }
 
     override fun onBack() {
-        Apps.killApp()
+        tApp.killApp()
     }
 
     override fun attachStatusBar(): Boolean {

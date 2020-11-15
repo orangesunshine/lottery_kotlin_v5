@@ -3,11 +3,14 @@ package com.bdb.lottery.utils
 import android.text.TextUtils
 import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.const.IDebugConfig
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * 配置
  */
-object Configs {
+@Singleton
+class TConfig @Inject constructor() {
     /**
      * 判断是不是debug
      */

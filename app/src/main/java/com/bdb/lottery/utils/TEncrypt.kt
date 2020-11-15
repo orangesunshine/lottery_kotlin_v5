@@ -5,9 +5,11 @@ import java.io.ByteArrayOutputStream
 import java.security.KeyFactory
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-object Encrypts {
+@Singleton
+class TEncrypt @Inject constructor() {
     //rsa加密
     fun rsaEncryptPublicKey(plainText: String, publicKey: String): String? {
         return encryptByPublicKey(plainText.toByteArray(), publicKey)?.run { base64Encode(this) }

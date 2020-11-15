@@ -1,4 +1,4 @@
-package com.bdb.lottery.base.module
+package com.bdb.lottery.module
 
 import com.bdb.lottery.datasource.account.AccountApi
 import com.bdb.lottery.datasource.app.AppApi
@@ -8,7 +8,6 @@ import com.bdb.lottery.datasource.home.HomeApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ApplicationComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton

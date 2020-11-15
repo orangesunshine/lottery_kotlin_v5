@@ -8,14 +8,14 @@ import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
-import com.bdb.lottery.const.HttpConstUrl
+import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.const.IDebugConfig
 import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.*
-import com.bdb.lottery.utils.Configs
-import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.TConfig
+import com.bdb.lottery.utils.cache.TCache
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -26,17 +26,19 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 class DomainRemoteDs @Inject constructor(
+    private val tCache: TCache,
+    private val tConfig: TConfig,
     private val domainApi: DomainApi,
-    private val domainLocalDs: DomainLocalDs
+    private val domainLocalDs: DomainLocalDs,
 ) {
     val cache = { platform: PlatformData? ->
         platform?.let {
             //保存配置
-            Cache.putString(HttpConstUrl.URL_PLATFORM_PARAMS, GsonBuilder().create().toJson(it))
+            tCache.putString(IUrl.URL_PLATFORM_PARAMS, GsonBuilder().create().toJson(it))
 
             //保存rsa公钥
             it.rsaPublicKey.let {
-                Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it)
+                tCache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it)
             }
         }
     }
@@ -83,7 +85,7 @@ class DomainRemoteDs @Inject constructor(
             }
 
 
-            if (Configs.isDebug()) {
+            if (tConfig.isDebug()) {
                 debugDomain({
                     //线上域名获取成功
                     if (domainSave(it)) domainSuccess() else onlineDomainError()
@@ -110,10 +112,10 @@ class DomainRemoteDs @Inject constructor(
      */
     fun debugDomain(
         success: ((PlatformData?) -> Any)? = null,
-        error: ((String?) -> Any)? = null
+        error: ((String?) -> Any)? = null,
     ) {
         observe(domainApi.urlPlatformParams(
-            IDebugConfig.URL_TEST_DOMAIN + HttpConstUrl.URL_PLATFORM_PARAMS
+            IDebugConfig.URL_TEST_DOMAIN + IUrl.URL_PLATFORM_PARAMS
         ), {
             Timber.d("online__onNext__response: ${it}")
             //获取配置成功
@@ -136,12 +138,12 @@ class DomainRemoteDs @Inject constructor(
      */
     fun onlineDomain(
         success: ((PlatformData?) -> Any)? = null,
-        error: ((String?) -> Any)? = null
+        error: ((String?) -> Any)? = null,
     ) {
         Timber.d("getOnlineDomain")
         val configPath = BdbApp.context.getString(R.string.api_txt_path)
         val onlineObservables = mutableListOf<Observable<String>>()
-        val hosts = HttpConstUrl.DOMAINS_API_TXT
+        val hosts = IUrl.DOMAINS_API_TXT
         if (!hosts.isNullOrEmpty()) {
             for (host in hosts) {
                 if (host.isDomainUrl()) {
@@ -168,7 +170,7 @@ class DomainRemoteDs @Inject constructor(
                 .flatMap {
                     Timber.d("online域名：${it}")
                     if (it.isDomainUrl()) domainApi.urlPlatformParams(
-                        it + HttpConstUrl.URL_PLATFORM_PARAMS
+                        it + IUrl.URL_PLATFORM_PARAMS
                     ) else null
                 }, {
                 //获取配置成功
@@ -215,7 +217,7 @@ class DomainRemoteDs @Inject constructor(
     fun localDomain(
         @StringRes localDomainStringId: Int,
         success: ((PlatformData?) -> Any)? = null,
-        error: (() -> Any)? = null
+        error: (() -> Any)? = null,
     ) {
         Timber.d("getLocalDomain")
         val localDomain = BdbApp.context.getString(localDomainStringId)
@@ -224,7 +226,7 @@ class DomainRemoteDs @Inject constructor(
             val localObservables = mutableListOf<Observable<BaseResponse<PlatformData>>>()
             if (!domains.isNullOrEmpty()) {
                 for (domain in domains) {
-                    localObservables.add(domainApi.urlPlatformParams(domain + HttpConstUrl.URL_PLATFORM_PARAMS))
+                    localObservables.add(domainApi.urlPlatformParams(domain + IUrl.URL_PLATFORM_PARAMS))
                 }
                 var disposable: Disposable? = null
                 val already = AtomicBoolean(false)
@@ -279,7 +281,7 @@ class DomainRemoteDs @Inject constructor(
         error: ((code: Int, msg: String?) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
-        viewState: LiveDataWraper<ViewState>? = null
+        viewState: LiveDataWraper<ViewState>? = null,
     ) {
         observable
             .subscribeOn(Schedulers.io())

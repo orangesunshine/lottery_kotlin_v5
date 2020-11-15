@@ -1,7 +1,7 @@
 package com.bdb.lottery.datasource.home
 
 import com.bdb.lottery.base.response.BaseResponse
-import com.bdb.lottery.const.HttpConstUrl
+import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.datasource.home.data.BannerData
 import com.bdb.lottery.datasource.home.data.NoticeData
 import io.reactivex.rxjava3.core.Observable
@@ -11,11 +11,11 @@ import retrofit2.http.POST
 
 interface HomeApi {
     //轮播图
-    @POST(HttpConstUrl.URL_HOME_BANNER)
+    @POST(IUrl.URL_HOME_BANNER)
     @FormUrlEncoded
     fun bannerDatas(@Field("type") type: String = "4"): Observable<BaseResponse<BannerData?>>
 
     //通知
-    @POST(HttpConstUrl.URL_NOTICE)
+    @POST(IUrl.URL_NOTICE)
     fun notice(): Observable<BaseResponse<NoticeData?>>
 }

@@ -1,6 +1,6 @@
 package com.bdb.lottery.const
 
-interface HttpConstUrl {
+interface IUrl {
     companion object {
         /**
          * TXT域名

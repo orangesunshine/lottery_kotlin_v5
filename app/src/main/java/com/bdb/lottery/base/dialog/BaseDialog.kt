@@ -6,10 +6,13 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.bdb.lottery.R
-import com.bdb.lottery.utils.Screens
-import com.bdb.lottery.utils.Sizes
+import com.bdb.lottery.utils.ui.TScreen
+import com.bdb.lottery.utils.ui.TSize
+import dagger.hilt.android.scopes.ActivityScoped
 import timber.log.Timber
+import javax.inject.Inject
 
+@ActivityScoped
 open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     private var rootView: View? = null
     var mDimAmount = 0.5f //背景昏暗度
@@ -19,6 +22,10 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     var mOutCancel = true //点击外部取消
     var mWidth = 0f
     var mHeight = 0f
+    @Inject
+    lateinit var tScreen: TScreen;
+    @Inject
+    lateinit var tSize: TSize
 
     //vars
     protected var statusbarLight = true;//状态栏是否半透明
@@ -55,16 +62,16 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
 
             //设置dialog宽度
             if (mWidth == 0f) {
-                params.width = Screens.screenWidth() - 2 * Sizes.dp2px(mMargin)
+                params.width = tScreen.screenSize()[0] - 2 * tSize.dp2px(mMargin)
             } else {
-                params.width = Sizes.dp2px(mWidth)
+                params.width = tSize.dp2px(mWidth)
             }
 
             //设置dialog高度
             if (mHeight == 0f) {
                 params.height = WindowManager.LayoutParams.WRAP_CONTENT
             } else {
-                params.height = Sizes.dp2px(mHeight)
+                params.height = tSize.dp2px(mHeight)
             }
 
             //设置dialog动画

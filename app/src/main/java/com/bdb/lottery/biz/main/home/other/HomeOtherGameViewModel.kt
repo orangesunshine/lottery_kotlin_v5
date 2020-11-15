@@ -18,7 +18,7 @@ class HomeOtherGameViewModel @ViewModelInject @Inject constructor(
     //娱乐
     fun otherGame() {
         gameRemoteDs.cachePriOtherGame {
-            it?.let { it ->
+            it?.let {
                 val mir = it.MIR
                 mir?.let {
                     appRemoteDs.cachePriPlatformParams { platform: PlatformData? ->

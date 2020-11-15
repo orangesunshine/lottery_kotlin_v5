@@ -1,12 +1,13 @@
 package com.bdb.lottery.utils.cache
 
 import com.tencent.mmkv.MMKV
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * 统一缓存方法，mmkv可以替换
  */
-object Cache {
-    val mmkv = MMKV.defaultMMKV()
+class TCache @Inject constructor(private val mmkv: MMKV) {
 
     fun putString(cacheKey: String, cacheValue: String? = null) {
         mmkv.putString(cacheKey, cacheValue)

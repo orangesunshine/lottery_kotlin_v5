@@ -19,14 +19,19 @@ import kotlinx.android.synthetic.main.main_activity.*
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
+    val HOME_FRAGMENT_TAG: String = "HOME_FRAGMENT_TAG"
+    val PROMOTION_FRAGMENT_TAG: String = "PROMOTION_FRAGMENT_TAG"
+    val FIND_FRAGMENT_TAG: String = "FIND_FRAGMENT_TAG"
+    val USER_FRAGMENT_TAG: String = "USER_FRAGMENT_TAG"
+
     private var mIndex = -1
     private lateinit var fragments: Array<Fragment>
     private lateinit var rbs: Array<RadioButton>
     private val tags: Array<String> = arrayOf(
-        ITag.HOME_FRAGMENT_TAG,
-        ITag.PROMOTION_FRAGMENT_TAG,
-        ITag.FIND_FRAGMENT_TAG,
-        ITag.USER_FRAGMENT_TAG
+        HOME_FRAGMENT_TAG,
+        PROMOTION_FRAGMENT_TAG,
+        FIND_FRAGMENT_TAG,
+        USER_FRAGMENT_TAG
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

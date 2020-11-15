@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.datasource.game.data.OtherGameDataMapper
 import com.bdb.lottery.datasource.game.data.OtherPlatformMIR
-import com.bdb.lottery.utils.Games
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import com.chad.library.adapter.base.listener.OnItemClickListener

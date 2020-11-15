@@ -10,11 +10,11 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.biz.register.RegisterActivity
-import com.bdb.lottery.const.HttpConstUrl
+import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.extension.*
-import com.bdb.lottery.utils.Apps
-import com.bdb.lottery.utils.Devices
+import com.bdb.lottery.utils.ui.TApp
+import com.bdb.lottery.utils.TDevice
 import com.bumptech.glide.load.model.GlideUrl
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.login_activity.*
@@ -27,7 +27,9 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
     @Inject
     lateinit var domainLocalDs: DomainLocalDs
     @Inject
-    lateinit var devices: Devices
+    lateinit var tDevice: TDevice
+    @Inject
+    lateinit var tApp: TApp
 
     private var mPwdVisible = false
 
@@ -45,7 +47,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        login_versionname_tv.text = Apps.getAppVersionName(this)//显示版本信息
+        login_versionname_tv.text = tApp.getAppVersionName()//显示版本信息
 
         login_toregister_bt.setOnClickListener { startNdFinish<RegisterActivity>() }//立即注册
 
@@ -107,13 +109,13 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
             if (it) {
                 login_verifycode_ll.visible(true)
                 val url =
-                    domainLocalDs.getDomain() + HttpConstUrl.URL_VERIFYCODE + "?" + Math.random()
+                    domainLocalDs.getDomain() + IUrl.URL_VERIFYCODE + "?" + Math.random()
                 val gliderUrl = GlideUrl(
                     url
                 ) {
                     val header: MutableMap<String, String> = HashMap()
                     header["C"] = "a"
-                    header["D"] = devices.getDeviceUUid()
+                    header["D"] = tDevice.getDeviceUUid()
                     header
                 }
                 login_verifycode_iv.loadImageUrl(gliderUrl)

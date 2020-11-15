@@ -10,16 +10,19 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.datasource.game.data.HomeFavoritesMapper
 import com.bdb.lottery.extension.ob
-import com.bdb.lottery.utils.Sizes
+import com.bdb.lottery.utils.ui.TSize
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.single_recyclerview_layout.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeCollectionFragment : BaseFragment(R.layout.single_recyclerview_layout) {
     private val vm by viewModels<HomeCollectionViewModel>()
+    @Inject
+    lateinit var tSize: TSize
 
     //region fling 惯性处理
     private var bindNoFling: ((RecyclerView) -> Unit)? = null
@@ -53,7 +56,7 @@ class HomeCollectionFragment : BaseFragment(R.layout.single_recyclerview_layout)
         ob(vm.favouritesLd.getLiveData()) {
             home_single_rv.run {
                 layoutManager = GridLayoutManager(context, 2)
-                setPadding(Sizes.dp2px(4f))
+                setPadding(tSize.dp2px(4f))
                 adapter =
                     object : BaseQuickAdapter<HomeFavoritesMapper, BaseViewHolder>(
                         R.layout.home_common_img_item, it

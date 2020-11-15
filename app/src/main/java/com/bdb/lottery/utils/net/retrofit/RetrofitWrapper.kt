@@ -10,7 +10,7 @@ import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.extension.toast
-import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.cache.TCache
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -23,6 +23,7 @@ import javax.inject.Inject
 
 class RetrofitWrapper @Inject constructor(
     @ActivityContext private val context: Context,
+    val tCache: TCache,
     private val domainLocalDs: DomainLocalDs,
     private val domainRemoteDs: DomainRemoteDs,
 ) {
@@ -119,12 +120,12 @@ class RetrofitWrapper @Inject constructor(
         observable: Observable<BaseResponse<Data?>>,
         success: ((Data?) -> Unit)? = null,
     ) {
-        Cache.putString(cacheKey)//清空缓存
+        tCache.putString(cacheKey)//清空缓存
         observe(
             observable,
             {
                 it?.let {
-                    Cache.putString(
+                    tCache.putString(
                         cacheKey,
                         GsonBuilder().create().toJson(it)
                     )
@@ -140,7 +141,7 @@ class RetrofitWrapper @Inject constructor(
         noinline success: ((Data?) -> Unit)? = null,
     ) {
         //优先缓存
-        val cache = Cache.getString(cacheKey)
+        val cache = tCache.getString(cacheKey)
         Timber.d("cache: ${cache}")
         if (!cache.isSpace()) {
             try {
@@ -152,7 +153,7 @@ class RetrofitWrapper @Inject constructor(
                 Timber.d("cacheKey: ${cacheKey}==>error:${e.msg}")
                 observe(observable, {
                     it?.let {
-                        Cache.putString(
+                        tCache.putString(
                             cacheKey,
                             GsonBuilder().create().toJson(it)
                         )
@@ -163,7 +164,7 @@ class RetrofitWrapper @Inject constructor(
         } else {
             observe(observable, {
                 it?.let {
-                    Cache.putString(
+                    tCache.putString(
                         cacheKey,
                         GsonBuilder().create().toJson(it)
                     )

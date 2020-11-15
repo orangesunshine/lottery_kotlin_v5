@@ -10,11 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.datasource.game.data.AllGameDataMapper
 import com.bdb.lottery.datasource.game.data.AllGameItemData
-import com.bdb.lottery.utils.Games
+import com.bdb.lottery.module.AppEntries
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import com.chad.library.adapter.base.listener.OnItemClickListener
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
+import dagger.hilt.android.EntryPointAccessors
 import net.cachapa.expandablelayout.ExpandableLayout
 
 class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
@@ -28,6 +29,8 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
     private var expandLayouts = SparseArray<ExpandableLayout>()
     private var imageViews = SparseArray<ImageView>()
     private var recyclerViews = SparseArray<RecyclerView>()
+    private val tGame =
+        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideGame()
 
     override fun convert(holder: BaseViewHolder, item: AllGameDataMapper) {
         val position = holder.adapterPosition
@@ -40,13 +43,13 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
         if (item.leftGameType > 0)
             holder.setImageResource(
                 R.id.home_allgame_left_ariv,
-                Games.gameTypeDrawable(item.leftGameType)
+                tGame.gameTypeDrawable(item.leftGameType)
             )
 
         if (item.rightGameType > 0)
             holder.setImageResource(
                 R.id.home_allgame_right_ariv,
-                Games.gameTypeDrawable(item.rightGameType)
+                tGame.gameTypeDrawable(item.rightGameType)
             )
 
         if (null == recyclerView.adapter) {
@@ -106,7 +109,7 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
         recyclerView: RecyclerView,
         expandableLayout: ExpandableLayout?,
         position: Int,
-        isLeft: Boolean
+        isLeft: Boolean,
     ) {
         imageView.setImageResource(if (isLeft) R.drawable.home_allgame_divide_left else R.drawable.home_allgame_divide_right)
         recyclerView.layoutManager = GridLayoutManager(context, 2)

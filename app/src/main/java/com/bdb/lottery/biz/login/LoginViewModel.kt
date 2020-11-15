@@ -8,12 +8,13 @@ import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
-import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.cache.TCache
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class LoginViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
+    val tCache: TCache,
     private val accountRemoteDs: AccountRemoteDs,
     private val appRemoteDs: AppRemoteDs
 ) : BaseViewModel() {
@@ -33,9 +34,9 @@ class LoginViewModel @ViewModelInject @Inject constructor(
             success()
             userInfo()//获取用户信息
             //登录成功保存用户名、密码、是否记住密码
-            Cache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
-            Cache.putString(ICache.LOGIN_USERNAME_CACHE, username)
-            Cache.putString(ICache.LOGIN_PWD_CACHE, if (rememberPwd) pwd else "")
+            tCache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
+            tCache.putString(ICache.LOGIN_USERNAME_CACHE, username)
+            tCache.putString(ICache.LOGIN_PWD_CACHE, if (rememberPwd) pwd else "")
         }, { validate ->
             validateLd.setData(validate)
         }, viewState = viewStatus)
@@ -68,7 +69,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     //刷新公钥
     fun refreshRsaKey() {
         appRemoteDs.platformParams {
-            Cache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it?.rsaPublicKey)
+            tCache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it?.rsaPublicKey)
         }
     }
 }

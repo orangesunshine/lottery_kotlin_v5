@@ -9,14 +9,20 @@ import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.alphaVisible
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
-import com.bdb.lottery.utils.Apps
-import com.bdb.lottery.utils.cache.Cache
+import com.bdb.lottery.utils.ui.TApp
+import com.bdb.lottery.utils.cache.TCache
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import kotlinx.android.synthetic.main.guide_activity.*
+import javax.inject.Inject
 
 
 class GuideActivity : BaseActivity(R.layout.guide_activity) {
+    @Inject
+    lateinit var tApp: TApp
+    @Inject
+    lateinit var tCache: TCache
+
     override fun initVar() {
         super.initVar()
         statusbarLight = false
@@ -26,7 +32,7 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
         super.onCreate(savedInstanceState)
         guide_dot_first_v.isSelected = true
         val imgs = mutableListOf<Int>().apply {
-            if (!Apps.isLBH(this@GuideActivity)) {
+            if (!tApp.isLBH()) {
                 add(R.drawable.guide_first_bg);
             } else {
                 guide_dot_third_v.visible(false)
@@ -37,7 +43,7 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
 
         //去登录
         guide_tologin_tv.setOnClickListener {
-            Cache.putBoolean(ICache.GUIDE_CACHE, true)
+            tCache.putBoolean(ICache.GUIDE_CACHE, true)
             startNdFinish<MainActivity>()
         }
 

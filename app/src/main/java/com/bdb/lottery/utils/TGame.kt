@@ -1,25 +1,22 @@
 package com.bdb.lottery.utils
 
 import com.bdb.lottery.R
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_KLSF
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_KS
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_PCDD
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_PK10
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_PLS_FC3D
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_SSC
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_SYX5
+import com.bdb.lottery.const.IGame.Companion.GAMEKIND_XGLHC
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object Games {
-    const val GAMEKIND_SSC = 1 //时时彩
-
-    const val GAMEKIND_SYX5 = 3 //十一选5
-
-    const val GAMEKIND_PK10 = 5 //PK10
-
-    const val GAMEKIND_PLS_FC3D = 2 //排列三，福彩3D
-
-    const val GAMEKIND_KS = 7 //快三
-
-    const val GAMEKIND_KLSF = 9 //快乐10分
-
-    const val GAMEKIND_PCDD = 6 //香港六合彩
-
-    const val GAMEKIND_XGLHC = 8 //香港六合彩
-
-
+@Singleton
+class TGame @Inject constructor() {
+    /**
+     * 首页home->全部游戏->游戏大类图片
+     */
     fun gameTypeDrawable(gameType: Int): Int {
         var drawable: Int = R.drawable.home_placeholder_round_img_ic
         when (gameType) {

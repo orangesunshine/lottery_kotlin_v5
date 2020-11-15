@@ -1,12 +1,17 @@
-package com.bdb.lottery.utils
+package com.bdb.lottery.utils.ui
 
+import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import com.bdb.lottery.app.BdbApp
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object Sizes {
+@Singleton
+class TSize @Inject constructor(@ApplicationContext val context: Context) {
     fun scale(): Float {
         return BdbApp.context.resources.displayMetrics.density
     }
@@ -177,6 +182,28 @@ object Sizes {
         }
         view.measure(widthSpec, heightSpec)
         return intArrayOf(view.measuredWidth, view.measuredHeight)
+    }
+
+    /**
+     * statusbar height
+     */
+    fun getStatusBarHeight(): Int {
+        val resources = Resources.getSystem()
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return resources.getDimensionPixelSize(resourceId)
+    }
+
+    /**
+     * navbar height
+     */
+    fun getNavBarHeight(): Int {
+        val res = Resources.getSystem()
+        val resourceId = res.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resourceId != 0) {
+            res.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

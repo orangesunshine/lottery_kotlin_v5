@@ -9,13 +9,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.extension.ob
-import com.bdb.lottery.utils.Sizes
+import com.bdb.lottery.utils.ui.TSize
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.single_recyclerview_layout.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeOtherGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
     private val vm by viewModels<HomeOtherGameViewModel>()
+    @Inject
+    lateinit var tSize: TSize
 
     //region fling 惯性处理
     private var bindNoFling: ((RecyclerView) -> Unit)? = null
@@ -50,7 +53,7 @@ class HomeOtherGameFragment : BaseFragment(R.layout.single_recyclerview_layout) 
         ob(vm.otherGameLd.getLiveData()) {
             home_single_rv.run {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                setPadding(Sizes.dp2px(4f))
+                setPadding(tSize.dp2px(4f))
                 adapter = HomeOtherGameAdapter(it)
             }
         }

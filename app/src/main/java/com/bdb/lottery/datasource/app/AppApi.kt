@@ -1,9 +1,9 @@
 package com.bdb.lottery.datasource.app
 
 import com.bdb.lottery.base.response.BaseResponse
-import com.bdb.lottery.const.HttpConstUrl
-import com.bdb.lottery.const.HttpConstUrl.Companion.URL_APK_VERSION
-import com.bdb.lottery.const.HttpConstUrl.Companion.URL_CUSTOM_SERVICE
+import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.const.IUrl.Companion.URL_APK_VERSION
+import com.bdb.lottery.const.IUrl.Companion.URL_CUSTOM_SERVICE
 import com.bdb.lottery.datasource.app.data.ApkVersionData
 import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.app.data.CustomServiceData
@@ -15,7 +15,7 @@ import retrofit2.http.POST
 interface AppApi {
 
     //获取前端配置
-    @POST(HttpConstUrl.URL_PLATFORM_PARAMS)
+    @POST(IUrl.URL_PLATFORM_PARAMS)
     fun platformParams(): Observable<BaseResponse<PlatformData?>>
 
     //客服

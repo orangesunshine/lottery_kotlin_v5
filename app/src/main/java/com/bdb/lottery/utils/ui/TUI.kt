@@ -1,4 +1,4 @@
-package com.bdb.lottery.utils
+package com.bdb.lottery.utils.ui
 
 import android.app.Activity
 import android.graphics.Color
@@ -6,12 +6,19 @@ import android.os.Build
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.ColorInt
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.ActivityScoped
+import javax.inject.Inject
 
-object UIs {
+/**
+ * 状态栏
+ */
+@ActivityScoped
+class TUI @Inject constructor(@ActivityContext val activity: Activity) {
     /**
      * 透明状态栏,此时状态栏高度为0，可以通过布局文件自定statusbar
      */
-    fun statusBarTranslucent(activity: Activity) {
+    fun statusBarTranslucent() {
         val window = activity.window
         // 设置状态栏全透明
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
