@@ -52,7 +52,7 @@ class CustomHeader @JvmOverloads constructor(
     protected var mTextFailed = "刷新失败"
     protected var mTextUpdate = "最后更新： HH:mm"
     var tCache: TCache =
-        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideCache()
+        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTCache()
 
     /**
      * 更新显示最后更新时间

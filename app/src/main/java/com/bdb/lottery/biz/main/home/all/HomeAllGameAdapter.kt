@@ -30,7 +30,7 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
     private var imageViews = SparseArray<ImageView>()
     private var recyclerViews = SparseArray<RecyclerView>()
     private val tGame =
-        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideGame()
+        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTGame()
 
     override fun convert(holder: BaseViewHolder, item: AllGameDataMapper) {
         val position = holder.adapterPosition
