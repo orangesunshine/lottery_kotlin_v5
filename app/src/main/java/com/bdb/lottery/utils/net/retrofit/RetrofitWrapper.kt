@@ -1,6 +1,5 @@
 package com.bdb.lottery.utils.net.retrofit
 
-import android.content.Context
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.datasource.common.LiveDataWraper
@@ -9,11 +8,10 @@ import com.bdb.lottery.datasource.domain.DomainRemoteDs
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.msg
-import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.ui.toast.WindowManagerToast
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import dagger.hilt.android.qualifiers.ActivityContext
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -22,7 +20,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class RetrofitWrapper @Inject constructor(
-    @ActivityContext private val context: Context,
+    private val toast: WindowManagerToast,
     val tCache: TCache,
     private val domainLocalDs: DomainLocalDs,
     private val domainRemoteDs: DomainRemoteDs,
@@ -55,7 +53,7 @@ class RetrofitWrapper @Inject constructor(
                     val code = it.code
                     val msg = it.msg
                     Timber.d("observe__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
-                    context.toast(msg)
+                    toast.show(msg)
                     error?.invoke(code, msg)
                     if (code >= 500) domainLocalDs.clearDomain()
                     viewState?.setData(ViewState(false))
@@ -97,7 +95,7 @@ class RetrofitWrapper @Inject constructor(
                         val code = it.code
                         val msg = it.msg
                         Timber.d("observeErrorData__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
-                        context.toast(msg)
+                        toast.show(msg)
                         if (it is ApiException) {
                             error?.invoke(it.response)
                         } else {

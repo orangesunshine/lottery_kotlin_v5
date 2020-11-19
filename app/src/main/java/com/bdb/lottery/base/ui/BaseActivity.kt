@@ -61,9 +61,9 @@ open class BaseActivity(
     }
 
     private fun actbar() {
-        actbarLeft?.let { actbarLeft().invoke(it) }
-        actbarCenter?.let { actbarCenter().invoke(it) }
-        actbarRight?.let { actbarRight().invoke(it) }
+        actbarLeft?.let { actbarLeft(it) }
+        actbarCenter?.let { actbarCenter(it) }
+        actbarRight?.let { actbarRight(it) }
     }
 
     //emptyErrorRoot()/content 添加空布局、网络错误
@@ -205,15 +205,16 @@ open class BaseActivity(
         return ""
     }
 
-    protected open fun actbarCenter(): (View?) -> Unit {
-        return { it?.let { if (it is TextView) it.text = actbarTitle() } }
+    protected open fun actbarCenter(center: View) {
+        if (center is TextView)
+            center.text = actbarTitle()
     }
 
-    protected open fun actbarLeft(): (ViewGroup?) -> Unit {
-        return { it?.setOnClickListener { onBack() } }
+    protected open fun actbarLeft(left: View) {
+        left.setOnClickListener { onBack() }
     }
 
-    protected open fun actbarRight(): (ViewGroup?) -> Unit {
-        return {}
+    protected open fun actbarRight(right: View) {
+
     }
 }

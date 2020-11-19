@@ -44,7 +44,7 @@ class CustomToastView @JvmOverloads constructor(
         addView(mToastTv, lp)
     }
 
-    fun setText(text: CharSequence) {
+    fun setText(text: CharSequence?) {
         mToastTv.setText(text)
     }
 }

@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
+import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.TPermision
 import com.bdb.lottery.utils.TThread
 import com.bdb.lottery.utils.ui.*
@@ -36,7 +37,7 @@ class ActivityToast @Inject constructor(
     private val TAG_TOAST = "TAG_TOAST"
     private var mActivityLifecycleCallbacks: ActivityLifecycleCallbacks? = null
 
-    override fun show(text: CharSequence, duration: Long) {
+    override fun show(text: CharSequence?, duration: Long) {
         if (!tActivityLifecycle.isAppForeground()) {
             // try to use system toast
             showSystemToast(text, duration)
@@ -88,7 +89,7 @@ class ActivityToast @Inject constructor(
         super.cancel()
     }
 
-    private fun showSystemToast(text: CharSequence, duration: Long) {
+    private fun showSystemToast(text: CharSequence?, duration: Long) {
         val systemToast = SystemToast(context)
         systemToast.mToast = mToast
         systemToast.show(text, duration)
@@ -96,7 +97,7 @@ class ActivityToast @Inject constructor(
 
     private fun showWithActivity(
         activity: Activity,
-        text: CharSequence,
+        text: CharSequence?,
         index: Int,
         useAnim: Boolean
     ) {
@@ -127,7 +128,7 @@ class ActivityToast @Inject constructor(
         return toastIv
     }
 
-    private fun registerLifecycleCallback(text: CharSequence) {
+    private fun registerLifecycleCallback(text: CharSequence?) {
         val index = sShowingIndex
         mActivityLifecycleCallbacks = object : ActivityLifecycleCallbacks() {
             override fun onActivityCreated(activity: Activity) {
@@ -187,7 +188,7 @@ class SystemToast @Inject constructor(
         }
     }
 
-    override fun show(text: CharSequence, duration: Long) {
+    override fun show(text: CharSequence?, duration: Long) {
         mToast.duration = duration.toInt()
         mToastView.setText(text)
         mToast.show()
@@ -204,7 +205,7 @@ class WindowManagerToast @Inject constructor(
     private var mWM: WindowManager? = null
     private val mParams: WindowManager.LayoutParams = WindowManager.LayoutParams()
 
-    override fun show(text: CharSequence, duration: Long) {
+    override fun show(text: CharSequence?, duration: Long) {
         cancel()
         mToastView.setText(text)
         mWM = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
@@ -265,6 +266,7 @@ abstract class AbsToast constructor(
     context: Context,
 ) :
     IToast {
+    val MAX_DURATION = 10000L;
     var mToast: Toast = Toast(context)
     protected val mToastView: CustomToastView = CustomToastView(context)
 
@@ -275,9 +277,19 @@ abstract class AbsToast constructor(
     override fun cancel() {
         mToast.cancel()
     }
+
+    fun show(text: CharSequence?) {
+        show(text, autoDuration(text))
+    }
+
+    fun autoDuration(text: CharSequence?): Long {
+        val length = if (text.isSpace()) 0 else text!!.length
+        val time = if (length < 10) 2500 else (length - 10) / 5 * 500 + 2500
+        return if (time > MAX_DURATION) MAX_DURATION else time.toLong()
+    }
 }
 
 internal interface IToast {
-    fun show(text: CharSequence, duration: Long)
+    fun show(text: CharSequence?, duration: Long)
     fun cancel()
 }
