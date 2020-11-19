@@ -17,14 +17,10 @@ class TPermision @Inject constructor(@ApplicationContext private val context: Co
     }
 
     fun toastType(): Int {
-        var type = -1
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
-            type = WindowManager.LayoutParams.TYPE_TOAST
-        } else if (isGrantedDrawOverlays()) {
-            type =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && isGrantedDrawOverlays()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE
+        } else {
+            WindowManager.LayoutParams.TYPE_TOAST
         }
-        return type
-
     }
 }

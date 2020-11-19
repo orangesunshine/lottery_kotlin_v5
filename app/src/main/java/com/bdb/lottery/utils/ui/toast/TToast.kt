@@ -3,48 +3,26 @@ package com.bdb.lottery.utils.ui.toast
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Handler
 import android.os.Message
-import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.*
-import androidx.annotation.CallSuper
-import androidx.core.view.ViewCompat
-import com.bdb.lottery.R
-import com.bdb.lottery.module.AppEntries
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.Toast
 import com.bdb.lottery.utils.TPermision
 import com.bdb.lottery.utils.TThread
 import com.bdb.lottery.utils.ui.*
-import dagger.hilt.android.EntryPointAccessors
+import com.bdb.lottery.widget.CustomToastView
+import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
-import timber.log.Timber
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
-
-class UtilsMaxWidthRelativeLayout @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
-) : RelativeLayout(context, attrs, defStyleAttr) {
-
-    private val tSize: TSize =
-        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTSize()
-    private val tScreen: TScreen =
-        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTScreen()
-    private val SPACING: Int = tSize.dp2px(80f)
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthMaxSpec =
-            MeasureSpec.makeMeasureSpec(tScreen.screenSize()[0] - SPACING,
-                MeasureSpec.AT_MOST)
-        super.onMeasure(widthMaxSpec, heightMeasureSpec)
-    }
-}
 
 class ActivityToast @Inject constructor(
     private val tImage: TImage,
@@ -52,17 +30,16 @@ class ActivityToast @Inject constructor(
     private val tActivityLifecycle: TActivityLifecycle,
     private val tSize: TSize,
     private val tThread: TThread,
-    private val tView: TView,
     @ApplicationContext private val context: Context,
 ) :
-    AbsToast(tView, context) {
+    AbsToast(context) {
     private val TAG_TOAST = "TAG_TOAST"
     private var mActivityLifecycleCallbacks: ActivityLifecycleCallbacks? = null
-    override fun show(duration: Int) {
-        if (mToast == null) return
+
+    override fun show(text: CharSequence, duration: Long) {
         if (!tActivityLifecycle.isAppForeground()) {
             // try to use system toast
-            showSystemToast(duration)
+            showSystemToast(text, duration)
             return
         }
         var hasAliveActivity = false
@@ -71,16 +48,19 @@ class ActivityToast @Inject constructor(
                 continue
             }
             hasAliveActivity = true
-            showWithActivity(activity, sShowingIndex, true)
+            cancel()
+            showWithActivity(activity, text, sShowingIndex, true)
         }
         if (hasAliveActivity) {
-            registerLifecycleCallback()
-            tThread.runOnUiThreadDelayed({ cancel() },
-                duration.toLong())
+            registerLifecycleCallback(text)
+            tThread.runOnUiThreadDelayed(
+                { cancel() },
+                duration
+            )
             ++sShowingIndex
         } else {
             // try to use system toast
-            showSystemToast(duration)
+            showSystemToast(text, duration)
         }
     }
 
@@ -108,22 +88,28 @@ class ActivityToast @Inject constructor(
         super.cancel()
     }
 
-    private fun showSystemToast(duration: Int) {
-        val systemToast = SystemToast(tView, context)
+    private fun showSystemToast(text: CharSequence, duration: Long) {
+        val systemToast = SystemToast(context)
         systemToast.mToast = mToast
-        systemToast.show(duration)
+        systemToast.show(text, duration)
     }
 
-    private fun showWithActivity(activity: Activity, index: Int, useAnim: Boolean) {
+    private fun showWithActivity(
+        activity: Activity,
+        text: CharSequence,
+        index: Int,
+        useAnim: Boolean
+    ) {
         val window = activity.window
         if (window != null) {
             val decorView = window.decorView as ViewGroup
             val lp = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            lp.gravity = mToast!!.gravity
-            lp.bottomMargin = mToast!!.yOffset + tSize.getNavBarHeight()
-            lp.leftMargin = mToast!!.xOffset
+            mToastView.setText(text)
+            lp.gravity = mToast.gravity
+            lp.bottomMargin = mToast.yOffset + tSize.getNavBarHeight()
+            lp.leftMargin = mToast.xOffset
             val toastViewSnapshot = getToastViewSnapshot(index)
             if (useAnim) {
                 toastViewSnapshot.alpha = 0f
@@ -141,12 +127,12 @@ class ActivityToast @Inject constructor(
         return toastIv
     }
 
-    private fun registerLifecycleCallback() {
+    private fun registerLifecycleCallback(text: CharSequence) {
         val index = sShowingIndex
         mActivityLifecycleCallbacks = object : ActivityLifecycleCallbacks() {
             override fun onActivityCreated(activity: Activity) {
                 if (isShowing) {
-                    showWithActivity(activity, index, false)
+                    showWithActivity(activity, text, index, false)
                 }
             }
 
@@ -160,7 +146,7 @@ class ActivityToast @Inject constructor(
     }
 
     private val isShowing: Boolean
-        private get() = mActivityLifecycleCallbacks != null
+        get() = mActivityLifecycleCallbacks != null
 
     companion object {
         private var sShowingIndex = 0
@@ -168,15 +154,9 @@ class ActivityToast @Inject constructor(
 }
 
 class SystemToast @Inject constructor(
-    tView: TView,
     @ApplicationContext private val context: Context,
 ) :
-    AbsToast(tView, context) {
-    override fun show(duration: Int) {
-        if (mToast == null) return
-        mToast!!.duration = duration
-        mToast!!.show()
-    }
+    AbsToast(context) {
 
     internal class SafeHandler(private val impl: Handler) : Handler() {
         override fun handleMessage(msg: Message) {
@@ -206,20 +186,40 @@ class SystemToast @Inject constructor(
             }
         }
     }
+
+    override fun show(text: CharSequence, duration: Long) {
+        mToast.duration = duration.toInt()
+        mToastView.setText(text)
+        mToast.show()
+    }
 }
 
+@ActivityScoped
 class WindowManagerToast @Inject constructor(
-    tView: TView,
     private val tThread: TThread,
     tPermision: TPermision,
-    @ApplicationContext private val context: Context,
+    @ActivityContext private val context: Context,
 ) :
-    AbsToast(tView, context) {
-    private val type = tPermision.toastType()
+    AbsToast(context) {
     private var mWM: WindowManager? = null
     private val mParams: WindowManager.LayoutParams = WindowManager.LayoutParams()
-    override fun show(duration: Int) {
-        if (mToast == null) return
+
+    override fun show(text: CharSequence, duration: Long) {
+        cancel()
+        mToastView.setText(text)
+        mWM = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+        try {
+            mWM?.addView(mToastView, mParams)
+        } catch (ignored: Exception) { /**/
+            Log.e("younger", "ignored: " + ignored + "\n context" + context.javaClass.canonicalName)
+        }
+        tThread.runOnUiThreadDelayed(
+            { cancel() },
+            duration
+        )
+    }
+
+    private fun buildParams() {
         mParams.height = WindowManager.LayoutParams.WRAP_CONTENT
         mParams.width = WindowManager.LayoutParams.WRAP_CONTENT
         mParams.format = PixelFormat.TRANSLUCENT
@@ -229,126 +229,55 @@ class WindowManagerToast @Inject constructor(
                 or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         mParams.packageName = context.getPackageName()
-        mParams.gravity = mToast!!.gravity
+        mParams.gravity = mToast.gravity
         if (mParams.gravity and Gravity.HORIZONTAL_GRAVITY_MASK == Gravity.FILL_HORIZONTAL) {
             mParams.horizontalWeight = 1.0f
         }
         if (mParams.gravity and Gravity.VERTICAL_GRAVITY_MASK == Gravity.FILL_VERTICAL) {
             mParams.verticalWeight = 1.0f
         }
-        mParams.x = mToast!!.xOffset
-        mParams.y = mToast!!.yOffset
-        mParams.horizontalMargin = mToast!!.horizontalMargin
-        mParams.verticalMargin = mToast!!.verticalMargin
-        mWM = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
-        try {
-            if (mWM != null) {
-                mWM!!.addView(mToastView, mParams)
-            }
-        } catch (ignored: Exception) { /**/
-        }
-        tThread.runOnUiThreadDelayed({ cancel() },
-            duration.toLong())
+        mParams.x = mToast.xOffset
+        mParams.y = mToast.yOffset
+        mParams.horizontalMargin = mToast.horizontalMargin
+        mParams.verticalMargin = mToast.verticalMargin
     }
 
     override fun cancel() {
         try {
-            if (mWM != null) {
-                mWM!!.removeViewImmediate(mToastView)
-                mWM = null
-            }
+            mWM?.removeViewImmediate(mToastView)
+            mWM = null
         } catch (ignored: Exception) { /**/
         }
         super.cancel()
     }
 
     init {
-        mParams.type = type
+        mParams.type =
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) WindowManager.LayoutParams.TYPE_TOAST else WindowManager.LayoutParams.LAST_APPLICATION_WINDOW
+    }
+
+    init {
+        buildParams()
     }
 }
 
 abstract class AbsToast constructor(
-    private val tView: TView,
     context: Context,
 ) :
     IToast {
-    protected val mGravity = -1
-    protected val mXOffset = -1
-    protected val mYOffset = -1
-    protected val mIcons = arrayOfNulls<Drawable>(4)
-    var mToast: Toast?
-    protected var mToastView: View? = null
-
-    override fun setToastView(view: View?) {
-        mToastView = view
-        mToast?.view = mToastView
-    }
-
-    fun tryApplyUtilsToastView(text: CharSequence?): View? {
-        val toastView: View = tView.layoutId2View(R.layout.toast_text)
-        val messageTv = toastView.findViewById<TextView>(R.id.toast_message_tv)
-        val bg = toastView.background.mutate() as GradientDrawable
-        bg.setColor(Color.parseColor("#BB000000"))
-        messageTv.setTextColor(Color.WHITE)
-        messageTv.text = text
-        if (mIcons.get(0) != null) {
-            val leftIconView = toastView.findViewById<View>(R.id.toast_left_icon)
-            ViewCompat.setBackground(leftIconView, mIcons.get(0))
-            leftIconView.visibility = View.VISIBLE
-        }
-        if (mIcons.get(1) != null) {
-            val topIconView = toastView.findViewById<View>(R.id.toast_top_icon)
-            ViewCompat.setBackground(topIconView, mIcons.get(1))
-            topIconView.visibility = View.VISIBLE
-        }
-        if (mIcons.get(2) != null) {
-            val rightIconView = toastView.findViewById<View>(R.id.toast_right_icon)
-            ViewCompat.setBackground(rightIconView, mIcons.get(2))
-            rightIconView.visibility = View.VISIBLE
-        }
-        if (mIcons.get(3) != null) {
-            val bottomIconView = toastView.findViewById<View>(R.id.toast_bottom_icon)
-            ViewCompat.setBackground(bottomIconView, mIcons.get(3))
-            bottomIconView.visibility = View.VISIBLE
-        }
-        return toastView
-    }
-
-    override fun setToastView(text: CharSequence?) {
-        tryApplyUtilsToastView(text)?.let {
-            setToastView(it)
-        } ?: let {
-
-        }
-        mToastView = mToast?.view
-        if (mToastView == null || mToastView!!.findViewById<View?>(R.id.toast_message_tv) == null) {
-            setToastView(tView.layoutId2View(R.layout.toast_text))
-        }
-        val messageTv = mToastView!!.findViewById<TextView>(R.id.toast_message_tv)
-        messageTv.text = text
-    }
-
-    @CallSuper
-    override fun cancel() {
-        Timber.d("AbsToast: cancel")
-        if (mToast != null) {
-            mToast!!.cancel()
-        }
-        mToast = null
-        mToastView = null
-    }
+    var mToast: Toast = Toast(context)
+    protected val mToastView: CustomToastView = CustomToastView(context)
 
     init {
-        mToast = Toast(context)
-        if (mGravity != -1 || mXOffset != -1 || mYOffset != -1) {
-            mToast!!.setGravity(mGravity, mXOffset, mYOffset)
-        }
+        mToast.view = mToastView
+    }
+
+    override fun cancel() {
+        mToast.cancel()
     }
 }
 
 internal interface IToast {
-    fun setToastView(view: View?)
-    fun setToastView(text: CharSequence?)
-    fun show(duration: Int)
+    fun show(text: CharSequence, duration: Long)
     fun cancel()
 }
