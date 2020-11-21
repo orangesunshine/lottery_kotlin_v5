@@ -3,7 +3,7 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="color_white">#FFFFFF</color>
+    <color name="white">#FFFFFF</color>
 
     <!-- 通用颜色 -->
     <color name="color_transparent">#00000000</color>
@@ -44,4 +44,7 @@
     <!--home 首页-->
     <color name="color_969696">#969696</color>
     <color name="color_ff535a">#ff535a</color>
+
+    <!-- lot -->
+    <color name="color_lot_textcolor_default">#c8e2f9</color>
 </resources>

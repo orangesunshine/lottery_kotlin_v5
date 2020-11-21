@@ -61,13 +61,39 @@ interface IUrl {
 
         const val URL_OTHER_GAME = "/thirdUserAdd/getPlatform.mvc"//其他平台游戏列表
 
-        const val URL_INIT_GAME = "/gameType/initGameType.mvc"//init
-
         const val URL_ALL_GAME = "/gameType/getAllGame.mvc"//all game
 
         const val URL_GAME_BY_GENRES = "/gameType/getGameByGenres.mvc"//获取彩种大类每个才会总信息
 
         const val URL_LOTTERY_FAVORITES =
             "/userInfo/lottery/favorites/getLotteryFavorites.mvc"//收藏彩种
+
+        ///////////////////////////////////////////////////////////////////////////
+        // lot
+        ///////////////////////////////////////////////////////////////////////////
+        const val URL_GET_TODAY_LOTTERY_NUMS = "/gameType/getToDayLotteryNums.mvc"//获取今日开奖（露珠图）
+
+        const val URL_GET_HISTORY = "/gameType/getHistory.mvc"//根据ID获取该彩种历史开奖
+
+        const val URL_GET_BETTING = "/gameType/getBetting.mvc"//获取未来期
+
+        //region 经典
+        const val URL_INIT_GAME = "/gameType/initGame.mvc"//经典彩种初始化
+
+        const val URL_GET_BET_TYPE = "/gameType/getBetType.mvc"//
+        //endregion
+
+        //region kg
+        const val URL_INIT_KG_GAME = "/gameType/initKgGame.mvc"//kg彩种初始化
+
+        const val URL_GET_KG_BET_TYPE = "/gameType/getKgBetType.mvc"//kg
+        //endregion
+
+        //region 微投
+        const val URL_INIT_WT_GAME = "/gameType/initWtGame.mvc"//微投彩种初始化
+
+        const val URL_GET_WT_BET_TYPE = "/gameType/getWtBetType.mvc"//
+        //endregion
+
     }
 }

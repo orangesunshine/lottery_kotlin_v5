@@ -53,7 +53,7 @@ class RetrofitWrapper @Inject constructor(
                     val code = it.code
                     val msg = it.msg
                     Timber.d("observe__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
-                    toast.show(msg)
+                    toast.showError(msg)
                     error?.invoke(code, msg)
                     if (code >= 500) domainLocalDs.clearDomain()
                     viewState?.setData(ViewState(false))
@@ -95,7 +95,7 @@ class RetrofitWrapper @Inject constructor(
                         val code = it.code
                         val msg = it.msg
                         Timber.d("observeErrorData__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
-                        toast.show(msg)
+                        toast.showError(msg)
                         if (it is ApiException) {
                             error?.invoke(it.response)
                         } else {

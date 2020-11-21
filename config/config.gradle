@@ -147,6 +147,7 @@ DEPS.put("MARQUEE", "com.sunfusheng:MarqueeView:$marquee_version")
 DEPS.put("MATERIAL", "com.google.android.material:material:$material_version")
 DEPS.put("CONSTRAINTLAYOUT", "androidx.constraintlayout:constraintlayout:$constraintlayout_version")
 DEPS.put("EXPANDABLELAYOUT", "net.cachapa.expandablelayout:expandablelayout:$expandablelayout_version")
+DEPS.put("FLOWLAYOUT", "com.hyman:flowlayout-lib:1.1.2")
 
 def IMMERSIONBAR = []
 DEPS.IMMERSIONBAR = IMMERSIONBAR

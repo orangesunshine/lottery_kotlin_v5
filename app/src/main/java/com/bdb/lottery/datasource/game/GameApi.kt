@@ -17,10 +17,6 @@ interface GameApi {
     @POST(IUrl.URL_GAME_BY_GENRES)
     fun gameByGenres(@Field("gameGenres") gameGenres: String): Observable<BaseResponse<List<GenresGameDataItem>?>>
 
-    //初始化游戏
-    @POST(IUrl.URL_INIT_GAME)
-    fun initGame(): Observable<BaseResponse<List<InitGameDataItemData>?>>
-
     //其他平台
     @POST(IUrl.URL_OTHER_GAME)
     fun otherGame(): Observable<BaseResponse<OtherPlatformData?>>

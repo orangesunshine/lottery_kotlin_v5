@@ -4,7 +4,7 @@
     android:layout_height="?actionBarSize">
 
     <FrameLayout
-        android:id="@id/id_common_actionbar_left"
+        android:id="@id/actionbar_left_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
@@ -15,7 +15,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@id/id_common_actionbar_center"
+        android:id="@id/actionbar_center_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

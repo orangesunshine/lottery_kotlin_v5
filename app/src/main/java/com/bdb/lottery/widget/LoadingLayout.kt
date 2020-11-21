@@ -64,7 +64,7 @@ class LoadingLayout @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        id = R.id.id_common_loadinglayout
+        id = R.id.loadinglayout_id
     }
 
     override fun onFinishInflate() {
@@ -75,7 +75,7 @@ class LoadingLayout @JvmOverloads constructor(
         if (childCount == 1) {
             val view = getChildAt(0)
             view?.let {
-                if (R.id.id_common_content_layout != it.id) it.id = R.id.id_common_content_layout
+                if (R.id.content_layout_id != it.id) it.id = R.id.content_layout_id
                 setContentView(it)
             }
         }
@@ -83,7 +83,7 @@ class LoadingLayout @JvmOverloads constructor(
         if (childCount > 1) {
             for (i in 0..childCount) {
                 val view = getChildAt(i)
-                view?.let { if (R.id.id_common_content_layout == it.id) setContentView(it) }
+                view?.let { if (R.id.content_layout_id == it.id) setContentView(it) }
                 removeView(view)
             }
         }
@@ -239,7 +239,7 @@ class LoadingLayout @JvmOverloads constructor(
             val index = parent.indexOfChild(view)
             val weight = lp is LinearLayout.LayoutParams && lp.weight > 0
             val layout = LoadingLayout(view.context)
-            layout.id = R.id.id_common_loadinglayout
+            layout.id = R.id.loadinglayout_id
             parent.removeView(view)
             parent.addView(
                 layout,

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="id_common_statusbar_layout" type="id" />
-    <item name="id_common_actionbar_layout" type="id" />
-    <item name="id_common_actionbar_left" type="id" />
-    <item name="id_common_actionbar_center" type="id" />
-    <item name="id_common_actionbar_right" type="id" />
-    <item name="id_common_content_layout" type="id" />
-    <item name="id_common_loadinglayout" type="id" />
-    <item name="id_common_error_layout" type="id" />
+    <item name="statusbar_layout_id" type="id" />
+    <item name="actionbar_layout_id" type="id" />
+    <item name="actionbar_left_id" type="id" />
+    <item name="actionbar_center_id" type="id" />
+    <item name="actionbar_right_id" type="id" />
+    <item name="content_layout_id" type="id" />
+    <item name="loadinglayout_id" type="id" />
+    <item name="error_id" type="id" />
 </resources>

@@ -11,10 +11,6 @@ class GameRemoteDs @Inject constructor(
     val retrofitWrapper: RetrofitWrapper,
     private val gameApi: GameApi,
 ) {
-    fun initGame() {
-        retrofitWrapper.observe(gameApi.initGame())
-    }
-
     //region 全部Game
     fun preAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
         retrofitWrapper.preload(IUrl.URL_ALL_GAME, gameApi.allGame(), success)

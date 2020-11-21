@@ -31,19 +31,19 @@ open class BaseActivity(
     @Inject
     lateinit var loading: LoadingDialog
     protected val loadingLayout: LoadingLayout?
-        get() = findViewById(R.id.id_common_loadinglayout)
+        get() = findViewById(R.id.loadinglayout_id)
     protected val content: ViewGroup?
-        get() = findViewById(R.id.id_common_content_layout)
+        get() = findViewById(R.id.content_layout_id)
     val statusBar: View?
-        get() = findViewById(R.id.id_common_statusbar_layout)
+        get() = findViewById(R.id.statusbar_layout_id)
 
     //actionbar
     val actbarLeft: ViewGroup?
-        get() = findViewById(R.id.id_common_actionbar_left)
+        get() = findViewById(R.id.actionbar_left_id)
     val actbarRight: ViewGroup?
-        get() = findViewById(R.id.id_common_actionbar_right)
+        get() = findViewById(R.id.actionbar_right_id)
     val actbarCenter: View?
-        get() = findViewById(R.id.id_common_actionbar_center)
+        get() = findViewById(R.id.actionbar_center_id)
     protected var mActivity: WeakReference<FragmentActivity>? = null//当前activity引用
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,14 +76,23 @@ open class BaseActivity(
     fun attachView(root: ViewGroup) {
         root.removeAllViews()
         if (attachStatusBar() || attachStatusBar()) {
+            val useContentLayoutId = attachRoot() == layoutId
+            if (!useContentLayoutId) {
+                layoutInflater.inflate(layoutId, root, true)
+            }
             var parent: ViewGroup?
-            var layout: ViewGroup = layoutInflater.inflate(layoutId, root, false) as ViewGroup
+            var layout: ViewGroup = layoutInflater.inflate(
+                if (useContentLayoutId) layoutId else attachRoot(),
+                root,
+                false
+            ) as ViewGroup
             val verticalLinearLayout = layout is LinearLayout && layout.orientation == VERTICAL
             if (verticalLinearLayout) {
                 parent = layout
             } else {
                 parent = LinearLayout(this)
                 parent.orientation = VERTICAL
+                parent.addView(layout)
             }
             root.addView(
                 parent,
@@ -109,8 +118,6 @@ open class BaseActivity(
                             layoutInflater.inflate(getActionbarLayout(), parent, false),
                             if (attachStatusBar()) 1 else 0
                         )
-
-                    if (!verticalLinearLayout) addView(layout)
                 }
             }
 
@@ -186,6 +193,10 @@ open class BaseActivity(
     }
 
     //是否注入actionbar
+    protected open fun attachRoot(): Int {
+        return layoutId
+    }
+
     protected open fun attachActionBar(): Boolean {
         return true
     }

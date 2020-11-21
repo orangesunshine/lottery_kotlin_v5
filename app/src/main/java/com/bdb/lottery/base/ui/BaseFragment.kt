@@ -25,7 +25,7 @@ open class BaseFragment(
     lateinit var loading: LoadingDialog
     protected var rootView: View? = null
     protected val loadingLayout: LoadingLayout?
-        get() = rootView?.findViewById(R.id.id_common_loadinglayout)
+        get() = rootView?.findViewById(R.id.loadinglayout_id)
     protected var mActivity: WeakReference<Activity>? = null//当前activity引用
 
     override fun onAttach(activity: Activity) {

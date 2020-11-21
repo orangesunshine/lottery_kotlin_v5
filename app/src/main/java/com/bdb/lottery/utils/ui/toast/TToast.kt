@@ -15,6 +15,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
+import com.bdb.lottery.R
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.TPermision
 import com.bdb.lottery.utils.TThread
@@ -266,7 +267,6 @@ abstract class AbsToast constructor(
     context: Context,
 ) :
     IToast {
-    val MAX_DURATION = 10000L;
     var mToast: Toast = Toast(context)
     protected val mToastView: CustomToastView = CustomToastView(context)
 
@@ -282,10 +282,24 @@ abstract class AbsToast constructor(
         show(text, autoDuration(text))
     }
 
-    fun autoDuration(text: CharSequence?): Long {
+    fun showWarning(text: CharSequence?) {
+        mToastView.setToastDrawable(R.drawable.toast_warning)
+        show(text, autoDuration(text))
+    }
+
+    fun showError(text: CharSequence?) {
+        mToastView.setToastDrawable(R.drawable.toast_error)
+        show(text, autoDuration(text))
+    }
+
+    fun showSuccess(text: CharSequence?) {
+        mToastView.setToastDrawable(R.drawable.toast_succes)
+        show(text, autoDuration(text))
+    }
+
+    private fun autoDuration(text: CharSequence?): Long {
         val length = if (text.isSpace()) 0 else text!!.length
-        val time = if (length < 10) 2500 else (length - 10) / 5 * 500 + 2500
-        return if (time > MAX_DURATION) MAX_DURATION else time.toLong()
+        return if (length < 20) 1500 else if (length < 40) 3000 else 5000
     }
 }
 

@@ -27,13 +27,13 @@ class PromotionFragment : BaseFragment(R.layout.main_promotion_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btn1.setOnClickListener {
-            toast1.show("haha", 5000)
+            toast1.showError("haha")
         }
         btn2.setOnClickListener {
-            toast2.show("haha\nhah", 5000)
+            toast2.showSuccess("haha\nhah")
         }
         btn3.setOnClickListener {
-            toast3.show("haha\nhah\nhah", 5000)
+            toast3.showWarning("haha\nhah\nhah")
         }
     }
 }

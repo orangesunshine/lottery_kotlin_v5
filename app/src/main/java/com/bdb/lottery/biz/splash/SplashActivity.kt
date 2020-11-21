@@ -33,7 +33,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
         showLoading()
         loadingAnim()
 
-        id_common_content_layout.postDelayed({ vm.initDomain() }, 500)
+        content_layout_id.postDelayed({ vm.initDomain() }, 500)
     }
 
     //重启app清空cache
