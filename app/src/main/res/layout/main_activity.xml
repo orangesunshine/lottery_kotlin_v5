@@ -28,7 +28,7 @@
             android:drawableTop="@drawable/home_nav_selector"
             android:gravity="center"
             android:text="@string/main_nav_lottery_hall"
-            android:textColor="@color/main_nav_text_colorselector"
+            android:textColor="@color/main_nav_color_selector"
             android:textSize="@dimen/text_11" />
 
 
@@ -42,7 +42,7 @@
             android:drawableTop="@drawable/selector_btn_main_promotion"
             android:gravity="center"
             android:text="@string/main_nav_promotion"
-            android:textColor="@color/main_nav_text_colorselector"
+            android:textColor="@color/main_nav_color_selector"
             android:textSize="@dimen/text_11" />
 
         <FrameLayout
@@ -72,7 +72,7 @@
             android:drawableTop="@drawable/selector_btn_main_find"
             android:gravity="center"
             android:text="@string/main_nav_find"
-            android:textColor="@color/main_nav_text_colorselector"
+            android:textColor="@color/main_nav_color_selector"
             android:textSize="@dimen/text_11" />
 
         <RadioButton
@@ -85,7 +85,7 @@
             android:drawableTop="@drawable/selector_btn_main_user"
             android:gravity="center"
             android:text="@string/main_nav_user"
-            android:textColor="@color/main_nav_text_colorselector"
+            android:textColor="@color/main_nav_color_selector"
             android:textSize="@dimen/text_11" />
 
     </LinearLayout>

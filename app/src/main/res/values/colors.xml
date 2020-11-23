@@ -21,7 +21,6 @@
     <color name="color_bbbbbb">#bbbbbb</color>
     <color name="color_cccccc">#cccccc</color>
     <color name="color_dddddd">#dddddd</color>
-    <color name="color_ffffff">#ffffff</color>
     <color name="color_f7f7f7">#f7f7f7</color>
     <color name="color_6a6a6a">#6a6a6a</color>
     <!-- 文字颜色 -->
@@ -30,20 +29,20 @@
     <color name="color_F7F8FF">#F7F8FF</color>
 
     <!-- 分割线 -->
-    <color name="color_E6E8EA">#E6E8EA</color>
+    <color name="color_line">#E6E8EA</color>
 
     <!-- 状态栏 -->
-    <color name="color_440E0404">#440E0404</color>
+    <color name="color_status">#440E0404</color>
 
     <!-- 按钮 -->
-    <color name="color_147CE2">#147CE2</color>
+    <color name="color_blue_bt">#147CE2</color>
 
     <!-- 背景 -->
-    <color name="color_f2f4f5">#f2f4f5</color>
+    <color name="color_bg">#f2f4f5</color>
 
     <!--home 首页-->
-    <color name="color_969696">#969696</color>
-    <color name="color_ff535a">#ff535a</color>
+    <color name="color_nav_unselected">#969696</color>
+    <color name="color_nav_selected">#ff535a</color>
 
     <!-- lot -->
     <color name="color_lot_textcolor_default">#c8e2f9</color>

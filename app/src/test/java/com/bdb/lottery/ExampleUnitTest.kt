@@ -158,4 +158,16 @@ class ExampleUnitTest {
                 }
             }
     }
+
+    @Test
+    fun assertReduce(){
+        val list= listOf(1,2,3)
+        val result = list.reduce { s, t ->
+            print("s=$s ")
+            print("t=$t")
+            println()
+            s + t
+        }
+        println(result)
+    }
 }

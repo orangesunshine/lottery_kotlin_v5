@@ -170,7 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:tabIndicator="@drawable/home_game_tab_indicator"
-                    app:tabIndicatorColor="@color/color_147CE2"
+                    app:tabIndicatorColor="@color/color_blue_bt"
                     app:tabIndicatorFullWidth="false"
                     app:tabIndicatorGravity="bottom"
                     app:tabMode="fixed" />

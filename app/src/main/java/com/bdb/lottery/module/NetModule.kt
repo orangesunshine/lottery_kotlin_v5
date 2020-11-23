@@ -5,6 +5,7 @@ import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.domain.DomainApi
 import com.bdb.lottery.datasource.game.GameApi
 import com.bdb.lottery.datasource.home.HomeApi
+import com.bdb.lottery.datasource.lot.LotApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +18,7 @@ import javax.inject.Singleton
 class NetModule {
 
     ///////////////////////////////////////////////////////////////////////////
-    // 账户：登录、试玩、是否需要验证码
+    // 账户：登录，试玩，是否需要验证码
     ///////////////////////////////////////////////////////////////////////////
     @Provides
     @Singleton
@@ -26,7 +27,7 @@ class NetModule {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // app前端配置、客服、版本信息
+    // app前端配置，客服，版本信息
     ///////////////////////////////////////////////////////////////////////////
     @Provides
     @Singleton
@@ -44,7 +45,7 @@ class NetModule {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // 游戏：初始化、全部、大类每个、三方平台、其他平台
+    // 游戏：初始化，全部，大类每个，三方平台，其他平台
     ///////////////////////////////////////////////////////////////////////////
     @Provides
     @Singleton
@@ -53,11 +54,20 @@ class NetModule {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // 首页home：通知、轮播图
+    // 首页home：通知，轮播图
     ///////////////////////////////////////////////////////////////////////////
     @Provides
     @Singleton
     fun homeApi(retrofit: Retrofit): HomeApi {
         return retrofit.create(HomeApi::class.java)
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // lot:获取当前、未来期
+    ///////////////////////////////////////////////////////////////////////////
+    @Provides
+    @Singleton
+    fun lotApi(retrofit: Retrofit): LotApi {
+        return retrofit.create(LotApi::class.java)
     }
 }

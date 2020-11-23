@@ -18,7 +18,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.bdb.lottery.R
-import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.const.IConst
@@ -114,7 +113,7 @@ fun Activity.statusbar(light: Boolean) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //5.0及以上
         window.statusBarColor = if (light) ContextCompat.getColor(
             this,
-            R.color.color_440E0404
+            R.color.color_status
         ) else Color.TRANSPARENT
         window.decorView.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE

@@ -3,6 +3,7 @@ package com.bdb.lottery.datasource.lot
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.datasource.lot.data.*
+import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.GameInitData
 import com.bdb.lottery.datasource.lot.data.kg.KgBetTypeData
@@ -26,7 +27,10 @@ interface LotApi {
 
     //获取未来期
     @POST(IUrl.URL_GET_BETTING)
-    fun getBetting(): Observable<BaseResponse<GetBettingData?>>
+    fun getBetting(
+        @Field("gameId") gameIds: String,
+        @Field("count") type: String = "120"
+    ): Observable<BaseResponse<CountDownData?>>
 
     //根据ID获取该彩种历史开奖
     @POST(IUrl.URL_GET_HISTORY)

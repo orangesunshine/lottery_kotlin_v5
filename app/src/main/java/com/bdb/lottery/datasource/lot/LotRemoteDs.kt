@@ -1,22 +1,29 @@
 package com.bdb.lottery.datasource.lot
 
-import com.bdb.lottery.datasource.home.HomeApi
-import com.bdb.lottery.datasource.home.data.BannerData
-import com.bdb.lottery.datasource.home.data.NoticeData
+import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
+import io.reactivex.rxjava3.disposables.Disposable
 import javax.inject.Inject
 
 class LotRemoteDs @Inject constructor(
-    val retrofitWrapper: RetrofitWrapper,
-    private val homeApi: HomeApi
+    private val retrofitWrapper: RetrofitWrapper,
+    private val lotApi: LotApi
 ) {
-    //轮播图
-    fun bannerDatas(success: (BannerData?) -> Unit) {
-        retrofitWrapper.observe(homeApi.bannerDatas(), success)
-    }
 
-    //通知
-    fun notice(success: (NoticeData?) -> Unit) {
-        retrofitWrapper.observe(homeApi.notice(), success)
+    /**
+     * 获取当前期、未来期
+     */
+    fun getFutureIssue(
+        gameIds: String,
+        onStart: (Disposable) -> Unit,
+        success: (CountDownData?) -> Unit,
+        complete: () -> Unit
+    ) {
+        retrofitWrapper.observe(
+            lotApi.getBetting(gameIds),
+            success,
+            onStart = onStart,
+            complete = complete
+        )
     }
 }
