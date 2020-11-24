@@ -10,18 +10,18 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 
 class HomeOtherGameItemAdapter(data: MutableList<OtherPlatformMIR>?) :
     BaseQuickAdapter<OtherPlatformMIR, BaseViewHolder>(
-        R.layout.home_allgame_gametype_item,
+        R.layout.home_allgame_item,
         data
     ) {
     override fun convert(holder: BaseViewHolder, item: OtherPlatformMIR) {
-        item?.let {
+        item.let {
             holder.run {
-                setText(R.id.home_allgame_gametype_item_name_tv, it.name)//彩种名称
+                setText(R.id.homeAllGameNameTv, it.name)//彩种名称
 
                 Glide.with(context).load(item.imgUrl)
                     .placeholder(R.drawable.home_placeholder_circle_img_ic)
                     .apply(RequestOptions.bitmapTransform(CircleCrop()))
-                    .into(holder.getView(R.id.home_allgame_gametype_item_iv))
+                    .into(holder.getView(R.id.homeAllGameItemIv))
             }
         }
     }

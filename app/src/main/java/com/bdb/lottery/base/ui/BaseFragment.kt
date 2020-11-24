@@ -13,6 +13,7 @@ import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.ITag
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
+import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -23,6 +24,8 @@ open class BaseFragment(
     //uis
     @Inject
     lateinit var loading: LoadingDialog
+    @Inject
+    lateinit var toast: AbsToast
     protected var rootView: View? = null
     protected val loadingLayout: LoadingLayout?
         get() = rootView?.findViewById(R.id.loadinglayout_id)

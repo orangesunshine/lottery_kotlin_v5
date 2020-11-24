@@ -27,7 +27,7 @@ class BdbGsonConverterFactory @Inject constructor(private val gson: Gson) : Conv
     override fun responseBodyConverter(
         type: Type, annotations: Array<Annotation>, retrofit: Retrofit,
     ): Converter<ResponseBody, *> {
-        val adapter: TypeAdapter<*> = gson.getAdapter(TypeToken.get(type))
+        val adapter = gson.getAdapter(TypeToken.get(type))
         return BdbGsonResponseBodyConverter(gson, adapter)
     }
 
@@ -37,8 +37,7 @@ class BdbGsonConverterFactory @Inject constructor(private val gson: Gson) : Conv
         methodAnnotations: Array<Annotation>,
         retrofit: Retrofit,
     ): Converter<*, RequestBody> {
-        val adapter: TypeAdapter<*> = gson.getAdapter(TypeToken.get(type))
-        return BdbGsonRequestBodyConverter(gson, adapter)
+        return BdbGsonRequestBodyConverter(gson, gson.getAdapter(TypeToken.get(type)))
     }
 }
 
@@ -60,7 +59,7 @@ internal class BdbGsonResponseBodyConverter<T>(
                     BufferedReader(InputStreamReader(ByteArrayInputStream(string.toByteArray())))
                 val jsonReader =
                     gson.newJsonReader(bufferedReader)
-                val result = adapter.read(jsonReader)
+                val result: T = adapter.read(jsonReader)
                 if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
                     throw JsonIOException("JSON document was not fully consumed.")
                 }

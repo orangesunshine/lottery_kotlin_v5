@@ -8,19 +8,24 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
+import com.bdb.lottery.biz.lot.LotActivity
+import com.bdb.lottery.const.IExtra
 import com.bdb.lottery.datasource.game.data.HomeFavoritesMapper
+import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.ob
+import com.bdb.lottery.extension.startWithArgs
 import com.bdb.lottery.utils.ui.TSize
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.single_recyclerview_layout.*
+import kotlinx.android.synthetic.main.recyclerview_single_layout.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeCollectionFragment : BaseFragment(R.layout.single_recyclerview_layout) {
+class HomeCollectionFragment : BaseFragment(R.layout.recyclerview_single_layout) {
     private val vm by viewModels<HomeCollectionViewModel>()
+
     @Inject
     lateinit var tSize: TSize
 
@@ -66,11 +71,23 @@ class HomeCollectionFragment : BaseFragment(R.layout.single_recyclerview_layout)
                                 .into(holder.getView(R.id.home_common_img_ariv))
                         }
                     }.apply {
-                        setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, view: View, position: Int ->
+                        setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
                             if (position == adapter.itemCount) {
                                 //收藏
                             } else {
                                 //彩票
+                                val item: HomeFavoritesMapper =
+                                    adapter.getItem(position) as HomeFavoritesMapper
+                                val gameId = item.gameId
+                                val gameType = item.gameType
+                                if (gameId.isSpace() || gameType.isSpace()) {
+                                    toast.showWarning("彩种异常")
+                                    return@setOnItemClickListener
+                                }
+                                startWithArgs<LotActivity> {
+                                    it.putExtra(IExtra.GAMEID_EXTRA, gameId)
+                                    it.putExtra(IExtra.GAMETYPE_EXTRA, gameType)
+                                }
                             }
                         }
                     }

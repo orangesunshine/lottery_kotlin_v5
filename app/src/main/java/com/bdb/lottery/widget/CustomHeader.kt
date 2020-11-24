@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.visible
-import com.bdb.lottery.module.AppEntries
+import com.bdb.lottery.module.application.AppEntries
 import com.bdb.lottery.utils.cache.TCache
 import com.scwang.smart.drawable.ProgressDrawable
 import com.scwang.smart.refresh.layout.api.RefreshHeader

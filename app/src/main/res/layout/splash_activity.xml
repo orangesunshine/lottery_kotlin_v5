@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/splash_version_name_tv"
+        android:id="@+id/splashVersionTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
@@ -28,7 +28,6 @@
         android:src="@drawable/splash_logo_ic" />
 
     <TextView
-        android:id="@+id/splash_app_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -47,7 +46,7 @@
     <View style="@style/weight" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/splash_loading_lav"
+        android:id="@+id/splashLoadingLav"
         android:layout_width="32dp"
         android:layout_height="32dp"
         app:lottie_fileName="animation/splash/loading.json"

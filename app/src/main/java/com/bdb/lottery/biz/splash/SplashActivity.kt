@@ -29,8 +29,8 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         resetCache()//重置cache
-        splash_version_name_tv.text = tApp.getAppVersionName()
-        showLoading()
+        splashVersionTv.text = tApp.getAppVersionName()
+        showSplashLoading()
         loadingAnim()
 
         content_layout_id.postDelayed({ vm.initDomain() }, 500)
@@ -52,20 +52,20 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
         content?.startAnimation(alpha)
     }
 
-    fun showLoading() {
-        splash_loading_lav.visible(true)
-        splash_loading_lav.playAnimation()
+    private fun showSplashLoading() {
+        splashLoadingLav.visible(true)
+        splashLoadingLav.playAnimation()
     }
 
-    fun dismissLoading() {
-        splash_loading_lav.visible(false)
+    private fun dismissSplashLoading() {
+        splashLoadingLav.visible(false)
     }
 
     override fun observe() {
         ob(vm.ldDomainRet.getLiveData()) {
             if (it) {
                 //获取域名成功
-                dismissLoading()
+                dismissSplashLoading()
                 if (tCache.getBoolean(ICache.GUIDE_CACHE)) {
                     startNdFinish<LoginActivity>()
                 } else {

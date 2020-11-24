@@ -12,7 +12,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import com.bdb.lottery.R
-import com.bdb.lottery.module.AppEntries
+import com.bdb.lottery.module.application.AppEntries
 import com.bdb.lottery.utils.ui.TScreen
 import com.bdb.lottery.utils.ui.TSize
 import dagger.hilt.android.EntryPointAccessors

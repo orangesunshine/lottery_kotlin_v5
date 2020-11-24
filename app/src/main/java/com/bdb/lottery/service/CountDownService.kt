@@ -1,9 +1,15 @@
 package com.bdb.lottery.service
 
+import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
+import androidx.core.content.ContextCompat
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
@@ -11,37 +17,53 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
+import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CountDownService : BaseService() {
     @Inject
-    private lateinit var lotRemoteDs: LotRemoteDs
+    lateinit var lotRemoteDs: LotRemoteDs
     private val mIsCountDown = AtomicBoolean(false)
     private val mCountDownCallbacks = HashMap<String, MutableList<CountDownCallback>>()
 
     companion object {
-        private val KEY_GAMEIDS = "key_gameids"
-        private val KEY_FORCE_REFRESH = "key_force_refresh"
+        private const val KEY_GAMEIDS = "key_gameids"
+        private const val KEY_FORCE_REFRESH = "key_force_refresh"
 
         fun start(context: Context, gameIds: Array<String>) {
-            val intent = Intent(context, CountDownService.javaClass)
+            val intent = Intent(context, CountDownService::class.java)
             intent.putExtra(KEY_GAMEIDS, gameIds)
-            context.startService(intent)
+            ContextCompat.startForegroundService(context, intent)
         }
 
         /**
          * forceRefresh：彩种当前期结束时，强制获取服务器倒计时时间矫正本缓存地时间
          */
         fun start(context: Context, gameId: String) {
-            val intent = Intent(context, CountDownService.javaClass)
+            val intent = Intent(context, CountDownService::class.java)
             intent.putExtra(KEY_GAMEIDS, Array(1) { gameId })
             intent.putExtra(KEY_FORCE_REFRESH, true)
-            context.startService(intent)
+            ContextCompat.startForegroundService(context, intent)
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (Build.VERSION.SDK_INT >= 26) {
+            val pkgName = applicationContext.packageName
+
+            @SuppressLint("WrongConstant")
+            val channel =
+                NotificationChannel(pkgName, "彩种倒计时", NotificationManager.IMPORTANCE_DEFAULT)
+            channel.setShowBadge(false)
+            val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            manager.createNotificationChannel(channel)
+            val notification = Notification.Builder(this@CountDownService, pkgName).build()
+            startForeground(0x11111, notification)
         }
     }
 
@@ -59,12 +81,13 @@ class CountDownService : BaseService() {
                 if (!isForce) {
                     isGettingList = isGettingList.filter { !isRunning(it) }.toMutableList()
                 }
-                if (buff.isNotEmpty()) {
+                if (isGettingList.isNotEmpty()) {
                     isGettingList.forEach { buff.append(it).append(",") }
                     buff.deleteCharAt(buff.length - 1)
                     lotRemoteDs.getFutureIssue(buff.toString(), {
                         mIsGettingList.addAll(isGettingList)
                     }, {
+                        it?.initCurrentTime()
                         it?.mapper(mCache)
                         countDown()
                     }, {
@@ -79,16 +102,16 @@ class CountDownService : BaseService() {
     /**
      * 定时倒计时
      */
-    fun countDown() {
+    private fun countDown() {
         if (mIsCountDown.compareAndSet(false, true)) {
             Observable.interval(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation()).subscribe {
+                .observeOn(Schedulers.computation()).subscribe({
                     if (mCache.isNullOrEmpty()) return@subscribe
                     mCache.forEach {
-                        val gameIdkey = it.key
+                        val gameId = it.key
                         it.value?.let { mapper: CountDownData.CountDownMapper ->
-                            val currentItem = mapper.currentItem
-                            currentItem?.let {
+                            val currentItem = mapper.currentTime
+                            currentItem?.let { it: CountDownData.CurrentTime ->
                                 if (it.isclose) {
                                     //已封盘
                                     it.openSurplusTime -= 1000
@@ -97,9 +120,13 @@ class CountDownService : BaseService() {
                                         it.openSurplusTime = 0
                                         it.isFinish = true
 
-                                        mapper.nextIssue()
-
-                                        start(this@CountDownService, gameIdkey)
+                                        if (mapper.futureTime.isNullOrEmpty()) {
+                                            start(this@CountDownService, gameId)
+                                        } else {
+                                            mapper.nextIssue()
+                                            if (mapper.futureTime.isNullOrEmpty())
+                                                start(this@CountDownService, gameId)
+                                        }
                                     }
                                 } else {
                                     //投注中
@@ -110,12 +137,16 @@ class CountDownService : BaseService() {
                                         it.openSurplusTime = it.closeTotalTime
                                     }
                                 }
-
-                                EventBus.getDefault().post(it)
+                                mCountDownCallbacks.get(gameId)
+                                    ?.forEach { callback: CountDownCallback ->
+                                        callback.countDown(it)
+                                    }
                             }
                         }
                     }
-                }
+                }, {
+                    Timber.d(it)
+                })
         }
     }
 
@@ -125,7 +156,7 @@ class CountDownService : BaseService() {
     private fun isRunning(gameId: String): Boolean {
         if (mCache.isEmpty()) return false
         val mapper = mCache.get(gameId)
-        return (mapper?.currentItem?.isclose ?: true).not()
+        return (mapper?.currentTime?.isclose ?: true).not()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -136,7 +167,7 @@ class CountDownService : BaseService() {
         fun registerCountDownCallback(gameId: String, callback: CountDownCallback) {
             var callbacks = mCountDownCallbacks[gameId]
             if (null == callbacks) {
-                callbacks = ArrayList<CountDownCallback>()
+                callbacks = ArrayList()
                 mCountDownCallbacks.put(gameId, callbacks)
             }
             if (callbacks.contains(callback)) return

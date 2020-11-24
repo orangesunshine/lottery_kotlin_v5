@@ -27,6 +27,7 @@ interface LotApi {
 
     //获取未来期
     @POST(IUrl.URL_GET_BETTING)
+    @FormUrlEncoded
     fun getBetting(
         @Field("gameId") gameIds: String,
         @Field("count") type: String = "120"
@@ -34,26 +35,34 @@ interface LotApi {
 
     //根据ID获取该彩种历史开奖
     @POST(IUrl.URL_GET_HISTORY)
-    fun getHistory(): Observable<BaseResponse<HistoryData?>>
+    @FormUrlEncoded
+    fun getHistoryByGameId(
+        @Field("gameId") gameId: String,
+        @Field("count") type: String = "80"
+    ): Observable<BaseResponse<HistoryData?>>
 
     //region 经典
     //经典彩种初始化
     @POST(IUrl.URL_INIT_GAME)
+    @FormUrlEncoded
     fun initGame(): Observable<BaseResponse<List<GameInitData>?>>
 
     //经典
     @POST(IUrl.URL_GET_BET_TYPE)
+    @FormUrlEncoded
     fun getBetType(): Observable<BaseResponse<GameBetTypeData?>>
     //endregion
 
     //region Kg
     //kg彩种初始化
     @POST(IUrl.URL_INIT_KG_GAME)
+    @FormUrlEncoded
     fun initKgGame(): Observable<BaseResponse<KgInitData?>>
 
 
     //kg
     @POST(IUrl.URL_GET_KG_BET_TYPE)
+    @FormUrlEncoded
     fun getKgBetType(): Observable<BaseResponse<KgBetTypeData?>>
     //endregion
 
@@ -61,11 +70,13 @@ interface LotApi {
     //region 微投
     //微投彩种初始化
     @POST(IUrl.URL_INIT_WT_GAME)
+    @FormUrlEncoded
     fun initWtGame(): Observable<BaseResponse<WtInitData?>>
 
 
     //微投
     @POST(IUrl.URL_GET_WT_BET_TYPE)
+    @FormUrlEncoded
     fun getWtBetType(): Observable<BaseResponse<WtBetTypeData?>>
     //endregion
 }

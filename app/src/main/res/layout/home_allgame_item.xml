@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/home_allgame_gametype_item_iv"
+        android:id="@+id/homeAllGameItemIv"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_margin="12dp"
@@ -15,41 +15,41 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/home_allgame_gametype_item_name_tv"
+        android:id="@+id/homeAllGameNameTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        app:layout_constraintLeft_toRightOf="@id/home_allgame_gametype_item_iv"
-        app:layout_constraintTop_toTopOf="@id/home_allgame_gametype_item_iv"
+        app:layout_constraintLeft_toRightOf="@id/homeAllGameItemIv"
+        app:layout_constraintTop_toTopOf="@id/homeAllGameItemIv"
         tools:text="重庆时时彩" />
 
     <ImageView
-        android:id="@+id/home_allgame_gametype_item_recommend_iv"
+        android:id="@+id/homeAllGameRecommendIv"
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
-        app:layout_constraintLeft_toRightOf="@id/home_allgame_gametype_item_name_tv"
-        app:layout_constraintTop_toTopOf="@id/home_allgame_gametype_item_name_tv" />
+        app:layout_constraintLeft_toRightOf="@id/homeAllGameNameTv"
+        app:layout_constraintTop_toTopOf="@id/homeAllGameNameTv" />
 
     <TextView
-        android:id="@+id/home_allgame_gametype_item_frequency_tv"
+        android:id="@+id/homeAllGameFrequencyTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
         android:text="@string/home_allgame_item_frequency"
-        app:layout_constraintBottom_toBottomOf="@id/home_allgame_gametype_item_iv"
-        app:layout_constraintLeft_toRightOf="@id/home_allgame_gametype_item_iv"
-        app:layout_constraintTop_toBottomOf="@id/home_allgame_gametype_item_name_tv" />
+        app:layout_constraintBottom_toBottomOf="@id/homeAllGameItemIv"
+        app:layout_constraintLeft_toRightOf="@id/homeAllGameItemIv"
+        app:layout_constraintTop_toBottomOf="@id/homeAllGameNameTv" />
 
     <TextView
-        android:id="@+id/home_allgame_gametype_item_frequency_time_tv"
+        android:id="@+id/homeAllGameFrequencyTimeTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:includeFontPadding="false"
-        app:layout_constraintBaseline_toBaselineOf="@id/home_allgame_gametype_item_frequency_tv"
-        app:layout_constraintLeft_toRightOf="@id/home_allgame_gametype_item_frequency_tv"
-        app:layout_constraintTop_toBottomOf="@id/home_allgame_gametype_item_name_tv"
+        app:layout_constraintBaseline_toBaselineOf="@id/homeAllGameFrequencyTv"
+        app:layout_constraintLeft_toRightOf="@id/homeAllGameFrequencyTv"
+        app:layout_constraintTop_toBottomOf="@id/homeAllGameNameTv"
         tools:text="20分钟" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

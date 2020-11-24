@@ -41,11 +41,11 @@ class BdbApp : Application() {
         //static代码段可以防止内存泄露，设置默认刷新和加载样式
         //设置全局的Header构建器
         init {
-            SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, layout ->
+            SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, _ ->
                 CustomHeader(context);//.setTimeFormat(new DynamicTimeFormat("更新于 %s"));//指定为经典Header，默认是 贝塞尔雷达Header
             }
 
-            SmartRefreshLayout.setDefaultRefreshFooterCreator { context, layout ->
+            SmartRefreshLayout.setDefaultRefreshFooterCreator { context, _ ->
                 ClassicsFooter(context).setDrawableSize(20F);
             }
         }
@@ -83,7 +83,7 @@ class BdbApp : Application() {
     }
 
     private fun initRxjava() {
-        RxJavaPlugins.setErrorHandler { e: Throwable? -> }
+        RxJavaPlugins.setErrorHandler { }
     }
 
     private fun initBugly() {

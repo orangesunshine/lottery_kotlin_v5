@@ -5,7 +5,7 @@
     android:background="@android:color/white">
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/guide_banner_vp2"
+        android:id="@+id/guideBannerVp2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="40dp"
@@ -18,7 +18,7 @@
         android:layout_marginBottom="50dp">
 
         <TextView
-            android:id="@+id/guide_tologin_tv"
+            android:id="@+id/guideTologinTv"
             android:layout_width="200dp"
             android:layout_height="45dp"
             android:background="@drawable/guide_tologin_btn_shape"
@@ -29,7 +29,7 @@
             android:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/guide_dot_ll"
+            android:id="@+id/guideDotLl"
             android:layout_width="200dp"
             android:layout_height="45dp"
             android:layout_gravity="center_horizontal"
@@ -37,13 +37,13 @@
             android:orientation="horizontal">
 
             <View
-                android:id="@+id/guide_dot_first_v"
+                android:id="@+id/guideDotFirstView"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:background="@drawable/guide_banner_indicator_selector" />
 
             <View
-                android:id="@+id/guide_dot_second_v"
+                android:id="@+id/guideDotSecondView"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_marginStart="12dp"
@@ -51,7 +51,7 @@
                 android:background="@drawable/guide_banner_indicator_selector" />
 
             <View
-                android:id="@+id/guide_dot_third_v"
+                android:id="@+id/guideDotThirdView"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_marginStart="12dp"

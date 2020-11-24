@@ -1,6 +1,7 @@
 package com.bdb.lottery.biz.guide
 
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.viewpager2.widget.ViewPager2
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
@@ -13,10 +14,12 @@ import com.bdb.lottery.utils.ui.TApp
 import com.bdb.lottery.utils.cache.TCache
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.guide_activity.*
 import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class GuideActivity : BaseActivity(R.layout.guide_activity) {
     @Inject
     lateinit var tApp: TApp
@@ -30,29 +33,30 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        guide_dot_first_v.isSelected = true
+        guideDotFirstView.isSelected = true
         val imgs = mutableListOf<Int>().apply {
             if (!tApp.isLBH()) {
                 add(R.drawable.guide_first_bg);
             } else {
-                guide_dot_third_v.visible(false)
+                guideDotThirdView.visible(false)
             }
             add(R.drawable.guide_second_bg)
             add(R.drawable.guide_third_bg)
         }
 
         //去登录
-        guide_tologin_tv.setOnClickListener {
+        guideTologinTv.setOnClickListener {
             tCache.putBoolean(ICache.GUIDE_CACHE, true)
             startNdFinish<MainActivity>()
         }
 
         //guide页
-        guide_banner_vp2.run {
+        guideBannerVp2.run {
             adapter =
                 object :
-                    BaseQuickAdapter<Int, BaseViewHolder>(R.layout.img_item_common_layout, imgs) {
+                    BaseQuickAdapter<Int, BaseViewHolder>(R.layout.img_single_item, imgs) {
                     override fun convert(holder: BaseViewHolder, item: Int) {
+                        holder.getView<ImageView>(R.id.img_common_iv).scaleType = ImageView.ScaleType.FIT_START
                         holder.setImageResource(R.id.img_common_iv, item)
                     }
                 }
@@ -68,13 +72,13 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
                     prePosition = position
 
                     //dot
-                    guide_dot_first_v.isSelected = false
-                    guide_dot_second_v.isSelected = false
-                    guide_dot_third_v.isSelected = false
+                    guideDotFirstView.isSelected = false
+                    guideDotSecondView.isSelected = false
+                    guideDotThirdView.isSelected = false
                     when (position) {
-                        0 -> guide_dot_first_v.isSelected = true
-                        1 -> guide_dot_second_v.isSelected = true
-                        2 -> guide_dot_third_v.isSelected = true
+                        0 -> guideDotFirstView.isSelected = true
+                        1 -> guideDotSecondView.isSelected = true
+                        2 -> guideDotThirdView.isSelected = true
                     }
                 }
             })
@@ -83,13 +87,13 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
     }
 
     fun showTologinBt() {
-        guide_dot_ll.alphaVisible(false)
-        guide_tologin_tv.alphaVisible(true)
+        guideDotLl.alphaVisible(false)
+        guideTologinTv.alphaVisible(true)
     }
 
     fun dimissTologinBt() {
-        guide_dot_ll.alphaVisible(true)
-        guide_tologin_tv.alphaVisible(false)
+        guideDotLl.alphaVisible(true)
+        guideTologinTv.alphaVisible(false)
     }
 
     override fun attachStatusBar(): Boolean {

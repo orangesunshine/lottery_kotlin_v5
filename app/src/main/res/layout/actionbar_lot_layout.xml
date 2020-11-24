@@ -19,12 +19,13 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/lot_back_iv"
+            android:id="@id/actionbar_left_id"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/back_white_ic" />
 
         <com.sunfusheng.marqueeview.MarqueeView
+            android:id="@id/actionbar_center_id"
             android:layout_width="230dp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -36,7 +37,7 @@
             app:mvTextSize="14sp" />
 
         <ImageView
-            android:id="@+id/lot_menu_iv"
+            android:id="@id/actionbar_right_id"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
@@ -46,10 +47,10 @@
             android:src="@drawable/lot_menu_ic" />
 
         <ImageView
-            android:id="@+id/lot_cup_iv"
+            android:id="@+id/actionbar_cup_id"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_toLeftOf="@id/lot_menu_iv"
+            android:layout_toLeftOf="@id/actionbar_right_id"
             android:paddingLeft="8dp"
             android:paddingRight="4dp"
             android:src="@drawable/lot_cup_ic" />

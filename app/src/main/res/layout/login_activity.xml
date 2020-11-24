@@ -10,7 +10,7 @@
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/login_versionname_tv"
+        android:id="@+id/loginVersionNameTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -52,7 +52,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/login_pwd_et"
+            android:id="@+id/loginPwdEt"
             style="@style/common_et_single"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -70,14 +70,14 @@
             app:drawableStartCompat="@drawable/login_pwd_et_ic" />
 
         <ImageView
-            android:id="@+id/login_pwd_clear_iv"
+            android:id="@+id/loginPwdClearIv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/login_pwd_clear_ic"
             android:visibility="gone" />
 
         <ImageView
-            android:id="@+id/login_pwd_cipher_iv"
+            android:id="@+id/loginPwdCipherIv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/login_pwd_ciphertext_ic" />
@@ -95,7 +95,7 @@
         android:visibility="gone">
 
         <EditText
-            android:id="@+id/login_verifycode_et"
+            android:id="@+id/loginVerifyCodeEt"
             style="@style/common_et_single"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -114,7 +114,7 @@
             app:drawableStartCompat="@drawable/login_verifycode_et_ic" />
 
         <ImageView
-            android:id="@+id/login_verifycode_iv"
+            android:id="@+id/loginVerifyCodeIv"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:scaleType="fitCenter" />
@@ -137,7 +137,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/login_toregister_bt"
+            android:id="@+id/loginToRegisterBt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -147,7 +147,7 @@
             android:text="@string/login_toregister" />
 
         <TextView
-            android:id="@+id/login_trial_play_bt"
+            android:id="@+id/loginTrialPlayBt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -157,7 +157,7 @@
             android:text="@string/login_trial" />
 
         <TextView
-            android:id="@+id/login_online_customservice_bt"
+            android:id="@+id/loginOnlineCustomServiceBt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

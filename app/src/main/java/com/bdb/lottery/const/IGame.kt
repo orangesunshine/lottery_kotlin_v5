@@ -8,7 +8,7 @@ interface IGame {
         val GAMEKIND_PLS_FC3D = 2 //排列三，福彩3D
         val GAMEKIND_KS = 7 //快三
         val GAMEKIND_KLSF = 9 //快乐10分
-        val GAMEKIND_PCDD = 6 //香港六合彩
+        val GAMEKIND_PC28 = 6 //香港六合彩
         val GAMEKIND_XGLHC = 8 //香港六合彩
     }
 }

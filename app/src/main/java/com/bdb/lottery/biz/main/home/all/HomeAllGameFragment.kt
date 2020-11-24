@@ -10,12 +10,13 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.utils.ui.TSize
+import com.chad.library.adapter.base.BaseQuickAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.single_recyclerview_layout.*
+import kotlinx.android.synthetic.main.recyclerview_single_layout.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
+class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
     private val vm by viewModels<HomeAllGameViewModel>()
     @Inject
     lateinit var tSize: TSize
@@ -54,7 +55,11 @@ class HomeAllGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
             home_single_rv.run {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 setPadding(tSize.dp2px(4f))
-                adapter = HomeAllGameAdapter(it)
+                adapter = HomeAllGameAdapter(it).apply {
+                    setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, view: View, position: Int ->
+
+                    }
+                }
             }
         }
     }

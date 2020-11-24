@@ -11,11 +11,11 @@ import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.utils.ui.TSize
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.single_recyclerview_layout.*
+import kotlinx.android.synthetic.main.recyclerview_single_layout.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeOtherGameFragment : BaseFragment(R.layout.single_recyclerview_layout) {
+class HomeOtherGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
     private val vm by viewModels<HomeOtherGameViewModel>()
     @Inject
     lateinit var tSize: TSize

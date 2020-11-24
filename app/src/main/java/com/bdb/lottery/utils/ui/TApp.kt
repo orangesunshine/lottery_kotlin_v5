@@ -62,7 +62,6 @@ class TApp @Inject constructor(@ApplicationContext val context: Context) {
     private fun getCurrentProcessNameByAms(): String? {
         try {
             val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                ?: return ""
             val info = am.runningAppProcesses
             if (info == null || info.size == 0) return ""
             val pid = Process.myPid()

@@ -1,4 +1,4 @@
-package com.bdb.lottery.module
+package com.bdb.lottery.module.application
 
 import com.bdb.lottery.utils.TGame
 import com.bdb.lottery.utils.ui.TSize

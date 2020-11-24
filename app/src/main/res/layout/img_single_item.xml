@@ -2,6 +2,4 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/img_common_iv"
     android:layout_width="match_parent"
-    android:src="@drawable/splash_logo_ic"
-    android:layout_height="match_parent"
-    android:scaleType="fitStart" />
+    android:layout_height="match_parent" />

@@ -12,17 +12,16 @@ import com.bdb.lottery.biz.main.home.HomeFragment
 import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.biz.main.user.UserFragment
 import com.bdb.lottery.const.IConst
-import com.bdb.lottery.const.ITag
 import com.bdb.lottery.extension.statusbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_activity.*
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
-    val HOME_FRAGMENT_TAG: String = "HOME_FRAGMENT_TAG"
-    val PROMOTION_FRAGMENT_TAG: String = "PROMOTION_FRAGMENT_TAG"
-    val FIND_FRAGMENT_TAG: String = "FIND_FRAGMENT_TAG"
-    val USER_FRAGMENT_TAG: String = "USER_FRAGMENT_TAG"
+    private val HOME_FRAGMENT_TAG: String = "HOME_FRAGMENT_TAG"
+    private val PROMOTION_FRAGMENT_TAG: String = "PROMOTION_FRAGMENT_TAG"
+    private val FIND_FRAGMENT_TAG: String = "FIND_FRAGMENT_TAG"
+    private val USER_FRAGMENT_TAG: String = "USER_FRAGMENT_TAG"
 
     private var mIndex = -1
     private lateinit var fragments: Array<Fragment>
@@ -45,28 +44,24 @@ class MainActivity : FragmentActivity() {
         fragments = if (null == savedInstanceState) {
             arrayOf(HomeFragment(), PromotionFragment(), FindFragment(), UserFragment())
         } else {
-            val home = supportFragmentManager.findFragmentByTag(tags[0])
-            val promotion = supportFragmentManager.findFragmentByTag(tags[1])
-            val find = supportFragmentManager.findFragmentByTag(tags[2])
-            val user = supportFragmentManager.findFragmentByTag(tags[3])
             arrayOf(
-                if (null == home) HomeFragment() else home,
-                if (null == promotion) PromotionFragment() else promotion,
-                if (null == find) FindFragment() else find,
-                if (null == user) UserFragment() else user
+                supportFragmentManager.findFragmentByTag(tags[0]) ?: HomeFragment(),
+                supportFragmentManager.findFragmentByTag(tags[1]) ?: PromotionFragment(),
+                supportFragmentManager.findFragmentByTag(tags[2]) ?: FindFragment(),
+                supportFragmentManager.findFragmentByTag(tags[3]) ?: UserFragment()
             )
         }
-        rbs = arrayOf(main_home_rb, main_promotion_rb, main_find_rb, main_user_rb)
+        rbs = arrayOf(mainHomeRb, mainPromotionRb, mainFindRb, mainUserRb)
         selectNavTab(0)
 
-        main_home_rb.setOnClickListener { selectNavTab(0) }
-        main_promotion_rb.setOnClickListener { selectNavTab(1) }
-        main_find_rb.setOnClickListener { selectNavTab(2) }
-        main_user_rb.setOnClickListener { selectNavTab(3) }
+        mainHomeRb.setOnClickListener { selectNavTab(0) }
+        mainPromotionRb.setOnClickListener { selectNavTab(1) }
+        mainFindRb.setOnClickListener { selectNavTab(2) }
+        mainUserRb.setOnClickListener { selectNavTab(3) }
     }
 
     //底部导航（彩票大厅、优惠、发现、我的）
-    fun selectNavTab(index: Int) {
+    private fun selectNavTab(index: Int) {
         if (mIndex == index || index < 0 || index >= fragments.size) return
         //处理fragment
         supportFragmentManager.beginTransaction().apply {

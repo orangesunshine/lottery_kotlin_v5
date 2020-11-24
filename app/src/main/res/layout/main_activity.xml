@@ -19,7 +19,7 @@
         android:paddingBottom="4dp">
 
         <RadioButton
-            android:id="@+id/main_home_rb"
+            android:id="@+id/mainHomeRb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -33,7 +33,7 @@
 
 
         <RadioButton
-            android:id="@+id/main_promotion_rb"
+            android:id="@+id/mainPromotionRb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -63,7 +63,7 @@
         </FrameLayout>
 
         <RadioButton
-            android:id="@+id/main_find_rb"
+            android:id="@+id/mainFindRb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -76,7 +76,7 @@
             android:textSize="@dimen/text_11" />
 
         <RadioButton
-            android:id="@+id/main_user_rb"
+            android:id="@+id/mainUserRb"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

@@ -1,5 +1,6 @@
 package com.bdb.lottery.datasource.lot
 
+import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import io.reactivex.rxjava3.disposables.Disposable
@@ -10,9 +11,7 @@ class LotRemoteDs @Inject constructor(
     private val lotApi: LotApi
 ) {
 
-    /**
-     * 获取当前期、未来期
-     */
+    //获取当前期、未来期
     fun getFutureIssue(
         gameIds: String,
         onStart: (Disposable) -> Unit,
@@ -25,5 +24,10 @@ class LotRemoteDs @Inject constructor(
             onStart = onStart,
             complete = complete
         )
+    }
+
+    //根据ID获取该彩种历史开奖
+    fun getHistoryByGameId(gameId: String, success: (HistoryData?) -> Unit) {
+        retrofitWrapper.observe(lotApi.getHistoryByGameId(gameId), success)
     }
 }

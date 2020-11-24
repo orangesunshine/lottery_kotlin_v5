@@ -47,14 +47,14 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        login_versionname_tv.text = tApp.getAppVersionName()//显示版本信息
+        loginVersionNameTv.text = tApp.getAppVersionName()//显示版本信息
 
-        login_toregister_bt.setOnClickListener { startNdFinish<RegisterActivity>() }//立即注册
+        loginToRegisterBt.setOnClickListener { startNdFinish<RegisterActivity>() }//立即注册
 
-        login_trial_play_bt.setOnClickListener { vm.trialPlay { startNdFinish<MainActivity>() } }//立即试玩
+        loginTrialPlayBt.setOnClickListener { vm.trialPlay { startNdFinish<MainActivity>() } }//立即试玩
 
         //在线客服
-        login_online_customservice_bt.setOnClickListener {
+        loginOnlineCustomServiceBt.setOnClickListener {
             vm.cachePriCustomServiceUrl()
         }
 
@@ -68,7 +68,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
             }
 
             //校验密码
-            val pwd: String = login_pwd_et.text.toString()
+            val pwd: String = loginPwdEt.text.toString()
             if (pwd.isEmpty()) {
                 toast(R.string.login_pwd_error_hint)
                 return@setOnClickListener
@@ -78,17 +78,17 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
             val rememberPwd = false
 
             //校验验证码
-            val verifycode: String = login_verifycode_et.text.toString()
+            val verifycode: String = loginVerifyCodeEt.text.toString()
 
-            vm.login(username, pwd, rememberPwd, verifycode, { startNdFinish<MainActivity>() })
+            vm.login(username, pwd, rememberPwd, verifycode) { startNdFinish<MainActivity>() }
         }
 
         //密码清空按钮
-        login_pwd_et.doAfterTextChanged { login_pwd_clear_iv.visible(null != it && it.length > 0) }
-        login_pwd_clear_iv.setOnClickListener { login_pwd_et.setText("") }
-        login_pwd_cipher_iv.setOnClickListener {
+        loginPwdEt.doAfterTextChanged { loginPwdClearIv.visible(null != it && it.length > 0) }
+        loginPwdClearIv.setOnClickListener { loginPwdEt.setText("") }
+        loginPwdCipherIv.setOnClickListener {
             switchPwdCipher()
-            login_pwd_et.setSelection(login_pwd_et.text.toString().length)
+            loginPwdEt.setSelection(loginPwdEt.text.toString().length)
         }//切换明文、密文
 
 
@@ -99,8 +99,8 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
     //切换明文、密文
     fun switchPwdCipher() {
         mPwdVisible = !mPwdVisible
-        login_pwd_cipher_iv.setImageResource(if (mPwdVisible) R.drawable.login_pwd_plaintext_ic else R.drawable.login_pwd_ciphertext_ic)
-        login_pwd_et.setTransformationMethod(if (mPwdVisible) HideReturnsTransformationMethod.getInstance() else PasswordTransformationMethod.getInstance())
+        loginPwdCipherIv.setImageResource(if (mPwdVisible) R.drawable.login_pwd_plaintext_ic else R.drawable.login_pwd_ciphertext_ic)
+        loginPwdEt.transformationMethod = if (mPwdVisible) HideReturnsTransformationMethod.getInstance() else PasswordTransformationMethod.getInstance()
     }
 
     //显示验证码
@@ -118,7 +118,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
                     header["D"] = tDevice.getDeviceUUid()
                     header
                 }
-                login_verifycode_iv.loadImageUrl(gliderUrl)
+                loginVerifyCodeIv.loadImageUrl(gliderUrl)
             }
         }
     }

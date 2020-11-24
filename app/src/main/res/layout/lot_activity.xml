@@ -18,7 +18,7 @@
             android:orientation="vertical">
 
             <net.cachapa.expandablelayout.ExpandableLayout
-                android:id="@+id/lot_expandable_layout"
+                android:id="@+id/lotExpandableLayout"
                 android:layout_width="match_parent"
                 android:layout_height="270dp"
                 android:clickable="true"
@@ -27,7 +27,7 @@
                 app:el_expanded="false">
 
                 <WebView
-                    android:id="@+id/lot_cocos_wv"
+                    android:id="@+id/lotCocosWv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </net.cachapa.expandablelayout.ExpandableLayout>
@@ -60,6 +60,7 @@
                         android:gravity="center_vertical">
 
                         <TextView
+                            android:id="@+id/lotTopRectIssueTv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/color_lot_textcolor_default"
@@ -67,6 +68,7 @@
                             tools:text="5分11选5 204期" />
 
                         <TextView
+                            android:id="@+id/lotTopRectHistoryOpenTv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="4dp"
@@ -84,10 +86,12 @@
                     </LinearLayout>
 
                     <com.zhy.view.flowlayout.FlowLayout
+                        android:id="@+id/lotOpenNumsFlowlayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                     <com.zhy.view.flowlayout.FlowLayout
+                        android:id="@+id/lotNumsLabelFlowlayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -104,27 +108,29 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="10dp"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/lotIssueStatusTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/color_lot_textcolor_default"
                         android:textSize="11dp"
                         tools:text="0369期 受注中" />
 
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginRight="10dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/lot_hour_ten_digit"
+                            android:id="@+id/lotCountdownFirstTv"
                             android:layout_width="20dp"
                             android:layout_height="27dp"
                             android:background="@drawable/lot_top_rect_countdown_shape"
@@ -134,7 +140,19 @@
                             tools:text="0" />
 
                         <TextView
-                            android:id="@+id/lot_hour_one_digit"
+                            android:id="@+id/lotCountdownDotFirstTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="2dp"
+                            android:gravity="center"
+                            android:text=":"
+                            android:textColor="@color/white"
+                            android:textSize="17dp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/lotCountdownSecondTv"
                             android:layout_width="20dp"
                             android:layout_height="27dp"
                             android:layout_marginLeft="2dp"
@@ -145,9 +163,10 @@
                             tools:text="0" />
 
                         <TextView
+                            android:id="@+id/lotCountdownDotSecondTv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="3dp"
+                            android:layout_margin="2dp"
                             android:gravity="center"
                             android:text=":"
                             android:textColor="@color/white"
@@ -155,7 +174,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/lot_munite_ten_digit"
+                            android:id="@+id/lotCountdownThirdTv"
                             android:layout_width="20dp"
                             android:layout_height="27dp"
                             android:background="@drawable/lot_top_rect_countdown_shape"
@@ -165,7 +184,7 @@
                             tools:text="0" />
 
                         <TextView
-                            android:id="@+id/lot_munite_one_digit"
+                            android:id="@+id/lotCountdownFourthTv"
                             android:layout_width="20dp"
                             android:layout_height="27dp"
                             android:layout_marginLeft="2dp"
@@ -175,6 +194,7 @@
                             android:textSize="18dp"
                             tools:text="0" />
                     </LinearLayout>
+
                 </LinearLayout>
 
                 <!-- divide -->
@@ -217,10 +237,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:background="#0277d1"
-                android:gravity="center_vertical"
-                android:visibility="gone">
+                android:gravity="center_vertical">
 
                 <TextView
+                    android:id="@+id/lotWtIssueTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="18dp"
@@ -229,24 +249,23 @@
                     tools:text="第 204 期" />
 
                 <com.zhy.view.flowlayout.FlowLayout
+                    android:id="@+id/lotWtOpenNumsFlowlayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
                 <TextView
+                    android:id="@+id/lotWtOpenTypeTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
+                    android:drawableRight="@drawable/lot_wt_top_rect_arrow"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="12dp"
                     tools:text="(综合:30,和,双)" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
-                    android:src="@drawable/lot_micro_top_rect_arrow" />
             </LinearLayout>
 
 
@@ -260,17 +279,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <com.google.android.material.tabs.TabLayout
+                android:id="@+id/lotSelectorTab"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lotPlayTypeLayer1Rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lotPlayTypeLayer2Rv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/color_bg" />

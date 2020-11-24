@@ -16,6 +16,7 @@ import com.bdb.lottery.const.ITag
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.statusbar
+import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -25,12 +26,14 @@ open class BaseActivity(
 ) : FragmentActivity() {
 
     //vars
-    protected var statusbarLight = true;//状态栏是否半透明
+    protected open var statusbarLight = true;//状态栏是否半透明
 
     //uis
     @Inject
     lateinit var loading: LoadingDialog
-    protected val loadingLayout: LoadingLayout?
+    @Inject
+    lateinit var toast: AbsToast
+    private val loadingLayout: LoadingLayout?
         get() = findViewById(R.id.loadinglayout_id)
     protected val content: ViewGroup?
         get() = findViewById(R.id.content_layout_id)
@@ -38,11 +41,11 @@ open class BaseActivity(
         get() = findViewById(R.id.statusbar_layout_id)
 
     //actionbar
-    val actbarLeft: ViewGroup?
+    private val actbarLeft: View?
         get() = findViewById(R.id.actionbar_left_id)
-    val actbarRight: ViewGroup?
+    private val actbarRight: View?
         get() = findViewById(R.id.actionbar_right_id)
-    val actbarCenter: View?
+    private val actbarCenter: View?
         get() = findViewById(R.id.actionbar_center_id)
     protected var mActivity: WeakReference<FragmentActivity>? = null//当前activity引用
 
@@ -73,9 +76,9 @@ open class BaseActivity(
         }
     }
 
-    fun attachView(root: ViewGroup) {
+    private fun attachView(root: ViewGroup) {
         root.removeAllViews()
-        if (attachStatusBar() || attachStatusBar()) {
+        if (attachStatusBar() || attachActionBar()) {
             val useContentLayoutId = attachRoot() == layoutId
             if (!useContentLayoutId) {
                 layoutInflater.inflate(layoutId, root, true)

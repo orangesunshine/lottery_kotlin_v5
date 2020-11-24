@@ -1,4 +1,4 @@
-package com.bdb.lottery.module
+package com.bdb.lottery.module.application
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

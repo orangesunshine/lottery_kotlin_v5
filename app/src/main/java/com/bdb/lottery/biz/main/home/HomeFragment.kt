@@ -54,9 +54,9 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     private val changeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             //可以来设置选中时tab的大小
-            val tabCount: Int = home_game_tl.getTabCount()
+            val tabCount: Int = homeGameTl.getTabCount()
             for (i in 0 until tabCount) {
-                val tab: TabLayout.Tab? = home_game_tl.getTabAt(i)
+                val tab: TabLayout.Tab? = homeGameTl.getTabAt(i)
                 tab?.let {
                     val tabView = it.customView as TextView
                     val selected = it.position == position
@@ -74,23 +74,22 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
 
     private fun initVp() {
         //禁用预加载
-        home_game_vp.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT;
+        homeGameVp.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT;
 
         //Adapter
-        home_game_vp.setAdapter(object : FragmentStateAdapter(childFragmentManager, lifecycle) {
+        homeGameVp.adapter = object : FragmentStateAdapter(childFragmentManager, lifecycle) {
             override fun getItemCount(): Int {
-
                 return tabs.size
             }
 
             override fun createFragment(position: Int): Fragment {
                 return fragments[position]
             }
-        })
+        }
 
         mediator = TabLayoutMediator(
-            home_game_tl,
-            home_game_vp
+            homeGameTl,
+            homeGameVp
         ) { tab: TabLayout.Tab, position: Int ->
             //这里可以自定义TabView
             val tabView = TextView(context)
@@ -114,12 +113,12 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         }
         //要执行这一句才是真正将两者绑定起来
         mediator.attach()
-        home_game_vp.registerOnPageChangeCallback(changeCallback)
+        homeGameVp.registerOnPageChangeCallback(changeCallback)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        home_game_vp?.unregisterOnPageChangeCallback(changeCallback)
+        homeGameVp?.unregisterOnPageChangeCallback(changeCallback)
     }
 
     override fun onDestroy() {
@@ -188,7 +187,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         }
     }
 
-    fun loadBanner(list: List<BannerMapper>?) {
+    private fun loadBanner(list: List<BannerMapper>?) {
         home_banner?.run {
             setBannerGalleryEffect(18, 10)
             indicator = RectangleIndicator(context)
@@ -198,17 +197,18 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
             addBannerLifecycleObserver(this@HomeFragment)
             adapter = object : BannerImageAdapter<BannerMapper>(list) {
                 override fun onCreateHolder(parent: ViewGroup?, viewType: Int): BannerImageHolder? {
-                    val imageView = ImageView(parent!!.context)
+                    val imageView = ImageView(context)
                     val params = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
                     imageView.layoutParams = params
-                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-                    //通过裁剪实现圆角
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        BannerUtils.setBannerRound(imageView, 20f)
-                    }
+                    imageView.adjustViewBounds = true
+//                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+//                    //通过裁剪实现圆角
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        BannerUtils.setBannerRound(imageView, 20f)
+//                    }
                     return BannerImageHolder(imageView)
                 }
 

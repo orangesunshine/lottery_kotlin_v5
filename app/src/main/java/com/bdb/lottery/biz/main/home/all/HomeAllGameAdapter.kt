@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.datasource.game.data.AllGameDataMapper
 import com.bdb.lottery.datasource.game.data.AllGameItemData
-import com.bdb.lottery.module.AppEntries
+import com.bdb.lottery.module.application.AppEntries
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.listener.OnItemChildClickListener
 import com.chad.library.adapter.base.listener.OnItemClickListener
@@ -20,7 +20,7 @@ import net.cachapa.expandablelayout.ExpandableLayout
 
 class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
     BaseQuickAdapter<AllGameDataMapper, BaseViewHolder>(
-        R.layout.home_allgame_lotterytype_item,
+        R.layout.home_allgame_sub_item,
         datas
     ),
     OnItemChildClickListener, OnItemClickListener {
@@ -29,8 +29,9 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
     private var expandLayouts = SparseArray<ExpandableLayout>()
     private var imageViews = SparseArray<ImageView>()
     private var recyclerViews = SparseArray<RecyclerView>()
-    private val tGame =
+    private val tGame by lazy {
         EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTGame()
+    }
 
     override fun convert(holder: BaseViewHolder, item: AllGameDataMapper) {
         val position = holder.adapterPosition
@@ -55,7 +56,7 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
         if (null == recyclerView.adapter) {
             recyclerView.setHasFixedSize(true)
             recyclerView.adapter =
-                HomeAllGameItemAdapter(null).apply {
+                HomeAllGameSubAdapter(null).apply {
                     setOnItemClickListener(this@HomeAllGameAdapter)
                 }
         }

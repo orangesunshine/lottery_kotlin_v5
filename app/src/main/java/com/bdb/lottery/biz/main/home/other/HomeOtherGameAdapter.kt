@@ -18,7 +18,7 @@ import net.cachapa.expandablelayout.ExpandableLayout
 
 class HomeOtherGameAdapter(datas: MutableList<OtherGameDataMapper>?) :
     BaseQuickAdapter<OtherGameDataMapper, BaseViewHolder>(
-        R.layout.home_allgame_lotterytype_item,
+        R.layout.home_allgame_sub_item,
         datas
     ),
     OnItemChildClickListener, OnItemClickListener {

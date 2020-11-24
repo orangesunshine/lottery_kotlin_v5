@@ -199,7 +199,6 @@ class SystemToast @Inject constructor(
 @ActivityScoped
 class WindowManagerToast @Inject constructor(
     private val tThread: TThread,
-    tPermision: TPermision,
     @ActivityContext private val context: Context,
 ) :
     AbsToast(context) {
@@ -213,7 +212,6 @@ class WindowManagerToast @Inject constructor(
         try {
             mWM?.addView(mToastView, mParams)
         } catch (ignored: Exception) { /**/
-            Log.e("younger", "ignored: " + ignored + "\n context" + context.javaClass.canonicalName)
         }
         tThread.runOnUiThreadDelayed(
             { cancel() },

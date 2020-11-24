@@ -9,6 +9,7 @@ import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.utils.ui.toast.WindowManagerToast
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -20,7 +21,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class RetrofitWrapper @Inject constructor(
-    private val toast: WindowManagerToast,
+    private val toast: AbsToast,
     val tCache: TCache,
     private val domainLocalDs: DomainLocalDs,
     private val domainRemoteDs: DomainRemoteDs,

@@ -7,7 +7,7 @@
     android:focusable="true">
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/common_loading_lav"
+        android:id="@+id/loadingLav"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center"
