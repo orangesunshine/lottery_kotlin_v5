@@ -85,13 +85,13 @@
 
                     </LinearLayout>
 
-                    <com.zhy.view.flowlayout.FlowLayout
-                        android:id="@+id/lotOpenNumsFlowlayout"
+                    <com.zhy.view.flowlayout.TagFlowLayout
+                        android:id="@+id/lotOpenNumsFl"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <com.zhy.view.flowlayout.FlowLayout
-                        android:id="@+id/lotNumsLabelFlowlayout"
+                    <com.zhy.view.flowlayout.TagFlowLayout
+                        android:id="@+id/lotNumsLabelFl"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -248,8 +248,8 @@
                     android:textSize="12dp"
                     tools:text="第 204 期" />
 
-                <com.zhy.view.flowlayout.FlowLayout
-                    android:id="@+id/lotWtOpenNumsFlowlayout"
+                <com.zhy.view.flowlayout.TagFlowLayout
+                    android:id="@+id/lotWtOpenNumsFl"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
@@ -268,6 +268,10 @@
                     tools:text="(综合:30,和,双)" />
             </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lot_history_rv"
+                android:layout_width="match_parent"
+                android:layout_height="260dp" />
 
             <FrameLayout
                 android:id="@+id/lot_rect_content_fl"
