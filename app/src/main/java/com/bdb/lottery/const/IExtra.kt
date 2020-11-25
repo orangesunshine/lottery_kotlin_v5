@@ -2,8 +2,8 @@ package com.bdb.lottery.const
 
 interface IExtra {
     companion object {
-        const val GAMEID_EXTRA = "gameid_extra"
-        const val GAMETYPE_EXTRA = "gametype_extra"
-        const val GAMENAME_EXTRA = "gamename_extra"
+        const val ID_GAME_EXTRA = "ID_GAME_EXTRA"
+        const val TYPE_GAME_EXTRA = "TYPE_GAME_EXTRA"
+        const val NAME_GAME_EXTRA = "NAME_GAME_EXTRA"
     }
 }

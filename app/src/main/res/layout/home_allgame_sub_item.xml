@@ -18,6 +18,7 @@
             android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:scaleType="fitXY"
+            android:src="@drawable/placeholder_square_picture_bg"
             app:aspectRatio="2.33" />
 
         <com.bdb.lottery.widget.AspectRatioImageView
@@ -27,6 +28,7 @@
             android:layout_marginLeft="4dp"
             android:layout_weight="1"
             android:scaleType="fitXY"
+            android:src="@drawable/placeholder_square_picture_bg"
             app:aspectRatio="2.33" />
     </LinearLayout>
 

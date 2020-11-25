@@ -1,6 +1,5 @@
 package com.bdb.lottery.biz.main.home.all
 
-import android.util.Log
 import android.util.SparseArray
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -23,9 +22,16 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
         R.layout.home_allgame_sub_item,
         datas
     ),
-    OnItemChildClickListener, OnItemClickListener {
-    private var expandIndex = -1
-    private var isLeft = true
+    OnItemChildClickListener {
+
+    //region 二级点击
+    private var mOnSubItemClickListener: OnItemClickListener? = null
+    fun setOnSubItemClickListener(onSubItemClickListener: OnItemClickListener) {
+        mOnSubItemClickListener = onSubItemClickListener
+    }
+    //endregion
+
+    //region 填充一级列表
     private var expandLayouts = SparseArray<ExpandableLayout>()
     private var imageViews = SparseArray<ImageView>()
     private var recyclerViews = SparseArray<RecyclerView>()
@@ -41,30 +47,44 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
         expandLayouts.put(position, expandableLayout)
         imageViews.put(position, imageView)
         recyclerViews.put(position, recyclerView)
-        if (item.leftGameType > 0)
-            holder.setImageResource(
-                R.id.home_allgame_left_ariv,
-                tGame.gameTypeDrawable(item.leftGameType)
-            )
+        item.leftGameType?.let {
+            if (it > 0)
+                holder.setImageResource(
+                    R.id.home_allgame_left_ariv,
+                    tGame.gameTypeDrawable(it)
+                )
+        }
 
-        if (item.rightGameType > 0)
-            holder.setImageResource(
-                R.id.home_allgame_right_ariv,
-                tGame.gameTypeDrawable(item.rightGameType)
-            )
+        item.rightGameType?.let {
+            if (it > 0)
+                holder.setImageResource(
+                    R.id.home_allgame_right_ariv,
+                    tGame.gameTypeDrawable(it)
+                )
+        }
 
         if (null == recyclerView.adapter) {
             recyclerView.setHasFixedSize(true)
-            recyclerView.adapter =
-                HomeAllGameSubAdapter(null).apply {
-                    setOnItemClickListener(this@HomeAllGameAdapter)
-                }
+            val adapter = HomeAllGameSubAdapter(null)
+            adapter.setOnItemClickListener(mOnSubItemClickListener)
+
+            recyclerView.adapter = adapter
         }
     }
+    //endregion
 
     init {
         addChildClickViewIds(R.id.home_allgame_left_ariv, R.id.home_allgame_right_ariv)
         setOnItemChildClickListener(this)
+    }
+
+    //region 一级点击
+    private var expandIndex = -1
+    private var isLeft = true
+
+    //当前二级列表是一级左侧、还是右侧展开
+    fun isLeft(): Boolean {
+        return isLeft
     }
 
     override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
@@ -82,7 +102,7 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
                     expandIndex = -1
                 } else if (left || right) {
                     isLeft = !isLeft
-                    renderRecyclerView(imageView, recyclerView, null, position, isLeft)
+                    renderSubRecyclerView(imageView, recyclerView, null, position, isLeft)
                 }
             } else {
                 isLeft = left
@@ -93,19 +113,17 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
 
                 //打开现在position
                 expandableLayout.clearAnimation()
-                renderRecyclerView(imageView, recyclerView, expandableLayout, position, isLeft)
+                renderSubRecyclerView(imageView, recyclerView, expandableLayout, position, isLeft)
                 expandableLayout.expand(true)
                 expandableLayout.setInterpolator(LinearInterpolator())
                 expandIndex = position
             }
         }
     }
+    //endregion
 
-    override fun onItemClick(adapter: BaseQuickAdapter<*, *>, view: View, position: Int) {
-        Log.e("younger", "onItemClick")
-    }
-
-    fun renderRecyclerView(
+    //region 填充二级列表
+    private fun renderSubRecyclerView(
         imageView: ImageView,
         recyclerView: RecyclerView,
         expandableLayout: ExpandableLayout?,
@@ -123,4 +141,5 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
                     } ?: 300
                 })
     }
+    //endregion
 }

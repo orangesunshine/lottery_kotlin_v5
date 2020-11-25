@@ -17,21 +17,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <net.cachapa.expandablelayout.ExpandableLayout
-                android:id="@+id/lotExpandableLayout"
-                android:layout_width="match_parent"
-                android:layout_height="270dp"
-                android:clickable="true"
-                android:visibility="gone"
-                app:el_duration="300"
-                app:el_expanded="false">
-
-                <WebView
-                    android:id="@+id/lotCocosWv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </net.cachapa.expandablelayout.ExpandableLayout>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -48,6 +33,7 @@
                 <!-- 经典、传统 -->
                 <!-- 期号、开奖号码、单双龙虎lable -->
                 <LinearLayout
+                    android:id="@+id/lotTopLeftAreaLl"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -87,13 +73,16 @@
 
                     <com.zhy.view.flowlayout.TagFlowLayout
                         android:id="@+id/lotOpenNumsFl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp" />
 
                     <com.zhy.view.flowlayout.TagFlowLayout
                         android:id="@+id/lotNumsLabelFl"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <!-- divide -->
@@ -122,10 +111,10 @@
                         android:textSize="11dp"
                         tools:text="0369期 受注中" />
 
-
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -237,7 +226,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:background="#0277d1"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/lotWtIssueTv"
@@ -268,10 +258,29 @@
                     tools:text="(综合:30,和,双)" />
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/lot_history_rv"
+            <net.cachapa.expandablelayout.ExpandableLayout
+                android:id="@+id/lotExpl"
                 android:layout_width="match_parent"
-                android:layout_height="260dp" />
+                android:layout_height="270dp"
+                app:el_duration="300"
+                app:el_expanded="false">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/lotHistoryRv"
+                    android:layout_width="match_parent"
+                    android:layout_height="270dp"
+                    android:background="#ff0000" />
+
+                <WebView
+                    android:id="@+id/lotCocosWv"
+                    android:layout_width="match_parent"
+                    android:layout_height="270dp"
+                    android:visibility="invisible" />
+            </net.cachapa.expandablelayout.ExpandableLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@drawable/bet_top_ret_top_divide" />
 
             <FrameLayout
                 android:id="@+id/lot_rect_content_fl"

@@ -1,13 +1,13 @@
 package com.bdb.lottery.datasource.game.data
 
-import android.text.TextUtils
 import androidx.annotation.DrawableRes
 import com.bdb.lottery.R
 import com.bdb.lottery.datasource.app.data.PlatformData
+import com.bdb.lottery.extension.equalsNSpace
 
 data class LotteryFavoritesData(
     var defaultList: MutableList<FavoritesGameType>?,
-    var gameTypeList: MutableList<FavoritesGameType>?
+    var gameTypeList: MutableList<FavoritesGameType>?,
 )
 
 data class FavoritesGameType(
@@ -17,18 +17,18 @@ data class FavoritesGameType(
     var gameInfo: GameInfo?,
     var gameName: String?,
     var subPlatform: String?,
-    var thirdGameInfo: ThirdGameInfo?
+    var thirdGameInfo: ThirdGameInfo?,
 ) {
     fun homeMapper(platform: PlatformData?): HomeFavoritesMapper {
         var homeImgUrl: String? = null
         var gameType: String? = null
         var placeholder = R.drawable.home_img_add_bg
-        if (TextUtils.equals("0", collectType)) {
+        if (collectType.equalsNSpace("0")) {
             placeholder = R.drawable.home_placeholder_round_img_ic
             //彩票
             homeImgUrl = platform?.lotteryFileImgSquare(gameInfo)
             gameType = gameInfo?.gameKind.toString()
-        } else if (TextUtils.equals("1", collectType)) {
+        } else if (collectType.equalsNSpace("1")) {
             placeholder = R.drawable.home_placeholder_round_img_ic
             //第三方游戏
             homeImgUrl = platform?.thirdGameImgUrl(thirdGameInfo)
@@ -87,7 +87,7 @@ data class GameInfo(
     var recommendType: String?,
     var remark: String,
     var sumbigNum: Int,
-    var wtEnable: Boolean
+    var wtEnable: Boolean,
 )
 
 data class HomeFavoritesMapper(

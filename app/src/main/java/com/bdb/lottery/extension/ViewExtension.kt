@@ -45,7 +45,6 @@ val SmartRefreshLayout.scrollListener: RecyclerView.OnScrollListener
     get() =
         object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                Timber.d("SmartRefreshLayout.scrollListener")
                 setEnableRefresh(!recyclerView.canScrollVertically(-1))
             }
         }

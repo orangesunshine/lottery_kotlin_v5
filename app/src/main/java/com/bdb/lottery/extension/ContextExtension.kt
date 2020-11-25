@@ -21,6 +21,8 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.const.IConst
+import com.bdb.lottery.const.IExtra
+import timber.log.Timber
 import kotlin.reflect.KProperty1
 
 fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_LONG) {
@@ -41,13 +43,13 @@ inline fun <reified T : Activity> Context.startNdFinish() {
 }
 
 inline fun <reified T : Activity> Context.startWithArgs(block: (Intent) -> Any) {
-    var intent = Intent(this, T::class.java)
+    val intent = Intent(this, T::class.java)
     block(intent)
     startActivity(intent)
 }
 
 inline fun <reified T : Activity> Context.startNdFinishWithArgs(block: (Intent) -> Any) {
-    var intent = Intent(this, T::class.java)
+    val intent = Intent(this, T::class.java)
     block(intent)
     startActivity(intent)
     if (this is Activity) finish()
@@ -63,13 +65,14 @@ inline fun <reified T : Activity> Fragment.startNdFinish() {
 }
 
 inline fun <reified T : Activity> Fragment.startWithArgs(block: (Intent) -> Any) {
-    var intent = Intent(this.activity, T::class.java)
+    val intent = Intent(this.activity, T::class.java)
     block(intent)
+    Timber.d("startWithArgs__gameId: ${intent.getStringExtra(IExtra.ID_GAME_EXTRA)}, gameType: ${intent.getStringExtra(IExtra.TYPE_GAME_EXTRA)}, gameName: ${intent.getStringExtra(IExtra.NAME_GAME_EXTRA)}")
     startActivity(intent)
 }
 
 inline fun <reified T : Activity> Fragment.startNdFinishWithArgs(block: (Intent) -> Any) {
-    var intent = Intent(this.activity, T::class.java)
+    val intent = Intent(this.activity, T::class.java)
     block(intent)
     startActivity(intent)
     if (this is Activity) finish()

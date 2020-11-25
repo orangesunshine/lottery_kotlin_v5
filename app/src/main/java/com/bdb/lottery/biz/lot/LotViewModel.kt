@@ -14,39 +14,47 @@ import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
+import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
 import com.bdb.lottery.service.CountDownService.CountDownSub
 import com.bdb.lottery.utils.TGame
 import com.bdb.lottery.utils.TThread
 import dagger.hilt.android.qualifiers.ActivityContext
-import java.lang.StringBuilder
+import timber.log.Timber
 import javax.inject.Inject
 
 class LotViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
     private val tGame: TGame,
     private val tThread: TThread,
-    private val lotRemoteDs: LotRemoteDs
+    private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {
     val countDown = LiveDataWraper<CountDownData.CurrentTime?>()
     val curIssue = LiveDataWraper<HistoryData.HistoryItem?>()
     val historyIssue = LiveDataWraper<List<HistoryData.HistoryItem?>?>()
     private lateinit var mGameId: String
     private lateinit var mGameType: String
-    private lateinit var mGameName: String
+    private var mGameName: String? = null
 
     init {
         if (context is Activity) {
-            mGameId = context.intent.getStringExtra(IExtra.GAMEID_EXTRA)
-            mGameType = context.intent.getStringExtra(IExtra.GAMETYPE_EXTRA)
-            mGameName = context.intent.getStringExtra(IExtra.GAMETYPE_EXTRA)
+            val gameId = context.intent.getStringExtra(IExtra.ID_GAME_EXTRA)
+            val gameType = context.intent.getStringExtra(IExtra.TYPE_GAME_EXTRA)
+            mGameName = context.intent.getStringExtra(IExtra.NAME_GAME_EXTRA)
+            if (null == gameId || null == gameType) {
+                context.finish()
+            } else {
+                mGameId = gameId
+                mGameType = gameType
+            }
         }
     }
 
     //region 开奖历史记录
     fun getHistoryByGameId() {
         lotRemoteDs.getHistoryByGameId(mGameId) {
+            Timber.d(it.toString())
             historyIssue.setData(it?.filterNotNull())
             curIssue.setData(if (!it.isNullOrEmpty()) it[0] else null)
         }
@@ -63,7 +71,7 @@ class LotViewModel @ViewModelInject @Inject constructor(
     }
 
     private var mSub: CountDownSub? = null
-    val conn = object : ServiceConnection {
+    private val conn = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             if (service is CountDownSub) {
                 mSub = service
@@ -102,13 +110,28 @@ class LotViewModel @ViewModelInject @Inject constructor(
 
     //开奖历史左侧彩种名称、期号
     fun gameNameNdShortIssue(issue: String): String {
-        return StringBuilder().append(mGameName).append(shortIssue(issue)).toString()
+        return StringBuilder().append(if (null == mGameName) "" else mGameName).append(" ")
+            .append(shortIssue(issue)).append("期")
+            .toString()
     }
     //endregion
 
     //region 获取彩种对应玩法关注号码位置（高亮显示）
-    fun getBrightIndexs(playTypeName: String): MutableList<String> {
-        return tGame.lotAlphaList(playTypeName, mGameType)
+    fun getBrightIndexs(playTypeName: String): List<Int> {
+        return tGame.getBrightIndexs(playTypeName, mGameType)
+    }
+    //endregion
+
+    //region 跳转彩票页面
+    companion object {
+        fun start(context: Context, gameId: String, gameType: String, gameName: String?) {
+            context.startActivity(Intent(context, LotActivity::class.java).apply {
+                putExtra(IExtra.ID_GAME_EXTRA, gameId)
+                putExtra(IExtra.TYPE_GAME_EXTRA, gameType)
+                if (!gameName.isSpace())
+                    putExtra(IExtra.NAME_GAME_EXTRA, gameName)
+            })
+        }
     }
     //endregion
 }

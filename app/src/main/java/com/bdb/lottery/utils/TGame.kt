@@ -12,7 +12,6 @@ import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_SSC
 import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_11X5
 import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -61,7 +60,7 @@ class TGame @Inject constructor() {
     /**
      * 彩种对应玩法开奖号码是否显示alpha
      */
-    private fun lotShowAlpha(gameType: String): Boolean {
+    private fun canShowAlpha(gameType: String): Boolean {
         return arrayOf(
             TYPE_GAME_PK10.toString(),
             TYPE_GAME_PK8.toString(),
@@ -74,12 +73,11 @@ class TGame @Inject constructor() {
     /**
      * 彩种对应玩法非alpha列表
      */
-    fun lotAlphaList(playTypeName: String, gameType: String): MutableList<String> {
-        val list: MutableList<String> = ArrayList()
-        if (playTypeName.isSpace() || !lotShowAlpha(gameType)) {
-            return list
+    fun getBrightIndexs(playTypeName: String, gameType: String): List<Int> {
+        if (playTypeName.isSpace() || !canShowAlpha(gameType)) {
+            return emptyList()
         }
-        val stringBuffer = StringBuffer()
+        val list = ArrayList<Int>()
         var max = 0
         if (gameType.equalsNSpace(TYPE_GAME_PK10.toString())) max = 10
         else if (gameType.equalsNSpace(TYPE_GAME_PK8.toString())) max = 8
@@ -111,45 +109,53 @@ class TGame @Inject constructor() {
             var start = max - index + 1
             if (start < 1) start = 1
             for (i in start..max) {
-                stringBuffer.append(i)
+                list.add(i)
             }
         } else if (playTypeName.contains("前")) {
             for (i in 1..index) {
-                stringBuffer.append(i)
+                list.add(i)
             }
         } else if (playTypeName.contains("第")) {
-            stringBuffer.append(index)
+            list.add(index)
         } else if (playTypeName.contains("1V10")) {
-            stringBuffer.append(1).append(10)
+            list.add(1)
+            list.add(10)
         } else if (playTypeName.contains("2V9")) {
-            stringBuffer.append(2).append(9)
+            list.add(2)
+            list.add(9)
         } else if (playTypeName.contains("3V8")) {
-            stringBuffer.append(3).append(8)
+            list.add(3)
+            list.add(8)
         } else if (playTypeName.contains("4V7")) {
-            stringBuffer.append(4).append(7)
+            list.add(4)
+            list.add(7)
         } else if (playTypeName.contains("5V6")) {
-            stringBuffer.append(5).append(6)
+            list.add(5)
+            list.add(6)
         } else if (playTypeName.contains("1V8")) {
-            stringBuffer.append(1).append(8)
+            list.add(1)
+            list.add(8)
         } else if (playTypeName.contains("2V7")) {
-            stringBuffer.append(2).append(7)
+            list.add(2)
+            list.add(7)
         } else if (playTypeName.contains("3V6")) {
-            stringBuffer.append(3).append(6)
+            list.add(3)
+            list.add(6)
         } else if (playTypeName.contains("4V5")) {
-            stringBuffer.append(4).append(5)
+            list.add(4)
+            list.add(5)
         } else if (playTypeName.contains("冠亚")) {
-            stringBuffer.append(1).append(2)
+            list.add(1)
+            list.add(2)
         }
 
-        if (stringBuffer.toString().isSpace()) {
+        if (list.isEmpty()) {
             when (gameType) {
                 TYPE_GAME_SSC.toString(), TYPE_GAME_11X5.toString() ->
-                    stringBuffer.append(1).append(2).append(3).append(4).append(5)
-                TYPE_GAME_FREQUENCY_LOW.toString() -> stringBuffer.append(1).append(2).append(3)
-                TYPE_GAME_PK10.toString() -> stringBuffer.append(1).append(2).append(3).append(4)
-                    .append(5).append(6).append(7).append(8).append(9).append(10)
-                TYPE_GAME_PK8.toString() -> stringBuffer.append(1).append(2).append(3).append(4)
-                    .append(5).append(6).append(7).append(8)
+                    list.addAll(listOf(1, 2, 3, 4, 5))
+                TYPE_GAME_FREQUENCY_LOW.toString() -> list.addAll(listOf(1, 2, 3))
+                TYPE_GAME_PK10.toString() -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+                TYPE_GAME_PK8.toString() -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8))
             }
         }
         return list

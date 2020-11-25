@@ -16,7 +16,7 @@ class LotRemoteDs @Inject constructor(
         gameIds: String,
         onStart: (Disposable) -> Unit,
         success: (CountDownData?) -> Unit,
-        complete: () -> Unit
+        complete: () -> Unit 
     ) {
         retrofitWrapper.observe(
             lotApi.getBetting(gameIds),
