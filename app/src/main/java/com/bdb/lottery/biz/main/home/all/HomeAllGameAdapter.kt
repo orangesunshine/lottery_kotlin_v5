@@ -137,8 +137,8 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
                 ?.toMutableList().apply {
                     expandableLayout?.duration = this?.let {
                         val count = (it.size + 1) / 2
-                        if (count <= 3) 300 else count * 100
-                    } ?: 300
+                        if (count <= 3) 100 else count * 100 / 3
+                    } ?: 100
                 })
     }
     //endregion

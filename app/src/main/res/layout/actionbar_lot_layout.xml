@@ -18,15 +18,22 @@
         android:background="@drawable/lot_actionbar_bg"
         android:orientation="horizontal">
 
-        <ImageView
-            android:id="@id/actionbar_left_id"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/back_white_ic" />
+        <FrameLayout
+            android:id="@+id/actionbar_left_id"
+            android:layout_width="44dp"
+            android:layout_height="44dp">
+
+            <ImageView
+                android:id="@id/actionbar_left_id"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/back_white_ic" />
+        </FrameLayout>
 
         <com.sunfusheng.marqueeview.MarqueeView
             android:id="@id/actionbar_center_id"
-            android:layout_width="230dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             app:mvAnimDuration="1000"
@@ -34,7 +41,7 @@
             app:mvInterval="3000"
             app:mvSingleLine="true"
             app:mvTextColor="@color/white"
-            app:mvTextSize="14sp" />
+            app:mvTextSize="17sp" />
 
         <ImageView
             android:id="@id/actionbar_right_id"

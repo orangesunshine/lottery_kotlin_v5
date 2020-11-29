@@ -58,6 +58,15 @@ class TGame @Inject constructor() {
     }
 
     /**
+     * 期号文字过长，根据彩种处理成适当长度期号，拼接gameName
+     */
+    fun shortIssueTextWithGameName(issue: String, gameName: String?, gameType: Int): String {
+        return StringBuilder().append(gameName ?: "").append(" ")
+            .append(shortIssueText(issue, gameType)).append("期")
+            .toString()
+    }
+
+    /**
      * 彩种对应玩法开奖号码是否显示alpha
      */
     private fun canShowAlpha(gameType: Int): Boolean {
@@ -73,7 +82,7 @@ class TGame @Inject constructor() {
     /**
      * 彩种对应玩法非alpha列表
      */
-    fun getBrightIndexs(playTypeName: String, gameType: Int): List<Int> {
+    fun brightIndexs(playTypeName: String, gameType: Int): List<Int> {
         if (playTypeName.isSpace() || !canShowAlpha(gameType)) {
             return emptyList()
         }

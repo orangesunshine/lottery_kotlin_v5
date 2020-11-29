@@ -1,6 +1,5 @@
 package com.bdb.lottery.biz.lot
 
-import android.app.Activity
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
@@ -10,13 +9,10 @@ import android.os.IBinder
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.IExtra
-import com.bdb.lottery.const.IGame
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_K3
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
-import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
@@ -36,23 +32,14 @@ class LotViewModel @ViewModelInject @Inject constructor(
     val countDown = LiveDataWraper<CountDownData.CurrentTime?>()
     val curIssue = LiveDataWraper<HistoryData.HistoryItem?>()
     val historyIssue = LiveDataWraper<List<HistoryData.HistoryItem>?>()
-    private var mGameId: Int
-    private var mGameType: Int
-    private var mGameName: String? = null
-
-    init {
-        val activity = context as Activity
-        mGameId = activity.intent.getIntExtra(IExtra.ID_GAME_EXTRA, -1)
-        mGameType = activity.intent.getIntExtra(IExtra.TYPE_GAME_EXTRA, -1)
-        mGameName = activity.intent.getStringExtra(IExtra.NAME_GAME_EXTRA)
-        if (-1 == mGameId || -1 == mGameType) {
-            context.finish()
-        }
+    private var mGameId = -1
+    fun setGameId(gameId: Int) {
+        mGameId = gameId
     }
 
     //region 开奖历史记录
-    fun getHistoryByGameId() {
-        lotRemoteDs.getHistoryByGameId(mGameId.toString()) {
+    fun getHistoryByGameId(gameId: String) {
+        lotRemoteDs.getHistoryByGameId(gameId) {
             Timber.d(it.toString())
             historyIssue.setData(it?.filterNotNull())
             curIssue.setData(if (!it.isNullOrEmpty()) it[0] else null)
@@ -86,8 +73,8 @@ class LotViewModel @ViewModelInject @Inject constructor(
 
     }
 
-    fun bindService() {
-        CountDownService.start(context, mGameId)
+    fun bindService(gameId: Int) {
+        CountDownService.start(context, gameId)
         context.bindService(
             Intent(context, CountDownService::class.java),
             conn,
@@ -95,29 +82,10 @@ class LotViewModel @ViewModelInject @Inject constructor(
         )
     }
 
-    fun unBindService() {
+    fun unBindService(gameId: Int) {
         context.unbindService(conn)
-        mSub?.unregisterCountDownCallback(mGameId, mCountDownCallback)
+        mSub?.unregisterCountDownCallback(gameId, mCountDownCallback)
         mSub = null
-    }
-    //endregion
-
-    //region 处理期号
-    fun shortIssue(issue: String): String {
-        return tGame.shortIssueText(issue, mGameType)
-    }
-
-    //开奖历史左侧彩种名称、期号
-    fun gameNameNdShortIssue(issue: String): String {
-        return StringBuilder().append(if (null == mGameName) "" else mGameName).append(" ")
-            .append(shortIssue(issue)).append("期")
-            .toString()
-    }
-    //endregion
-
-    //region 获取彩种对应玩法关注号码位置（高亮显示）
-    fun getBrightIndexs(playTypeName: String): List<Int> {
-        return tGame.getBrightIndexs(playTypeName, mGameType)
     }
     //endregion
 
@@ -133,8 +101,4 @@ class LotViewModel @ViewModelInject @Inject constructor(
         }
     }
     //endregion
-
-    fun isK3(): Boolean {
-        return mGameType == TYPE_GAME_K3
-    }
 }

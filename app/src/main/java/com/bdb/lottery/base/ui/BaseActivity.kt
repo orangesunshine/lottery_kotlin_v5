@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
+import androidx.annotation.CallSuper
 import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
@@ -52,7 +53,7 @@ open class BaseActivity(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //初始化变量
-        initVar()
+        initVar(savedInstanceState)
         //解析布局文件
         val content: FrameLayout = window.decorView.findViewById(android.R.id.content)
         attachView(content)
@@ -129,7 +130,8 @@ open class BaseActivity(
         }
     }
 
-    open fun initVar() {
+    @CallSuper
+    open fun initVar(bundle:Bundle?) {
         mActivity = WeakReference(this)
     }
 

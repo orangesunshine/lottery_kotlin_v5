@@ -26,8 +26,8 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
     @Inject
     lateinit var tCache: TCache
 
-    override fun initVar() {
-        super.initVar()
+    override fun initVar(bundle: Bundle?) {
+        super.initVar(bundle)
         statusbarLight = false
     }
 

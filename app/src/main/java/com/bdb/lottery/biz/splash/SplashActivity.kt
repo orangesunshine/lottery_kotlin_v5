@@ -7,13 +7,15 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
-import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.const.ICache
+import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.datasource.account.AccountLocalDs
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
-import com.bdb.lottery.utils.ui.TApp
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.ui.TApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.splash_activity.*
 import javax.inject.Inject
@@ -21,10 +23,15 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SplashActivity : BaseActivity(R.layout.splash_activity) {
     private val vm by viewModels<SplashViewModel>()
+
     @Inject
     lateinit var tApp: TApp
+
     @Inject
     lateinit var tCache: TCache
+
+    @Inject
+    lateinit var accountLocalDs: AccountLocalDs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +74,12 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
                 //获取域名成功
                 dismissSplashLoading()
                 if (tCache.getBoolean(ICache.GUIDE_CACHE)) {
-                    startNdFinish<LoginActivity>()
+                    if (accountLocalDs.isLogin()) {
+                        startNdFinish<MainActivity>()
+                    } else {
+                        startNdFinish<LoginActivity>()
+                    }
+
                 } else {
                     //首次进入
                     startNdFinish<GuideActivity>()

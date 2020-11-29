@@ -42,8 +42,6 @@ class TDevice @Inject constructor(val tCache: TCache) {
 
     fun isMIUI(): Boolean {
         val manufacturer = Build.MANUFACTURER
-        return if ("xiaomi".equals(manufacturer, ignoreCase = true)) {
-            true
-        } else false
+        return "xiaomi".equals(manufacturer, true)
     }
 }

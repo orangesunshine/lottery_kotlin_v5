@@ -1,26 +1,29 @@
 package com.bdb.lottery.biz.lot
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
+import com.bdb.lottery.biz.lot.jd.LotJdFragment
+import com.bdb.lottery.biz.lot.tr.LotTrFragment
+import com.bdb.lottery.biz.lot.wt.LotWtFragment
 import com.bdb.lottery.const.IExtra
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.visible
+import com.bdb.lottery.utils.TGame
 import com.bdb.lottery.utils.TTime
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.viewholder.BaseViewHolder
+import com.bdb.lottery.utils.ui.TSize
+import com.sunfusheng.marqueeview.MarqueeView
 import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
-import com.zhy.view.flowlayout.TagFlowLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.actionbar_lot_layout.*
 import kotlinx.android.synthetic.main.lot_activity.*
@@ -29,25 +32,72 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LotActivity : BaseActivity(R.layout.lot_activity) {
+    private val JD_FRAGMENT_TAG: String = "JD_FRAGMENT_TAG"
+    private val TR_FRAGMENT_TAG: String = "TR_FRAGMENT_TAG"
+    private val WT_FRAGMENT_TAG: String = "WT_FRAGMENT_TAG"
+
     override var statusbarLight = false;//状态栏是否半透明
 
+    @Inject
+    lateinit var tSize: TSize
+
+    @Inject
+    lateinit var tGame: TGame
+
     //region 生命周期 开关service，网络请求
+
+    private var mGameId: Int = -1
+    private var mGameType: Int = -1
+    private var mGameName: String? = null
+    private lateinit var fragments: Array<Fragment>
+    private val tags: Array<String> = arrayOf(
+        JD_FRAGMENT_TAG,
+        TR_FRAGMENT_TAG,
+        WT_FRAGMENT_TAG
+    )
+
+    override fun initVar(bundle: Bundle?) {
+        super.initVar(bundle)
+        mGameId = intent.getIntExtra(IExtra.ID_GAME_EXTRA, -1)
+        mGameType = intent.getIntExtra(IExtra.TYPE_GAME_EXTRA, -1)
+        mGameName = intent.getStringExtra(IExtra.NAME_GAME_EXTRA)
+        if (-1 == mGameId || -1 == mGameType) {
+            finish()
+        }
+        fragments = if (null == bundle) {
+            arrayOf(LotJdFragment(), LotTrFragment(), LotWtFragment())
+        } else {
+            arrayOf(
+                supportFragmentManager.findFragmentByTag(tags[0]) ?: LotJdFragment(),
+                supportFragmentManager.findFragmentByTag(tags[1]) ?: LotTrFragment(),
+                supportFragmentManager.findFragmentByTag(tags[2]) ?: LotWtFragment()
+            )
+        }
+    }
+
     private val vm by viewModels<LotViewModel>()
     private var mExplContent = 0//0开奖记录、1coco动画、2直播
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mIsK3 = vm.isK3()
-        vm.bindService()
-        vm.getHistoryByGameId()
+        //views
+        lotHistoryRv.layoutManager = LinearLayoutManager(this)
+
+        //data
+        vm.setGameId(mGameId)
+        vm.bindService(mGameId)
+        vm.getHistoryByGameId(mGameId.toString())
         lotTopLeftAreaLl.setOnClickListener {
             switchExplContent(0)
         }
         lotCupIv.setOnClickListener {
             switchExplContent(1)
         }
+
+        //select 页面
+        switchFragment(0)
     }
 
-    fun switchExplContent(expl2Show: Int) {
+    private fun switchExplContent(expl2Show: Int) {
         if (mExplContent == expl2Show || !lotExpl.isExpanded) lotExpl.toggle()
         if (mExplContent == expl2Show) return
         lotCocosWv.visibility = if (expl2Show == 1) View.VISIBLE else View.INVISIBLE
@@ -57,19 +107,38 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     override fun onDestroy() {
         super.onDestroy()
-        vm.unBindService()
+        vm.unBindService(mGameId)
     }
     //endregion
 
     //region 切换fragment
-    private val TYPE_FRAGMENT_JD = 0x01//经典
-    private val TYPE_FRAGMENT_TR = 0x02//传统
-    private val TYPE_FRAGMENT_WT = 0x03//微投
-    private var mFragmentType = TYPE_FRAGMENT_JD
-    fun switchFragment(type: Int) {
-        if (mFragmentType == type) return
-        lotNumsLabelFl.visible(TYPE_FRAGMENT_TR == type)
-        mFragmentType = type
+    private var mFragmentIndex = -1// 0经典 1传统 2微投
+    fun switchFragment(index: Int) {
+        if (mFragmentIndex == index) return
+        //传统显示label
+        lotNumsLabelFl.visible(1 == index)
+        supportFragmentManager.beginTransaction().let {
+            //上一个页面
+            if (mFragmentIndex < fragments.size && mFragmentIndex >= 0) {
+                val preFragment = fragments[mFragmentIndex]
+                if (preFragment.isAdded) {
+                    it.hide(preFragment)
+                }
+            }
+
+            //当前的页面
+            if (index < fragments.size && index >= 0) {
+                val fragment = fragments[index]
+                val tag = tags[index]
+                if (fragment.isAdded) {
+                    it.show(fragment)
+                } else {
+                    it.add(R.id.lot_rect_content_fl, fragment, tag)
+                }
+            }
+            it.commitAllowingStateLoss()
+        }
+        mFragmentIndex = index
     }
     //endregion
 
@@ -83,11 +152,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private fun curIssueNums(curIssue: HistoryData.HistoryItem?) {
         Timber.d(curIssue.toString())
         curIssue?.let {
-            lotTopRectIssueTv.text = vm.gameNameNdShortIssue(it.issueno)
+            lotTopRectIssueTv.text =
+                tGame.shortIssueTextWithGameName(it.issueno, mGameName, mGameType)
             val nums = it.nums
             if (!nums.isSpace()) {
                 val split = nums!!.split(" ")
-                val brightIndexs = vm.getBrightIndexs("1")
+                val brightIndexs = tGame.brightIndexs("1", mGameType)
                 lotOpenNumsFl.adapter = object : TagAdapter<String>(split) {
                     override fun getView(parent: FlowLayout?, position: Int, num: String?): View {
                         val textView = TextView(this@LotActivity)
@@ -105,39 +175,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 历史开奖号码
-    private var mIsK3 = false//是否快3
     private fun historyIssueNums(historyIssues: List<HistoryData.HistoryItem>?) {
         lotHistoryRv.setListOrUpdate(historyIssues?.toMutableList()) {
-            object : BaseQuickAdapter<HistoryData.HistoryItem, BaseViewHolder>(
-                R.layout.lot_history_item,
-                historyIssues?.toMutableList()
-            ) {
-                override fun convert(holder: BaseViewHolder, item: HistoryData.HistoryItem) {
-                    holder.setText(R.id.lot_history_item_issue_tv, "第" + item.issueno + "期")
-                    holder.setVisible(R.id.lot_history_item_divide_view, mIsK3)
-                    val nums = item.nums
-                    if (!nums.isSpace()) {
-                        val split = nums!!.split(" ")
-                        val brightIndexs = vm.getBrightIndexs("1")
-                        holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter =
-                            object : TagAdapter<String>(split) {
-                                override fun getView(
-                                    parent: FlowLayout?,
-                                    position: Int,
-                                    num: String?
-                                ): View {
-                                    val textView = TextView(context)
-                                    textView.gravity = Gravity.CENTER
-                                    textView.text = num
-                                    textView.setBackgroundResource(R.drawable.lot_open_nums_white_circle_shape)
-                                    textView.alpha =
-                                        if (brightIndexs.contains(position + 1)) 1f else 0.6f
-                                    return textView
-                                }
-                            }
-                    }
-                }
-            }
+            BallAdapter(mGameType, tSize.dp2px(20f), it?.toMutableList())
         }
     }
     //endregion
@@ -148,7 +188,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private fun coundown(currentTime: CountDownData.CurrentTime?) {
         currentTime?.let {
             val isclose = it.isclose
-            val issue = vm.shortIssue(it.issueno)
+            val issue = tGame.shortIssueText(it.issueno, mGameType)
             val status = StringBuilder().append(issue).append("期 ")
                 .append(if (isclose) "封盘中" else "受注中")
             lotIssueStatusTv.text = status
@@ -208,13 +248,11 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     }
     //endregion
 
-    companion object {
-        fun start(context: Context, gameId: String, gameType: String, gameName: String?) {
-            val intent = Intent(context, LotActivity::class.java)
-            intent.putExtra(IExtra.ID_GAME_EXTRA, gameId)
-            intent.putExtra(IExtra.TYPE_GAME_EXTRA, gameType)
-            intent.putExtra(IExtra.NAME_GAME_EXTRA, gameName)
-            context.startActivity(intent)
-        }
+    //region 跑马灯title
+    override fun actbarCenter(center: View) {
+        val marqueeView = center as MarqueeView<String>
+        val playName = "五星直选"
+        marqueeView.startWithList(listOf(playName, mGameName))
     }
+    //endregion
 }
