@@ -29,6 +29,7 @@ class HomeCollectionViewModel @ViewModelInject @Inject constructor(
                 null,
                 null,
                 null,
+                null,
                 null
             )
             it?.let { data: LotteryFavoritesData ->

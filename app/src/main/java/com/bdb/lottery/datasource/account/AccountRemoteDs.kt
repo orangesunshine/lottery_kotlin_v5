@@ -63,10 +63,8 @@ class AccountRemoteDs @Inject constructor(
                     }, {
                     //缓存用户已登录
                     accountLocalDs.saveIsLogin(true)
-                    it?.let {
-                        if (!it.isBlank()) {
-                            tCache.putString(ICache.TOKEN_CACHE, it)
-                        }
+                    if (!it.isSpace()) {
+                        tCache.putString(ICache.TOKEN_CACHE, it)
                     }
                     success()
                 },

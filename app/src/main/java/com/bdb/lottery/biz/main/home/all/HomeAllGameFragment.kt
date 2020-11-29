@@ -28,6 +28,7 @@ class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
 
     @Inject
     lateinit var tSize: TSize
+
     @Inject
     lateinit var tActivity: TActivity
 
@@ -81,10 +82,9 @@ class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
                         }
 
                         startWithArgs<LotActivity> {
-                            it.putExtra(IExtra.ID_GAME_EXTRA, gameId.toString())
-                            it.putExtra(IExtra.TYPE_GAME_EXTRA, gameType.toString())
-                            if (!gameName.isSpace())
-                                it.putExtra(IExtra.NAME_GAME_EXTRA, gameName)
+                            it.putExtra(IExtra.ID_GAME_EXTRA, gameId)
+                            it.putExtra(IExtra.TYPE_GAME_EXTRA, gameType)
+                            it.putExtra(IExtra.NAME_GAME_EXTRA, gameName)
                         }
                     }
                 }

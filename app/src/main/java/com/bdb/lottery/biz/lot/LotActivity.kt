@@ -13,10 +13,14 @@ import com.bdb.lottery.const.IExtra
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.TTime
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
+import com.zhy.view.flowlayout.TagFlowLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.actionbar_lot_layout.*
 import kotlinx.android.synthetic.main.lot_activity.*
@@ -32,6 +36,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private var mExplContent = 0//0开奖记录、1coco动画、2直播
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mIsK3 = vm.isK3()
         vm.bindService()
         vm.getHistoryByGameId()
         lotTopLeftAreaLl.setOnClickListener {
@@ -82,7 +87,6 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             val nums = it.nums
             if (!nums.isSpace()) {
                 val split = nums!!.split(" ")
-                Timber.d(split.toString())
                 val brightIndexs = vm.getBrightIndexs("1")
                 lotOpenNumsFl.adapter = object : TagAdapter<String>(split) {
                     override fun getView(parent: FlowLayout?, position: Int, num: String?): View {
@@ -101,9 +105,40 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 历史开奖号码
-
-    private fun historyIssueNums(historyIssues: List<HistoryData.HistoryItem?>?) {
-        Timber.d(historyIssues.toString())
+    private var mIsK3 = false//是否快3
+    private fun historyIssueNums(historyIssues: List<HistoryData.HistoryItem>?) {
+        lotHistoryRv.setListOrUpdate(historyIssues?.toMutableList()) {
+            object : BaseQuickAdapter<HistoryData.HistoryItem, BaseViewHolder>(
+                R.layout.lot_history_item,
+                historyIssues?.toMutableList()
+            ) {
+                override fun convert(holder: BaseViewHolder, item: HistoryData.HistoryItem) {
+                    holder.setText(R.id.lot_history_item_issue_tv, "第" + item.issueno + "期")
+                    holder.setVisible(R.id.lot_history_item_divide_view, mIsK3)
+                    val nums = item.nums
+                    if (!nums.isSpace()) {
+                        val split = nums!!.split(" ")
+                        val brightIndexs = vm.getBrightIndexs("1")
+                        holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter =
+                            object : TagAdapter<String>(split) {
+                                override fun getView(
+                                    parent: FlowLayout?,
+                                    position: Int,
+                                    num: String?
+                                ): View {
+                                    val textView = TextView(context)
+                                    textView.gravity = Gravity.CENTER
+                                    textView.text = num
+                                    textView.setBackgroundResource(R.drawable.lot_open_nums_white_circle_shape)
+                                    textView.alpha =
+                                        if (brightIndexs.contains(position + 1)) 1f else 0.6f
+                                    return textView
+                                }
+                            }
+                    }
+                }
+            }
+        }
     }
     //endregion
 

@@ -98,7 +98,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginRight="10dp"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
@@ -261,19 +260,85 @@
             <net.cachapa.expandablelayout.ExpandableLayout
                 android:id="@+id/lotExpl"
                 android:layout_width="match_parent"
-                android:layout_height="270dp"
+                android:layout_height="260dp"
                 app:el_duration="300"
-                app:el_expanded="false">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/lotHistoryRv"
+                app:el_expanded="true">
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="270dp"
-                    android:background="#ff0000" />
+                    android:layout_height="260dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="#efeeea"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="期号"
+                            android:textColor="#535353"
+                            android:textSize="10dp" />
+
+                        <View
+                            android:layout_width="5dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/lot_history_issue_divide"
+                            android:visibility="gone" />
+
+                        <FrameLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <LinearLayout
+                                android:id="@+id/lotJdHistoryTitleLl"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginRight="8dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="开奖号码"
+                                    android:textColor="#535353"
+                                    android:textSize="12dp" />
+
+                                <TextView
+                                    android:layout_width="40dp"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="形态"
+                                    android:textColor="#535353"
+                                    android:textSize="12dp" />
+                            </LinearLayout>
+
+                            <com.google.android.material.tabs.TabLayout
+                                android:id="@+id/lotTrWtHistoryTitleTl"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone" />
+                        </FrameLayout>
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/lotHistoryRv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#ff0000" />
+                </LinearLayout>
+
 
                 <WebView
                     android:id="@+id/lotCocosWv"
                     android:layout_width="match_parent"
-                    android:layout_height="270dp"
+                    android:layout_height="260dp"
                     android:visibility="invisible" />
             </net.cachapa.expandablelayout.ExpandableLayout>
 

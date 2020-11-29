@@ -8,7 +8,11 @@ import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.zhy.view.flowlayout.TagAdapter
+import com.zhy.view.flowlayout.TagFlowLayout
 import timber.log.Timber
 
 val apperAnim = AlphaAnimation(0f, 1f).apply { duration = 1000 }
@@ -38,6 +42,15 @@ fun ImageView?.loadImageUrl(glideUrl: GlideUrl) {
     this?.let {
         Glide.with(this).load(glideUrl).into(this)
     }
+}
+
+fun <T> RecyclerView.setListOrUpdate(
+    list: List<T>?,
+    create: (List<T>?) -> BaseQuickAdapter<T, BaseViewHolder>
+) {
+    val adapter = this.adapter
+    if (null == adapter) this.adapter =
+        create(list) else (adapter as BaseQuickAdapter<T, BaseViewHolder>).setList(list)
 }
 
 //region smartrefreshlayout 惯性问题

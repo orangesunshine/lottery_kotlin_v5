@@ -46,13 +46,13 @@ class TGame @Inject constructor() {
     /**
      * 期号文字过长，根据彩种处理成适当长度期号
      */
-    fun shortIssueText(issue: String, gameType: String): String {
+    fun shortIssueText(issue: String, gameType: Int): String {
         if (issue.isSpace()) return issue
         if (issue.contains("-")) {
             val split = issue.split("-")
             return split[split.size - 1]
         } else {
-            val isPc28 = gameType.equalsNSpace(TYPE_GAME_PC28.toString())
+            val isPc28 = gameType == TYPE_GAME_PC28
             return if (issue.length > 8 && !isPc28) issue.substring(4) else issue
         }
     }
@@ -60,31 +60,32 @@ class TGame @Inject constructor() {
     /**
      * 彩种对应玩法开奖号码是否显示alpha
      */
-    private fun canShowAlpha(gameType: String): Boolean {
+    private fun canShowAlpha(gameType: Int): Boolean {
         return arrayOf(
-            TYPE_GAME_PK10.toString(),
-            TYPE_GAME_PK8.toString(),
-            TYPE_GAME_SSC.toString(),
-            TYPE_GAME_11X5.toString(),
-            TYPE_GAME_FREQUENCY_LOW.toString()
+            TYPE_GAME_PK10,
+            TYPE_GAME_PK8,
+            TYPE_GAME_SSC,
+            TYPE_GAME_11X5,
+            TYPE_GAME_FREQUENCY_LOW
         ).contains(gameType)
     }
 
     /**
      * 彩种对应玩法非alpha列表
      */
-    fun getBrightIndexs(playTypeName: String, gameType: String): List<Int> {
+    fun getBrightIndexs(playTypeName: String, gameType: Int): List<Int> {
         if (playTypeName.isSpace() || !canShowAlpha(gameType)) {
             return emptyList()
         }
         val list = ArrayList<Int>()
         var max = 0
-        if (gameType.equalsNSpace(TYPE_GAME_PK10.toString())) max = 10
-        else if (gameType.equalsNSpace(TYPE_GAME_PK8.toString())) max = 8
-        else if (gameType.equalsNSpace(TYPE_GAME_SSC.toString())
-            || gameType.equalsNSpace(TYPE_GAME_11X5.toString())
+        if (gameType == TYPE_GAME_PK10) max = 10
+        else if (gameType == TYPE_GAME_PK8) max = 8
+        else if (gameType == TYPE_GAME_SSC
+            || gameType == TYPE_GAME_11X5
         ) max = 5
-        else if (gameType.equalsNSpace(TYPE_GAME_FREQUENCY_LOW.toString())) max = 3
+        else if (
+            gameType == TYPE_GAME_FREQUENCY_LOW) max = 3
 
         var index = 1
         if (playTypeName.contains("一")) {
@@ -151,11 +152,11 @@ class TGame @Inject constructor() {
 
         if (list.isEmpty()) {
             when (gameType) {
-                TYPE_GAME_SSC.toString(), TYPE_GAME_11X5.toString() ->
+                TYPE_GAME_SSC, TYPE_GAME_11X5 ->
                     list.addAll(listOf(1, 2, 3, 4, 5))
-                TYPE_GAME_FREQUENCY_LOW.toString() -> list.addAll(listOf(1, 2, 3))
-                TYPE_GAME_PK10.toString() -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-                TYPE_GAME_PK8.toString() -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8))
+                TYPE_GAME_FREQUENCY_LOW -> list.addAll(listOf(1, 2, 3))
+                TYPE_GAME_PK10 -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+                TYPE_GAME_PK8 -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8))
             }
         }
         return list

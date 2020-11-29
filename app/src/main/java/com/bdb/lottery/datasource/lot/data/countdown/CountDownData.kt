@@ -56,11 +56,11 @@ data class CountDownData(
         }
     }
 
-    fun mapper(cache: ConcurrentHashMap<String, CountDownMapper?>) {
+    fun mapper(cache: ConcurrentHashMap<Int, CountDownMapper?>) {
         if (currents.isNullOrEmpty()) return
         currents.forEach {
             val gameId = it.key
-            cache[gameId.toString()] = CountDownMapper(it.value, futureIssue.get(gameId))
+            cache[gameId] = CountDownMapper(it.value, futureIssue.get(gameId))
         }
     }
 

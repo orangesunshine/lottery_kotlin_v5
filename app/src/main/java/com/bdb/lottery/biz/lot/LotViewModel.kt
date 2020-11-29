@@ -10,10 +10,13 @@ import android.os.IBinder
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.IExtra
+import com.bdb.lottery.const.IGame
+import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_K3
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
+import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
@@ -32,28 +35,24 @@ class LotViewModel @ViewModelInject @Inject constructor(
 ) : BaseViewModel() {
     val countDown = LiveDataWraper<CountDownData.CurrentTime?>()
     val curIssue = LiveDataWraper<HistoryData.HistoryItem?>()
-    val historyIssue = LiveDataWraper<List<HistoryData.HistoryItem?>?>()
-    private lateinit var mGameId: String
-    private lateinit var mGameType: String
+    val historyIssue = LiveDataWraper<List<HistoryData.HistoryItem>?>()
+    private var mGameId: Int
+    private var mGameType: Int
     private var mGameName: String? = null
 
     init {
-        if (context is Activity) {
-            val gameId = context.intent.getStringExtra(IExtra.ID_GAME_EXTRA)
-            val gameType = context.intent.getStringExtra(IExtra.TYPE_GAME_EXTRA)
-            mGameName = context.intent.getStringExtra(IExtra.NAME_GAME_EXTRA)
-            if (null == gameId || null == gameType) {
-                context.finish()
-            } else {
-                mGameId = gameId
-                mGameType = gameType
-            }
+        val activity = context as Activity
+        mGameId = activity.intent.getIntExtra(IExtra.ID_GAME_EXTRA, -1)
+        mGameType = activity.intent.getIntExtra(IExtra.TYPE_GAME_EXTRA, -1)
+        mGameName = activity.intent.getStringExtra(IExtra.NAME_GAME_EXTRA)
+        if (-1 == mGameId || -1 == mGameType) {
+            context.finish()
         }
     }
 
     //region 开奖历史记录
     fun getHistoryByGameId() {
-        lotRemoteDs.getHistoryByGameId(mGameId) {
+        lotRemoteDs.getHistoryByGameId(mGameId.toString()) {
             Timber.d(it.toString())
             historyIssue.setData(it?.filterNotNull())
             curIssue.setData(if (!it.isNullOrEmpty()) it[0] else null)
@@ -134,4 +133,8 @@ class LotViewModel @ViewModelInject @Inject constructor(
         }
     }
     //endregion
+
+    fun isK3(): Boolean {
+        return mGameType == TYPE_GAME_K3
+    }
 }

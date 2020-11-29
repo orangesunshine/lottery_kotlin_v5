@@ -12,7 +12,6 @@ import com.bdb.lottery.biz.lot.LotActivity
 import com.bdb.lottery.const.IExtra
 import com.bdb.lottery.datasource.game.data.HomeFavoritesMapper
 import com.bdb.lottery.extension.equalsNSpace
-import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startWithArgs
 import com.bdb.lottery.utils.ui.TSize
@@ -83,20 +82,21 @@ class HomeCollectionFragment : BaseFragment(R.layout.recyclerview_single_layout)
                                 //彩票、游戏
                                 val gameId = item.gameId
                                 val gameType = item.gameType
-                                val gameName =
-                                    if (collectType.equalsNSpace("0")) item.gameInfo?.name
-                                    else if (collectType.equalsNSpace("1")) item.thirdGameInfo?.name
-                                    else null
+                                val gameName = item.gameName
 
-                                if (gameId.isSpace() || gameType.isSpace()) {
+                                when {
+                                    collectType.equalsNSpace("0") -> item.gameInfo?.name
+                                    collectType.equalsNSpace("1") -> item.thirdGameInfo?.name
+                                    else -> null
+                                }
+                                if (null == gameId || null == gameType) {
                                     toast.showWarning("彩种异常")
                                     return@setOnItemClickListener
                                 }
                                 startWithArgs<LotActivity> {
                                     it.putExtra(IExtra.ID_GAME_EXTRA, gameId)
                                     it.putExtra(IExtra.TYPE_GAME_EXTRA, gameType)
-                                    if (!gameName.isSpace())
-                                        it.putExtra(IExtra.NAME_GAME_EXTRA, gameName)
+                                    it.putExtra(IExtra.NAME_GAME_EXTRA, gameName)
                                 }
                             }
                         }

@@ -13,7 +13,7 @@ data class LotteryFavoritesData(
 data class FavoritesGameType(
     var collectType: String?,
     var gameGenres: Int?,
-    var gameId: String?,
+    var gameId: Int?,
     var gameInfo: GameInfo?,
     var gameName: String?,
     var subPlatform: String?,
@@ -21,25 +21,26 @@ data class FavoritesGameType(
 ) {
     fun homeMapper(platform: PlatformData?): HomeFavoritesMapper {
         var homeImgUrl: String? = null
-        var gameType: String? = null
+//        var gameType: String? = null
         var placeholder = R.drawable.home_img_add_bg
         if (collectType.equalsNSpace("0")) {
             placeholder = R.drawable.home_placeholder_round_img_ic
             //彩票
             homeImgUrl = platform?.lotteryFileImgSquare(gameInfo)
-            gameType = gameInfo?.gameKind.toString()
+//            gameType = gameInfo?.gameKind.toString()
         } else if (collectType.equalsNSpace("1")) {
             placeholder = R.drawable.home_placeholder_round_img_ic
             //第三方游戏
             homeImgUrl = platform?.thirdGameImgUrl(thirdGameInfo)
-            gameType = thirdGameInfo?.gameType
+//            gameType = thirdGameInfo?.gameType
         }
         return HomeFavoritesMapper(
             placeholder,
             homeImgUrl,
             collectType,
-            gameType,
+            gameGenres,
             gameId,
+            gameName,
             gameInfo,
             thirdGameInfo
         )
@@ -94,8 +95,9 @@ data class HomeFavoritesMapper(
     @DrawableRes var placeholder: Int,//默认图片、添加图片
     var homeImgUrl: String?,//home页面收藏、游戏、娱乐图片
     var collectType: String?,
-    var gameType: String?,
-    var gameId: String?,
+    var gameType: Int?,
+    var gameId: Int?,
+    var gameName: String?,
     var gameInfo: GameInfo?,
     var thirdGameInfo: ThirdGameInfo?,
 )

@@ -12,6 +12,7 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
+import com.bdb.lottery.extension.isNullOrEmpty
 import com.bdb.lottery.extension.isSpace
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.core.Observable
@@ -28,13 +29,13 @@ class CountDownService : BaseService() {
     @Inject
     lateinit var lotRemoteDs: LotRemoteDs
     private val mIsCountDown = AtomicBoolean(false)
-    private val mCountDownCallbacks = HashMap<String, MutableList<CountDownCallback>>()
+    private val mCountDownCallbacks = HashMap<Int, MutableList<CountDownCallback>>()
 
     companion object {
         private const val KEY_GAMEIDS = "key_gameids"
         private const val KEY_FORCE_REFRESH = "key_force_refresh"
 
-        fun start(context: Context, gameIds: Array<String>) {
+        fun start(context: Context, gameIds: Array<Int>) {
             val intent = Intent(context, CountDownService::class.java)
             intent.putExtra(KEY_GAMEIDS, gameIds)
             ContextCompat.startForegroundService(context, intent)
@@ -43,7 +44,7 @@ class CountDownService : BaseService() {
         /**
          * forceRefresh：彩种当前期结束时，强制获取服务器倒计时时间矫正本缓存地时间
          */
-        fun start(context: Context, gameId: String) {
+        fun start(context: Context, gameId: Int) {
             val intent = Intent(context, CountDownService::class.java)
             intent.putExtra(KEY_GAMEIDS, Array(1) { gameId })
             intent.putExtra(KEY_FORCE_REFRESH, true)
@@ -67,14 +68,14 @@ class CountDownService : BaseService() {
         }
     }
 
-    private val mCache = ConcurrentHashMap<String, CountDownData.CountDownMapper?>()//倒计时缓存
-    private val mIsGettingList = ArrayList<String>()//正在获取倒计时接口数据
+    private val mCache = ConcurrentHashMap<Int, CountDownData.CountDownMapper?>()//倒计时缓存
+    private val mIsGettingList = ArrayList<Int>()//正在获取倒计时接口数据
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val gameIds = intent?.getStringArrayExtra(KEY_GAMEIDS)
+        val gameIds = intent?.getIntArrayExtra(KEY_GAMEIDS)
         if (!gameIds.isNullOrEmpty()) {
-            var isGettingList: MutableList<String> = ArrayList()
+            var isGettingList: MutableList<Int> = ArrayList()
             //过滤正在请求倒计时接口的gameid
-            isGettingList.addAll(gameIds.filter { !it.isSpace() && !mIsGettingList.contains(it) })
+            isGettingList.addAll(gameIds!!.filter { !mIsGettingList.contains(it) })
             if (isGettingList.isNotEmpty()) {
                 val isForce = intent?.getBooleanExtra(KEY_FORCE_REFRESH, false)
                 val buff = StringBuilder()
@@ -153,9 +154,9 @@ class CountDownService : BaseService() {
     /**
      * 判断当前期是否正在进行
      */
-    private fun isRunning(gameId: String): Boolean {
+    private fun isRunning(gameId: Int): Boolean {
         if (mCache.isEmpty()) return false
-        val mapper = mCache.get(gameId)
+        val mapper = mCache[gameId]
         return (mapper?.currentTime?.isclose ?: true).not()
     }
 
@@ -164,7 +165,7 @@ class CountDownService : BaseService() {
     }
 
     inner class CountDownSub : Binder() {
-        fun registerCountDownCallback(gameId: String, callback: CountDownCallback) {
+        fun registerCountDownCallback(gameId: Int, callback: CountDownCallback) {
             var callbacks = mCountDownCallbacks[gameId]
             if (null == callbacks) {
                 callbacks = ArrayList()
@@ -174,7 +175,7 @@ class CountDownService : BaseService() {
             callbacks.add(callback)
         }
 
-        fun unregisterCountDownCallback(gameId: String, callback: CountDownCallback) {
+        fun unregisterCountDownCallback(gameId: Int, callback: CountDownCallback) {
             var callbacks = mCountDownCallbacks[gameId]
             if (callbacks?.contains(callback) == true) {
                 callbacks.remove(callback)
