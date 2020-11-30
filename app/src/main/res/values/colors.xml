@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
     <!-- 通用颜色 -->
     <color name="color_transparent">#00000000</color>
@@ -36,6 +37,8 @@
 
     <!-- 按钮 -->
     <color name="color_blue_bt">#147CE2</color>
+    <color name="color_red_bt">#f43f22</color>
+    <color name="color_orange_bt">#f57514</color>
 
     <!-- 背景 -->
     <color name="color_bg">#f2f4f5</color>

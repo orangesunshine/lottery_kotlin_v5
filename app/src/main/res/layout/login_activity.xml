@@ -124,7 +124,7 @@
 
     <TextView
         android:id="@+id/login_bt"
-        style="@style/big_bt"
+        style="@style/big_blue_bt"
         android:layout_marginTop="20dp"
         android:letterSpacing="1.5"
         android:text="@string/login_text" />

@@ -1,17 +1,12 @@
 package com.bdb.lottery
 
-import com.bdb.lottery.datasource.game.data.AllGameDataMapper
-import com.bdb.lottery.datasource.game.data.AllGameItemData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.lang.System.*
-import java.lang.ref.WeakReference
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -161,7 +156,7 @@ class ExampleUnitTest {
 
     @Test
     fun assertReduce(){
-        val list= listOf(1,2,3)
+        val list= listOf(1, 2, 3)
         val result = list.reduce { s, t ->
             print("s=$s ")
             print("t=$t")
@@ -169,5 +164,12 @@ class ExampleUnitTest {
             s + t
         }
         println(result)
+    }
+
+    @Test
+    fun test(){
+        val phonenum = "13177668655"
+        val chpier = phonenum.replace("(\\d{3})\\d{4}(\\d{4})".toRegex(), "$1****$2")
+        println(chpier)
     }
 }

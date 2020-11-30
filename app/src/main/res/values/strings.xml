@@ -44,5 +44,14 @@
     <string name="home_recommend_collection">推荐收藏</string>
     <string name="home_all_lotterytype">全部彩种</string>
     <string name="home_entertainment">综合娱乐</string>
-
+    <string name="lot_jd_single_remove_repeat_text">删除重复和错误号码</string>
+    <string name="lot_jd_account_balance_text">账户余额：%f 元</string>
+    <string name="lot_jd_today_loss_profit_text">今日输赢：%f 元</string>
+    <string name="lot_jd_selected_notes_text">已选 %d 注</string>
+    <string name="lot_jd_total_amount_text">共 %f 元</string>
+    <string name="lot_jd_max_bonus_text">理论最高奖金 %f 元</string>
+    <string name="lot_jd_money_unit_yuan">元</string>
+    <string name="lot_jd_multiple_text">倍数</string>
+    <string name="lot_jd_shopping_bar">购彩篮</string>
+    <string name="lot_jd_direct_betting">直接投注</string>
 </resources>

@@ -127,7 +127,7 @@
 
     <TextView
         android:id="@+id/register_bt"
-        style="@style/big_bt"
+        style="@style/big_blue_bt"
         android:layout_margin="20dp"
         android:letterSpacing="1.5"
         android:text="@string/register_text" />

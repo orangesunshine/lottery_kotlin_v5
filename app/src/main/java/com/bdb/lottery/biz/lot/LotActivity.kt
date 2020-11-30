@@ -177,7 +177,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 历史开奖号码
     private fun historyIssueNums(historyIssues: List<HistoryData.HistoryItem>?) {
         lotHistoryRv.setListOrUpdate(historyIssues?.toMutableList()) {
-            BallAdapter(mGameType, tSize.dp2px(20f), it?.toMutableList())
+            BallAdapter(mGameType, tSize.dp2px(16f), it?.toMutableList())
         }
     }
     //endregion
