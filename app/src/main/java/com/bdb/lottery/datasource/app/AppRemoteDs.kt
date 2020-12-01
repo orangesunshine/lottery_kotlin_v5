@@ -4,14 +4,13 @@ import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.datasource.app.data.ApkVersionData
 import com.bdb.lottery.datasource.app.data.CustomServiceData
 import com.bdb.lottery.datasource.app.data.PlatformData
-import com.bdb.lottery.utils.ui.app.TApp
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
+import com.bdb.lottery.utils.ui.app.Apps
 import javax.inject.Inject
 
 class AppRemoteDs @Inject constructor(
     private val retrofitWrapper: RetrofitWrapper,
     private val appApi: AppApi,
-    private val tApp: TApp,
 ) {
     //region 获取平台参数
     fun platformParams(success: ((PlatformData?) -> Unit)? = null) {
@@ -28,9 +27,11 @@ class AppRemoteDs @Inject constructor(
 
     //缓存优先
     fun cachePriPlatformParams(success: ((PlatformData?) -> Unit)? = null) {
-        retrofitWrapper.cachePriLoad(IUrl.URL_PLATFORM_PARAMS,
+        retrofitWrapper.cachePriLoad(
+            IUrl.URL_PLATFORM_PARAMS,
             appApi.platformParams(),
-            success)
+            success
+        )
     }
     //endregion
 
@@ -57,14 +58,14 @@ class AppRemoteDs @Inject constructor(
     fun preApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.preload(
             IUrl.URL_APK_VERSION,
-            appApi.apkVersion("android", tApp.getAppVersionCode()), success
+            appApi.apkVersion("android", Apps.getAppVersionCode()), success
         )
     }
 
     fun cachePriApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.cachePriLoad(
             IUrl.URL_APK_VERSION,
-            appApi.apkVersion("android", tApp.getAppVersionCode()), success
+            appApi.apkVersion("android", Apps.getAppVersionCode()), success
         )
     }
     //endregion

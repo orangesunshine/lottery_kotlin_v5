@@ -17,7 +17,6 @@ import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
 import com.bdb.lottery.service.CountDownService.CountDownSub
-import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.thread.TThread
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
@@ -25,7 +24,6 @@ import javax.inject.Inject
 
 class LotViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
-    private val tGame: TGame,
     private val tThread: TThread,
     private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {

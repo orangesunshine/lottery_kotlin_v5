@@ -9,7 +9,6 @@ import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.cache.Caches
-import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -22,7 +21,6 @@ import javax.inject.Inject
 
 class RetrofitWrapper @Inject constructor(
     private val toast: AbsToast,
-    val tCache: TCache,
     private val domainLocalDs: DomainLocalDs,
     private val domainRemoteDs: DomainRemoteDs,
 ) {

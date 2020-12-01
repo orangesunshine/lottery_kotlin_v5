@@ -37,7 +37,7 @@ class AccountRemoteDs @Inject constructor(
         error: (validate: Boolean) -> Unit,
         viewState: LiveDataWraper<ViewState?>
     ) {
-        val key = tCache.getString(ICache.PUBLIC_RSA_KEY_CACHE, "")
+        val key = tCache.rsaPublicKeyCache()
         if (key.isSpace()) {
             retrofitWrapper.observeErrorData(
                 appApi.platformParams()
@@ -63,9 +63,7 @@ class AccountRemoteDs @Inject constructor(
                     }, {
                     //缓存用户已登录
                     accountLocalDs.saveIsLogin(true)
-                    if (!it.isSpace()) {
-                        tCache.putString(ICache.TOKEN_CACHE, it)
-                    }
+                    tCache.cacheToken(it)
                     success()
                 },
                 { response ->
@@ -116,11 +114,7 @@ class AccountRemoteDs @Inject constructor(
                     {
                         //缓存用户已登录
                         accountLocalDs.saveIsLogin(true)
-                        it?.let {
-                            if (!it.isBlank()) {
-                                tCache.putString(ICache.TOKEN_CACHE, it)
-                            }
-                        }
+                        tCache.cacheToken(it)
                         success()
                     },
                     { response ->
@@ -148,8 +142,7 @@ class AccountRemoteDs @Inject constructor(
             //缓存用户已登录
             accountLocalDs.saveIsLogin(true)
             it?.let {
-                val token = it.token
-                if (!token.isSpace()) tCache.putString(ICache.TOKEN_CACHE, token)
+                tCache.cacheToken(it.token)
             }
         }, { code, msg ->
             //缓存用户未登录
@@ -161,7 +154,7 @@ class AccountRemoteDs @Inject constructor(
     fun loginInfo() {
         retrofitWrapper.observe(accountApi.userinfo(), {
             //缓存用户登录信息
-            it?.let { tCache.putString(ICache.USERINFO_CACHE, GsonBuilder().create().toJson(it)) }
+            tCache.cacheUserInfo(it)
         })
     }
 

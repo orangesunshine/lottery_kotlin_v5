@@ -3,7 +3,9 @@ package com.bdb.lottery.utils.cache
 import android.text.TextUtils
 import com.bdb.lottery.const.ICache
 import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.datasource.account.data.UserInfoData
 import com.bdb.lottery.datasource.app.data.PlatformData
+import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.device.Devices
 import com.bdb.lottery.utils.gson.Gsons
 import javax.inject.Inject
@@ -76,28 +78,34 @@ class TCache @Inject constructor() {
         cacheRememberPwd(rememberPwd)
     }
 
-    fun cacheAccount(account: String) {
+    private fun cacheAccount(account: String) {
         Caches.putString(ICache.LOGIN_ACCOUNT_CACHE, account)
     }
 
-    fun cachePwd(pwd: String) {
+    private fun cachePwd(pwd: String) {
         Caches.putString(ICache.LOGIN_PWD_CACHE, pwd)
     }
 
-    fun cacheRememberPwd(rememberPwd: Boolean) {
+    private fun cacheRememberPwd(rememberPwd: Boolean) {
         Caches.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
     }
     //endregion
 
     //region 保存公钥
     fun cacheRsaPublicKey(publicKey: String?) {
-        Caches.putString(ICache.PUBLIC_RSA_KEY_CACHE, publicKey)
+        if (!publicKey.isSpace())
+            Caches.putString(ICache.PUBLIC_RSA_KEY_CACHE, publicKey)
+    }
+
+    fun rsaPublicKeyCache(): String? {
+        return Caches.getString(ICache.PUBLIC_RSA_KEY_CACHE)
     }
     //endregion
 
     //region token
-    fun cacheToken(token: String) {
-        Caches.putString(ICache.TOKEN_CACHE, token)
+    fun cacheToken(token: String?) {
+        if (!token.isSpace())
+            Caches.putString(ICache.TOKEN_CACHE, token)
     }
 
     fun tokenCache(): String? {
@@ -111,7 +119,8 @@ class TCache @Inject constructor() {
     }
 
     fun cacheDomain(domain: String?) {
-        Caches.putString(ICache.DOMAIN_URL_CACHE, domain)
+        if (!domain.isSpace())
+            Caches.putString(ICache.DOMAIN_URL_CACHE, domain)
     }
 
     fun domainCache(): String? {
@@ -120,16 +129,30 @@ class TCache @Inject constructor() {
     //endregion
 
     //region 平台参数
-    fun cachePlatformParams(platformParams: PlatformData) {
-        Caches.putString(IUrl.URL_PLATFORM_PARAMS, Gsons.toJson(platformParams))
+    fun cachePlatformParams(params: PlatformData?) {
+        if (null != params)
+            Caches.putString(IUrl.URL_PLATFORM_PARAMS, Gsons.toJson(params))
     }
     //endregion
 
+    //region 登录状态
     fun cacheLoginStatus(isLogin: Boolean) {
         Caches.putBoolean(ICache.ISLOGIN_CACHE, isLogin)
     }
 
-    fun loginStatusCache(){
-
+    fun loginStatusCache(): Boolean {
+        return Caches.getBoolean(ICache.ISLOGIN_CACHE)
     }
+    //endregion
+
+    //region 用户信息
+    fun cacheUserInfo(info: UserInfoData?) {
+        if (null != info)
+            Caches.putString(ICache.USERINFO_CACHE, Gsons.toJson(info))
+    }
+
+    fun userInfoCache(): String? {
+        return Caches.getString(ICache.USERINFO_CACHE)
+    }
+    //endregion
 }

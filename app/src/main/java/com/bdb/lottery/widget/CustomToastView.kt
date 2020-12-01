@@ -13,8 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import com.bdb.lottery.R
 import com.bdb.lottery.module.application.AppEntries
-import com.bdb.lottery.utils.ui.screen.TScreen
-import com.bdb.lottery.utils.ui.size.TSize
+import com.bdb.lottery.utils.ui.screen.Screens
+import com.bdb.lottery.utils.ui.size.Sizes
 import dagger.hilt.android.EntryPointAccessors
 
 class CustomToastView @JvmOverloads constructor(
@@ -22,16 +22,12 @@ class CustomToastView @JvmOverloads constructor(
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private val mToastTv: TextView
 
-    private val tSize: TSize =
-        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTSize()
-    private val tScreen: TScreen =
-        EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTScreen()
-    private val SPACING: Int = tSize.dp2px(80f)
+    private val SPACING: Int = Sizes.dp2px(80f)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(
             MeasureSpec.makeMeasureSpec(
-                tScreen.screenWidth() - SPACING,
+                Screens.screenSize()[0] - SPACING,
                 MeasureSpec.AT_MOST
             ), heightMeasureSpec
         )
@@ -43,15 +39,15 @@ class CustomToastView @JvmOverloads constructor(
 
     //设置top dr
     private fun setToastDrawable(dr: Drawable?) {
-        dr?.setBounds(0, 0, tSize.dp2px(48f), tSize.dp2px(48f))
+        dr?.setBounds(0, 0, Sizes.dp2px(48f), Sizes.dp2px(48f))
         mToastTv.setCompoundDrawables(null, dr, null, null);
-        mToastTv.compoundDrawablePadding = tSize.dp2px(12f)
+        mToastTv.compoundDrawablePadding = Sizes.dp2px(12f)
     }
 
     init {
-        minimumWidth = tSize.dp2px(190f)
+        minimumWidth = Sizes.dp2px(190f)
         setBackgroundResource(R.drawable.toast_bg)
-        setPadding(tSize.dp2px(12f))
+        setPadding(Sizes.dp2px(12f))
         mToastTv = TextView(getContext());
         mToastTv.gravity = Gravity.CENTER
         mToastTv.setTextColor(Color.parseColor("#eeeeee"))
