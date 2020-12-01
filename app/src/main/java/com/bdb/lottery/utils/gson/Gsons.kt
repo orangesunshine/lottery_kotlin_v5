@@ -10,7 +10,7 @@ object Gsons {
         return gson.toJson(src)
     }
 
-    fun <T> fromJson(json: String, type: Type): T {
-        return gson.fromJson(json, type)
+    inline fun <reified T> fromJson(json: String): T {
+        return gson.fromJson(json, T::class.java)
     }
 }

@@ -34,18 +34,20 @@ fun Context.toast(msg: String?, length: Int = Toast.LENGTH_LONG) {
 }
 
 inline fun <reified T : Activity> Context.start() {
-    startActivity(Intent(this, T::class.java))
+    val intent = Intent(this, T::class.java)
+    if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    startActivity(intent)
 }
 
 inline fun <reified T : Activity> Context.startNdFinish() {
-    startActivity(Intent(this, T::class.java))
+    start<T>()
     if (this is Activity) finish()
 }
 
 inline fun <reified T : Activity> Context.startWithArgs(block: (Intent) -> Any) {
     val intent = Intent(this, T::class.java)
     block(intent)
-    startActivity(intent)
+    start<T>()
 }
 
 inline fun <reified T : Activity> Context.startNdFinishWithArgs(block: (Intent) -> Any) {
@@ -67,7 +69,6 @@ inline fun <reified T : Activity> Fragment.startNdFinish() {
 inline fun <reified T : Activity> Fragment.startWithArgs(block: (Intent) -> Any) {
     val intent = Intent(this.activity, T::class.java)
     block(intent)
-    Timber.d("startWithArgs__gameId: ${intent.getStringExtra(IExtra.ID_GAME_EXTRA)}, gameType: ${intent.getStringExtra(IExtra.TYPE_GAME_EXTRA)}, gameName: ${intent.getStringExtra(IExtra.NAME_GAME_EXTRA)}")
     startActivity(intent)
 }
 
@@ -79,7 +80,7 @@ inline fun <reified T : Activity> Fragment.startNdFinishWithArgs(block: (Intent)
 }
 
 inline fun <reified T : AppCompatActivity> Context.startActivity(
-    vararg params: Pair<KProperty1<out Any?, Any?>, Any?>
+    vararg params: Pair<KProperty1<out Any?, Any?>, Any?>,
 ) {
     val extras = params.map { it.first.name to it.second }.toTypedArray()
     val intent = Intent(this, T::class.java)
@@ -134,7 +135,7 @@ fun Activity.statusbar(light: Boolean) {
 
 inline fun <reified D> LifecycleOwner.ob(
     data: LiveData<D>?,
-    crossinline block: (D) -> Unit
+    crossinline block: (D) -> Unit,
 ) {
     data?.let {
         data.observe(this, Observer { block(it) })

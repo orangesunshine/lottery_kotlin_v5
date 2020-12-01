@@ -2,8 +2,14 @@ package com.bdb.lottery.utils.ui.activity
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle
+import com.bdb.lottery.app.BdbApp
+import com.bdb.lottery.base.response.BaseResponse
+import com.bdb.lottery.biz.login.LoginActivity
+import com.bdb.lottery.const.ICode
+import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.thread.TThread
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -138,14 +144,6 @@ class TActivityLifecycle @Inject constructor(
         }
     }
 
-    fun getTopActivity(): Activity? {
-        for (activity in getActivityList()) {
-            if (Activitys.isActivityAlive(activity))
-                return activity
-        }
-        return null
-    }
-
     fun addOnAppStatusChangedListener(listener: OnAppStatusChangedListener) {
         mStatusListeners.add(listener)
     }
@@ -156,6 +154,42 @@ class TActivityLifecycle @Inject constructor(
 
     fun isAppForeground(): Boolean {
         return !mIsBackground
+    }
+
+    //获取顶部栈context
+    fun getTopActivityOrApp(): Context {
+        return getTopActivity() ?: BdbApp.sApp
+    }
+
+    private fun getTopActivity(): Activity? {
+        for (activity in getActivityList()) {
+            if (Activitys.isActivityAlive(activity))
+                return activity
+        }
+        return null
+    }
+
+    //顶层activity打开页面
+    private inline fun <reified T : Activity> topStartActivity() {
+        val topActivity = getTopActivity()
+        if (isAppForeground() && topActivity !is T) {
+            topActivity?.start<T>()
+            popAllActivity()
+        }
+    }
+
+    private fun popAllActivity() {
+        var pop = mActivityStack.pop()
+        while (null != pop) {
+            pop.finish()
+            pop = mActivityStack.pop()
+        }
+    }
+
+    //根据后端code跳转登录
+    fun topLogin(response: BaseResponse<*>) {
+        if (ICode.LIST_TOLOGIN.contains(response.code))
+            topStartActivity<LoginActivity>()
     }
 
     ///////////////////////////////////////////////////////////////////////////

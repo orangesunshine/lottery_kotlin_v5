@@ -4,7 +4,12 @@ import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.ICode
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
-import com.google.gson.*
+import com.bdb.lottery.utils.gson.Gsons
+import com.bdb.lottery.utils.ui.activity.TActivityLifecycle
+import com.google.gson.Gson
+import com.google.gson.JsonIOException
+import com.google.gson.JsonParser
+import com.google.gson.TypeAdapter
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonToken
 import okhttp3.MediaType
@@ -23,12 +28,15 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class BdbGsonConverterFactory @Inject constructor(private val gson: Gson) : Converter.Factory() {
+class BdbGsonConverterFactory @Inject constructor(
+    private val gson: Gson,
+    private val tActivityLifecycle: TActivityLifecycle,
+) : Converter.Factory() {
     override fun responseBodyConverter(
         type: Type, annotations: Array<Annotation>, retrofit: Retrofit,
     ): Converter<ResponseBody, *> {
         val adapter = gson.getAdapter(TypeToken.get(type))
-        return BdbGsonResponseBodyConverter(gson, adapter)
+        return BdbGsonResponseBodyConverter(gson, adapter, tActivityLifecycle)
     }
 
     override fun requestBodyConverter(
@@ -44,6 +52,7 @@ class BdbGsonConverterFactory @Inject constructor(private val gson: Gson) : Conv
 internal class BdbGsonResponseBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
+    private val tActivityLifecycle: TActivityLifecycle,
 ) :
     Converter<ResponseBody, T> {
     @Throws(IOException::class)
@@ -65,8 +74,10 @@ internal class BdbGsonResponseBodyConverter<T>(
                 }
                 return result
             } else {
+                val response = Gsons.fromJson<BaseResponse<*>>(string)
+                tActivityLifecycle.topLogin(response)
                 throw ApiException(
-                    GsonBuilder().create().fromJson(string, BaseResponse::class.java)
+                    response
                 )
             }
         } catch (e: Exception) {

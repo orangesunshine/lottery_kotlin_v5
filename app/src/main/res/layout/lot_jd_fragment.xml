@@ -27,6 +27,7 @@
                 android:src="@drawable/lot_jd_play_des" />
 
             <TextView
+                android:id="@+id/lot_jd_play_desc_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -161,7 +162,7 @@
 
             <TextView
                 android:id="@+id/lot_jd_add_to_shopping_bar_tv"
-                android:layout_width="80dp"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:background="@drawable/bt_common_orange_round_shape"
                 android:gravity="center"
@@ -172,7 +173,7 @@
 
             <TextView
                 android:id="@+id/lot_jd_direct_betting_tv"
-                android:layout_width="80dp"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"
                 android:background="@drawable/bt_common_red_round_shape"
