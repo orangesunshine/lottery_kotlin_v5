@@ -4,10 +4,10 @@ import android.app.Application
 import android.content.Context
 import android.os.Process
 import androidx.multidex.MultiDex
-import com.bdb.lottery.utils.ui.TApp
-import com.bdb.lottery.utils.TConfig
+import com.bdb.lottery.utils.ui.app.TApp
+import com.bdb.lottery.utils.inject.TConfig
 import com.bdb.lottery.utils.timber.LogTree
-import com.bdb.lottery.utils.ui.TActivityLifecycle
+import com.bdb.lottery.utils.ui.activity.TActivityLifecycle
 import com.bdb.lottery.widget.CustomHeader
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.layout.SmartRefreshLayout

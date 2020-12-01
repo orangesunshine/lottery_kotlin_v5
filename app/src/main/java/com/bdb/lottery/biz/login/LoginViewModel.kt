@@ -34,9 +34,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
             success()
             userInfo()//获取用户信息
             //登录成功保存用户名、密码、是否记住密码
-            tCache.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
-            tCache.putString(ICache.LOGIN_USERNAME_CACHE, username)
-            tCache.putString(ICache.LOGIN_PWD_CACHE, if (rememberPwd) pwd else "")
+            tCache.cacheLogin(username, if (rememberPwd) pwd else "", rememberPwd)
         }, { validate ->
             validateLd.setData(validate)
         }, viewState = viewStatus)
@@ -69,7 +67,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     //刷新公钥
     fun refreshRsaKey() {
         appRemoteDs.platformParams {
-            tCache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it?.rsaPublicKey)
+            tCache.cacheRsaPublicKey(it?.rsaPublicKey)
         }
     }
 }

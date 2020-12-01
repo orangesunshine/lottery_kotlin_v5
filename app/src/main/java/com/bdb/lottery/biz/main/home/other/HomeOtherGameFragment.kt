@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.extension.ob
-import com.bdb.lottery.utils.ui.TSize
+import com.bdb.lottery.utils.ui.size.Sizes
+import com.bdb.lottery.utils.ui.size.TSize
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.recyclerview_single_layout.*
 import javax.inject.Inject
@@ -53,7 +54,7 @@ class HomeOtherGameFragment : BaseFragment(R.layout.recyclerview_single_layout) 
         ob(vm.otherGameLd.getLiveData()) {
             home_single_rv.run {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                setPadding(tSize.dp2px(4f))
+                setPadding(Sizes.dp2px(4f))
                 adapter = HomeOtherGameAdapter(it)
             }
         }

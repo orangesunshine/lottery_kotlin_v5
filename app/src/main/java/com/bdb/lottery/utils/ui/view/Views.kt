@@ -1,6 +1,7 @@
-package com.bdb.lottery.utils.ui
+package com.bdb.lottery.utils.ui.view
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -9,11 +10,17 @@ import android.os.Handler
 import android.view.PixelCopy
 import android.view.View
 import androidx.annotation.RequiresApi
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.bdb.lottery.app.BdbApp
 
-@Singleton
-class TImage @Inject constructor() {
+object Views {
+    fun layoutId2View(layoutId: Int): View {
+        return layoutId2View(BdbApp.context, layoutId)
+    }
+
+    fun layoutId2View(context: Context, layoutId: Int): View {
+        return View.inflate(context, layoutId, null)
+    }
+
     fun view2Bitmap(view: View?): Bitmap? {
         if (view == null) return null
         val drawingCacheEnabled = view.isDrawingCacheEnabled

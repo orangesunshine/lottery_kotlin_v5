@@ -1,10 +1,9 @@
 package com.bdb.lottery.utils.net.retrofit
 
-import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.utils.TDevice
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.device.TDevice
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -22,7 +21,7 @@ class HeadersInterceptor @Inject constructor(
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = tCache.getString(ICache.TOKEN_CACHE)
+        val token = tCache.tokenCache()
         return chain.proceed(
             chain.request().newBuilder()
                 .header("C", "a")

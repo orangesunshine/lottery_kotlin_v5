@@ -17,8 +17,8 @@ import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
 import com.bdb.lottery.service.CountDownService.CountDownSub
-import com.bdb.lottery.utils.TGame
-import com.bdb.lottery.utils.TThread
+import com.bdb.lottery.utils.game.TGame
+import com.bdb.lottery.utils.thread.TThread
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
 import javax.inject.Inject

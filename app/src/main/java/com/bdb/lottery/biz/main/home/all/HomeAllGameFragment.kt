@@ -11,26 +11,16 @@ import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.lot.LotActivity
 import com.bdb.lottery.const.IExtra
 import com.bdb.lottery.datasource.game.data.AllGameItemData
-import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startWithArgs
-import com.bdb.lottery.utils.ui.TActivity
-import com.bdb.lottery.utils.ui.TSize
+import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.recyclerview_single_layout.*
-import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
     private val vm by viewModels<HomeAllGameViewModel>()
-
-    @Inject
-    lateinit var tSize: TSize
-
-    @Inject
-    lateinit var tActivity: TActivity
 
     //region fling 惯性处理
     private var bindNoFling: ((RecyclerView) -> Unit)? = null
@@ -65,7 +55,7 @@ class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
         ob(vm.allGameLd.getLiveData()) {
             home_single_rv.run {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-                setPadding(tSize.dp2px(4f))
+                setPadding(Sizes.dp2px(4f))
                 adapter = HomeAllGameAdapter(it).apply {
                     setOnSubItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
                         val item: AllGameItemData =

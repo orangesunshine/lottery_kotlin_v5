@@ -18,9 +18,11 @@ import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.visible
-import com.bdb.lottery.utils.TGame
-import com.bdb.lottery.utils.TTime
-import com.bdb.lottery.utils.ui.TSize
+import com.bdb.lottery.utils.game.Games
+import com.bdb.lottery.utils.game.TGame
+import com.bdb.lottery.utils.time.TTime
+import com.bdb.lottery.utils.ui.size.Sizes
+import com.bdb.lottery.utils.ui.size.TSize
 import com.sunfusheng.marqueeview.MarqueeView
 import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
@@ -177,7 +179,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 历史开奖号码
     private fun historyIssueNums(historyIssues: List<HistoryData.HistoryItem>?) {
         lotHistoryRv.setListOrUpdate(historyIssues?.toMutableList()) {
-            BallAdapter(mGameType, tSize.dp2px(16f), it?.toMutableList())
+            BallAdapter(mGameType, Sizes.dp2px(16f), it?.toMutableList())
         }
     }
     //endregion
@@ -188,7 +190,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private fun coundown(currentTime: CountDownData.CurrentTime?) {
         currentTime?.let {
             val isclose = it.isclose
-            val issue = tGame.shortIssueText(it.issueno, mGameType)
+            val issue = Games.shortIssueText(it.issueno, mGameType)
             val status = StringBuilder().append(issue).append("期 ")
                 .append(if (isclose) "封盘中" else "受注中")
             lotIssueStatusTv.text = status

@@ -15,7 +15,8 @@ import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.cache.TCache
-import com.bdb.lottery.utils.ui.TApp
+import com.bdb.lottery.utils.ui.app.Apps
+import com.bdb.lottery.utils.ui.app.TApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.splash_activity.*
 import javax.inject.Inject
@@ -25,9 +26,6 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
     private val vm by viewModels<SplashViewModel>()
 
     @Inject
-    lateinit var tApp: TApp
-
-    @Inject
     lateinit var tCache: TCache
 
     @Inject
@@ -35,21 +33,12 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        resetCache()//重置cache
-        splashVersionTv.text = tApp.getAppVersionName()
+        tCache.clearCacheOnSplash()//重置cache
+        splashVersionTv.text = Apps.getAppVersionName()
         showSplashLoading()
         loadingAnim()
 
         content_layout_id.postDelayed({ vm.initDomain() }, 500)
-    }
-
-    //重启app清空cache
-    private fun resetCache() {
-        tCache.putString(ICache.DOMAIN_URL_CACHE)//域名
-        tCache.putString(IUrl.URL_PLATFORM_PARAMS)//平台
-        tCache.putString(ICache.PUBLIC_RSA_KEY_CACHE)//公钥
-        tCache.putString(IUrl.URL_CUSTOM_SERVICE)//客服线
-        tCache.putString(IUrl.URL_APK_VERSION)//版本信息
     }
 
     private fun loadingAnim() {
@@ -73,7 +62,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
             if (it) {
                 //获取域名成功
                 dismissSplashLoading()
-                if (tCache.getBoolean(ICache.GUIDE_CACHE)) {
+                if (tCache.splashGuideCache()) {
                     if (accountLocalDs.isLogin()) {
                         startNdFinish<MainActivity>()
                     } else {
@@ -89,7 +78,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
     }
 
     override fun onBack() {
-        tApp.killApp()
+        Apps.killApp()
     }
 
     override fun attachStatusBar(): Boolean {

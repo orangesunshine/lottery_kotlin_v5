@@ -21,7 +21,7 @@ interface ICache {
         // login
         ///////////////////////////////////////////////////////////////////////////
         val LOGIN_REMEMBER_PWD_CACHE = "LOGIN_REMEMBER_PWD_CACHE"//是否记住密码
-        val LOGIN_USERNAME_CACHE = "LOGIN_USERNAME_CACHE"//用户名
+        val LOGIN_ACCOUNT_CACHE = "LOGIN_ACCOUNT_CACHE"//用户名
         val LOGIN_PWD_CACHE = "LOGIN_PWD_CACHE"//密码
         val TOKEN_CACHE = "TOKEN_CACHE"//token
         val ISLOGIN_CACHE = "ISLOGIN_CACHE"//是否登录

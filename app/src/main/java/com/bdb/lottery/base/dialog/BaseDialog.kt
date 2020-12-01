@@ -6,8 +6,9 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.bdb.lottery.R
-import com.bdb.lottery.utils.ui.TScreen
-import com.bdb.lottery.utils.ui.TSize
+import com.bdb.lottery.utils.ui.screen.TScreen
+import com.bdb.lottery.utils.ui.size.Sizes
+import com.bdb.lottery.utils.ui.size.TSize
 import dagger.hilt.android.scopes.ActivityScoped
 import timber.log.Timber
 import javax.inject.Inject
@@ -22,8 +23,10 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     var mOutCancel = true //点击外部取消
     var mWidth = 0f
     var mHeight = 0f
+
     @Inject
     lateinit var tScreen: TScreen;
+
     @Inject
     lateinit var tSize: TSize
 
@@ -62,16 +65,16 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
 
             //设置dialog宽度
             if (mWidth == 0f) {
-                params.width = tScreen.screenSize()[0] - 2 * tSize.dp2px(mMargin)
+                params.width = tScreen.screenWidth() - 2 * Sizes.dp2px(mMargin)
             } else {
-                params.width = tSize.dp2px(mWidth)
+                params.width = Sizes.dp2px(mWidth)
             }
 
             //设置dialog高度
             if (mHeight == 0f) {
                 params.height = WindowManager.LayoutParams.WRAP_CONTENT
             } else {
-                params.height = tSize.dp2px(mHeight)
+                params.height = Sizes.dp2px(mHeight)
             }
 
             //设置dialog动画

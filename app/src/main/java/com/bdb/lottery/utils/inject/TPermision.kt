@@ -1,4 +1,4 @@
-package com.bdb.lottery.utils
+package com.bdb.lottery.utils.inject
 
 import android.content.Context
 import android.os.Build

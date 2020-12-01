@@ -51,7 +51,7 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
             if (it > 0)
                 holder.setImageResource(
                     R.id.home_allgame_left_ariv,
-                    tGame.gameTypeDrawable(it)
+                    tGame.gameTypeRoundDr(it)
                 )
         }
 
@@ -59,7 +59,7 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
             if (it > 0)
                 holder.setImageResource(
                     R.id.home_allgame_right_ariv,
-                    tGame.gameTypeDrawable(it)
+                    tGame.gameTypeRoundDr(it)
                 )
         }
 

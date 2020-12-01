@@ -1,16 +1,15 @@
-package com.bdb.lottery.utils
+package com.bdb.lottery.utils.game
 
 import com.bdb.lottery.R
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_KL10FEN
+import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_11X5
+import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_FREQUENCY_LOW
 import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_K3
+import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_KL10FEN
 import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_LHC
 import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_PC28
 import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_PK10
 import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_PK8
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_FREQUENCY_LOW
 import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_SSC
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_11X5
-import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,7 +19,7 @@ class TGame @Inject constructor() {
     /**
      * 首页home->全部游戏->游戏大类图片
      */
-    fun gameTypeDrawable(gameType: Int): Int {
+    fun gameTypeRoundDr(gameType: Int): Int {
         var drawable: Int = R.drawable.home_placeholder_round_img_ic
         when (gameType) {
             TYPE_GAME_SSC -> drawable =
@@ -44,25 +43,11 @@ class TGame @Inject constructor() {
     }
 
     /**
-     * 期号文字过长，根据彩种处理成适当长度期号
-     */
-    fun shortIssueText(issue: String, gameType: Int): String {
-        if (issue.isSpace()) return issue
-        if (issue.contains("-")) {
-            val split = issue.split("-")
-            return split[split.size - 1]
-        } else {
-            val isPc28 = gameType == TYPE_GAME_PC28
-            return if (issue.length > 8 && !isPc28) issue.substring(4) else issue
-        }
-    }
-
-    /**
      * 期号文字过长，根据彩种处理成适当长度期号，拼接gameName
      */
     fun shortIssueTextWithGameName(issue: String, gameName: String?, gameType: Int): String {
         return StringBuilder().append(gameName ?: "").append(" ")
-            .append(shortIssueText(issue, gameType)).append("期")
+            .append(Games.shortIssueText(issue, gameType)).append("期")
             .toString()
     }
 

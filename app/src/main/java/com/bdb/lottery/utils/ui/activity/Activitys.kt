@@ -1,4 +1,4 @@
-package com.bdb.lottery.utils.ui
+package com.bdb.lottery.utils.ui.activity
 
 import android.animation.ValueAnimator
 import android.app.Activity
@@ -8,18 +8,15 @@ import android.view.View
 import android.view.Window
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import com.bdb.lottery.utils.TThread
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.bdb.lottery.app.BdbApp
+import com.bdb.lottery.utils.thread.Threads
 import timber.log.Timber
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TActivity @Inject constructor(
-    @ApplicationContext val context: Context,
-    val tThread: TThread,
-) {
+object Activitys {
+    /**
+     * 判断activity是否是活的
+     */
     fun isActivityAlive(activity: Activity?): Boolean {
         return (activity != null && !activity.isFinishing
                 && (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || !activity.isDestroyed))
@@ -88,7 +85,7 @@ class TActivity @Inject constructor(
         return try {
             val activityThreadClass = Class.forName("android.app.ActivityThread")
             activityThreadClass.getMethod("currentActivityThread").invoke(null)
-        } catch (e: java.lang.Exception) {
+        } catch (e: Exception) {
             Timber.d("getActivityThreadInActivityThreadStaticMethod: ${e.message}")
             null
         }
@@ -109,10 +106,8 @@ class TActivity @Inject constructor(
                 sDurationScaleField[null] = 1f
                 Timber.d("setAnimatorsEnabled: Animators are enabled now!")
             }
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
+        } catch (e: Exception) {
+            Timber.d("setAnimatorsEnabled: ${e.message}")
         }
     }
 
@@ -134,7 +129,7 @@ class TActivity @Inject constructor(
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             } else {
                 val tag = activity.window.decorView.getTag(-123) as? Int ?: return
-                tThread.runOnUiThreadDelayed(Runnable {
+                Threads.runOnUiThreadDelayed(Runnable {
                     try {
                         val window = activity.window
                         window?.setSoftInputMode(tag)
@@ -146,12 +141,20 @@ class TActivity @Inject constructor(
         }
     }
 
+    fun fixSoftInputLeaks(activity: Activity) {
+        fixSoftInputLeaks(activity.window, activity)
+    }
+
+    fun fixSoftInputLeaks(window: Window) {
+        fixSoftInputLeaks(window, BdbApp.context)
+    }
+
     /**
      * Fix the leaks of soft input.
      *
      * @param window The window.
      */
-    fun fixSoftInputLeaks(window: Window) {
+    private fun fixSoftInputLeaks(window: Window, context: Context) {
         val imm =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 ?: return
@@ -159,7 +162,8 @@ class TActivity @Inject constructor(
         for (leakView in leakViews) {
             try {
                 val leakViewField = InputMethodManager::class.java.getDeclaredField(
-                    leakView)
+                    leakView
+                )
                 if (!leakViewField.isAccessible) {
                     leakViewField.isAccessible = true
                 }

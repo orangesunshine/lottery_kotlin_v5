@@ -8,15 +8,13 @@ import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
-import com.bdb.lottery.const.IUrl
-import com.bdb.lottery.const.ICache
 import com.bdb.lottery.const.IDebugConfig
+import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.*
-import com.bdb.lottery.utils.TConfig
 import com.bdb.lottery.utils.cache.TCache
-import com.google.gson.GsonBuilder
+import com.bdb.lottery.utils.inject.TConfig
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
@@ -34,11 +32,11 @@ class DomainRemoteDs @Inject constructor(
     val cache = { platform: PlatformData? ->
         platform?.let {
             //保存配置
-            tCache.putString(IUrl.URL_PLATFORM_PARAMS, GsonBuilder().create().toJson(it))
+            tCache.cachePlatformParams(it)
 
             //保存rsa公钥
             it.rsaPublicKey.let {
-                tCache.putString(ICache.PUBLIC_RSA_KEY_CACHE, it)
+                tCache.cacheRsaPublicKey(it)
             }
         }
     }

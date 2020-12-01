@@ -14,7 +14,8 @@ import com.bdb.lottery.datasource.game.data.HomeFavoritesMapper
 import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startWithArgs
-import com.bdb.lottery.utils.ui.TSize
+import com.bdb.lottery.utils.ui.size.Sizes
+import com.bdb.lottery.utils.ui.size.TSize
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
@@ -61,7 +62,7 @@ class HomeCollectionFragment : BaseFragment(R.layout.recyclerview_single_layout)
         ob(vm.favouritesLd.getLiveData()) {
             home_single_rv.run {
                 layoutManager = GridLayoutManager(context, 2)
-                setPadding(tSize.dp2px(4f))
+                setPadding(Sizes.dp2px(4f))
                 adapter =
                     object : BaseQuickAdapter<HomeFavoritesMapper, BaseViewHolder>(
                         R.layout.home_common_img_item, it

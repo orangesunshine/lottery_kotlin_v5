@@ -4,7 +4,7 @@ import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.datasource.app.data.ApkVersionData
 import com.bdb.lottery.datasource.app.data.CustomServiceData
 import com.bdb.lottery.datasource.app.data.PlatformData
-import com.bdb.lottery.utils.ui.TApp
+import com.bdb.lottery.utils.ui.app.TApp
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import javax.inject.Inject
 

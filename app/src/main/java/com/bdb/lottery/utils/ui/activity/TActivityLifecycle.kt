@@ -1,10 +1,10 @@
-package com.bdb.lottery.utils.ui
+package com.bdb.lottery.utils.ui.activity
 
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.Lifecycle
-import com.bdb.lottery.utils.TThread
+import com.bdb.lottery.utils.thread.TThread
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -13,7 +13,6 @@ import javax.inject.Singleton
 
 @Singleton
 class TActivityLifecycle @Inject constructor(
-    private val tActivity: TActivity,
     private val tThread: TThread,
 ) :
     Application.ActivityLifecycleCallbacks {
@@ -50,7 +49,7 @@ class TActivityLifecycle @Inject constructor(
         var callbacksList: MutableList<ActivityLifecycleCallbacks>? =
             mActivityLifecycleCallbacksMap[activity]?.toMutableList()
         if (callbacksList == null) {
-            callbacksList = CopyOnWriteArrayList<ActivityLifecycleCallbacks>()
+            callbacksList = CopyOnWriteArrayList()
             mActivityLifecycleCallbacksMap[activity] = callbacksList
         } else {
             if (callbacksList.contains(callbacks)) return
@@ -104,28 +103,28 @@ class TActivityLifecycle @Inject constructor(
         if (listeners == null) return
         for (listener in listeners) {
             listener.onLifecycleChanged(activity, event)
-            if (event.equals(Lifecycle.Event.ON_CREATE)) {
+            if (event == Lifecycle.Event.ON_CREATE) {
                 listener.onActivityCreated(activity)
-            } else if (event.equals(Lifecycle.Event.ON_START)) {
+            } else if (event == Lifecycle.Event.ON_START) {
                 listener.onActivityStarted(activity)
-            } else if (event.equals(Lifecycle.Event.ON_RESUME)) {
+            } else if (event == Lifecycle.Event.ON_RESUME) {
                 listener.onActivityResumed(activity)
-            } else if (event.equals(Lifecycle.Event.ON_PAUSE)) {
+            } else if (event == Lifecycle.Event.ON_PAUSE) {
                 listener.onActivityPaused(activity)
-            } else if (event.equals(Lifecycle.Event.ON_STOP)) {
+            } else if (event == Lifecycle.Event.ON_STOP) {
                 listener.onActivityStopped(activity)
-            } else if (event.equals(Lifecycle.Event.ON_DESTROY)) {
+            } else if (event == Lifecycle.Event.ON_DESTROY) {
                 listener.onActivityDestroyed(activity)
             }
         }
-        if (event.equals(Lifecycle.Event.ON_DESTROY)) {
+        if (event == Lifecycle.Event.ON_DESTROY) {
             mActivityLifecycleCallbacksMap.remove(activity)
         }
     }
 
     fun getActivityList(): List<Activity> {
         if (!mActivityStack.isNullOrEmpty()) return mActivityStack
-        return tActivity.getActivitiesByReflect() ?: LinkedList<Activity>()
+        return Activitys.getActivitiesByReflect() ?: LinkedList<Activity>()
     }
 
     private fun setTopActivity(activity: Activity) {
@@ -141,7 +140,7 @@ class TActivityLifecycle @Inject constructor(
 
     fun getTopActivity(): Activity? {
         for (activity in getActivityList()) {
-            if (tActivity.isActivityAlive(activity))
+            if (Activitys.isActivityAlive(activity))
                 return activity
         }
         return null
@@ -163,7 +162,7 @@ class TActivityLifecycle @Inject constructor(
     // Application.ActivityLifecycleCallbacks
     ///////////////////////////////////////////////////////////////////////////
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-        tActivity.setAnimatorsEnabled()
+        Activitys.setAnimatorsEnabled()
         setTopActivity(activity)
         consumeActivityLifecycleCallbacks(activity, Lifecycle.Event.ON_CREATE)
     }
@@ -186,7 +185,7 @@ class TActivityLifecycle @Inject constructor(
             mIsBackground = false
             postStatus(activity, true)
         }
-        tActivity.processHideSoftInputOnActivityDestroy(activity, false)
+        Activitys.processHideSoftInputOnActivityDestroy(activity, false)
         consumeActivityLifecycleCallbacks(activity, Lifecycle.Event.ON_RESUME)
     }
 
@@ -204,7 +203,7 @@ class TActivityLifecycle @Inject constructor(
                 postStatus(activity, false)
             }
         }
-        tActivity.processHideSoftInputOnActivityDestroy(activity, true)
+        Activitys.processHideSoftInputOnActivityDestroy(activity, true)
         consumeActivityLifecycleCallbacks(activity, Lifecycle.Event.ON_STOP)
     }
 
@@ -213,7 +212,7 @@ class TActivityLifecycle @Inject constructor(
 
     override fun onActivityDestroyed(activity: Activity) {
         mActivityStack.remove(activity)
-        tActivity.fixSoftInputLeaks(activity.window)
+        Activitys.fixSoftInputLeaks(activity.window)
         consumeActivityLifecycleCallbacks(activity, Lifecycle.Event.ON_DESTROY)
     }
 

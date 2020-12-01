@@ -10,7 +10,7 @@ import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.alphaVisible
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
-import com.bdb.lottery.utils.ui.TApp
+import com.bdb.lottery.utils.ui.app.TApp
 import com.bdb.lottery.utils.cache.TCache
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
@@ -23,6 +23,7 @@ import javax.inject.Inject
 class GuideActivity : BaseActivity(R.layout.guide_activity) {
     @Inject
     lateinit var tApp: TApp
+
     @Inject
     lateinit var tCache: TCache
 
@@ -46,7 +47,7 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
 
         //去登录
         guideTologinTv.setOnClickListener {
-            tCache.putBoolean(ICache.GUIDE_CACHE, true)
+            tCache.splashGuideCache()//保存引导已开启过
             startNdFinish<MainActivity>()
         }
 
@@ -56,7 +57,8 @@ class GuideActivity : BaseActivity(R.layout.guide_activity) {
                 object :
                     BaseQuickAdapter<Int, BaseViewHolder>(R.layout.img_single_item, imgs) {
                     override fun convert(holder: BaseViewHolder, item: Int) {
-                        holder.getView<ImageView>(R.id.img_common_iv).scaleType = ImageView.ScaleType.FIT_START
+                        holder.getView<ImageView>(R.id.img_common_iv).scaleType =
+                            ImageView.ScaleType.FIT_START
                         holder.setImageResource(R.id.img_common_iv, item)
                     }
                 }

@@ -67,7 +67,7 @@ class CustomHeader @JvmOverloads constructor(
     private fun saveLastTime() {
         mLastTime = Date()
         if (!isInEditMode) {
-            tCache.putLong(HEADER_LAST_UPDATE_TIME_CACHE, mLastTime.time)
+            tCache.cacheRefreshTime(HEADER_LAST_UPDATE_TIME_CACHE, mLastTime.time)
         }
     }
 
@@ -179,7 +179,7 @@ class CustomHeader @JvmOverloads constructor(
         inflate(context, R.layout.refresh_header_common_layout, this)
         HEADER_LAST_UPDATE_TIME_CACHE += context.javaClass.name
         mLastTime =
-            Date(tCache.getLong(HEADER_LAST_UPDATE_TIME_CACHE, System.currentTimeMillis()))
+            Date(tCache.refreshTimeCache(HEADER_LAST_UPDATE_TIME_CACHE, System.currentTimeMillis()))
         mProgressDrawable = ProgressDrawable()
         ivProgress = findViewById(R.id.srl_classics_progress)
         ivResult = findViewById(R.id.iv_refresh_result)

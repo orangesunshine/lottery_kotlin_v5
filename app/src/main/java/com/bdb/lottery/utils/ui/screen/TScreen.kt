@@ -1,4 +1,4 @@
-package com.bdb.lottery.utils.ui
+package com.bdb.lottery.utils.ui.screen
 
 import android.content.Context
 import android.graphics.Point
@@ -19,14 +19,12 @@ import javax.inject.Singleton
 
 @Singleton
 class TScreen @Inject constructor(@ApplicationContext val context: Context) {
-    fun screenSize(): Array<Int> {
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val point = Point()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            wm.defaultDisplay.getRealSize(point)
-        } else {
-            wm.defaultDisplay.getSize(point)
-        }
-        return arrayOf(point.x, point.y)
+
+    fun screenWidth(): Int {
+        return Screens.screenSize()[0]
+    }
+
+    fun screenHeight(): Int {
+        return Screens.screenSize()[1]
     }
 }

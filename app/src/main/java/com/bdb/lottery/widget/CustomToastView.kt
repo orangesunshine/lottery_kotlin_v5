@@ -13,8 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import com.bdb.lottery.R
 import com.bdb.lottery.module.application.AppEntries
-import com.bdb.lottery.utils.ui.TScreen
-import com.bdb.lottery.utils.ui.TSize
+import com.bdb.lottery.utils.ui.screen.TScreen
+import com.bdb.lottery.utils.ui.size.TSize
 import dagger.hilt.android.EntryPointAccessors
 
 class CustomToastView @JvmOverloads constructor(
@@ -31,7 +31,7 @@ class CustomToastView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(
             MeasureSpec.makeMeasureSpec(
-                tScreen.screenSize()[0] - SPACING,
+                tScreen.screenWidth() - SPACING,
                 MeasureSpec.AT_MOST
             ), heightMeasureSpec
         )

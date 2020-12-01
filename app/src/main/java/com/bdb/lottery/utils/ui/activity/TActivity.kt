@@ -1,20 +1,23 @@
-package com.bdb.lottery.utils.ui
+package com.bdb.lottery.utils.ui.activity
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.ColorInt
+import com.bdb.lottery.utils.thread.TThread
 import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
+import javax.inject.Singleton
 
-/**
- * 状态栏
- */
 @ActivityScoped
-class TUI @Inject constructor(@ActivityContext val activity: Activity) {
+class TActivity @Inject constructor(
+    @ActivityContext val activity: Activity
+) {
     /**
      * 透明状态栏,此时状态栏高度为0，可以通过布局文件自定statusbar
      */

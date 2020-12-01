@@ -1,11 +1,10 @@
 package com.bdb.lottery.module.application
 
-import com.bdb.lottery.utils.TGame
-import com.bdb.lottery.utils.ui.TSize
+import com.bdb.lottery.utils.game.TGame
+import com.bdb.lottery.utils.ui.size.TSize
 import com.bdb.lottery.utils.cache.TCache
-import com.bdb.lottery.utils.ui.TScreen
-import com.bdb.lottery.utils.ui.TUI
-import com.bdb.lottery.utils.ui.TView
+import com.bdb.lottery.utils.ui.screen.TScreen
+import com.bdb.lottery.utils.ui.view.TView
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent

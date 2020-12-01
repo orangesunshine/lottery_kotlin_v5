@@ -1,4 +1,4 @@
-package com.bdb.lottery.utils.ui
+package com.bdb.lottery.utils.ui.app
 
 import android.app.ActivityManager
 import android.app.Application
@@ -9,33 +9,77 @@ import android.text.TextUtils
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import javax.inject.Inject
-import javax.inject.Singleton
 
-
-@Singleton
-class TApp @Inject constructor(@ApplicationContext val context: Context) {
-
-    /**
-     * 判断是不是当前process
-     */
-    fun isMainProcess(): Boolean {
-        // 获取当前包名
-        val packageName = context.packageName
-        // 获取当前进程名
-        val processName = getCurrentProcessName()
-        return processName.equalsNSpace(packageName)
+object Apps {
+    private fun getMetaDataFromApp(metadataName: String): String? {
+        return getMetaDataFromApp(BdbApp.context, metadataName)
     }
 
-    //region processName
+    /**
+     * application meta
+     */
+    private fun getMetaDataFromApp(context: Context, metadataName: String): String? {
+        return context.packageManager?.getApplicationInfo(
+            context.packageName,
+            PackageManager.GET_META_DATA
+        )?.metaData?.getString(metadataName)
+    }
+
+    /**
+     * 获取application "SCHEME" meta
+     */
+    private fun getScheme(): String? {
+        return getMetaDataFromApp("SCHEME")
+    }
+
+    /**
+     * 根据application "SCHEME" meta 判断平台
+     */
+    fun isPlatform(scheme: String): Boolean {
+        return scheme.equalsNSpace(getScheme())
+    }
+
+    //杀死进程
+    fun killApp() {
+        Process.killProcess(Process.myPid())
+        System.exit(0)
+    }
+
+    //获取AppVersionName
+    fun getAppVersionName(): String? {
+        return getAppVersionName(BdbApp.context)
+    }
+
+    private fun getAppVersionName(context: Context): String? {
+        return context.packageName?.let {
+            context.packageManager?.getPackageInfo(
+                it,
+                0
+            )?.versionName
+        }
+    }
+
+    //获取AppVersionCode
+    fun getAppVersionCode(): Int {
+        return getAppVersionCode(BdbApp.context)
+    }
+
+    fun getAppVersionCode(context: Context): Int {
+        val packageName = context.packageName
+        if (packageName.isSpace()) return -1
+        return packageName.let {
+            context.packageManager.getPackageInfo(
+                it,
+                0
+            )?.versionCode ?: -1
+        }
+    }
+
     /**
      * Return the name of current process.
-     *
-     * @return the name of current process
      */
     fun getCurrentProcessName(): String? {
         var name: String? = getCurrentProcessNameByFile()
@@ -60,6 +104,10 @@ class TApp @Inject constructor(@ApplicationContext val context: Context) {
     }
 
     private fun getCurrentProcessNameByAms(): String? {
+        return getCurrentProcessNameByAms(BdbApp.context)
+    }
+
+    private fun getCurrentProcessNameByAms(context: Context): String? {
         try {
             val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             val info = am.runningAppProcesses
@@ -95,73 +143,4 @@ class TApp @Inject constructor(@ApplicationContext val context: Context) {
         }
         return processName
     }
-    //endregion
-
-    //region versionCode
-    fun getAppVersionCode(): Int {
-        return getAppVersionCode(context.packageName)
-    }
-
-    fun getAppVersionCode(packageName: String): Int {
-        if (packageName.isSpace()) return -1
-        return packageName.let {
-            context.packageManager.getPackageInfo(
-                it,
-                0
-            )?.versionCode ?: -1
-        }
-    }
-    //endregion
-
-    //region versionName
-    fun getAppVersionName(): String? {
-        return context.packageName?.let {
-            context.packageManager?.getPackageInfo(
-                it,
-                0
-            )?.versionName
-        }
-    }
-    //endregion
-
-    /**
-     * 杀死进程
-     */
-    fun killApp() {
-        Process.killProcess(Process.myPid())
-        System.exit(0)
-    }
-
-    //region application meta
-    /**
-     * application meta
-     */
-    private fun getMetaDataFromApp(metadataName: String): String? {
-        return context.packageManager?.getApplicationInfo(
-            context.packageName,
-            PackageManager.GET_META_DATA
-        )?.metaData?.getString(metadataName)
-    }
-
-    /**
-     * 获取application "SCHEME" meta
-     */
-    fun getScheme(): String? {
-        return getMetaDataFromApp("SCHEME")
-    }
-
-    /**
-     * 根据application "SCHEME" meta 判断平台
-     */
-    fun isPlatform(scheme: String): Boolean {
-        return scheme.equalsNSpace(getScheme())
-    }
-
-    /**
-     * 判断利博会平台
-     */
-    fun isLBH(): Boolean {
-        return isPlatform("libohui")
-    }
-    //endregion
 }

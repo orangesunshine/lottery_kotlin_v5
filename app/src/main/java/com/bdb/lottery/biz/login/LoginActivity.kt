@@ -13,8 +13,9 @@ import com.bdb.lottery.biz.register.RegisterActivity
 import com.bdb.lottery.const.IUrl
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.extension.*
-import com.bdb.lottery.utils.ui.TApp
-import com.bdb.lottery.utils.TDevice
+import com.bdb.lottery.utils.device.TDevice
+import com.bdb.lottery.utils.ui.app.Apps
+import com.bdb.lottery.utils.ui.app.TApp
 import com.bumptech.glide.load.model.GlideUrl
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.login_activity.*
@@ -26,8 +27,10 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
     @Inject
     lateinit var domainLocalDs: DomainLocalDs
+
     @Inject
     lateinit var tDevice: TDevice
+
     @Inject
     lateinit var tApp: TApp
 
@@ -47,7 +50,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loginVersionNameTv.text = tApp.getAppVersionName()//显示版本信息
+        loginVersionNameTv.text = Apps.getAppVersionName()//显示版本信息
 
         loginToRegisterBt.setOnClickListener { startNdFinish<RegisterActivity>() }//立即注册
 
@@ -100,7 +103,8 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
     fun switchPwdCipher() {
         mPwdVisible = !mPwdVisible
         loginPwdCipherIv.setImageResource(if (mPwdVisible) R.drawable.login_pwd_plaintext_ic else R.drawable.login_pwd_ciphertext_ic)
-        loginPwdEt.transformationMethod = if (mPwdVisible) HideReturnsTransformationMethod.getInstance() else PasswordTransformationMethod.getInstance()
+        loginPwdEt.transformationMethod =
+            if (mPwdVisible) HideReturnsTransformationMethod.getInstance() else PasswordTransformationMethod.getInstance()
     }
 
     //显示验证码

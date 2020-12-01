@@ -81,7 +81,7 @@ data class PlatformData(
     fun otherGameImgUrl(other: OtherPlatformMIR?) {
         other?.let {
             it.imgUrl = StringBuilder().append(imgurl)
-                .append(other?.appImgUrl).toString()
+                .append(it.appImgUrl).toString()
         }
     }
 }

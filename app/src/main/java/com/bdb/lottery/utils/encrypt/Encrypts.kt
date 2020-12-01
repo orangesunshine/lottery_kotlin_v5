@@ -1,21 +1,12 @@
-package com.bdb.lottery.utils
+package com.bdb.lottery.utils.encrypt
 
 import org.apache.commons.codec.binary.Base64
 import java.io.ByteArrayOutputStream
 import java.security.KeyFactory
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TEncrypt @Inject constructor() {
-    //rsa加密
-    fun rsaEncryptPublicKey(plainText: String, publicKey: String): String? {
-        return encryptByPublicKey(plainText.toByteArray(), publicKey)?.run { base64Encode(this) }
-    }
-
-
+object Encrypts {
     fun base64Encode(bytes: ByteArray): String {
         return String(Base64().encode(bytes))
     }
@@ -37,7 +28,7 @@ class TEncrypt @Inject constructor() {
             val baos = ByteArrayOutputStream()
             var offset = 0
             while (size - offset > 0) {
-                var cache: ByteArray? = null
+                var cache: ByteArray
                 if (size - offset > 117) {
                     cache = cipher.doFinal(data, offset, 117)
                 } else {

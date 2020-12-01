@@ -10,7 +10,7 @@ import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.toast
-import com.bdb.lottery.utils.TEncrypt
+import com.bdb.lottery.utils.encrypt.TEncrypt
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import com.google.gson.GsonBuilder

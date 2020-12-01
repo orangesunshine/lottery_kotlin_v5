@@ -1,17 +1,30 @@
-package com.bdb.lottery.utils.ui
+package com.bdb.lottery.utils.ui.size
 
-import android.content.Context
 import android.content.res.Resources
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import com.bdb.lottery.app.BdbApp
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TSize @Inject constructor(@ApplicationContext val context: Context) {
+object Sizes {
+    /**
+     * 获取屏幕密度
+     *
+     * @return
+     */
+    fun getDensity(): Float {
+        return Resources.getSystem().displayMetrics.density
+    }
+
+    /**
+     * 获取font屏幕密度
+     *
+     * @return
+     */
+    fun getScaledDensity(): Float {
+        return Resources.getSystem().displayMetrics.scaledDensity
+    }
+
     fun scale(): Float {
         return BdbApp.context.resources.displayMetrics.density
     }
@@ -70,24 +83,6 @@ class TSize @Inject constructor(@ApplicationContext val context: Context) {
             return (it / fontScale() + 0.5f).toInt()
         }
         return -1
-    }
-
-    /**
-     * 获取屏幕密度
-     *
-     * @return
-     */
-    fun getDensity(): Float {
-        return Resources.getSystem().displayMetrics.density
-    }
-
-    /**
-     * 获取font屏幕密度
-     *
-     * @return
-     */
-    fun getScaledDensity(): Float {
-        return Resources.getSystem().displayMetrics.scaledDensity
     }
 
 

@@ -8,9 +8,9 @@ import com.bdb.lottery.datasource.domain.DomainRemoteDs
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.msg
+import com.bdb.lottery.utils.cache.Caches
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.ui.toast.AbsToast
-import com.bdb.lottery.utils.ui.toast.WindowManagerToast
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -119,12 +119,12 @@ class RetrofitWrapper @Inject constructor(
         observable: Observable<BaseResponse<Data?>>,
         success: ((Data?) -> Unit)? = null,
     ) {
-        tCache.putString(cacheKey)//清空缓存
+        Caches.putString(cacheKey)//清空缓存
         observe(
             observable,
             {
                 it?.let {
-                    tCache.putString(
+                    Caches.putString(
                         cacheKey,
                         GsonBuilder().create().toJson(it)
                     )
@@ -140,7 +140,7 @@ class RetrofitWrapper @Inject constructor(
         noinline success: ((Data?) -> Unit)? = null,
     ) {
         //优先缓存
-        val cache = tCache.getString(cacheKey)
+        val cache = Caches.getString(cacheKey)
         Timber.d("cache: ${cache}")
         if (!cache.isSpace()) {
             try {
@@ -152,7 +152,7 @@ class RetrofitWrapper @Inject constructor(
                 Timber.d("cacheKey: ${cacheKey}==>error:${e.msg}")
                 observe(observable, {
                     it?.let {
-                        tCache.putString(
+                        Caches.putString(
                             cacheKey,
                             GsonBuilder().create().toJson(it)
                         )
@@ -163,7 +163,7 @@ class RetrofitWrapper @Inject constructor(
         } else {
             observe(observable, {
                 it?.let {
-                    tCache.putString(
+                    Caches.putString(
                         cacheKey,
                         GsonBuilder().create().toJson(it)
                     )

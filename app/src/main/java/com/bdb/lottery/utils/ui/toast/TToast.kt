@@ -7,7 +7,6 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.Message
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -17,9 +16,12 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.bdb.lottery.R
 import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.utils.TPermision
-import com.bdb.lottery.utils.TThread
-import com.bdb.lottery.utils.ui.*
+import com.bdb.lottery.utils.thread.TThread
+import com.bdb.lottery.utils.ui.activity.ActivityLifecycleCallbacks
+import com.bdb.lottery.utils.ui.activity.Activitys
+import com.bdb.lottery.utils.ui.activity.TActivityLifecycle
+import com.bdb.lottery.utils.ui.size.Sizes
+import com.bdb.lottery.utils.ui.view.Views
 import com.bdb.lottery.widget.CustomToastView
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,10 +29,7 @@ import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
 class ActivityToast @Inject constructor(
-    private val tImage: TImage,
-    private val tActivity: TActivity,
     private val tActivityLifecycle: TActivityLifecycle,
-    private val tSize: TSize,
     private val tThread: TThread,
     @ApplicationContext private val context: Context,
 ) :
@@ -46,7 +45,7 @@ class ActivityToast @Inject constructor(
         }
         var hasAliveActivity = false
         for (activity in tActivityLifecycle.getActivityList()) {
-            if (!tActivity.isActivityAlive(activity)) {
+            if (!Activitys.isActivityAlive(activity)) {
                 continue
             }
             hasAliveActivity = true
@@ -70,7 +69,7 @@ class ActivityToast @Inject constructor(
         if (isShowing) {
             unregisterLifecycleCallback()
             for (activity in tActivityLifecycle.getActivityList()) {
-                if (!tActivity.isActivityAlive(activity)) {
+                if (!Activitys.isActivityAlive(activity)) {
                     continue
                 }
                 val window = activity.window
@@ -110,7 +109,7 @@ class ActivityToast @Inject constructor(
             )
             mToastView.setText(text)
             lp.gravity = mToast.gravity
-            lp.bottomMargin = mToast.yOffset + tSize.getNavBarHeight()
+            lp.bottomMargin = mToast.yOffset + Sizes.getNavBarHeight()
             lp.leftMargin = mToast.xOffset
             val toastViewSnapshot = getToastViewSnapshot(index)
             if (useAnim) {
@@ -122,7 +121,7 @@ class ActivityToast @Inject constructor(
     }
 
     private fun getToastViewSnapshot(index: Int): View {
-        val bitmap: Bitmap? = tImage.view2Bitmap(mToastView)
+        val bitmap: Bitmap? = Views.view2Bitmap(mToastView)
         val toastIv = ImageView(context)
         toastIv.tag = TAG_TOAST + index
         toastIv.setImageBitmap(bitmap)
