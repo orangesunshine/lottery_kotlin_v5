@@ -23,6 +23,7 @@
     "MMKV",
     "MULTIDEX",
     "OKHTTP3",
+    "PERMISSIONSDISPATCHER",
     "REFRESH",
     "RETROFIT",
     "RXANDROID3",

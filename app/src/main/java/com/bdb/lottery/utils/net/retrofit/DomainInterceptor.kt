@@ -16,23 +16,23 @@ class DomainInterceptor @Inject constructor(val domainLocalDs: DomainLocalDs) :
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-        val domain = domainLocalDs.getDomain()
-        Timber.d("domain: ${domain}")
-        return chain.proceed(
+        var request = chain.request()
+        val interceptorDomain = request.headers.get("domainIntercept")?.toBoolean() ?: true
+        Timber.d("interceptorDomain: ${interceptorDomain}")
+        if (interceptorDomain) {
+            val domain = domainLocalDs.getDomain()
+            Timber.d("domain: ${domain}")
             if (domain.isDomainUrl() && domainLocalDs.alreadySave.get()) {
                 val domainUrl = domain!!.toHttpUrl()
-                Timber.d("requestUrl: ${request.url}, domainUrl: ${domainUrl}")
-                chain.request().newBuilder().url(
+                request = chain.request().newBuilder().url(
                     request.url.newBuilder()
                         .scheme(domainUrl.scheme)
                         .host(domainUrl.host)
                         .build()
                 ).build()
-            } else {
-                request
             }
-        )
+        }
+        return chain.proceed(request)
     }
 
 }

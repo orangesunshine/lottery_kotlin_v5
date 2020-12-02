@@ -24,6 +24,17 @@ interface IUrl {
 
         const val URL_APK_VERSION: String = "/login/apkversion.mvc"//版本信息
 
+        ///////////////////////////////////////////////////////////////////////////
+        // cocos动画
+        ///////////////////////////////////////////////////////////////////////////
+        val ULR_COCOS_CONFIG = arrayOf(
+            "https://bdbapp.oss-cn-shenzhen.aliyuncs.com/lottery/common/animation/draw/json/data.json",
+            "https://dongfangyinfeng.com/lottery/common/animation/draw/json/data.json" +
+                    "https://gxtgw.cn/lottery/common/animation/draw/json/data.json" +
+                    "http://oklznzb.com/lottery/common/animation/draw/json/data.json" +
+                    "https://o3rjctsi8.qnssl.com/lottery/common/animation/draw/json/data.json"
+        )
+
 
         ///////////////////////////////////////////////////////////////////////////
         // 登录

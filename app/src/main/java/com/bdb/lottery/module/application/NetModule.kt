@@ -2,6 +2,7 @@ package com.bdb.lottery.module.application
 
 import com.bdb.lottery.datasource.account.AccountApi
 import com.bdb.lottery.datasource.app.AppApi
+import com.bdb.lottery.datasource.cocos.CocosApi
 import com.bdb.lottery.datasource.domain.DomainApi
 import com.bdb.lottery.datasource.game.GameApi
 import com.bdb.lottery.datasource.home.HomeApi
@@ -69,5 +70,14 @@ class NetModule {
     @Singleton
     fun lotApi(retrofit: Retrofit): LotApi {
         return retrofit.create(LotApi::class.java)
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // cocos动画下载
+    ///////////////////////////////////////////////////////////////////////////
+    @Provides
+    @Singleton
+    fun cocosApi(retrofit: Retrofit): CocosApi {
+        return retrofit.create(CocosApi::class.java)
     }
 }

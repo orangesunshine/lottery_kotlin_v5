@@ -4,6 +4,7 @@ import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.datasource.app.data.PlatformData
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Url
 
@@ -14,5 +15,6 @@ interface DomainApi {
 
     //读取域名配置
     @GET()
+    @Headers("domainIntercept: false", "headerIntercept:false")
     fun get(@Url url: String): Observable<String>
 }

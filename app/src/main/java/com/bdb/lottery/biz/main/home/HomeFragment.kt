@@ -1,14 +1,15 @@
 package com.bdb.lottery.biz.main.home
 
+import android.Manifest
 import android.content.res.ColorStateList
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,11 +23,13 @@ import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
 import com.bdb.lottery.biz.main.home.other.HomeOtherGameFragment
+import com.bdb.lottery.datasource.cocos.data.CocosData
 import com.bdb.lottery.datasource.home.data.BannerMapper
 import com.bdb.lottery.extension.bindNoFlingRecyclerView
-import com.bdb.lottery.extension.unbindNoFlingRecyclerView
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.start
+import com.bdb.lottery.extension.unbindNoFlingRecyclerView
+import com.bdb.lottery.utils.ui.activity.Activitys
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -37,12 +40,12 @@ import com.youth.banner.holder.BannerImageHolder
 import com.youth.banner.indicator.RectangleIndicator
 import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.util.BannerUtils
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_home_fragment.*
+import permissions.dispatcher.*
 
 
 //主页home
-@AndroidEntryPoint
+@RuntimePermissions
 class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     private val vm by viewModels<HomeViewModel>()
     val tabs = arrayOf("推荐收藏", "全部彩种", "综合娱乐")
@@ -204,11 +207,6 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
                     )
                     imageView.layoutParams = params
                     imageView.adjustViewBounds = true
-//                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-//                    //通过裁剪实现圆角
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                        BannerUtils.setBannerRound(imageView, 20f)
-//                    }
                     return BannerImageHolder(imageView)
                 }
 
@@ -234,6 +232,41 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
                 }
             })
         }
+    }
+    //endregion
+
+    //region sd卡权限，cocos下载
+    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    fun cocos(cocosBeans: List<CocosData?>?) {
+    }
+
+    @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    //给用户解释要请求什么权限，为什么需要此权限
+    fun showSingleRationale(request: PermissionRequest) {
+        val activity = mActivity?.get()
+        if (Activitys.isActivityAlive(activity)) {
+            AlertDialog.Builder(activity!!)
+                .setMessage("拒绝将影响应用的正常使用，请允许")
+                .setPositiveButton("允许") { dialog, which ->
+                    request.proceed() //继续执行请求
+                }.setNegativeButton("拒绝") { dialog, which ->
+                    request.cancel() //取消执行请求
+                }.show()
+        }
+    }
+
+    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE) //一旦用户拒绝了
+    fun storageDenied() {
+        toast.showWarning("SD卡权限已拒绝")
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        onRequestPermissionsResult(requestCode, grantResults)
     }
     //endregion
 }

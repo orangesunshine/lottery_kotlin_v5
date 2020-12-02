@@ -52,6 +52,7 @@ def marquee_version = "1.4.1"
 def material_version = "1.2.0"
 def constraintlayout_version = "2.0.4"
 def expandablelayout_version = "2.9.2"
+def permissionsdispatcher_version = "4.8.0"
 
 def DEPS = [:]
 ext.DEPS = DEPS
@@ -112,6 +113,10 @@ DEPS.put("EVENTBUS", "org.greenrobot:eventbus:$eventbus_version")
 DEPS.put("LOTTIE", "com.airbnb.android:lottie:$lottie_version")
 DEPS.put("VIEWPAGER2", "androidx.viewpager2:viewpager2:$viewpager2_version")
 DEPS.put("BASERECYCLERVIEWADAPTERHELPER", "com.github.CymChad:BaseRecyclerViewAdapterHelper:$baserecyclerviewadapterhelper_version")
+def PERMISSIONSDISPATCHER = []
+DEPS.PERMISSIONSDISPATCHER = PERMISSIONSDISPATCHER
+PERMISSIONSDISPATCHER << "org.permissionsdispatcher:permissionsdispatcher:$permissionsdispatcher_version"
+PERMISSIONSDISPATCHER << "kapt__org.permissionsdispatcher:permissionsdispatcher-processor:$permissionsdispatcher_version"
 
 if (ktx) {
     DEPS.put("ACTIVITY", "androidx.activity:activity-ktx:$activity_version")

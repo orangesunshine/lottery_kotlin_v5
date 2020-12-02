@@ -4,6 +4,8 @@ import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
+import com.bdb.lottery.datasource.cocos.CocosApi
+import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.home.HomeRemoteDs
@@ -16,7 +18,8 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     private val accountRemoteDs: AccountRemoteDs,
     private val homeAppRemoteDs: HomeRemoteDs,
     private val gameRemoteDs: GameRemoteDs,
-    private val appRemoteDs: AppRemoteDs
+    private val appRemoteDs: AppRemoteDs,
+    private val cocosRemoteDs: CocosRemoteDs
 ) : BaseViewModel() {
     val balanceLd = LiveDataWraper<String>()//余额
     val bannerLd = LiveDataWraper<List<BannerMapper>?>()//轮播图
@@ -125,5 +128,10 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     //红包
     fun receiveDividend() {
 
+    }
+
+    //下载全部的cocos文件
+    fun downloadAllCocosFiles() {
+        cocosRemoteDs.downAllCocosFile()
     }
 }
