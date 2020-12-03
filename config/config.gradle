@@ -52,7 +52,9 @@ def marquee_version = "1.4.1"
 def material_version = "1.2.0"
 def constraintlayout_version = "2.0.4"
 def expandablelayout_version = "2.9.2"
+def flowlayout_version = "1.1.2"
 def permissionsdispatcher_version = "4.8.0"
+def filedownloader_version = "1.7.7"
 
 def DEPS = [:]
 ext.DEPS = DEPS
@@ -152,8 +154,9 @@ DEPS.put("MARQUEE", "com.sunfusheng:MarqueeView:$marquee_version")
 DEPS.put("MATERIAL", "com.google.android.material:material:$material_version")
 DEPS.put("CONSTRAINTLAYOUT", "androidx.constraintlayout:constraintlayout:$constraintlayout_version")
 DEPS.put("EXPANDABLELAYOUT", "net.cachapa.expandablelayout:expandablelayout:$expandablelayout_version")
-DEPS.put("FLOWLAYOUT", "com.hyman:flowlayout-lib:1.1.2")
+DEPS.put("FLOWLAYOUT", "com.hyman:flowlayout-lib:$flowlayout_version")
 DEPS.put("ANDROIDANIMATIONS", "com.daimajia.androidanimations:library:2.4@aar")
+DEPS.put("FILEDOWNLOADER", "com.liulishuo.filedownloader:library:$filedownloader_version")
 
 def IMMERSIONBAR = []
 DEPS.IMMERSIONBAR = IMMERSIONBAR

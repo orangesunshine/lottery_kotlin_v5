@@ -29,10 +29,10 @@ interface IUrl {
         ///////////////////////////////////////////////////////////////////////////
         val ULR_COCOS_CONFIG = arrayOf(
             "https://bdbapp.oss-cn-shenzhen.aliyuncs.com/lottery/common/animation/draw/json/data.json",
-            "https://dongfangyinfeng.com/lottery/common/animation/draw/json/data.json" +
-                    "https://gxtgw.cn/lottery/common/animation/draw/json/data.json" +
-                    "http://oklznzb.com/lottery/common/animation/draw/json/data.json" +
-                    "https://o3rjctsi8.qnssl.com/lottery/common/animation/draw/json/data.json"
+            "https://dongfangyinfeng.com/lottery/common/animation/draw/json/data.json",
+            "https://gxtgw.cn/lottery/common/animation/draw/json/data.json",
+            "http://oklznzb.com/lottery/common/animation/draw/json/data.json",
+            "https://o3rjctsi8.qnssl.com/lottery/common/animation/draw/json/data.json"
         )
 
 

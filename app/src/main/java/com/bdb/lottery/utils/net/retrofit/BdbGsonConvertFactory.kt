@@ -22,6 +22,7 @@ import retrofit2.Converter
 import retrofit2.Retrofit
 import timber.log.Timber
 import java.io.*
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.nio.charset.Charset
 import javax.inject.Inject
@@ -34,9 +35,14 @@ class BdbGsonConverterFactory @Inject constructor(
 ) : Converter.Factory() {
     override fun responseBodyConverter(
         type: Type, annotations: Array<Annotation>, retrofit: Retrofit,
-    ): Converter<ResponseBody, *> {
-        val adapter = gson.getAdapter(TypeToken.get(type))
-        return BdbGsonResponseBodyConverter(gson, adapter, tActivityLifecycle)
+    ): Converter<ResponseBody, *>? {
+        return if (type is ParameterizedType && BaseResponse::class.java.isAssignableFrom(type.rawType as Class<*>)) {
+            BdbGsonResponseBodyConverter(
+                gson,
+                gson.getAdapter(TypeToken.get(type)),
+                tActivityLifecycle
+            )
+        } else GsonResponseBodyConverter(gson, gson.getAdapter(TypeToken.get(type)))
     }
 
     override fun requestBodyConverter(
@@ -49,6 +55,7 @@ class BdbGsonConverterFactory @Inject constructor(
     }
 }
 
+//region repsonse
 internal class BdbGsonResponseBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
@@ -57,13 +64,12 @@ internal class BdbGsonResponseBodyConverter<T>(
     Converter<ResponseBody, T> {
     @Throws(IOException::class)
     override fun convert(value: ResponseBody): T {
-        var string: String? = null
         var bufferedReader: BufferedReader? = null
-        return try {
-            string = value.string()
-            val jsonObject = JsonParser().parse(string).asJsonObject
-            val code = jsonObject.get("code").asInt
-            if (ICode.NET_SUCCESSFUL_CODE == code) {
+        val string = value.string()
+        val jsonObject = JsonParser().parse(string).asJsonObject
+        val code = jsonObject.get("code").asInt
+        if (ICode.NET_SUCCESSFUL_CODE == code) {
+            try {
                 bufferedReader =
                     BufferedReader(InputStreamReader(ByteArrayInputStream(string.toByteArray())))
                 val jsonReader =
@@ -73,28 +79,44 @@ internal class BdbGsonResponseBodyConverter<T>(
                     throw JsonIOException("JSON document was not fully consumed.")
                 }
                 return result
-            } else {
-                val response = Gsons.fromJson<BaseResponse<*>>(string)
-                tActivityLifecycle.topLogin(response)
-                throw ApiException(
-                    response
-                )
+            } catch (e: Exception) {
+                Timber.d("BdbGsonRequestBodyConverter: ${e}")
+                //ApiException返回自定义
+                throw ApiException(BaseResponse(e.code, e.msg, string))
+            } finally {
+                bufferedReader?.close()
+                value.close()
             }
-        } catch (e: Exception) {
-            Timber.d("BdbGsonRequestBodyConverter: ${e}")
-            //ApiException返回自定义
-            throw if (e !is ApiException) {
-                ApiException(BaseResponse(e.code, e.msg, string))
-            } else {
-                e
-            }
-        } finally {
-            bufferedReader?.close()
-            value.close()
+        } else {
+            val response = Gsons.fromJson<BaseResponse<*>>(string)
+            tActivityLifecycle.topLogin(response)
+            throw ApiException(response)
         }
     }
 }
 
+internal class GsonResponseBodyConverter<T>(
+    private val gson: Gson,
+    private val adapter: TypeAdapter<T>
+) :
+    Converter<ResponseBody, T> {
+    @Throws(IOException::class)
+    override fun convert(value: ResponseBody): T {
+        val jsonReader = gson.newJsonReader(value.charStream())
+        return try {
+            val result = adapter.read(jsonReader)
+            if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
+                throw JsonIOException("JSON document was not fully consumed.")
+            }
+            result
+        } finally {
+            value.close()
+        }
+    }
+}
+//endregion
+
+//region request
 internal class BdbGsonRequestBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
@@ -116,5 +138,6 @@ internal class BdbGsonRequestBodyConverter<T>(
         private val UTF_8 = Charset.forName("UTF-8")
     }
 }
+//endregion
 
 class ApiException(val response: BaseResponse<*>) : RuntimeException()

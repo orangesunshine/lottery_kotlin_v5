@@ -33,7 +33,14 @@ class HeadersInterceptor @Inject constructor(
                 .apply { if (!token.isSpace()) header("T", token!!) }
                 .build()
         }
-        return chain.proceed(request)
+
+        val cocos: String? = request.headers.get("cocos")
+        return if (cocos.isSpace()) {
+            chain.proceed(request)
+        } else {
+            val proceed = chain.proceed(request)
+            proceed.newBuilder().addHeader("cocos", cocos!!).build()
+        }
     }
 
 }

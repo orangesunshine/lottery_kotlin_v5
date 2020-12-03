@@ -40,12 +40,14 @@ import com.youth.banner.holder.BannerImageHolder
 import com.youth.banner.indicator.RectangleIndicator
 import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.util.BannerUtils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_home_fragment.*
 import permissions.dispatcher.*
 
 
 //主页home
 @RuntimePermissions
+@AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     private val vm by viewModels<HomeViewModel>()
     val tabs = arrayOf("推荐收藏", "全部彩种", "综合娱乐")
@@ -73,6 +75,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initVp()//game viewpager设置
+        cocosWithPermissionCheck()
     }
 
     private fun initVp() {
@@ -237,7 +240,8 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
 
     //region sd卡权限，cocos下载
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun cocos(cocosBeans: List<CocosData?>?) {
+    fun cocos() {
+        vm.downloadAllCocosFiles()//下载全部cocos文件
     }
 
     @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)

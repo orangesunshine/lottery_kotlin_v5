@@ -82,3 +82,6 @@
 -dontwarn java.util.concurrent.Flow*
 
 -keep class com.bdb.lottery.base.response.BaseResponse{*;}
+
+-dontwarn okhttp3.*
+-dontwarn okio.**

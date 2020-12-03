@@ -71,6 +71,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
 
                 } else {
                     //首次进入
+                    tCache.cacheSplashGuide()
                     startNdFinish<GuideActivity>()
                 }
             }

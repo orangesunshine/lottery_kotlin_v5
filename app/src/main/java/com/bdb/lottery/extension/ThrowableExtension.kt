@@ -4,7 +4,10 @@ import com.bdb.lottery.const.ICode
 import com.bdb.lottery.utils.net.retrofit.ApiException
 import com.google.gson.JsonSyntaxException
 import retrofit2.HttpException
-import java.lang.ClassCastException
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 var Throwable?.msg: String?
     get() = this?.let {
@@ -12,10 +15,26 @@ var Throwable?.msg: String?
         if (it is JsonSyntaxException) {
             message = "数据解析失败"
         } else if (it is HttpException) {
-            if (it.code() >= 500)
+            val code = it.code()
+            if (code >= 500)
                 message = "服务器错误"
-            else if (it.code() >= 400)
-                message = "请求错误"
+            else if (code >= 400) {
+                message = when (code) {
+                    400 -> "参数错误"
+                    401 -> "身份未授权"
+                    403 -> "禁止访问"
+                    404 -> "地址未找到"
+                    else -> "请求错误"
+                }
+            }
+        } else if (it is UnknownHostException) {
+            message = "网络异常"
+        } else if (it is ConnectException) {
+            message = "网络异常"
+        } else if (it is SocketException) {
+            message = "服务异常"
+        } else if (it is SocketTimeoutException) {
+            message = "响应超时"
         } else if (it is ClassCastException) {
             message = "数据异常"
         } else if (it is ApiException) {

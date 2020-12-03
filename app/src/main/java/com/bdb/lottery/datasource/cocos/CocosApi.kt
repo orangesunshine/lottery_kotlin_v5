@@ -14,5 +14,5 @@ interface CocosApi {
     @GET
     @Streaming
     @Headers("domainIntercept: false", "headerIntercept:false")
-    fun downFile(@Url url: String): Observable<ResponseBody>
+    fun downFile(@Header("cocos") cocosName: String, @Url url: String): Observable<ResponseBody>
 }
