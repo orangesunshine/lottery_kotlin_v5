@@ -1,6 +1,6 @@
 package com.bdb.lottery.datasource.game
 
-import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.game.data.AllGameItemData
 import com.bdb.lottery.datasource.game.data.LotteryFavoritesData
 import com.bdb.lottery.datasource.game.data.OtherPlatformData
@@ -13,11 +13,11 @@ class GameRemoteDs @Inject constructor(
 ) {
     //region 全部Game
     fun preAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
-        retrofitWrapper.preload(IUrl.URL_ALL_GAME, gameApi.allGame(), success)
+        retrofitWrapper.preload(URL.URL_ALL_GAME, gameApi.allGame(), success)
     }
 
     fun cachePriAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
-        retrofitWrapper.cachePriLoad(IUrl.URL_ALL_GAME, gameApi.allGame(), success)
+        retrofitWrapper.cachePriLoad(URL.URL_ALL_GAME, gameApi.allGame(), success)
     }
     //endregion
 
@@ -27,11 +27,11 @@ class GameRemoteDs @Inject constructor(
 
     //region othergame
     fun preOtherGame() {
-        retrofitWrapper.preload(IUrl.URL_OTHER_GAME, gameApi.otherGame())
+        retrofitWrapper.preload(URL.URL_OTHER_GAME, gameApi.otherGame())
     }
 
     fun cachePriOtherGame(success: (OtherPlatformData?) -> Unit) {
-        retrofitWrapper.cachePriLoad(IUrl.URL_OTHER_GAME, gameApi.otherGame(), success)
+        retrofitWrapper.cachePriLoad(URL.URL_OTHER_GAME, gameApi.otherGame(), success)
     }
     //endregion
 
@@ -41,12 +41,12 @@ class GameRemoteDs @Inject constructor(
 
     //region 收藏
     fun preLotteryFavorites() {
-        retrofitWrapper.preload(IUrl.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
+        retrofitWrapper.preload(URL.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
     }
 
     fun cachePriLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
         retrofitWrapper.cachePriLoad(
-            IUrl.URL_LOTTERY_FAVORITES,
+            URL.URL_LOTTERY_FAVORITES,
             gameApi.lotteryFavorites(),
             success
         )

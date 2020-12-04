@@ -8,7 +8,7 @@ import androidx.lifecycle.Lifecycle
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.biz.login.LoginActivity
-import com.bdb.lottery.const.ICode
+import com.bdb.lottery.const.CODE
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.thread.TThread
 import java.util.*
@@ -188,7 +188,7 @@ class TActivityLifecycle @Inject constructor(
 
     //根据后端code跳转登录
     fun topLogin(response: BaseResponse<*>) {
-        if (ICode.LIST_TOLOGIN.contains(response.code))
+        if (CODE.LIST_TOLOGIN.contains(response.code))
             topStartActivity<LoginActivity>()
     }
 

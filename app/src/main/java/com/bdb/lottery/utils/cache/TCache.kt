@@ -1,10 +1,11 @@
 package com.bdb.lottery.utils.cache
 
 import android.text.TextUtils
-import com.bdb.lottery.const.ICache
-import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.const.CACHE
+import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.account.data.UserInfoData
 import com.bdb.lottery.datasource.app.data.PlatformData
+import com.bdb.lottery.datasource.cocos.data.CocosData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.device.Devices
 import com.bdb.lottery.utils.gson.Gsons
@@ -18,13 +19,13 @@ class TCache @Inject constructor() {
     //缓存uuid
     private fun cacheUUid(prifex: Int, id: String): String {
         val uuid = Devices.getUUid(prifex, id)
-        Caches.putString(ICache.DEVICE_ID_CACHE, uuid)
+        Caches.putString(CACHE.DEVICE_ID_CACHE, uuid)
         return uuid
     }
 
     //获取设备uuid
     fun cachePriUUid(): String {
-        return (Caches.getString(ICache.DEVICE_ID_CACHE, null)) ?: let {
+        return (Caches.getString(CACHE.DEVICE_ID_CACHE, null)) ?: let {
             val androidId = Devices.getAndroidId()
             cacheUUid(if (TextUtils.isEmpty(androidId)) 9 else 2, androidId)
         }
@@ -53,21 +54,21 @@ class TCache @Inject constructor() {
 
     //region 重启app充值缓存
     fun clearCacheOnSplash() {
-        Caches.putString(ICache.DOMAIN_URL_CACHE)//域名
-        Caches.putString(IUrl.URL_PLATFORM_PARAMS)//平台
-        Caches.putString(ICache.PUBLIC_RSA_KEY_CACHE)//公钥
-        Caches.putString(IUrl.URL_CUSTOM_SERVICE)//客服线
-        Caches.putString(IUrl.URL_APK_VERSION)//版本信息
+        Caches.putString(CACHE.DOMAIN_URL_CACHE)//域名
+        Caches.putString(URL.URL_PLATFORM_PARAMS)//平台
+        Caches.putString(CACHE.PUBLIC_RSA_KEY_CACHE)//公钥
+        Caches.putString(URL.URL_CUSTOM_SERVICE)//客服线
+        Caches.putString(URL.URL_APK_VERSION)//版本信息
     }
     //endregion
 
     //region 引导缓存
     fun cacheSplashGuide() {
-        Caches.putBoolean(ICache.GUIDE_CACHE, true)
+        Caches.putBoolean(CACHE.GUIDE_CACHE, true)
     }
 
     fun splashGuideCache(): Boolean {
-        return Caches.getBoolean(ICache.GUIDE_CACHE, false)
+        return Caches.getBoolean(CACHE.GUIDE_CACHE, false)
     }
     //endregion
 
@@ -79,37 +80,35 @@ class TCache @Inject constructor() {
     }
 
     private fun cacheAccount(account: String) {
-        Caches.putString(ICache.LOGIN_ACCOUNT_CACHE, account)
+        Caches.putString(CACHE.LOGIN_ACCOUNT_CACHE, account)
     }
 
     private fun cachePwd(pwd: String) {
-        Caches.putString(ICache.LOGIN_PWD_CACHE, pwd)
+        Caches.putString(CACHE.LOGIN_PWD_CACHE, pwd)
     }
 
     private fun cacheRememberPwd(rememberPwd: Boolean) {
-        Caches.putBoolean(ICache.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
+        Caches.putBoolean(CACHE.LOGIN_REMEMBER_PWD_CACHE, rememberPwd)
     }
     //endregion
 
     //region 保存公钥
     fun cacheRsaPublicKey(publicKey: String?) {
-        if (!publicKey.isSpace())
-            Caches.putString(ICache.PUBLIC_RSA_KEY_CACHE, publicKey)
+        if (!publicKey.isSpace()) Caches.putString(CACHE.PUBLIC_RSA_KEY_CACHE, publicKey)
     }
 
     fun rsaPublicKeyCache(): String? {
-        return Caches.getString(ICache.PUBLIC_RSA_KEY_CACHE)
+        return Caches.getString(CACHE.PUBLIC_RSA_KEY_CACHE)
     }
     //endregion
 
     //region token
     fun cacheToken(token: String?) {
-        if (!token.isSpace())
-            Caches.putString(ICache.TOKEN_CACHE, token)
+        if (!token.isSpace()) Caches.putString(CACHE.TOKEN_CACHE, token)
     }
 
     fun tokenCache(): String? {
-        return Caches.getString(ICache.TOKEN_CACHE)
+        return Caches.getString(CACHE.TOKEN_CACHE)
     }
     //endregion
 
@@ -119,40 +118,52 @@ class TCache @Inject constructor() {
     }
 
     fun cacheDomain(domain: String?) {
-        if (!domain.isSpace())
-            Caches.putString(ICache.DOMAIN_URL_CACHE, domain)
+        if (!domain.isSpace()) Caches.putString(CACHE.DOMAIN_URL_CACHE, domain)
     }
 
     fun domainCache(): String? {
-        return Caches.getString(ICache.DOMAIN_URL_CACHE)
+        return Caches.getString(CACHE.DOMAIN_URL_CACHE)
     }
     //endregion
 
     //region 平台参数
     fun cachePlatformParams(params: PlatformData?) {
         if (null != params)
-            Caches.putString(IUrl.URL_PLATFORM_PARAMS, Gsons.toJson(params))
+            Caches.putString(URL.URL_PLATFORM_PARAMS, Gsons.toJson(params))
+    }
+
+    fun platformParamsCache(): PlatformData? {
+        return Caches.getString(URL.URL_PLATFORM_PARAMS)?.let { Gsons.fromJson<PlatformData>(it) }
     }
     //endregion
 
     //region 登录状态
     fun cacheLoginStatus(isLogin: Boolean) {
-        Caches.putBoolean(ICache.ISLOGIN_CACHE, isLogin)
+        Caches.putBoolean(CACHE.ISLOGIN_CACHE, isLogin)
     }
 
     fun loginStatusCache(): Boolean {
-        return Caches.getBoolean(ICache.ISLOGIN_CACHE)
+        return Caches.getBoolean(CACHE.ISLOGIN_CACHE)
     }
     //endregion
 
     //region 用户信息
     fun cacheUserInfo(info: UserInfoData?) {
-        if (null != info)
-            Caches.putString(ICache.USERINFO_CACHE, Gsons.toJson(info))
+        if (null != info) Caches.putString(CACHE.USERINFO_CACHE, Gsons.toJson(info))
     }
 
-    fun userInfoCache(): String? {
-        return Caches.getString(ICache.USERINFO_CACHE)
+    fun userInfoCache(): UserInfoData? {
+        return Caches.getString(CACHE.USERINFO_CACHE)?.let { Gsons.fromJson<UserInfoData>(it) }
+    }
+    //endregion
+
+    //region cocos配置缓存
+    fun cacheCocosConfig(cocos: CocosData?) {
+        if (null != cocos) Caches.putString(CACHE.COCOS_CONFIG_CACHE, Gsons.toJson(cocos))
+    }
+
+    fun cocosConfigCache(): CocosData? {
+        return Caches.getString(CACHE.COCOS_CONFIG_CACHE)?.let { Gsons.fromJson<CocosData>(it) }
     }
     //endregion
 }

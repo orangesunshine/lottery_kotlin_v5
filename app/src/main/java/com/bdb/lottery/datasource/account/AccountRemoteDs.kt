@@ -4,7 +4,6 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
-import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWraper

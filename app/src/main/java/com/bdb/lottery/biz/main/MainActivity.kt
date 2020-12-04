@@ -11,7 +11,7 @@ import com.bdb.lottery.biz.main.find.FindFragment
 import com.bdb.lottery.biz.main.home.HomeFragment
 import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.biz.main.user.UserFragment
-import com.bdb.lottery.const.IConst
+import com.bdb.lottery.const.CONST
 import com.bdb.lottery.extension.statusbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_activity.*
@@ -39,7 +39,7 @@ class MainActivity : FragmentActivity() {
         content.removeAllViews()
         layoutInflater.inflate(R.layout.main_activity, content, true)
         (main_content_fl.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-            IConst.HEIGHT_STATUS_BAR
+            CONST.HEIGHT_STATUS_BAR
         statusbar(true)
         fragments = if (null == savedInstanceState) {
             arrayOf(HomeFragment(), PromotionFragment(), FindFragment(), UserFragment())

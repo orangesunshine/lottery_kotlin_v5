@@ -157,6 +157,7 @@ DEPS.put("EXPANDABLELAYOUT", "net.cachapa.expandablelayout:expandablelayout:$exp
 DEPS.put("FLOWLAYOUT", "com.hyman:flowlayout-lib:$flowlayout_version")
 DEPS.put("ANDROIDANIMATIONS", "com.daimajia.androidanimations:library:2.4@aar")
 DEPS.put("FILEDOWNLOADER", "com.liulishuo.filedownloader:library:$filedownloader_version")
+DEPS.put("ZIP", "org.zeroturnaround:zt-zip:1.14")
 
 def IMMERSIONBAR = []
 DEPS.IMMERSIONBAR = IMMERSIONBAR

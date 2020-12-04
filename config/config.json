@@ -31,7 +31,8 @@
     "TIMBER",
     "VIEWMODEL",
     "VIEWMODEL_SAVEDSTATE",
-    "VIEWPAGER2"
+    "VIEWPAGER2",
+    "ZIP"
   ],
   "common": [
     "COMMON"

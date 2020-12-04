@@ -4,7 +4,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
-import com.bdb.lottery.datasource.cocos.CocosApi
 import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.game.GameRemoteDs
@@ -132,6 +131,6 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 
     //下载全部的cocos文件
     fun downloadAllCocosFiles() {
-        cocosRemoteDs.downAllCocosFile()
+        cocosRemoteDs.downloadAllCocos()
     }
 }

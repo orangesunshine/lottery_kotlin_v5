@@ -1,6 +1,6 @@
 package com.bdb.lottery.datasource.app
 
-import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.app.data.ApkVersionData
 import com.bdb.lottery.datasource.app.data.CustomServiceData
 import com.bdb.lottery.datasource.app.data.PlatformData
@@ -22,13 +22,13 @@ class AppRemoteDs @Inject constructor(
 
     //预加载
     fun prePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
-        retrofitWrapper.preload(IUrl.URL_PLATFORM_PARAMS, appApi.platformParams(), success)
+        retrofitWrapper.preload(URL.URL_PLATFORM_PARAMS, appApi.platformParams(), success)
     }
 
     //缓存优先
     fun cachePriPlatformParams(success: ((PlatformData?) -> Unit)? = null) {
         retrofitWrapper.cachePriLoad(
-            IUrl.URL_PLATFORM_PARAMS,
+            URL.URL_PLATFORM_PARAMS,
             appApi.platformParams(),
             success
         )
@@ -38,7 +38,7 @@ class AppRemoteDs @Inject constructor(
     //region 客服线
     fun preCustomServiceUrl() {
         retrofitWrapper.preload(
-            IUrl.URL_CUSTOM_SERVICE,
+            URL.URL_CUSTOM_SERVICE,
             appApi.customservice()
         )
     }
@@ -46,7 +46,7 @@ class AppRemoteDs @Inject constructor(
     //优先缓存，网络请求
     fun cachePriCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
         retrofitWrapper.cachePriLoad(
-            IUrl.URL_CUSTOM_SERVICE,
+            URL.URL_CUSTOM_SERVICE,
             appApi.customservice(),
             success
         )
@@ -57,14 +57,14 @@ class AppRemoteDs @Inject constructor(
     //预加载
     fun preApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.preload(
-            IUrl.URL_APK_VERSION,
+            URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success
         )
     }
 
     fun cachePriApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.cachePriLoad(
-            IUrl.URL_APK_VERSION,
+            URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success
         )
     }

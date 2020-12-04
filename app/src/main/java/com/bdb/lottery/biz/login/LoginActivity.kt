@@ -10,7 +10,7 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.biz.register.RegisterActivity
-import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.device.TDevice
@@ -113,7 +113,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
             if (it) {
                 login_verifycode_ll.visible(true)
                 val url =
-                    domainLocalDs.getDomain() + IUrl.URL_VERIFYCODE + "?" + Math.random()
+                    domainLocalDs.getDomain() + URL.URL_VERIFYCODE + "?" + Math.random()
                 val gliderUrl = GlideUrl(
                     url
                 ) {

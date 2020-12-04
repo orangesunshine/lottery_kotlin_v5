@@ -1,7 +1,7 @@
 package com.bdb.lottery.datasource.lot
 
 import com.bdb.lottery.base.response.BaseResponse
-import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.lot.data.*
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
@@ -17,7 +17,7 @@ import retrofit2.http.POST
 
 interface LotApi {
     //获取今日开奖（露珠图）
-    @POST(IUrl.URL_GET_TODAY_LOTTERY_NUMS)
+    @POST(URL.URL_GET_TODAY_LOTTERY_NUMS)
     @FormUrlEncoded
     fun getTodayLotteryNums(
         @Field("gameId") gameId: String,
@@ -26,7 +26,7 @@ interface LotApi {
 
 
     //获取未来期
-    @POST(IUrl.URL_GET_BETTING)
+    @POST(URL.URL_GET_BETTING)
     @FormUrlEncoded
     fun getBetting(
         @Field("gameId") gameIds: String,
@@ -34,7 +34,7 @@ interface LotApi {
     ): Observable<BaseResponse<CountDownData?>>
 
     //根据ID获取该彩种历史开奖
-    @POST(IUrl.URL_GET_HISTORY)
+    @POST(URL.URL_GET_HISTORY)
     @FormUrlEncoded
     fun getHistoryByGameId(
         @Field("gameId") gameId: String,
@@ -43,25 +43,25 @@ interface LotApi {
 
     //region 经典
     //经典彩种初始化
-    @POST(IUrl.URL_INIT_GAME)
+    @POST(URL.URL_INIT_GAME)
     @FormUrlEncoded
     fun initGame(): Observable<BaseResponse<List<GameInitData>?>>
 
     //经典
-    @POST(IUrl.URL_GET_BET_TYPE)
+    @POST(URL.URL_GET_BET_TYPE)
     @FormUrlEncoded
     fun getBetType(): Observable<BaseResponse<GameBetTypeData?>>
     //endregion
 
     //region Kg
     //kg彩种初始化
-    @POST(IUrl.URL_INIT_KG_GAME)
+    @POST(URL.URL_INIT_KG_GAME)
     @FormUrlEncoded
     fun initKgGame(): Observable<BaseResponse<KgInitData?>>
 
 
     //kg
-    @POST(IUrl.URL_GET_KG_BET_TYPE)
+    @POST(URL.URL_GET_KG_BET_TYPE)
     @FormUrlEncoded
     fun getKgBetType(): Observable<BaseResponse<KgBetTypeData?>>
     //endregion
@@ -69,13 +69,13 @@ interface LotApi {
 
     //region 微投
     //微投彩种初始化
-    @POST(IUrl.URL_INIT_WT_GAME)
+    @POST(URL.URL_INIT_WT_GAME)
     @FormUrlEncoded
     fun initWtGame(): Observable<BaseResponse<WtInitData?>>
 
 
     //微投
-    @POST(IUrl.URL_GET_WT_BET_TYPE)
+    @POST(URL.URL_GET_WT_BET_TYPE)
     @FormUrlEncoded
     fun getWtBetType(): Observable<BaseResponse<WtBetTypeData?>>
     //endregion

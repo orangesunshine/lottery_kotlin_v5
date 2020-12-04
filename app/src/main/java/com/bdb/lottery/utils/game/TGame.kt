@@ -1,42 +1,35 @@
 package com.bdb.lottery.utils.game
 
 import com.bdb.lottery.R
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_11X5
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_FREQUENCY_LOW
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_K3
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_KL10FEN
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_LHC
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_PC28
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_PK10
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_PK8
-import com.bdb.lottery.const.IGame.Companion.TYPE_GAME_SSC
+import com.bdb.lottery.const.GAME
+import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.extension.isSpace
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TGame @Inject constructor() {
+class TGame @Inject constructor(private val tCocos: TCocos) {
     /**
      * 首页home->全部游戏->游戏大类图片
      */
     fun gameTypeRoundDr(gameType: Int): Int {
         var drawable: Int = R.drawable.home_placeholder_round_img_ic
         when (gameType) {
-            TYPE_GAME_SSC -> drawable =
+            GAME.TYPE_GAME_SSC -> drawable =
                 R.drawable.home_allgame_type_ssc
-            TYPE_GAME_11X5 -> drawable =
+            GAME.TYPE_GAME_11X5 -> drawable =
                 R.drawable.home_allgame_type_11x5
-            TYPE_GAME_PK10 -> drawable =
+            GAME.TYPE_GAME_PK10 -> drawable =
                 R.drawable.home_allgame_type_pk10
-            TYPE_GAME_FREQUENCY_LOW -> drawable =
+            GAME.TYPE_GAME_FREQUENCY_LOW -> drawable =
                 R.drawable.home_allgame_type_lows
-            TYPE_GAME_K3 -> drawable =
+            GAME.TYPE_GAME_K3 -> drawable =
                 R.drawable.home_allgame_type_k3
-            TYPE_GAME_KL10FEN -> drawable =
+            GAME.TYPE_GAME_KL10FEN -> drawable =
                 R.drawable.home_allgame_type_klc
-            TYPE_GAME_LHC -> drawable =
+            GAME.TYPE_GAME_LHC -> drawable =
                 R.drawable.home_allgame_type_lhc
-            TYPE_GAME_PC28 -> drawable =
+            GAME.TYPE_GAME_PC28 -> drawable =
                 R.drawable.home_allgame_type_pc28
         }
         return drawable
@@ -56,11 +49,11 @@ class TGame @Inject constructor() {
      */
     private fun canShowAlpha(gameType: Int): Boolean {
         return arrayOf(
-            TYPE_GAME_PK10,
-            TYPE_GAME_PK8,
-            TYPE_GAME_SSC,
-            TYPE_GAME_11X5,
-            TYPE_GAME_FREQUENCY_LOW
+            GAME.TYPE_GAME_PK10,
+            GAME.TYPE_GAME_PK8,
+            GAME.TYPE_GAME_SSC,
+            GAME.TYPE_GAME_11X5,
+            GAME.TYPE_GAME_FREQUENCY_LOW
         ).contains(gameType)
     }
 
@@ -73,13 +66,13 @@ class TGame @Inject constructor() {
         }
         val list = ArrayList<Int>()
         var max = 0
-        if (gameType == TYPE_GAME_PK10) max = 10
-        else if (gameType == TYPE_GAME_PK8) max = 8
-        else if (gameType == TYPE_GAME_SSC
-            || gameType == TYPE_GAME_11X5
+        if (gameType == GAME.TYPE_GAME_PK10) max = 10
+        else if (gameType == GAME.TYPE_GAME_PK8) max = 8
+        else if (gameType == GAME.TYPE_GAME_SSC
+            || gameType == GAME.TYPE_GAME_11X5
         ) max = 5
         else if (
-            gameType == TYPE_GAME_FREQUENCY_LOW) max = 3
+            gameType == GAME.TYPE_GAME_FREQUENCY_LOW) max = 3
 
         var index = 1
         if (playTypeName.contains("一")) {
@@ -146,13 +139,23 @@ class TGame @Inject constructor() {
 
         if (list.isEmpty()) {
             when (gameType) {
-                TYPE_GAME_SSC, TYPE_GAME_11X5 ->
+                GAME.TYPE_GAME_SSC, GAME.TYPE_GAME_11X5 ->
                     list.addAll(listOf(1, 2, 3, 4, 5))
-                TYPE_GAME_FREQUENCY_LOW -> list.addAll(listOf(1, 2, 3))
-                TYPE_GAME_PK10 -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-                TYPE_GAME_PK8 -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8))
+                GAME.TYPE_GAME_FREQUENCY_LOW -> list.addAll(listOf(1, 2, 3))
+                GAME.TYPE_GAME_PK10 -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+                GAME.TYPE_GAME_PK8 -> list.addAll(listOf(1, 2, 3, 4, 5, 6, 7, 8))
             }
         }
         return list
+    }
+
+    //投注页面cocos动画、直播入口（奖杯）是否显示
+    fun cupVisible(gameType: Int, gameId: Int): Boolean {
+        return tCocos.hasCocosAnim(gameType, gameId) || hasLive(gameType, gameId)
+    }
+
+    //直播存在
+    private fun hasLive(gameType: Int, gameId: Int): Boolean {
+        return true
     }
 }

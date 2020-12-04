@@ -1,5 +1,6 @@
 package com.bdb.lottery.extension
 
+import android.text.TextUtils
 import java.util.regex.Pattern
 
 fun CharSequence?.isSpace(): Boolean {
@@ -20,5 +21,6 @@ fun CharSequence?.isDomainUrl(): Boolean {
 }
 
 fun CharSequence?.equalsNSpace(other: CharSequence?): Boolean {
-    return !isSpace() && this!!.equals(other)
+    return !isSpace() && TextUtils.equals(this, other)
 }
+

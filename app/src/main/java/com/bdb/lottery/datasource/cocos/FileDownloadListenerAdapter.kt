@@ -3,7 +3,7 @@ package com.bdb.lottery.datasource.cocos
 import com.liulishuo.filedownloader.BaseDownloadTask
 import com.liulishuo.filedownloader.FileDownloadListener
 
-class FileDownloadListenerAdapter : FileDownloadListener() {
+open class FileDownloadListenerAdapter : FileDownloadListener() {
     override fun pending(task: BaseDownloadTask?, soFarBytes: Int, totalBytes: Int) {
 
     }

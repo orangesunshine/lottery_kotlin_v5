@@ -1,7 +1,7 @@
 package com.bdb.lottery.utils.convert
 
 import android.annotation.SuppressLint
-import com.bdb.lottery.const.MemConst
+import com.bdb.lottery.const.MEM
 import kotlin.experimental.and
 
 object Converts {
@@ -20,22 +20,22 @@ object Converts {
         require(precision >= 0) { "precision shouldn't be less than zero!" }
         return if (byteSize < 0) {
             throw IllegalArgumentException("byteSize shouldn't be less than zero!")
-        } else if (byteSize < MemConst.KB) {
+        } else if (byteSize < MEM.KB) {
             String.format("%." + precision + "fB", byteSize.toDouble())
-        } else if (byteSize < MemConst.MB) {
+        } else if (byteSize < MEM.MB) {
             java.lang.String.format(
                 "%." + precision + "fKB",
-                byteSize.toDouble() / MemConst.KB
+                byteSize.toDouble() / MEM.KB
             )
-        } else if (byteSize < MemConst.GB) {
+        } else if (byteSize < MEM.GB) {
             java.lang.String.format(
                 "%." + precision + "fMB",
-                byteSize.toDouble() / MemConst.MB
+                byteSize.toDouble() / MEM.MB
             )
         } else {
             java.lang.String.format(
                 "%." + precision + "fGB",
-                byteSize.toDouble() / MemConst.GB
+                byteSize.toDouble() / MEM.GB
             )
         }
     }

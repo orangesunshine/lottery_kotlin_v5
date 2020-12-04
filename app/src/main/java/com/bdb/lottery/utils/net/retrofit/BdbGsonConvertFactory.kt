@@ -1,7 +1,7 @@
 package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
-import com.bdb.lottery.const.ICode
+import com.bdb.lottery.const.CODE
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.gson.Gsons
@@ -68,7 +68,7 @@ internal class BdbGsonResponseBodyConverter<T>(
         val string = value.string()
         val jsonObject = JsonParser().parse(string).asJsonObject
         val code = jsonObject.get("code").asInt
-        if (ICode.NET_SUCCESSFUL_CODE == code) {
+        if (CODE.NET_SUCCESSFUL_CODE == code) {
             try {
                 bufferedReader =
                     BufferedReader(InputStreamReader(ByteArrayInputStream(string.toByteArray())))

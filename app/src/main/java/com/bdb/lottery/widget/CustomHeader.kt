@@ -13,7 +13,7 @@ import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
-import com.bdb.lottery.const.ICache
+import com.bdb.lottery.const.CACHE
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.module.application.AppEntries
 import com.bdb.lottery.utils.cache.TCache
@@ -31,7 +31,7 @@ import java.util.*
 class CustomHeader @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : RelativeLayout(context, attrs, defStyleAttr), RefreshHeader {
-    private var HEADER_LAST_UPDATE_TIME_CACHE: String = ICache.LAST_UPDATE_TIME_CACHE
+    private var HEADER_LAST_UPDATE_TIME_CACHE: String = CACHE.LAST_UPDATE_TIME_CACHE
 
     private val ivProgress //刷新动画视图
             : ImageView

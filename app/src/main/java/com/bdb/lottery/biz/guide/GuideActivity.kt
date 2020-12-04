@@ -6,7 +6,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.main.MainActivity
-import com.bdb.lottery.const.ICache
 import com.bdb.lottery.extension.alphaVisible
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible

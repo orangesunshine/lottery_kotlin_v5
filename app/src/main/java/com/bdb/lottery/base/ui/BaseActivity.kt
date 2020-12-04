@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
 import com.bdb.lottery.biz.base.BaseViewModel
-import com.bdb.lottery.const.ITag
+import com.bdb.lottery.const.TAG
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.statusbar
@@ -155,7 +155,7 @@ open class BaseActivity(
     }
 
     fun show() {
-        loading.show(supportFragmentManager, ITag.COMMON_LOADING_TAG)
+        loading.show(supportFragmentManager, TAG.COMMON_LOADING_TAG)
     }
 
     fun hide() {

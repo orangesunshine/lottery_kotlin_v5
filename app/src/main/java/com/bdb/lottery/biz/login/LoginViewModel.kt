@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.biz.base.BaseViewModel
-import com.bdb.lottery.const.ICache
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper

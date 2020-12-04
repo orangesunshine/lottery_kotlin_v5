@@ -1,6 +1,6 @@
 package com.bdb.lottery.utils.game
 
-import com.bdb.lottery.const.IGame
+import com.bdb.lottery.const.GAME
 import com.bdb.lottery.extension.isSpace
 
 object Games {
@@ -13,7 +13,7 @@ object Games {
             val split = issue.split("-")
             return split[split.size - 1]
         } else {
-            val isPc28 = gameType == IGame.TYPE_GAME_PC28
+            val isPc28 = gameType == GAME.TYPE_GAME_PC28
             return if (issue.length > 8 && !isPc28) issue.substring(4) else issue
         }
     }

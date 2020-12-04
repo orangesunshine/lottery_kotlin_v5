@@ -1,16 +1,16 @@
 package com.bdb.lottery.base.response
 
-import com.bdb.lottery.const.ICode
+import com.bdb.lottery.const.CODE
 import com.google.gson.GsonBuilder
 
 open class BaseResponse<T>(
-    var code: Int = ICode.DEFAULT_ERROR_CODE,
+    var code: Int = CODE.DEFAULT_ERROR_CODE,
     var msg: String? = null,
     var data: T? = null
 ) {
     //网络请求成功
     fun isSuccess(): Boolean {
-        return code == ICode.NET_SUCCESSFUL_CODE
+        return code == CODE.NET_SUCCESSFUL_CODE
     }
 
     //T类型Response转String

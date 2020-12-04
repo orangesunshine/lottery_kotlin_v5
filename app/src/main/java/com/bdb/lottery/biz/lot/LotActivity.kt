@@ -12,7 +12,8 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.lot.jd.LotJdFragment
 import com.bdb.lottery.biz.lot.tr.LotTrFragment
 import com.bdb.lottery.biz.lot.wt.LotWtFragment
-import com.bdb.lottery.const.IExtra
+import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
@@ -46,8 +47,10 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     @Inject
     lateinit var tGame: TGame
 
-    //region 生命周期 开关service，网络请求
+    @Inject
+    lateinit var tCocos: TCocos
 
+    //region 生命周期 开关service，网络请求
     private var mGameId: Int = -1
     private var mGameType: Int = -1
     private var mGameName: String? = null
@@ -60,9 +63,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     override fun initVar(bundle: Bundle?) {
         super.initVar(bundle)
-        mGameId = intent.getIntExtra(IExtra.ID_GAME_EXTRA, -1)
-        mGameType = intent.getIntExtra(IExtra.TYPE_GAME_EXTRA, -1)
-        mGameName = intent.getStringExtra(IExtra.NAME_GAME_EXTRA)
+        mGameId = intent.getIntExtra(EXTRA.ID_GAME_EXTRA, -1)
+        mGameType = intent.getIntExtra(EXTRA.TYPE_GAME_EXTRA, -1)
+        mGameName = intent.getStringExtra(EXTRA.NAME_GAME_EXTRA)
         if (-1 == mGameId || -1 == mGameType) {
             finish()
         }
@@ -82,7 +85,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //views
+        lotCupIv.visible(tGame.cupVisible(mGameType, mGameId))
         lotHistoryRv.layoutManager = LinearLayoutManager(this)
+        if (tCocos.hasCocosAnim(mGameType, mGameId)) {
+            vm.downloadCocos(tCocos.cocosName(mGameType, mGameId))
+        }
+
 
         //data
         vm.setGameId(mGameId)
@@ -115,7 +123,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     //region 切换fragment
     private var mFragmentIndex = -1// 0经典 1传统 2微投
-    fun switchFragment(index: Int) {
+    private fun switchFragment(index: Int) {
         if (mFragmentIndex == index) return
         //传统显示label
         lotNumsLabelFl.visible(1 == index)

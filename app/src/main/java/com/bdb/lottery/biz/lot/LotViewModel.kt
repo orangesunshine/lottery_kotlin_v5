@@ -8,7 +8,8 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
-import com.bdb.lottery.const.IExtra
+import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
@@ -26,6 +27,7 @@ class LotViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
     private val tThread: TThread,
     private val lotRemoteDs: LotRemoteDs,
+    private val cocosRemoteDs: CocosRemoteDs,
 ) : BaseViewModel() {
     val countDown = LiveDataWraper<CountDownData.CurrentTime?>()
     val curIssue = LiveDataWraper<HistoryData.HistoryItem?>()
@@ -87,14 +89,20 @@ class LotViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
+    //region 下载cocos动画文件
+    fun downloadCocos(cocosName:String){
+        cocosRemoteDs.downloadSingleCocos(cocosName)
+    }
+    //endregion
+
     //region 跳转彩票页面
     companion object {
         fun start(context: Context, gameId: String, gameType: String, gameName: String?) {
             context.startActivity(Intent(context, LotActivity::class.java).apply {
-                putExtra(IExtra.ID_GAME_EXTRA, gameId)
-                putExtra(IExtra.TYPE_GAME_EXTRA, gameType)
+                putExtra(EXTRA.ID_GAME_EXTRA, gameId)
+                putExtra(EXTRA.TYPE_GAME_EXTRA, gameType)
                 if (!gameName.isSpace())
-                    putExtra(IExtra.NAME_GAME_EXTRA, gameName)
+                    putExtra(EXTRA.NAME_GAME_EXTRA, gameName)
             })
         }
     }

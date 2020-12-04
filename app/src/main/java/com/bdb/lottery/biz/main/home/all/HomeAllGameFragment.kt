@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.lot.LotActivity
-import com.bdb.lottery.const.IExtra
+import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.game.data.AllGameItemData
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startWithArgs
@@ -72,9 +72,9 @@ class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
                         }
 
                         startWithArgs<LotActivity> {
-                            it.putExtra(IExtra.ID_GAME_EXTRA, gameId)
-                            it.putExtra(IExtra.TYPE_GAME_EXTRA, gameType)
-                            it.putExtra(IExtra.NAME_GAME_EXTRA, gameName)
+                            it.putExtra(EXTRA.ID_GAME_EXTRA, gameId)
+                            it.putExtra(EXTRA.TYPE_GAME_EXTRA, gameType)
+                            it.putExtra(EXTRA.NAME_GAME_EXTRA, gameName)
                         }
                     }
                 }

@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.LoadingDialog
 import com.bdb.lottery.biz.base.BaseViewModel
-import com.bdb.lottery.const.ITag
+import com.bdb.lottery.const.TAG
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.utils.ui.toast.AbsToast
@@ -78,7 +78,7 @@ open class BaseFragment(
     }
 
     fun show() {
-        loading.show(childFragmentManager, ITag.COMMON_LOADING_TAG)
+        loading.show(childFragmentManager, TAG.COMMON_LOADING_TAG)
     }
 
     fun hide() {

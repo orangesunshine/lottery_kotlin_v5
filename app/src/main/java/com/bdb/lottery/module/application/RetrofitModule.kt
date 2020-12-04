@@ -1,6 +1,6 @@
 package com.bdb.lottery.module.application
 
-import com.bdb.lottery.const.IConst
+import com.bdb.lottery.const.CONST
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.utils.net.retrofit.BdbGsonConverterFactory
 import com.bdb.lottery.utils.net.retrofit.DomainInterceptor
@@ -52,7 +52,7 @@ class RetrofitModule {
             .addConverterFactory(bdbGsonConverterFactory) // 使用Gson作为数据转换器
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create()) // 使用RxJava作为回调适配器
             .client(okClient)
-            .baseUrl(IConst.BASE_URL) //获取 最终的base url
+            .baseUrl(CONST.BASE_URL) //获取 最终的base url
             .build()
     }
 

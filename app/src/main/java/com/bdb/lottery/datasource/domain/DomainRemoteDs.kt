@@ -8,8 +8,8 @@ import com.bdb.lottery.R
 import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
-import com.bdb.lottery.const.IDebugConfig
-import com.bdb.lottery.const.IUrl
+import com.bdb.lottery.const.DEBUGCONFIG
+import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.extension.*
@@ -113,7 +113,7 @@ class DomainRemoteDs @Inject constructor(
         error: ((String?) -> Any)? = null,
     ) {
         observe(domainApi.urlPlatformParams(
-            IDebugConfig.URL_TEST_DOMAIN + IUrl.URL_PLATFORM_PARAMS
+            DEBUGCONFIG.URL_TEST_DOMAIN + URL.URL_PLATFORM_PARAMS
         ), {
             Timber.d("online__onNext__response: ${it}")
             //获取配置成功
@@ -141,7 +141,7 @@ class DomainRemoteDs @Inject constructor(
         Timber.d("getOnlineDomain")
         val configPath = BdbApp.context.getString(R.string.api_txt_path)
         val onlineObservables = mutableListOf<Observable<String>>()
-        val hosts = IUrl.DOMAINS_API_TXT
+        val hosts = URL.DOMAINS_API_TXT
         if (!hosts.isNullOrEmpty()) {
             for (host in hosts) {
                 if (host.isDomainUrl()) {
@@ -168,7 +168,7 @@ class DomainRemoteDs @Inject constructor(
                 .flatMap {
                     Timber.d("online域名：${it}")
                     if (it.isDomainUrl()) domainApi.urlPlatformParams(
-                        it + IUrl.URL_PLATFORM_PARAMS
+                        it + URL.URL_PLATFORM_PARAMS
                     ) else null
                 }, {
                 //获取配置成功
@@ -224,7 +224,7 @@ class DomainRemoteDs @Inject constructor(
             val localObservables = mutableListOf<Observable<BaseResponse<PlatformData>>>()
             if (!domains.isNullOrEmpty()) {
                 for (domain in domains) {
-                    localObservables.add(domainApi.urlPlatformParams(domain + IUrl.URL_PLATFORM_PARAMS))
+                    localObservables.add(domainApi.urlPlatformParams(domain + URL.URL_PLATFORM_PARAMS))
                 }
                 var disposable: Disposable? = null
                 val already = AtomicBoolean(false)

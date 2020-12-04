@@ -1,6 +1,6 @@
 package com.bdb.lottery.extension
 
-import com.bdb.lottery.const.ICode
+import com.bdb.lottery.const.CODE
 import com.bdb.lottery.utils.net.retrofit.ApiException
 import com.google.gson.JsonSyntaxException
 import retrofit2.HttpException
@@ -50,17 +50,17 @@ var Throwable?.msg: String?
 //返回code
 var Throwable?.code: Int
     get() = this?.let {
-        var code: Int = ICode.DEFAULT_ERROR_CODE
+        var code: Int = CODE.DEFAULT_ERROR_CODE
         if (it is JsonSyntaxException) {
-            code = ICode.JSONSYNTAX_ERROR_CODE
+            code = CODE.JSONSYNTAX_ERROR_CODE
         } else if (it is HttpException) {
             code = it.code()
         } else if (it is ApiException) {
             code = it.response.code
         } else {
-            code = ICode.DEFAULT_ERROR_CODE
+            code = CODE.DEFAULT_ERROR_CODE
         }
         code
     }
-        ?: ICode.DEFAULT_ERROR_CODE
+        ?: CODE.DEFAULT_ERROR_CODE
     set(_) {}

@@ -20,9 +20,7 @@ import androidx.lifecycle.Observer
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.base.ui.BaseFragment
-import com.bdb.lottery.const.IConst
-import com.bdb.lottery.const.IExtra
-import timber.log.Timber
+import com.bdb.lottery.const.CONST
 import kotlin.reflect.KProperty1
 
 fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_LONG) {
@@ -111,7 +109,7 @@ fun BaseFragment.loading(show: Boolean) {
 fun Activity.statusbar(light: Boolean) {
     if (this is BaseActivity)
         statusBar?.let {
-            (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin = IConst.HEIGHT_STATUS_BAR
+            (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin = CONST.HEIGHT_STATUS_BAR
         }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //5.0及以上
