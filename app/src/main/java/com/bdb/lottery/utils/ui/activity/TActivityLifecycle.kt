@@ -11,6 +11,7 @@ import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.CODE
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.thread.TThread
+import com.bdb.lottery.utils.ui.keyboard.KeyBoards
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -246,7 +247,7 @@ class TActivityLifecycle @Inject constructor(
 
     override fun onActivityDestroyed(activity: Activity) {
         mActivityStack.remove(activity)
-        Activitys.fixSoftInputLeaks(activity.window)
+        KeyBoards.fixSoftInputLeaks(activity.window)
         consumeActivityLifecycleCallbacks(activity, Lifecycle.Event.ON_DESTROY)
     }
 

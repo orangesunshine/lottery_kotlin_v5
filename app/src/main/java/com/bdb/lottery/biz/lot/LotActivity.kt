@@ -17,11 +17,13 @@ import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.margin
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.game.Games
 import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.time.TTime
+import com.bdb.lottery.utils.ui.keyboard.KeyBoards
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.bdb.lottery.utils.ui.size.TSize
 import com.sunfusheng.marqueeview.MarqueeView
@@ -90,7 +92,17 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         if (tCocos.hasCocosAnim(mGameType, mGameId)) {
             vm.downloadCocos(tCocos.cocosName(mGameType, mGameId))
         }
-
+        //经典玩法、单式输入法适配
+        KeyBoards.fixAndroidBug5497(this)
+        KeyBoards.registerSoftInputChangedListener(window,
+            object : KeyBoards.OnSoftInputChangedListener {
+                override fun onSoftInputChanged(height: Int) {
+                    val softInputVisible = KeyBoards.isSoftInputVisible(this@LotActivity)
+                    if (softInputVisible && lotExpl.isExpanded) {
+                        lotExpl.collapse()
+                    }
+                }
+            })
 
         //data
         vm.setGameId(mGameId)
@@ -108,7 +120,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     }
 
     private fun switchExplContent(expl2Show: Int) {
-        if (mExplContent == expl2Show || !lotExpl.isExpanded) lotExpl.toggle()
+        val expanded = lotExpl.isExpanded
+        if(!expanded)KeyBoards.hideSoftInput(this)
+        if (mExplContent == expl2Show || !expanded) lotExpl.toggle()
         if (mExplContent == expl2Show) return
         lotCocosWv.visibility = if (expl2Show == 1) View.VISIBLE else View.INVISIBLE
         lotHistoryRv.visible(expl2Show == 0)
@@ -118,6 +132,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     override fun onDestroy() {
         super.onDestroy()
         vm.unBindService(mGameId)
+        KeyBoards.unregisterSoftInputChangedListener(window)
     }
     //endregion
 

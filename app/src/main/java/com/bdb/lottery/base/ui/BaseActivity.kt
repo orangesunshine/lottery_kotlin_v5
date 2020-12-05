@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
-import com.bdb.lottery.base.dialog.LoadingDialog
+import com.bdb.lottery.dialog.LoadingDialog
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.TAG
 import com.bdb.lottery.extension.loading

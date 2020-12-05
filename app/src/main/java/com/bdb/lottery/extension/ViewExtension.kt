@@ -1,6 +1,7 @@
 package com.bdb.lottery.extension
 
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewStub
 import android.view.animation.AlphaAnimation
 import android.widget.ImageView
@@ -11,12 +12,9 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import com.zhy.view.flowlayout.TagAdapter
-import com.zhy.view.flowlayout.TagFlowLayout
-import timber.log.Timber
 
-val apperAnim = AlphaAnimation(0f, 1f).apply { duration = 1000 }
-val disapperAnim = AlphaAnimation(1f, 0f).apply { duration = 1000 }
+val appearAnim = AlphaAnimation(0f, 1f).apply { duration = 1000 }
+val disappearAnim = AlphaAnimation(1f, 0f).apply { duration = 1000 }
 
 fun ViewStub.attach(@LayoutRes layoutId: Int): View {
     layoutResource = layoutId
@@ -29,7 +27,7 @@ fun View.visible(visible: Boolean) {
 
 fun View.alphaVisible(visible: Boolean) {
     visibility = if (visible) View.VISIBLE else View.GONE
-    startAnimation(if (visible) apperAnim else disapperAnim)
+    startAnimation(if (visible) appearAnim else disappearAnim)
 }
 
 fun ImageView?.loadImageUrl(url: String?) {
@@ -46,11 +44,26 @@ fun ImageView?.loadImageUrl(glideUrl: GlideUrl) {
 
 fun <T> RecyclerView.setListOrUpdate(
     list: List<T>?,
-    create: (List<T>?) -> BaseQuickAdapter<T, BaseViewHolder>
+    create: (List<T>?) -> BaseQuickAdapter<T, BaseViewHolder>,
 ) {
     val adapter = this.adapter
     if (null == adapter) this.adapter =
         create(list) else (adapter as BaseQuickAdapter<T, BaseViewHolder>).setList(list)
+}
+
+fun View.margin(
+    left: Int = Int.MAX_VALUE,
+    top: Int = Int.MAX_VALUE,
+    right: Int = Int.MAX_VALUE,
+    bottom: Int = Int.MAX_VALUE,
+) {
+    val lp = layoutParams
+    if (null != lp && lp is ViewGroup.MarginLayoutParams) {
+        lp.setMargins(if (left == Int.MAX_VALUE) lp.leftMargin else left,
+            if (top == Int.MAX_VALUE) lp.topMargin else top,
+            if (right == Int.MAX_VALUE) lp.rightMargin else right,
+            if (bottom == Int.MAX_VALUE) lp.bottomMargin else bottom)
+    }
 }
 
 //region smartrefreshlayout 惯性问题

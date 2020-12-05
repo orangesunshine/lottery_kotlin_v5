@@ -13,4 +13,6 @@ abstract class ActivityModule {
 
     @Binds
     abstract fun provideToast(toast: WindowManagerToast): AbsToast
+
+
 }

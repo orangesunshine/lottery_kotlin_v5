@@ -140,39 +140,4 @@ object Activitys {
         } catch (ignore: java.lang.Exception) {
         }
     }
-
-    fun fixSoftInputLeaks(activity: Activity) {
-        fixSoftInputLeaks(activity.window, activity)
-    }
-
-    fun fixSoftInputLeaks(window: Window) {
-        fixSoftInputLeaks(window, BdbApp.context)
-    }
-
-    /**
-     * Fix the leaks of soft input.
-     *
-     * @param window The window.
-     */
-    private fun fixSoftInputLeaks(window: Window, context: Context) {
-        val imm =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                ?: return
-        val leakViews = arrayOf("mLastSrvView", "mCurRootView", "mServedView", "mNextServedView")
-        for (leakView in leakViews) {
-            try {
-                val leakViewField = InputMethodManager::class.java.getDeclaredField(
-                    leakView
-                )
-                if (!leakViewField.isAccessible) {
-                    leakViewField.isAccessible = true
-                }
-                val obj = leakViewField[imm] as? View ?: continue
-                if (obj.rootView === window.decorView.rootView) {
-                    leakViewField[imm] = null
-                }
-            } catch (ignore: Throwable) { /**/
-            }
-        }
-    }
 }
