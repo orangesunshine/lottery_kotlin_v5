@@ -7,4 +7,5 @@
     <item name="content_layout_id" type="id" />
     <item name="loadinglayout_id" type="id" />
     <item name="error_id" type="id" />
+    <item name="confirm_dialog_text_id" type="id" />
 </resources>
