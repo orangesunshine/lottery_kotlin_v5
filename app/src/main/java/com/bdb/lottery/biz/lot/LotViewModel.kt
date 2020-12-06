@@ -90,10 +90,15 @@ class LotViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region 下载cocos动画文件
-    fun downloadCocos(cocosName:String){
+    fun downloadCocos(cocosName: String) {
         cocosRemoteDs.downloadSingleCocos(cocosName)
     }
     //endregion
+
+    //下注
+    fun lot() {
+//        lotRemoteDs.lot()
+    }
 
     //region 跳转彩票页面
     companion object {

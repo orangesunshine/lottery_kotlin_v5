@@ -21,7 +21,7 @@ interface LotApi {
     @FormUrlEncoded
     fun getTodayLotteryNums(
         @Field("gameId") gameId: String,
-        @Field("count") type: String = "1500"
+        @Field("count") type: String = "1500",
     ): Observable<BaseResponse<TodayLotteryNumsData?>>
 
 
@@ -30,7 +30,7 @@ interface LotApi {
     @FormUrlEncoded
     fun getBetting(
         @Field("gameId") gameIds: String,
-        @Field("count") type: String = "120"
+        @Field("count") type: String = "120",
     ): Observable<BaseResponse<CountDownData?>>
 
     //根据ID获取该彩种历史开奖
@@ -38,7 +38,7 @@ interface LotApi {
     @FormUrlEncoded
     fun getHistoryByGameId(
         @Field("gameId") gameId: String,
-        @Field("count") type: String = "80"
+        @Field("count") type: String = "80",
     ): Observable<BaseResponse<HistoryData?>>
 
     //region 经典
@@ -79,4 +79,9 @@ interface LotApi {
     @FormUrlEncoded
     fun getWtBetType(): Observable<BaseResponse<WtBetTypeData?>>
     //endregion
+
+    //下注
+    @POST(URL.URL_GET_WT_BET_TYPE)
+    @FormUrlEncoded
+    fun lot(@Field("json") lotParams: String): Observable<BaseResponse<LotData?>>
 }

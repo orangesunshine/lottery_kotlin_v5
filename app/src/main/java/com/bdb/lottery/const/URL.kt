@@ -105,4 +105,5 @@ object URL {
     const val URL_GET_WT_BET_TYPE = "/gameType/getWtBetType.mvc"//
     //endregion
 
+    const val URL_CATHECTIC = "/cathectic/cathectic.mvc"//下注
 }
