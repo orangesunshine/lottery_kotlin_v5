@@ -8,7 +8,10 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
+import com.bdb.lottery.biz.lot.LotActivity
+import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.const.TAG.CONFIRM_DIALOG_TAG
+import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.dialog.ConfirmDialog
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import com.bdb.lottery.utils.ui.popup.ALIGN_ANCHOR
@@ -20,6 +23,18 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
+    companion object {
+        fun newInstance(gameType: Int, gameId: Int, gameName: String?): LotJdFragment {
+            val fragment = LotJdFragment()
+            val args = Bundle()
+            args.putInt(EXTRA.ID_GAME_EXTRA, gameId)
+            args.putInt(EXTRA.TYPE_GAME_EXTRA, gameType)
+            args.putString(EXTRA.NAME_GAME_EXTRA, gameName)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     private val vm by viewModels<LotJdViewModel>()
 
     @Inject
@@ -78,6 +93,18 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
+    private var mGameId: Int = -1
+    private var mGameType: Int = -1
+    private var mGameName: String? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            mGameId = it.getInt(EXTRA.ID_GAME_EXTRA)
+            mGameType = it.getInt(EXTRA.TYPE_GAME_EXTRA)
+            mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
+        }
+    }
+
     private val MODE_SINGLE = 0//单式
     private val MODE_DUPLEX = 1//复式
     private var mMode = MODE_SINGLE//模式
@@ -121,6 +148,17 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
 
         log_jd_multiple_et.setOnClickListener {}//倍数
+
+        //下注
+        lot_jd_direct_betting_tv.setOnClickListener {
+            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken!!, null, null) { vm.mToken = it }
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        vm.initGame(mGameId.toString())
+        vm.getBetType(mGameId.toString())
     }
 
     //清空号码

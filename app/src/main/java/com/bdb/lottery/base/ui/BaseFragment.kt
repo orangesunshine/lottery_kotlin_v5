@@ -13,23 +13,25 @@ import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.TAG
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
+import com.bdb.lottery.utils.ui.activity.Activitys
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 open class BaseFragment(
-    var layoutId: Int
+    var layoutId: Int,
 ) : Fragment() {
     //uis
     @Inject
     lateinit var loading: LoadingDialog
+
     @Inject
     lateinit var toast: AbsToast
     protected var rootView: View? = null
     protected val loadingLayout: LoadingLayout?
         get() = rootView?.findViewById(R.id.loadinglayout_id)
-    protected var mActivity: WeakReference<Activity>? = null//当前activity引用
+    var mActivity: WeakReference<Activity>? = null//当前activity引用
 
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
@@ -47,10 +49,15 @@ open class BaseFragment(
         mActivity = null
     }
 
+    inline fun <reified T : Activity> aliveActivity(): T? {
+        val activity = mActivity?.get()
+        return if (Activitys.isActivityAlive(activity) && activity is T) activity else null
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         rootView = super.onCreateView(inflater, container, savedInstanceState)
         if (null == rootView) rootView = inflater.inflate(layoutId, container, false)

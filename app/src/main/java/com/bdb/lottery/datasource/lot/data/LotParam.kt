@@ -7,8 +7,8 @@ data class LotParam(
     var kg: Boolean,
     var tingZhiZhuiHao: Boolean,
     var token: String,
-    var touZhuHaoMa: List<TouZhuHaoMa>,
-    var zhuiHaoQiHao: List<ZhuiHaoQiHao>
+    var touZhuHaoMa: List<TouZhuHaoMa>?,
+    var zhuiHaoQiHao: List<ZhuiHaoQiHao>?
 )
 
 data class TouZhuHaoMa(

@@ -2,7 +2,9 @@ package com.bdb.lottery.datasource.lot
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.URL
-import com.bdb.lottery.datasource.lot.data.*
+import com.bdb.lottery.datasource.lot.data.HistoryData
+import com.bdb.lottery.datasource.lot.data.LotData
+import com.bdb.lottery.datasource.lot.data.TodayLotteryNumsData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.GameInitData
@@ -45,43 +47,42 @@ interface LotApi {
     //经典彩种初始化
     @POST(URL.URL_INIT_GAME)
     @FormUrlEncoded
-    fun initGame(): Observable<BaseResponse<List<GameInitData>?>>
+    fun initGame(@Field("gameID") gameId: String): Observable<BaseResponse<GameInitData?>>
 
     //经典
     @POST(URL.URL_GET_BET_TYPE)
     @FormUrlEncoded
-    fun getBetType(): Observable<BaseResponse<GameBetTypeData?>>
+    fun getBetType(@Field("gameId") gameId: String): Observable<BaseResponse<GameBetTypeData?>>
     //endregion
 
     //region Kg
     //kg彩种初始化
     @POST(URL.URL_INIT_KG_GAME)
     @FormUrlEncoded
-    fun initKgGame(): Observable<BaseResponse<KgInitData?>>
+    fun initKgGame(@Field("gameID") gameId: String): Observable<BaseResponse<KgInitData?>>
 
 
     //kg
     @POST(URL.URL_GET_KG_BET_TYPE)
     @FormUrlEncoded
-    fun getKgBetType(): Observable<BaseResponse<KgBetTypeData?>>
+    fun getKgBetType(@Field("gameId") gameId: String): Observable<BaseResponse<KgBetTypeData?>>
     //endregion
-
 
     //region 微投
     //微投彩种初始化
     @POST(URL.URL_INIT_WT_GAME)
     @FormUrlEncoded
-    fun initWtGame(): Observable<BaseResponse<WtInitData?>>
+    fun initWtGame(@Field("gameID") gameId: String): Observable<BaseResponse<WtInitData?>>
 
 
     //微投
     @POST(URL.URL_GET_WT_BET_TYPE)
     @FormUrlEncoded
-    fun getWtBetType(): Observable<BaseResponse<WtBetTypeData?>>
+    fun getWtBetType(@Field("gameId") gameId: String): Observable<BaseResponse<WtBetTypeData?>>
     //endregion
 
     //下注
-    @POST(URL.URL_GET_WT_BET_TYPE)
+    @POST(URL.URL_CATHECTIC)
     @FormUrlEncoded
     fun lot(@Field("json") lotParams: String): Observable<BaseResponse<LotData?>>
 }

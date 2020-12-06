@@ -15,6 +15,9 @@ import com.bdb.lottery.biz.lot.wt.LotWtFragment
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
+import com.bdb.lottery.datasource.lot.data.LotParam
+import com.bdb.lottery.datasource.lot.data.TouZhuHaoMa
+import com.bdb.lottery.datasource.lot.data.ZhuiHaoQiHao
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.setListOrUpdate
@@ -55,6 +58,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private var mGameId: Int = -1
     private var mGameType: Int = -1
     private var mGameName: String? = null
+    private var mCurIssue: String? = null
     private lateinit var fragments: Array<Fragment>
     private val tags: Array<String> = arrayOf(
         JD_FRAGMENT_TAG,
@@ -70,11 +74,17 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         if (-1 == mGameId || -1 == mGameType) {
             finish()
         }
+        val saveState = null == bundle
         fragments = if (null == bundle) {
-            arrayOf(LotJdFragment(), LotTrFragment(), LotWtFragment())
+            arrayOf(LotJdFragment.newInstance(mGameType, mGameId, mGameName),
+                LotTrFragment(),
+                LotWtFragment())
         } else {
             arrayOf(
-                supportFragmentManager.findFragmentByTag(tags[0]) ?: LotJdFragment(),
+                supportFragmentManager.findFragmentByTag(tags[0]) ?: LotJdFragment.newInstance(
+                    mGameType,
+                    mGameId,
+                    mGameName),
                 supportFragmentManager.findFragmentByTag(tags[1]) ?: LotTrFragment(),
                 supportFragmentManager.findFragmentByTag(tags[2]) ?: LotWtFragment()
             )
@@ -174,8 +184,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     //region 开奖号码
     private fun curIssueNums(curIssue: HistoryData.HistoryItem?) {
-        Timber.d(curIssue.toString())
         curIssue?.let {
+            mCurIssue = it.issueno
             lotTopRectIssueTv.text =
                 tGame.shortIssueTextWithGameName(it.issueno, mGameName, mGameType)
             val nums = it.nums
@@ -283,4 +293,24 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         marqueeView.startWithList(listOf(playName, mGameName))
     }
     //endregion
+
+    //弹窗并下注
+    fun lotByDialog(
+        token: String,
+        touZhuHaoMa: List<TouZhuHaoMa>?,
+        zhuiHaoQiHao: List<ZhuiHaoQiHao>?,
+        error: (token: String) -> Unit,
+    ) {
+        vm.lot(LotParam(
+            mGameId.toString(),
+            mGameName!!,
+            mCurIssue!!,
+            mFragmentIndex > 0,
+            false,
+            token,
+            touZhuHaoMa,
+            zhuiHaoQiHao
+        ), {}, error)
+    }
+
 }

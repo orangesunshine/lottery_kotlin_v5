@@ -3,6 +3,7 @@ package com.bdb.lottery.datasource.lot.data.jd
 data class GameInitData(
     var current: Current,
     var game: Game,
+    var history: List<History>,
     var oddInfo: List<OddInfo>,
     var singledInfo: SingledInfo,
     var token: String,
@@ -23,6 +24,12 @@ data class Game(
     var remarks: String,
     var startExplain: Boolean,
     var startSign: Boolean
+)
+
+data class History(
+    var gametype: Int,
+    var issueno: String,
+    var nums: String
 )
 
 data class OddInfo(
@@ -47,26 +54,26 @@ data class SingledInfo(
 data class LotteryNums(
     var betmoneytotal: Double,
     var closetime: Long,
-    var defaultnums: Any?,
-    var gametype: Any?,
-    var gametypename: Any?,
-    var id: Any?,
+    var defaultnums: Any,
+    var gametype: Any,
+    var gametypename: Any,
+    var id: Any,
     var issueno: String,
     var kjbetmoneytotal: Double,
     var kjorderCounter: Int,
     var kjwinmoneytotal: Double,
     var lotterydt: Long,
-    var lotterydt_begin: Any?,
-    var lotterydt_end: Any?,
-    var nums: Any?,
+    var lotterydt_begin: Any,
+    var lotterydt_end: Any,
+    var nums: Any,
     var openState: Boolean,
     var opentime: Long,
-    var operatingTime: Any?,
-    var `operator`: Any?,
+    var operatingTime: Any,
+    var `operator`: Any,
     var orderCounter: Int,
-    var `param`: Any?,
+    var `param`: Any,
     var processText: String,
-    var remark: Any?,
-    var state: Any?,
+    var remark: Any,
+    var state: Any,
     var winmoneytotal: Double
 )

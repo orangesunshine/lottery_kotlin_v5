@@ -13,6 +13,8 @@ import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
+import com.bdb.lottery.datasource.lot.data.LotData
+import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.service.CountDownCallback
@@ -96,8 +98,8 @@ class LotViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //下注
-    fun lot() {
-//        lotRemoteDs.lot()
+    fun lot(param: LotParam, success: (LotData?) -> Unit, error: (token: String) -> Unit) {
+        lotRemoteDs.lot(param, success, error)
     }
 
     //region 跳转彩票页面
