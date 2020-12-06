@@ -56,9 +56,11 @@
     <string name="lot_jd_multiple_text">倍数</string>
     <string name="lot_jd_shopping_bar">购彩篮</string>
     <string name="lot_jd_put_shopping_bar">加入购彩篮</string>
+    <string name="lot_jd_closed">封盘中</string>
     <string name="lot_jd_direct_betting">直接投注</string>
 
     <!--dialog-->
     <string name="confirm_cancel_bt_text">取消</string>
     <string name="confirm_confirm_bt_text">确认</string>
+    <string name="lot_jd_amount_unit_yuan">元</string>
 </resources>

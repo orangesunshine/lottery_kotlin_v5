@@ -17,7 +17,6 @@ import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.extension.margin
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.game.Games
@@ -121,7 +120,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     private fun switchExplContent(expl2Show: Int) {
         val expanded = lotExpl.isExpanded
-        if(!expanded)KeyBoards.hideSoftInput(this)
+        if (!expanded) KeyBoards.hideSoftInput(this)
         if (mExplContent == expl2Show || !expanded) lotExpl.toggle()
         if (mExplContent == expl2Show) return
         lotCocosWv.visibility = if (expl2Show == 1) View.VISIBLE else View.INVISIBLE
@@ -168,7 +167,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     override fun observe() {
-        vm.countDown.getLiveData().observe(this, { coundown(it) })//倒计时
+        vm.countDown.getLiveData().observe(this, { countdown(it) })//倒计时
         vm.curIssue.getLiveData().observe(this, { curIssueNums(it) })//开奖号码
         vm.historyIssue.getLiveData().observe(this, { historyIssueNums(it) })//历史开奖号码
     }
@@ -210,19 +209,23 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 倒计时
     @Inject
     lateinit var tTime: TTime
-    private fun coundown(currentTime: CountDownData.CurrentTime?) {
+    private fun countdown(currentTime: CountDownData.CurrentTime?) {
         currentTime?.let {
-            val isclose = it.isclose
+            val isClosed = it.isclose
             val issue = Games.shortIssueText(it.issueno, mGameType)
             val status = StringBuilder().append(issue).append("期 ")
-                .append(if (isclose) "封盘中" else "受注中")
+                .append(if (isClosed) "封盘中" else "受注中")
             lotIssueStatusTv.text = status
             val showHour = it.betTotalTime / 1000 / 60 / 60 > 0
             val surplusTime = tTime.surplusTime2String(
                 showHour,
-                if (isclose) it.openSurplusTime else it.betSurplusTime
+                if (isClosed) it.openSurplusTime else it.betSurplusTime
             )
             showCountDown(surplusTime, showHour)
+
+            if (mFragmentIndex == 0 && !fragments.isEmpty()) {
+                (fragments[0] as LotJdFragment).updateStatus(isClosed)
+            }
         }
     }
 

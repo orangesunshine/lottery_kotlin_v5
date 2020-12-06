@@ -3,6 +3,10 @@ package com.bdb.lottery.widget
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -12,13 +16,11 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import com.bdb.lottery.R
-import com.bdb.lottery.module.application.AppEntries
 import com.bdb.lottery.utils.ui.screen.Screens
 import com.bdb.lottery.utils.ui.size.Sizes
-import dagger.hilt.android.EntryPointAccessors
 
 class CustomToastView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
     private val mToastTv: TextView
 
@@ -39,9 +41,9 @@ class CustomToastView @JvmOverloads constructor(
 
     //设置top dr
     private fun setToastDrawable(dr: Drawable?) {
-        dr?.setBounds(0, 0, Sizes.dp2px(48f), Sizes.dp2px(48f))
+        dr?.setBounds(0, 0, Sizes.dp2px(36f), Sizes.dp2px(36f))
         mToastTv.setCompoundDrawables(null, dr, null, null);
-        mToastTv.compoundDrawablePadding = Sizes.dp2px(12f)
+        mToastTv.compoundDrawablePadding = Sizes.dp2px(8f)
     }
 
     init {
@@ -59,5 +61,16 @@ class CustomToastView @JvmOverloads constructor(
 
     fun setText(text: CharSequence?) {
         mToastTv.text = text
+    }
+
+    fun tipsText(text: CharSequence?) {
+        mToastTv.setCompoundDrawables(null, null, null, null);
+        mToastTv.compoundDrawablePadding = 0
+        val spanned =
+            SpannableStringBuilder("温馨提示").append(System.getProperty("line.separator")).append(text)
+        spanned
+            .setSpan(AbsoluteSizeSpan(18, true), 0, 4, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+        spanned.setSpan(ForegroundColorSpan(Color.WHITE), 0, 4, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+        mToastTv.text = spanned
     }
 }

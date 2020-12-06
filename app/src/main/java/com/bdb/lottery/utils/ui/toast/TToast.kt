@@ -37,10 +37,10 @@ class ActivityToast @Inject constructor(
     private val TAG_TOAST = "TAG_TOAST"
     private var mActivityLifecycleCallbacks: ActivityLifecycleCallbacks? = null
 
-    override fun show(text: CharSequence?, duration: Long) {
+    override fun show(text: CharSequence?, duration: Long, tips: Boolean?) {
         if (!tActivityLifecycle.isAppForeground()) {
             // try to use system toast
-            showSystemToast(text, duration)
+            showSystemToast(text, duration, tips)
             return
         }
         var hasAliveActivity = false
@@ -50,10 +50,10 @@ class ActivityToast @Inject constructor(
             }
             hasAliveActivity = true
             cancel()
-            showWithActivity(activity, text, sShowingIndex, true)
+            showWithActivity(activity, text, sShowingIndex, true, tips)
         }
         if (hasAliveActivity) {
-            registerLifecycleCallback(text)
+            registerLifecycleCallback(text, tips)
             tThread.runOnUiThreadDelayed(
                 { cancel() },
                 duration
@@ -61,7 +61,7 @@ class ActivityToast @Inject constructor(
             ++sShowingIndex
         } else {
             // try to use system toast
-            showSystemToast(text, duration)
+            showSystemToast(text, duration, tips)
         }
     }
 
@@ -89,17 +89,18 @@ class ActivityToast @Inject constructor(
         super.cancel()
     }
 
-    private fun showSystemToast(text: CharSequence?, duration: Long) {
+    private fun showSystemToast(text: CharSequence?, duration: Long, tips: Boolean? = false) {
         val systemToast = SystemToast(context)
         systemToast.mToast = mToast
-        systemToast.show(text, duration)
+        systemToast.show(text, duration, tips)
     }
 
     private fun showWithActivity(
         activity: Activity,
         text: CharSequence?,
         index: Int,
-        useAnim: Boolean
+        useAnim: Boolean,
+        tips: Boolean? = false,
     ) {
         val window = activity.window
         if (window != null) {
@@ -107,7 +108,11 @@ class ActivityToast @Inject constructor(
             val lp = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            mToastView.setText(text)
+            if (null != tips && tips) {
+                mToastView.tipsText(text)//温馨提示
+            } else {
+                mToastView.setText(text)//带图片
+            }
             lp.gravity = mToast.gravity
             lp.bottomMargin = mToast.yOffset + Sizes.getNavBarHeight()
             lp.leftMargin = mToast.xOffset
@@ -128,12 +133,12 @@ class ActivityToast @Inject constructor(
         return toastIv
     }
 
-    private fun registerLifecycleCallback(text: CharSequence?) {
+    private fun registerLifecycleCallback(text: CharSequence?, tips: Boolean? = false) {
         val index = sShowingIndex
         mActivityLifecycleCallbacks = object : ActivityLifecycleCallbacks() {
             override fun onActivityCreated(activity: Activity) {
                 if (isShowing) {
-                    showWithActivity(activity, text, index, false)
+                    showWithActivity(activity, text, index, false, tips)
                 }
             }
 
@@ -188,9 +193,13 @@ class SystemToast @Inject constructor(
         }
     }
 
-    override fun show(text: CharSequence?, duration: Long) {
+    override fun show(text: CharSequence?, duration: Long, tips: Boolean?) {
         mToast.duration = duration.toInt()
-        mToastView.setText(text)
+        if (null != tips && tips) {
+            mToastView.tipsText(text)//温馨提示
+        } else {
+            mToastView.setText(text)//带图片
+        }
         mToast.show()
     }
 }
@@ -204,9 +213,13 @@ class WindowManagerToast @Inject constructor(
     private var mWM: WindowManager? = null
     private val mParams: WindowManager.LayoutParams = WindowManager.LayoutParams()
 
-    override fun show(text: CharSequence?, duration: Long) {
+    override fun show(text: CharSequence?, duration: Long, tips: Boolean?) {
         cancel()
-        mToastView.setText(text)
+        if (null != tips && tips) {
+            mToastView.tipsText(text)//温馨提示
+        } else {
+            mToastView.setText(text)//带图片
+        }
         mWM = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
         try {
             mWM?.addView(mToastView, mParams)
@@ -279,6 +292,10 @@ abstract class AbsToast constructor(
         show(text, autoDuration(text))
     }
 
+    fun showTips(text: CharSequence?) {
+        show(text, autoDuration(text), true)
+    }
+
     fun showWarning(text: CharSequence?) {
         mToastView.setToastDrawable(R.drawable.toast_warning)
         show(text, autoDuration(text))
@@ -301,6 +318,6 @@ abstract class AbsToast constructor(
 }
 
 internal interface IToast {
-    fun show(text: CharSequence?, duration: Long)
+    fun show(text: CharSequence?, duration: Long, tips: Boolean? = false)
     fun cancel()
 }

@@ -10,12 +10,12 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.convert.Converts
 import java.io.*
+import java.net.HttpURLConnection
 import java.net.URL
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
-import javax.net.ssl.HttpsURLConnection
 import kotlin.experimental.and
 
 object Files {
@@ -191,7 +191,7 @@ object Files {
     //region 复制
     fun copy(
         srcPath: String?,
-        destPath: String?
+        destPath: String?,
     ): Boolean {
         return copy(
             getFileByPath(
@@ -203,7 +203,7 @@ object Files {
     fun copy(
         srcPath: String?,
         destPath: String?,
-        listener: OnReplaceListener?
+        listener: OnReplaceListener?,
     ): Boolean {
         return copy(
             getFileByPath(
@@ -218,7 +218,7 @@ object Files {
     fun copy(
         src: File?,
         dest: File?,
-        listener: OnReplaceListener? = null
+        listener: OnReplaceListener? = null,
     ): Boolean {
         if (src == null) return false
         return if (src.isDirectory) {
@@ -229,7 +229,7 @@ object Files {
     private fun copyDir(
         srcDir: File?,
         destDir: File?,
-        listener: OnReplaceListener?
+        listener: OnReplaceListener?,
     ): Boolean {
         return copyOrMoveDir(
             srcDir,
@@ -242,7 +242,7 @@ object Files {
     private fun copyFile(
         srcFile: File?,
         destFile: File?,
-        listener: OnReplaceListener?
+        listener: OnReplaceListener?,
     ): Boolean {
         return copyOrMoveFile(
             srcFile,
@@ -256,7 +256,7 @@ object Files {
     //region 移动文件
     fun move(
         srcPath: String?,
-        destPath: String?
+        destPath: String?,
     ): Boolean {
         return move(
             getFileByPath(
@@ -268,7 +268,7 @@ object Files {
     fun move(
         srcPath: String?,
         destPath: String?,
-        listener: OnReplaceListener?
+        listener: OnReplaceListener?,
     ): Boolean {
         return move(
             getFileByPath(
@@ -283,7 +283,7 @@ object Files {
     fun move(
         src: File?,
         dest: File?,
-        listener: OnReplaceListener? = null
+        listener: OnReplaceListener? = null,
     ): Boolean {
         if (src == null) return false
         return if (src.isDirectory) {
@@ -294,7 +294,7 @@ object Files {
     fun moveDir(
         srcDir: File?,
         destDir: File?,
-        listener: OnReplaceListener?
+        listener: OnReplaceListener?,
     ): Boolean {
         return copyOrMoveDir(
             srcDir,
@@ -307,7 +307,7 @@ object Files {
     fun moveFile(
         srcFile: File?,
         destFile: File?,
-        listener: OnReplaceListener?
+        listener: OnReplaceListener?,
     ): Boolean {
         return copyOrMoveFile(
             srcFile,
@@ -323,7 +323,7 @@ object Files {
         srcDir: File?,
         destDir: File?,
         listener: OnReplaceListener?,
-        isMove: Boolean
+        isMove: Boolean,
     ): Boolean {
         if (srcDir == null || destDir == null) return false
         // destDir's path locate in srcDir's path then return false
@@ -362,7 +362,7 @@ object Files {
         srcFile: File?,
         destFile: File?,
         listener: OnReplaceListener?,
-        isMove: Boolean
+        isMove: Boolean,
     ): Boolean {
         if (srcFile == null || destFile == null) return false
         // srcFile equals destFile then return false
@@ -461,7 +461,7 @@ object Files {
 
     fun deleteFilesInDirWithFilter(
         dirPath: String?,
-        filter: FileFilter?
+        filter: FileFilter?,
     ): Boolean {
         return deleteFilesInDirWithFilter(
             getFileByPath(
@@ -496,7 +496,7 @@ object Files {
     @JvmOverloads
     fun listFilesInDir(
         dirPath: String?,
-        comparator: Comparator<File?>? = null
+        comparator: Comparator<File?>? = null,
     ): List<File> {
         return listFilesInDir(
             getFileByPath(
@@ -525,7 +525,7 @@ object Files {
     fun listFilesInDir(
         dirPath: String?,
         isRecursive: Boolean,
-        comparator: Comparator<File?>?
+        comparator: Comparator<File?>?,
     ): List<File> {
         return listFilesInDir(
             getFileByPath(
@@ -538,7 +538,7 @@ object Files {
     fun listFilesInDir(
         dir: File?,
         isRecursive: Boolean,
-        comparator: Comparator<File?>? = null
+        comparator: Comparator<File?>? = null,
     ): List<File> {
         return listFilesInDirWithFilter(
             dir,
@@ -548,7 +548,7 @@ object Files {
 
     fun listFilesInDirWithFilter(
         dirPath: String?,
-        filter: FileFilter?
+        filter: FileFilter?,
     ): List<File> {
         return listFilesInDirWithFilter(
             getFileByPath(
@@ -560,7 +560,7 @@ object Files {
     fun listFilesInDirWithFilter(
         dirPath: String?,
         filter: FileFilter?,
-        comparator: Comparator<File?>?
+        comparator: Comparator<File?>?,
     ): List<File> {
         return listFilesInDirWithFilter(
             getFileByPath(
@@ -572,7 +572,7 @@ object Files {
     fun listFilesInDirWithFilter(
         dir: File?,
         filter: FileFilter?,
-        comparator: Comparator<File?>?
+        comparator: Comparator<File?>?,
     ): List<File> {
         return listFilesInDirWithFilter(
             dir,
@@ -585,7 +585,7 @@ object Files {
     fun listFilesInDirWithFilter(
         dirPath: String?,
         filter: FileFilter?,
-        isRecursive: Boolean
+        isRecursive: Boolean,
     ): List<File> {
         return listFilesInDirWithFilter(
             getFileByPath(
@@ -598,7 +598,7 @@ object Files {
         dirPath: String?,
         filter: FileFilter?,
         isRecursive: Boolean,
-        comparator: Comparator<File?>? = null
+        comparator: Comparator<File?>? = null,
     ): List<File> {
         return listFilesInDirWithFilter(
             getFileByPath(
@@ -612,7 +612,7 @@ object Files {
         dir: File?,
         filter: FileFilter?,
         isRecursive: Boolean = false,
-        comparator: Comparator<File?>? = null
+        comparator: Comparator<File?>? = null,
     ): List<File> {
         val files: List<File> =
             listFilesInDirWithFilterInner(
@@ -629,7 +629,7 @@ object Files {
     private fun listFilesInDirWithFilterInner(
         dir: File?,
         filter: FileFilter?,
-        isRecursive: Boolean
+        isRecursive: Boolean,
     ): List<File> {
         val list: MutableList<File> = ArrayList()
         if (!isDir(dir)) return list
@@ -914,7 +914,7 @@ object Files {
         val isURL = filePath.matches(Regex("[a-zA-z]+://[^\\s]*"))
         if (isURL) {
             try {
-                val conn = URL(filePath).openConnection() as HttpsURLConnection
+                val conn = URL(filePath).openConnection() as HttpURLConnection
                 conn.setRequestProperty("Accept-Encoding", "identity")
                 conn.connect()
                 return if (conn.responseCode == 200) {

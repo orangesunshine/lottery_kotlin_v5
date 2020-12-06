@@ -11,4 +11,9 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private val gameRemoteDs: GameRemoteDs,
     private val appRemoteDs: AppRemoteDs
 ) : BaseViewModel() {
+
+    //下注
+    fun lot(){
+
+    }
 }

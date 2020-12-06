@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_popwin_down"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/lot_jd_amount_unit_yuan_tv"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/lot_jd_amount_unit_yuan"
+        android:textColor="#EBEBEB"
+        android:textSize="15dp" />
+
+    <View
+        android:id="@+id/yuan_tv_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#454852" />
+
+    <TextView
+        android:id="@+id/lot_jd_amount_unit_jiao_tv"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="角"
+        android:textColor="#EBEBEB"
+        android:textSize="15dp" />
+
+    <View
+        android:id="@+id/jiao_tv_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#454852" />
+
+    <TextView
+        android:id="@+id/lot_jd_amount_unit_fen_tv"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="分"
+        android:textColor="#EBEBEB"
+        android:textSize="15dp" />
+
+    <View
+        android:id="@+id/li_tv_line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#454852" />
+
+    <TextView
+        android:id="@+id/lot_jd_amount_unit_li_tv"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="厘"
+        android:textColor="#EBEBEB"
+        android:textSize="15dp" />
+
+</LinearLayout>
