@@ -166,4 +166,30 @@ class TCache @Inject constructor() {
         return Caches.getString(CACHE.COCOS_CONFIG_CACHE)?.let { Gsons.fromJson<CocosData>(it) }
     }
     //endregion
+
+    //region 经典：gameid对应cb选中玩法缓存
+    fun cachePlay4GameId(gameId: Int, layer1: Int, group: Int, layer2: Int, playId: Int) {
+        val gameIdText = gameId.toString()
+        Caches.putInt(gameIdText + CACHE.LOT_PLAY_LAYER1_CACHE, layer1)
+        Caches.putInt(gameIdText + CACHE.LOT_PLAY_GROUP_CACHE, group)
+        Caches.putInt(gameIdText + CACHE.LOT_PLAY_LAYER2_CACHE, layer2)
+        Caches.putInt(gameIdText + CACHE.LOT_PLAY_ID_CACHE, playId)
+    }
+
+    fun playLayer1Cache4GameId(gameId: Int): Int {
+        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_LAYER1_CACHE, 0)
+    }
+
+    fun playGroupCache4GameId(gameId: Int): Int {
+        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_GROUP_CACHE, 0)
+    }
+
+    fun playLayer2Cache4GameId(gameId: Int): Int {
+        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_LAYER2_CACHE, 0)
+    }
+
+    fun playIdCache4GameId(gameId: Int): Int {
+        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_ID_CACHE, 0)
+    }
+    //endregion
 }

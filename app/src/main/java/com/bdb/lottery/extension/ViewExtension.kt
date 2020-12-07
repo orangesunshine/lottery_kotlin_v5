@@ -9,10 +9,12 @@ import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
+import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.utils.ui.view.Views
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.BaseSectionQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.google.android.material.tabs.TabLayout
 import com.scwang.smart.refresh.layout.SmartRefreshLayout

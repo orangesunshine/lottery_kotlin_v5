@@ -384,8 +384,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/white"
-                        android:paddingLeft="-2.5dp"
-                        android:paddingBottom="14.5dp" />
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/lotMenuPlayLayer2Rv"
@@ -393,7 +393,8 @@
                         android:layout_height="wrap_content"
                         android:background="#f2f4f5"
                         android:orientation="vertical"
-                        android:paddingBottom="38.5dp" />
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp" />
                 </LinearLayout>
 
             </FrameLayout>

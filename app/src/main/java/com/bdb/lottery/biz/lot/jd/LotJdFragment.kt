@@ -14,7 +14,6 @@ import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.const.TAG.CONFIRM_DIALOG_TAG
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.dialog.ConfirmDialog
-import com.bdb.lottery.extension.indexValid
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import com.bdb.lottery.utils.cache.Caches
 import com.bdb.lottery.utils.ui.popup.ALIGN_ANCHOR
@@ -85,18 +84,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //玩法菜单
     private fun updatePlayMenu(betTypeData: GameBetTypeData?) {
-        if (betTypeData.isNullOrEmpty()) {
+        if (!betTypeData.isNullOrEmpty()) {
             val lotActivity = aliveActivity<LotActivity>()
             lotActivity?.updatePlayLayer1List(betTypeData)
-
-            var playLayer1 = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_LAYER1_CACHE)
-            if (-1 == playLayer1) playLayer1 = 0
-            Caches.putInt(mGameId.toString() + CACHE.LOT_PLAY_LAYER1_CACHE, 0)
-
-
-            val group = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_GROUP_CACHE)
-            val playLayer2 = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_LAYER2_CACHE)
-            val playId = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_ID_CACHE)
         }
     }
 
