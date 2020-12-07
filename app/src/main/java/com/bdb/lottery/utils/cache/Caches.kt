@@ -29,4 +29,12 @@ object Caches {
     fun getLong(cacheKey: String, default: Long = -1): Long {
         return mmkv.getLong(cacheKey, default)
     }
+
+    fun putInt(cacheKey: String, cacheValue: Int = -1) {
+        mmkv.putInt(cacheKey, cacheValue)
+    }
+
+    fun getInt(cacheKey: String, default: Int = -1): Int {
+        return mmkv.getInt(cacheKey, default)
+    }
 }

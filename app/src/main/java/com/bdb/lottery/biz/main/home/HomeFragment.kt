@@ -1,8 +1,6 @@
 package com.bdb.lottery.biz.main.home
 
 import android.Manifest
-import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -10,26 +8,21 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bdb.lottery.R
-import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
 import com.bdb.lottery.biz.main.home.other.HomeOtherGameFragment
-import com.bdb.lottery.datasource.cocos.data.CocosData
 import com.bdb.lottery.datasource.home.data.BannerMapper
-import com.bdb.lottery.extension.bindNoFlingRecyclerView
-import com.bdb.lottery.extension.ob
-import com.bdb.lottery.extension.start
-import com.bdb.lottery.extension.unbindNoFlingRecyclerView
+import com.bdb.lottery.extension.*
+import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
 import com.bdb.lottery.utils.ui.activity.Activitys
+import com.bdb.lottery.utils.ui.view.Views
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -56,26 +49,11 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
 
     //region viewpager2 tablayout
     private lateinit var mediator: TabLayoutMediator
-    private val changeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            //可以来设置选中时tab的大小
-            val tabCount: Int = homeGameTl.getTabCount()
-            for (i in 0 until tabCount) {
-                val tab: TabLayout.Tab? = homeGameTl.getTabAt(i)
-                tab?.let {
-                    val tabView = it.customView as TextView
-                    val selected = it.position == position
-                    tabView.textSize = if (selected) 17F else 14F
-                    tabView.setTypeface(if (selected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT)
-                }
-            }
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initVp()//game viewpager设置
-        cocosWithPermissionCheck()
+        cocosDownloadWithPermissionCheck()
     }
 
     private fun initVp() {
@@ -99,32 +77,24 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         ) { tab: TabLayout.Tab, position: Int ->
             //这里可以自定义TabView
             val tabView = TextView(context)
-            val states = arrayOfNulls<IntArray>(2)
-            states[0] = intArrayOf(android.R.attr.state_selected)
-            states[1] = intArrayOf()
-            val colors = intArrayOf(
-                ContextCompat.getColor(BdbApp.context, R.color.color_333333),
-                ContextCompat.getColor(
-                    BdbApp.context,
-                    R.color.color_999999
-                )
-            )
-            val colorStateList = ColorStateList(states, colors)
-            tabView.text = tabs[position]
             tabView.textSize = 14F
-            tabView.setTextColor(colorStateList)
+            tabView.text = tabs[position]
             tabView.gravity = Gravity.CENTER_HORIZONTAL
             tab.customView = tabView
-            tab.view.background = null//默认点击效果去掉
+//            tab.view.background = null//默认点击效果去掉
         }
         //要执行这一句才是真正将两者绑定起来
         mediator.attach()
-        homeGameVp.registerOnPageChangeCallback(changeCallback)
-    }
+        homeGameTl.addOnTabSelectedListener(object : OnTabSelectedListenerAdapter() {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab.updateTab(true)
+            }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        homeGameVp?.unregisterOnPageChangeCallback(changeCallback)
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                tab.updateTab(false)
+            }
+        })
+        homeGameTl.getTabAt(0).updateTab(true)//选中第一个
     }
 
     override fun onDestroy() {
@@ -240,7 +210,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
 
     //region sd卡权限，cocos下载
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun cocos() {
+    fun cocosDownload() {
         vm.downloadAllCocosFiles()//下载全部cocos文件
     }
 

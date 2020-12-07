@@ -173,7 +173,8 @@
                     app:tabIndicatorColor="@color/color_blue_bt"
                     app:tabIndicatorFullWidth="false"
                     app:tabIndicatorGravity="bottom"
-                    app:tabMode="fixed" />
+                    app:tabMode="fixed"
+                    app:tabRippleColor="@color/color_transparent" />
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/homeGameVp"

@@ -1,6 +1,7 @@
 package com.bdb.lottery.utils.time
 
-import com.bdb.lottery.utils.time.Times
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 

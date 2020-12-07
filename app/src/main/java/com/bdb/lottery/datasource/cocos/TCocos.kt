@@ -1,9 +1,12 @@
 package com.bdb.lottery.datasource.cocos
 
+import android.webkit.JavascriptInterface
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.cocos.data.CocosData
+import com.bdb.lottery.datasource.cocos.data.LoadCocosParams
 import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.utils.file.Files
+import com.bdb.lottery.utils.gson.Gsons
 import com.bdb.lottery.utils.regex.Regexs
 import com.bdb.lottery.utils.sdcard.SDCards
 import org.zeroturnaround.zip.ZipUtil
@@ -22,8 +25,12 @@ class TCocos @Inject constructor() {
     fun clearSize() {
         cocosTotalSize = 0
     }
+
     //批量cocos文件条件1.本地文件校验失败，2.内存空间足够下载
-    fun checkCocosBatchDownload(cocosDownloadPath: String, cocos: CocosData.CocosDataItem): Boolean {
+    fun checkCocosBatchDownload(
+        cocosDownloadPath: String,
+        cocos: CocosData.CocosDataItem
+    ): Boolean {
         return !checkCocosLocal(cocosDownloadPath, cocos) && checkStorage4BatchCocosUrl(cocos)
     }
 
@@ -36,7 +43,10 @@ class TCocos @Inject constructor() {
 
     //region 单个cocos文件下载
     //单个cocos文件条件1.本地文件校验失败，2.内存空间足够下载
-    fun checkCocosSingleDownload(cocosDownloadPath: String, cocos: CocosData.CocosDataItem): Boolean {
+    fun checkCocosSingleDownload(
+        cocosDownloadPath: String,
+        cocos: CocosData.CocosDataItem
+    ): Boolean {
         return !checkCocosLocal(cocosDownloadPath, cocos) && checkStorage4SingleCocosUrl(cocos)
     }
 
@@ -58,11 +68,11 @@ class TCocos @Inject constructor() {
             return false//url格式不对
         }
         val size = cocos.androidDirSize//解压后文件大小
-        val decompressDir = cocosDecompressDirFullName(cocosDownloadPath, cocos)
+        val decompressDir = cocosDecompressDirFullName(cocosDownloadPath, cocos.name)
         //1.校验cocos解压文件夹存在及大小；2.判断cocos压缩存在及大小，并解压压缩包后，校验解压目录大小
         return if (checkDecompressDir(decompressDir, size)) true else {
             val md5 = cocos.androidZipMD5//zip文件md5值
-            val filePath = cocosZipFileFullName(cocosDownloadPath, cocos)
+            val filePath = cocosZipFileFullName(cocosDownloadPath, cocos.name)
             checkZipFile(filePath, md5) && decompressZip(filePath, decompressDir, size)
         }
     }
@@ -101,8 +111,8 @@ class TCocos @Inject constructor() {
     //region 解压cocos文件
     fun decompressZip(cocosDownloadPath: String, cocos: CocosData.CocosDataItem): Boolean {
         return decompressZip(
-            cocosZipFileFullName(cocosDownloadPath, cocos),
-            cocosDecompressDirFullName(cocosDownloadPath, cocos),
+            cocosZipFileFullName(cocosDownloadPath, cocos.name),
+            cocosDecompressDirFullName(cocosDownloadPath, cocos.name),
             cocos.androidDirSize
         )
     }
@@ -135,15 +145,23 @@ class TCocos @Inject constructor() {
     //endregion
 
     //region cocos压缩文件全路径、解压目录全路径
-    fun cocosZipFileFullName(cocosDownloadPath: String, cocos: CocosData.CocosDataItem): String {
-        return cocosDownloadPath + cocos.name + ".zip"
+    fun cocosZipFileFullName(cocosDownloadPath: String, name: String): String {
+        return "$cocosDownloadPath$name.zip"
     }
 
     private fun cocosDecompressDirFullName(
         cocosDownloadPath: String,
-        cocos: CocosData.CocosDataItem
+        name: String
     ): String {
-        return cocosDownloadPath + File.separator + "decompress" + File.separator + cocos.name + File.separator
+        return cocosDownloadPath + "decompress" + File.separator + name + File.separator
+    }
+
+    //获取加载cocos本地路径url
+    fun cocosLoadUrl(cocosDownloadPath: String, name: String): String {
+        return "file:///mnt/sdcard/" + cocosDecompressDirFullName(
+            cocosDownloadPath,
+            name
+        ).let { it.substring(it.indexOf("Android")) + "index.html" }
     }
     //endregion
 
@@ -170,5 +188,23 @@ class TCocos @Inject constructor() {
             GAME.TYPE_GAME_SSC -> "ssc"
             else -> ""
         }
+    }
+
+    /**
+     * 生成cocos动画请求参数
+     * @param expectedTime 下期开奖时间
+     */
+    fun genLoadCocosParams(
+        openNums: String?,
+        issue: String?,
+        openTime: String?,
+        name: String?
+    ): String {
+        return Gsons.toJson(LoadCocosParams(openNums, issue, openTime, name))
+    }
+
+    internal abstract class Cocos2H5 {
+        @JavascriptInterface
+        abstract fun onLoadDataCallback()
     }
 }

@@ -9,7 +9,9 @@ import android.os.Build
 import android.os.Handler
 import android.view.PixelCopy
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.annotation.StyleRes
 import com.bdb.lottery.app.BdbApp
 
 object Views {
@@ -76,6 +78,14 @@ object Views {
                 )
             } catch (e: Exception) {
             }
+        }
+    }
+
+    fun setTextAppearance(textView: TextView, @StyleRes resId: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            textView.setTextAppearance(resId)
+        } else {
+            textView.setTextAppearance(BdbApp.context, resId)
         }
     }
 }

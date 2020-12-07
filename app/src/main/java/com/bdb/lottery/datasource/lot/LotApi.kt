@@ -49,7 +49,7 @@ interface LotApi {
     @FormUrlEncoded
     fun initGame(@Field("gameID") gameId: String): Observable<BaseResponse<GameInitData?>>
 
-    //经典
+    //经典玩法列表
     @POST(URL.URL_GET_BET_TYPE)
     @FormUrlEncoded
     fun getBetType(@Field("gameId") gameId: String): Observable<BaseResponse<GameBetTypeData?>>

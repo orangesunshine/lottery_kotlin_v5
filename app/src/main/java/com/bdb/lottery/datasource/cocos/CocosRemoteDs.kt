@@ -63,7 +63,6 @@ class CocosRemoteDs @Inject constructor(
 
     //下载全部cocos文件
     fun downloadAllCocos() {
-        Timber.d("downloadAllCocos")
         cachePriCocosConfig { data: CocosData?, path: String ->
             data?.let {
                 FileDownloader.setup(context)
@@ -76,16 +75,18 @@ class CocosRemoteDs @Inject constructor(
                         tasks.add(
                             FileDownloader.getImpl().create(it.androidZipUrl)
                                 .setTag(it)
-                                .setPath(tCocos.cocosZipFileFullName(path, it))
+                                .setPath(tCocos.cocosZipFileFullName(path, it.name))
                         )
                     }
                 }
-                queueSet.disableCallbackProgressTimes().setAutoRetryTimes(1)
-                    .downloadTogether(tasks)
-                    .addTaskFinishListener {
-                        val cocos = it.tag as CocosData.CocosDataItem
-                        tCocos.decompressZip(path, cocos)
-                    }.start()
+                if (tasks.isNotEmpty()) {
+                    queueSet.disableCallbackProgressTimes().setAutoRetryTimes(1)
+                        .downloadTogether(tasks)
+                        .addTaskFinishListener {
+                            val cocos = it.tag as CocosData.CocosDataItem
+                            tCocos.decompressZip(path, cocos)
+                        }.start()
+                }
             }
         }
     }
@@ -97,9 +98,8 @@ class CocosRemoteDs @Inject constructor(
     fun downloadSingleCocos(
         cocosName: String,
         progress: ((soFarBytes: Int, totalBytes: Int, speed: Int) -> Unit)? = null,
-        success: (() -> Unit)? = null
+        success: ((String) -> Unit)? = null
     ) {
-        Timber.d("downloadCocos")
         cachePriCocosConfig { data: CocosData?, path: String ->
             data?.let {
                 FileDownloader.setup(context)
@@ -122,9 +122,11 @@ class CocosRemoteDs @Inject constructor(
                                 .addFinishListener {
                                     val cocos = it.tag as CocosData.CocosDataItem
                                     if (tCocos.decompressZip(path, cocos)) {
-                                        success?.invoke()
+                                        success?.invoke(path)
                                     }
                                 }.start()
+                        } else {
+                            success?.invoke(path)
                         }
                         return@forEach
                     }

@@ -1,5 +1,8 @@
 package com.bdb.lottery.utils.time
 
+import java.text.SimpleDateFormat
+import java.util.*
+
 object Times {
     /**
      * 剩余时间转string
@@ -23,4 +26,26 @@ object Times {
         ret.append(second)
         return ret.toString()
     }
+
+
+    //region 格式化日期：时分秒
+    fun formatHMS(timeStamp: Long): String {
+        return formatHMS(Date(timeStamp))
+    }
+
+    fun formatHMS(date: Date): String {
+        return SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(date)
+    }
+    //endregion
+
+
+    //region 格式化日期
+    fun formatDate(pattern: String, timeStamp: Long): String {
+        return formatDate(pattern, Date(timeStamp))
+    }
+
+    fun formatDate(pattern: String, date: Date): String {
+        return SimpleDateFormat(pattern, Locale.getDefault()).format(date)
+    }
+    //endregion
 }

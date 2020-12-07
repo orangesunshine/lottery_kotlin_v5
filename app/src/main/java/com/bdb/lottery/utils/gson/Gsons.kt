@@ -6,7 +6,7 @@ import java.lang.reflect.Type
 object Gsons {
     val gson = GsonBuilder().create()
 
-    fun toJson(src: Any): String? {
+    fun toJson(src: Any): String {
         return gson.toJson(src)
     }
 

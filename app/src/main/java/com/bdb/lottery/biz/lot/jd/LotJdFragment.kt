@@ -9,11 +9,14 @@ import androidx.fragment.app.viewModels
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.lot.LotActivity
+import com.bdb.lottery.const.CACHE
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.const.TAG.CONFIRM_DIALOG_TAG
-import com.bdb.lottery.datasource.lot.data.LotParam
+import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.dialog.ConfirmDialog
+import com.bdb.lottery.extension.indexValid
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
+import com.bdb.lottery.utils.cache.Caches
 import com.bdb.lottery.utils.ui.popup.ALIGN_ANCHOR
 import com.bdb.lottery.utils.ui.popup.TPopupWindow
 import com.bdb.lottery.utils.ui.size.Sizes
@@ -23,18 +26,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
-    companion object {
-        fun newInstance(gameType: Int, gameId: Int, gameName: String?): LotJdFragment {
-            val fragment = LotJdFragment()
-            val args = Bundle()
-            args.putInt(EXTRA.ID_GAME_EXTRA, gameId)
-            args.putInt(EXTRA.TYPE_GAME_EXTRA, gameType)
-            args.putString(EXTRA.NAME_GAME_EXTRA, gameName)
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
     private val vm by viewModels<LotJdViewModel>()
 
     @Inject
@@ -42,6 +33,72 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     @Inject
     lateinit var mTPopupWindow: TPopupWindow
+
+    private val MODE_SINGLE = 0//单式
+    private val MODE_DUPLEX = 1//复式
+    private var mMode = MODE_SINGLE//模式
+    private var mMultiple = 1//默认1倍
+    private var mAmountUnit = 1//默认元
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lot_jd_single_input_et.addTextChangedListener(mTextWatcher)//监听单式输入框
+        //删除重复、错误号码
+        lot_jd_remove_repeat_nums_tv.setOnClickListener {
+            mTextWatcher.repeatNdErrorNums(
+                lot_jd_single_input_et.text.toString().trim()
+                    .replace(",", ""),
+                singleNumCount
+            )
+        }
+
+        //清空号码
+        clearNums()
+
+        //投注参数
+        //单位
+        initAmountUnitPopWin()
+        log_jd_money_unit_tv.setOnClickListener {
+            mTPopupWindow.showAtScreenLocation(
+                log_jd_money_unit_tv,
+                Gravity.TOP or Gravity.START, -Sizes.dp2px(16f), -Sizes.dp2px(8f), ALIGN_ANCHOR
+            )
+        }
+
+        log_jd_multiple_et.setOnClickListener {}//倍数
+
+        //下注
+        lot_jd_direct_betting_tv.setOnClickListener {
+            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken!!, null, null) { vm.mToken = it }
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        vm.initGame(mGameId.toString())
+        vm.getBetType(mGameId.toString())
+    }
+
+    override fun observe() {
+        vm.mGameInitData.getLiveData().observe(this) {}
+        vm.mGameBetTypeData.getLiveData().observe(this) { updatePlayMenu(it) }
+    }
+
+    //玩法菜单
+    private fun updatePlayMenu(betTypeData: GameBetTypeData?) {
+        if (betTypeData.isNullOrEmpty()) {
+            val lotActivity = aliveActivity<LotActivity>()
+            lotActivity?.updatePlayLayer1List(betTypeData)
+
+            var playLayer1 = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_LAYER1_CACHE)
+            if (-1 == playLayer1) playLayer1 = 0
+            Caches.putInt(mGameId.toString() + CACHE.LOT_PLAY_LAYER1_CACHE, 0)
+
+
+            val group = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_GROUP_CACHE)
+            val playLayer2 = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_LAYER2_CACHE)
+            val playId = Caches.getInt(mGameId.toString() + CACHE.LOT_PLAY_ID_CACHE)
+        }
+    }
 
     //region 单式输入框
     private var singleNumCount: Int = 5//单注号码数
@@ -64,8 +121,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 canPutBasket = oneNote
                 lot_jd_add_to_shopping_bar_tv.text =
                     getString(if (oneNote) R.string.lot_jd_put_shopping_bar else R.string.lot_jd_shopping_bar)
-                lot_jd_add_to_shopping_bar_tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP,
-                    if (oneNote) 12f else 15f)
+                lot_jd_add_to_shopping_bar_tv.setTextSize(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    if (oneNote) 12f else 15f
+                )
             }
 
             if (end) {
@@ -93,6 +152,19 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
+    //region 传递参数gameType、gameId、gameName
+    companion object {
+        fun newInstance(gameType: Int, gameId: Int, gameName: String?): LotJdFragment {
+            val fragment = LotJdFragment()
+            val args = Bundle()
+            args.putInt(EXTRA.ID_GAME_EXTRA, gameId)
+            args.putInt(EXTRA.TYPE_GAME_EXTRA, gameType)
+            args.putString(EXTRA.NAME_GAME_EXTRA, gameName)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     private var mGameId: Int = -1
     private var mGameType: Int = -1
     private var mGameName: String? = null
@@ -104,27 +176,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
         }
     }
+    //endregion
 
-    private val MODE_SINGLE = 0//单式
-    private val MODE_DUPLEX = 1//复式
-    private var mMode = MODE_SINGLE//模式
-    private var mMultiple = 1//默认1倍
-    private var mAmountUnit = 1//默认元
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        lot_jd_single_input_et.addTextChangedListener(mTextWatcher)//监听单式输入框
-        //删除重复、错误号码
-        lot_jd_remove_repeat_nums_tv.setOnClickListener {
-            mTextWatcher.repeatNdErrorNums(lot_jd_single_input_et.text.toString().trim()
-                .replace(",", ""),
-                singleNumCount)
-        }
-
-        //清空号码
-        clearNums()
-
-        //投注参数
-        //单位
+    //region 金额单位popup
+    private fun initAmountUnitPopWin() {
         mTPopupWindow.setPopWinWidth(100, true).content {
             val content = layoutInflater.inflate(R.layout.lot_jd_amount_unit, null)
             val listener: (View) -> Unit = { view: View ->
@@ -142,26 +197,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             content.findViewById<View>(R.id.lot_jd_amount_unit_li_tv).setOnClickListener(listener)
             content
         }
-        log_jd_money_unit_tv.setOnClickListener {
-            mTPopupWindow.showAtScreenLocation(log_jd_money_unit_tv,
-                Gravity.TOP or Gravity.START, -Sizes.dp2px(16f), -Sizes.dp2px(8f), ALIGN_ANCHOR)
-        }
-
-        log_jd_multiple_et.setOnClickListener {}//倍数
-
-        //下注
-        lot_jd_direct_betting_tv.setOnClickListener {
-            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken!!, null, null) { vm.mToken = it }
-        }
     }
+    //endregion
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        vm.initGame(mGameId.toString())
-        vm.getBetType(mGameId.toString())
-    }
-
-    //清空号码
+    //region 清空号码
     private fun clearNums() {
         //清空确认弹窗
         mConfirmDialog.contentText("是否清除已选择号码").onConfirm {
@@ -174,12 +213,15 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             }
         }
         lot_jd_input_clear_iv.setOnClickListener {
-            mConfirmDialog.show(childFragmentManager,
-                CONFIRM_DIALOG_TAG)
+            mConfirmDialog.show(
+                childFragmentManager,
+                CONFIRM_DIALOG_TAG
+            )
         }
     }
+    //endregion
 
-    //下注倒计时状态更新
+    //region 下注倒计时状态更新
     private var mClosed = false
     fun updateStatus(closed: Boolean) {
         if (mClosed == closed) return
@@ -189,4 +231,5 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_direct_betting_tv.isEnabled = can
         mClosed = closed
     }
+    //endregion
 }

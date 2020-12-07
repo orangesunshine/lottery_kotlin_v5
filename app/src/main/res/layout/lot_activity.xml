@@ -346,33 +346,57 @@
                 android:background="@drawable/bet_top_ret_top_divide" />
 
             <FrameLayout
-                android:id="@+id/lot_rect_content_fl"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
-        </LinearLayout>
+                android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
+                <FrameLayout
+                    android:id="@+id/lot_rect_content_fl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/lotSelectorTab"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:id="@+id/lotMenuLl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#66000000"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/lotPlayTypeLayer1Rv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/lotMenuSelectFragmentTl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        app:tabIndicator="@drawable/home_game_tab_indicator"
+                        app:tabIndicatorColor="@color/color_blue_bt"
+                        app:tabIndicatorFullWidth="false"
+                        app:tabIndicatorGravity="bottom"
+                        app:tabMode="fixed"
+                        app:tabRippleColor="@color/color_transparent" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/lotPlayTypeLayer2Rv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/color_bg" />
+                    <View style="@style/line_horizontal" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/lotMenuPlayLayer1Rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:paddingLeft="-2.5dp"
+                        android:paddingBottom="14.5dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/lotMenuPlayLayer2Rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#f2f4f5"
+                        android:orientation="vertical"
+                        android:paddingBottom="38.5dp" />
+                </LinearLayout>
+
+            </FrameLayout>
         </LinearLayout>
     </FrameLayout>
 

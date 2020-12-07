@@ -106,4 +106,17 @@
         <!-- 空布局资源id -->
         <attr name="aspectRatio" format="float" />
     </declare-styleable>
+
+    <!-- tab -->
+    <style name="TabLayoutTextSelected">
+        <item name="android:textSize">17dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/color_333333</item>
+    </style>
+
+    <style name="TabLayoutTextUnSelected">
+        <item name="android:textSize">14dp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/color_999999</item>
+    </style>
 </resources>

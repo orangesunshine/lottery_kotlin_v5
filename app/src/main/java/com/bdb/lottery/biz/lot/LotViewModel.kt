@@ -92,8 +92,8 @@ class LotViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region 下载cocos动画文件
-    fun downloadCocos(cocosName: String) {
-        cocosRemoteDs.downloadSingleCocos(cocosName)
+    fun downloadCocos(cocosName: String, success: ((String) -> Unit)? = null) {
+        cocosRemoteDs.downloadSingleCocos(cocosName, success = success)
     }
     //endregion
 

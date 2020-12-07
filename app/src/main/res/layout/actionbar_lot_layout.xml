@@ -44,6 +44,14 @@
             app:mvTextSize="17sp" />
 
         <ImageView
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@id/actionbar_center_id"
+            android:src="@drawable/lot_jd_title_arrow_ic" />
+
+        <ImageView
             android:id="@id/actionbar_right_id"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
