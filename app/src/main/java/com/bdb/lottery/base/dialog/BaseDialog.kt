@@ -10,7 +10,6 @@ import com.bdb.lottery.utils.ui.screen.TScreen
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.bdb.lottery.utils.ui.size.TSize
 import dagger.hilt.android.scopes.ActivityScoped
-import timber.log.Timber
 import javax.inject.Inject
 
 @ActivityScoped
@@ -91,8 +90,8 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
      * @param manager 当前Activity对应的fragment管理者
      * @return
      */
-    protected fun checkActivityIsActive(manager: FragmentManager): Boolean {
-        return !manager.isStateSaved()
+    private fun checkActivityIsActive(manager: FragmentManager): Boolean {
+        return !manager.isStateSaved
     }
 
 
@@ -100,17 +99,17 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
         if (!checkActivityIsActive(manager)) {
             return
         }
+        val ft = manager.beginTransaction()
         if (!isAdded) {
-            super.show(manager, tag)
+            ft.add(this, tag)
         } else {
-            val ft = manager.beginTransaction()
             ft.show(this)
-            ft.commit()
         }
+        ft.commit()
     }
 
     override fun dismiss() {
-        Timber.d("dismiss")
-        dismissAllowingStateLoss()
+        if (isAdded)
+            dismissAllowingStateLoss()
     }
 }

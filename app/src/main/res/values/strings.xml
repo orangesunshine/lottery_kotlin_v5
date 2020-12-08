@@ -50,9 +50,8 @@
     <string name="lot_jd_account_balance_text">账户余额：%f 元</string>
     <string name="lot_jd_today_loss_profit_text">今日输赢：%f 元</string>
     <string name="lot_jd_selected_notes_text">已选 %d 注</string>
-    <string name="lot_jd_total_amount_text">共 %f 元</string>
+    <string name="lot_jd_total_money_text">共 %f 元</string>
     <string name="lot_jd_max_bonus_text">理论最高奖金 %f 元</string>
-    <string name="lot_jd_money_unit_yuan">元</string>
     <string name="lot_jd_multiple_text">倍数</string>
     <string name="lot_jd_shopping_bar">购彩篮</string>
     <string name="lot_jd_put_shopping_bar">加入购彩篮</string>
@@ -60,7 +59,10 @@
     <string name="lot_jd_direct_betting">直接投注</string>
 
     <!--dialog-->
-    <string name="confirm_cancel_bt_text">取消</string>
-    <string name="confirm_confirm_bt_text">确认</string>
-    <string name="lot_jd_amount_unit_yuan">元</string>
+    <string name="cancel_bt_text">取消</string>
+    <string name="confirm_bt_text">确认</string>
+    <string name="lot_jd_money_unit_yuan">元</string>
+    <string name="lot_jd_money_unit_jiao">角</string>
+    <string name="lot_jd_money_unit_fen">分</string>
+    <string name="lot_jd_money_unit_li">厘</string>
 </resources>

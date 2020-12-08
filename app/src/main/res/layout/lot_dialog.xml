@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rect_white_corner8_shape"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/lot_dialog_iv"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginLeft="8dp"
+            android:src="@drawable/main_nav_shortcut_ic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lot_dialog_game_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:textColor="#373737"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toTopOf="@id/lot_dialog_issue_tv"
+            app:layout_constraintLeft_toRightOf="@id/lot_dialog_iv"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="欢乐球" />
+
+        <TextView
+            android:id="@+id/lot_dialog_issue_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_666666"
+            android:textSize="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/lot_dialog_game_name_tv"
+            app:layout_constraintTop_toBottomOf="@id/lot_dialog_game_name_tv"
+            tools:text="第20201208-0098期" />
+
+        <ImageView
+            android:id="@+id/lot_dialog_close_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:padding="8dp"
+            android:src="@drawable/lot_dialog_close"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/lot_dialog_countdown_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/lot_dialog_status_tv"
+            app:layout_constraintRight_toLeftOf="@id/lot_dialog_close_iv"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/lot_dialog_countdown_hour_tv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/lot_dialog_countdown_shape"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                android:visibility="gone"
+                tools:text="00" />
+
+            <TextView
+                android:id="@+id/lot_dialog_countdown_hour_dot_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                android:text=":"
+                android:textColor="@color/color_333333"
+                android:textSize="17dp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/lot_dialog_countdown_minute_tv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="2dp"
+                android:background="@drawable/lot_dialog_countdown_shape"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                tools:text="00" />
+
+            <TextView
+                android:id="@+id/lot_dialog_countdown_minute_dot_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="@color/color_333333"
+                android:textSize="17dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/lot_dialog_countdown_second_tv"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/lot_dialog_countdown_shape"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                tools:text="00" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/lot_dialog_status_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_666666"
+            android:textSize="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/lot_dialog_countdown_ll"
+            app:layout_constraintRight_toRightOf="@id/lot_dialog_countdown_ll"
+            app:layout_constraintTop_toBottomOf="@id/lot_dialog_countdown_ll"
+            tools:text="受注重" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View style="@style/line_horizontal" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="玩法："
+                    android:textColor="@color/color_666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/lot_dialog_play_name_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15dp"
+                    tools:text="五星·直选复式" />
+
+                <TextView
+                    android:id="@+id/lot_dialog_singled_out_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/lot_dialog_singled_out_shape"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:text="单挑"
+                    android:textColor="#ff6741"
+                    android:textSize="12dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="号码："
+                    android:textColor="@color/color_666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/lot_dialog_nums_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15dp"
+                    tools:text="7|5|8|8|9" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="注数："
+                    android:textColor="@color/color_666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/lot_dialog_notes_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15dp"
+                    tools:text="1注" />
+
+                <TextView
+                    android:id="@+id/lot_dialog_multiple_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15dp"
+                    tools:text="1倍" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="总额："
+                    android:textColor="@color/color_666666"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/lot_dialog_amount_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_333333"
+                    android:textSize="15dp"
+                    tools:text="2元" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/lot_dialog_warning" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/color_333333"
+                android:textSize="15dp"
+                tools:text="投注失败" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!--单挑、限红-->
+    <TextView
+        android:id="@+id/lot_dialog_tips_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="#f88c2c"
+        android:textSize="13dp"
+        android:visibility="invisible"
+        tools:text="单挑模式最高利润 20000 元" />
+
+    <TextView
+        android:id="@+id/lot_dialog_submit_bt"
+        style="@style/big_bt"
+        android:layout_margin="16dp"
+        android:background="@drawable/lot_dialog_bt_selector"
+        android:fontFamily="sans-serif-black"
+        android:letterSpacing="0.5"
+        android:text="@string/confirm_bt_text"
+        android:textColor="@color/white" />
+</LinearLayout>

@@ -94,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                tools:text="@string/lot_jd_total_amount_text" />
+                tools:text="@string/lot_jd_total_money_text" />
 
             <TextView
                 android:id="@+id/lot_jd_selected_notes_tv"
@@ -150,7 +150,7 @@
                 android:textColor="@color/white" />
 
             <EditText
-                android:id="@+id/log_jd_multiple_et"
+                android:id="@+id/lot_jd_multiple_et"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"

@@ -9,18 +9,16 @@ import androidx.fragment.app.viewModels
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.lot.LotActivity
-import com.bdb.lottery.const.CACHE
 import com.bdb.lottery.const.EXTRA
-import com.bdb.lottery.const.TAG.CONFIRM_DIALOG_TAG
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.dialog.ConfirmDialog
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
-import com.bdb.lottery.utils.cache.Caches
 import com.bdb.lottery.utils.ui.popup.ALIGN_ANCHOR
 import com.bdb.lottery.utils.ui.popup.TPopupWindow
 import com.bdb.lottery.utils.ui.size.Sizes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.lot_jd_fragment.*
+import kotlinx.android.synthetic.main.lot_jd_money_unit.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -63,11 +61,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             )
         }
 
-        log_jd_multiple_et.setOnClickListener {}//倍数
+        lot_jd_multiple_et.setOnClickListener {}//倍数
 
         //下注
         lot_jd_direct_betting_tv.setOnClickListener {
-            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken!!, null, null) { vm.mToken = it }
+            val multiple = lot_jd_multiple_et.text.toString().trim()
+            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken!!, multiple, null) {
+                vm.mToken = it
+            }
         }
     }
 
@@ -171,20 +172,20 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //region 金额单位popup
     private fun initAmountUnitPopWin() {
         mTPopupWindow.setPopWinWidth(100, true).content {
-            val content = layoutInflater.inflate(R.layout.lot_jd_amount_unit, null)
+            val content = layoutInflater.inflate(R.layout.lot_jd_money_unit, null)
             val listener: (View) -> Unit = { view: View ->
                 mTPopupWindow.dismiss()
                 when (view.id) {
-                    R.id.lot_jd_amount_unit_yuan_tv -> mAmountUnit = 1
-                    R.id.lot_jd_amount_unit_jiao_tv -> mAmountUnit = 2
-                    R.id.lot_jd_amount_unit_fen_tv -> mAmountUnit = 3
-                    R.id.lot_jd_amount_unit_li_tv -> mAmountUnit = 4
+                    R.id.lot_jd_money_unit_yuan_tv -> mAmountUnit = 1
+                    R.id.lot_jd_money_unit_jiao_tv -> mAmountUnit = 2
+                    R.id.lot_jd_money_unit_fen_tv -> mAmountUnit = 3
+                    R.id.lot_jd_money_unit_li_tv -> mAmountUnit = 4
                 }
             }
-            content.findViewById<View>(R.id.lot_jd_amount_unit_yuan_tv).setOnClickListener(listener)
-            content.findViewById<View>(R.id.lot_jd_amount_unit_jiao_tv).setOnClickListener(listener)
-            content.findViewById<View>(R.id.lot_jd_amount_unit_fen_tv).setOnClickListener(listener)
-            content.findViewById<View>(R.id.lot_jd_amount_unit_li_tv).setOnClickListener(listener)
+            content.findViewById<View>(R.id.lot_jd_money_unit_yuan_tv).setOnClickListener(listener)
+            content.findViewById<View>(R.id.lot_jd_money_unit_jiao_tv).setOnClickListener(listener)
+            content.findViewById<View>(R.id.lot_jd_money_unit_fen_tv).setOnClickListener(listener)
+            content.findViewById<View>(R.id.lot_jd_money_unit_li_tv).setOnClickListener(listener)
             content
         }
     }
@@ -203,11 +204,13 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             }
         }
         lot_jd_input_clear_iv.setOnClickListener {
-            mConfirmDialog.show(
-                childFragmentManager,
-                CONFIRM_DIALOG_TAG
-            )
+            mConfirmDialog.show(childFragmentManager)
         }
+    }
+
+    override fun onDestroy() {
+        mConfirmDialog.dismiss()
+        super.onDestroy()
     }
     //endregion
 

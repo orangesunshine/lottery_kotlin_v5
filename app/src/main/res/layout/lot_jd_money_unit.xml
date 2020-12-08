@@ -7,64 +7,64 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/lot_jd_amount_unit_yuan_tv"
+        android:id="@+id/lot_jd_money_unit_yuan_tv"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="@string/lot_jd_amount_unit_yuan"
+        android:text="@string/lot_jd_money_unit_yuan"
         android:textColor="#EBEBEB"
         android:textSize="15dp" />
 
     <View
-        android:id="@+id/yuan_tv_line"
+        android:id="@+id/yuan_line_tv"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#454852" />
 
     <TextView
-        android:id="@+id/lot_jd_amount_unit_jiao_tv"
+        android:id="@+id/lot_jd_money_unit_jiao_tv"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="角"
+        android:text="@string/lot_jd_money_unit_jiao"
         android:textColor="#EBEBEB"
         android:textSize="15dp" />
 
     <View
-        android:id="@+id/jiao_tv_line"
+        android:id="@+id/jiao_line_tv"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#454852" />
 
     <TextView
-        android:id="@+id/lot_jd_amount_unit_fen_tv"
+        android:id="@+id/lot_jd_money_unit_fen_tv"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="分"
+        android:text="@string/lot_jd_money_unit_fen"
         android:textColor="#EBEBEB"
         android:textSize="15dp" />
 
     <View
-        android:id="@+id/li_tv_line"
+        android:id="@+id/li_line_tv"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#454852" />
 
     <TextView
-        android:id="@+id/lot_jd_amount_unit_li_tv"
+        android:id="@+id/lot_jd_money_unit_li_tv"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="厘"
+        android:text="@string/lot_jd_money_unit_li"
         android:textColor="#EBEBEB"
         android:textSize="15dp" />
 

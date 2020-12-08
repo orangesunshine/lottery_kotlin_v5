@@ -149,13 +149,14 @@ open class BaseActivity(
     }
 
     override fun onDestroy() {
+        loading.dismiss()
         super.onDestroy()
         mActivity?.clear()
         mActivity = null
     }
 
     fun show() {
-        loading.show(supportFragmentManager, TAG.COMMON_LOADING_TAG)
+        loading.show(supportFragmentManager)
     }
 
     fun hide() {

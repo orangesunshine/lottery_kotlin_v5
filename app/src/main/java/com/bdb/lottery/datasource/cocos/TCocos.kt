@@ -1,6 +1,7 @@
 package com.bdb.lottery.datasource.cocos
 
 import android.webkit.JavascriptInterface
+import android.webkit.WebView
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.cocos.data.CocosData
 import com.bdb.lottery.datasource.cocos.data.LoadCocosParams
@@ -9,6 +10,8 @@ import com.bdb.lottery.utils.file.Files
 import com.bdb.lottery.utils.gson.Gsons
 import com.bdb.lottery.utils.regex.Regexs
 import com.bdb.lottery.utils.sdcard.SDCards
+import com.bdb.lottery.utils.webview.WebViews
+import kotlinx.android.synthetic.main.lot_activity.*
 import org.zeroturnaround.zip.ZipUtil
 import timber.log.Timber
 import java.io.File
@@ -190,21 +193,40 @@ class TCocos @Inject constructor() {
         }
     }
 
-    /**
-     * 生成cocos动画请求参数
-     * @param expectedTime 下期开奖时间
-     */
-    fun genLoadCocosParams(
-        openNums: String?,
-        issue: String?,
-        openTime: String?,
-        name: String?
-    ): String {
-        return Gsons.toJson(LoadCocosParams(openNums, issue, openTime, name))
+    //region js调用：cocos初始化完成回调、传递参数
+    fun initCocosEngine(
+        cocosDownloadPath: String,
+        name: String,
+        webView: WebView,
+        inited: (() -> Unit)? = null
+    ) {
+        webView.loadUrl(cocosLoadUrl(cocosDownloadPath, name))
+        val cocosH5: Cocos2H5 = object : TCocos.Cocos2H5() {
+            @JavascriptInterface
+            override fun onLoadDataCallback() {
+                inited?.invoke()
+            }
+        }
+        webView.addJavascriptInterface(cocosH5, "AndroidMessage")
     }
 
     internal abstract class Cocos2H5 {
         @JavascriptInterface
         abstract fun onLoadDataCallback()
     }
+
+    //cocos动画加载cb参数
+    fun cocosLoadData(
+        webView: WebView, openNums: String?,
+        issue: String?,
+        openTime: String?,
+        name: String?
+    ) {
+        WebViews.loadUrl(
+            webView,
+            "callFromJava",
+            Gsons.toJson(LoadCocosParams(openNums, issue, openTime, name))//生成cocos动画请求参数
+        )
+    }
+    //endregion
 }

@@ -79,6 +79,7 @@ open class BaseFragment(
     }
 
     override fun onDestroy() {
+        loading.dismiss()
         super.onDestroy()
         mActivity?.clear()
         mActivity = null

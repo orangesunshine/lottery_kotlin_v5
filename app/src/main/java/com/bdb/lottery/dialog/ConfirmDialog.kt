@@ -7,6 +7,7 @@ import android.view.Gravity.CENTER
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.fragment.app.FragmentManager
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.extension.visible
@@ -16,6 +17,8 @@ import javax.inject.Inject
 
 @ActivityScoped
 class ConfirmDialog @Inject constructor() : BaseDialog(R.layout.confirm_dialog) {
+    private val CONFIRM_DIALOG_TAG: String = "confirm_dialog_tag"
+
     private var mConfirmListener: View.OnClickListener? = null
     private var mCancelListener: View.OnClickListener? = null
     private var mSingleBt = false
@@ -51,16 +54,18 @@ class ConfirmDialog @Inject constructor() : BaseDialog(R.layout.confirm_dialog) 
         super.onViewCreated(view, savedInstanceState)
         mMargin = 48f
         confirm_confirm_btn.setOnClickListener {
-            dismissAllowingStateLoss()
+            dismiss()
             mConfirmListener?.onClick(it)
         }
         confirm_cancel_bt.setOnClickListener {
-            dismissAllowingStateLoss()
+            dismiss()
             mCancelListener?.onClick(it)
         }
         confirm_cancel_bt.visible(!mSingleBt)
-        val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT).apply { gravity = CENTER }
+        val lp = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply { gravity = CENTER }
         confirm_content_fl.addView(mContent?.invoke() ?: let {
             TextView(context).apply {
                 setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13f)
@@ -69,5 +74,9 @@ class ConfirmDialog @Inject constructor() : BaseDialog(R.layout.confirm_dialog) 
             }
         }, lp)
 
+    }
+
+    fun show(manager: FragmentManager) {
+        super.show(manager, CONFIRM_DIALOG_TAG)
     }
 }

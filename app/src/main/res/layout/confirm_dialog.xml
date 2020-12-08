@@ -45,10 +45,10 @@
             android:layout_width="100dp"
             android:layout_height="35dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/confirm_cancel_bt_shape"
+            android:background="@drawable/confirm_dialog_cancel_bt_shape"
             android:gravity="center"
             android:letterSpacing="1.5"
-            android:text="@string/confirm_cancel_bt_text"
+            android:text="@string/cancel_bt_text"
             android:textColor="#333333"
             android:textSize="16dp" />
 
@@ -56,10 +56,10 @@
             android:id="@+id/confirm_confirm_btn"
             android:layout_width="100dp"
             android:layout_height="35dp"
-            android:background="@drawable/confirm_confirm_bg_shape"
+            android:background="@drawable/confirm_dialog_confirm_bt_shape"
             android:gravity="center"
             android:letterSpacing="1.5"
-            android:text="@string/confirm_confirm_bt_text"
+            android:text="@string/confirm_bt_text"
             android:textColor="@color/white"
             android:textSize="16dp" />
     </LinearLayout>
