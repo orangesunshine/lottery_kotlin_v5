@@ -18,7 +18,6 @@ import com.bdb.lottery.utils.ui.popup.TPopupWindow
 import com.bdb.lottery.utils.ui.size.Sizes
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.lot_jd_fragment.*
-import kotlinx.android.synthetic.main.lot_jd_money_unit.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -208,10 +207,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
     }
 
-    override fun onDestroy() {
-        mConfirmDialog.dismiss()
-        super.onDestroy()
-    }
     //endregion
 
     //region 下注倒计时状态更新

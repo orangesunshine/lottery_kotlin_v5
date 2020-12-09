@@ -3,22 +3,21 @@ package com.bdb.lottery.dialog.lot
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.time.TTime
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
-import kotlinx.android.synthetic.main.lot_activity.*
 import kotlinx.android.synthetic.main.lot_dialog.*
 import javax.inject.Inject
 
 @ActivityScoped
+@AndroidEntryPoint
 class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     private val LOT_DIALOG_TAG = "lot_dialog_tag"
-    private val vm by viewModels<LotDialogViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,17 +31,10 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        vm.bindService(mGameId)
-        vm.countDown.getLiveData().observe(this, { })//倒计时
         lot_dialog_game_name_tv.text = mLotName
         lot_dialog_status_tv.text = mLotStatus
         if (!mLotMultiple.isSpace())
             lot_dialog_multiple_tv.text = String.format("%s 倍", mLotMultiple)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        vm.unBindService(mGameId)
     }
 
     //设置gameId
@@ -55,7 +47,7 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     //region 倒计时
     @Inject
     lateinit var tTime: TTime
-    private fun countdown(currentTime: CountDownData.CurrentTime?) {
+    fun countdown(currentTime: CountDownData.CurrentTime?) {
         currentTime?.let {
             val isClosed = currentTime.isclose
             val showHour = currentTime.betTotalTime / 1000 / 60 / 60 > 0//是否显示小时

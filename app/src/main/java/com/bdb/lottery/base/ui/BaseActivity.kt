@@ -149,7 +149,6 @@ open class BaseActivity(
     }
 
     override fun onDestroy() {
-        loading.dismiss()
         super.onDestroy()
         mActivity?.clear()
         mActivity = null

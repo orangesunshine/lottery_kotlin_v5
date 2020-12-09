@@ -218,6 +218,10 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                     val charArray = it.toCharArray()
                     if (charArray.size > 1) charArray[1].toString() else "0"
                 }
+
+            if (lotDialog.isAdded) {
+                lotDialog.countdown(it)
+            }
         }
     }
     //endregion
@@ -558,7 +562,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         token: String,
         multiply: String,
         success: (() -> Unit)? = null,
-        error: ((String) -> Unit)? = null
+        error: ((String) -> Unit)? = null,
     ) {
         lotDialog.gameId(mGameId).lotName(mGameName).lotMultiply(multiply)
         lotDialog.show(supportFragmentManager)
