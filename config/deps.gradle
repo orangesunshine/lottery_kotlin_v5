@@ -115,12 +115,11 @@ def modulePlugins(String modulename) {
             if (null != it && it.length() > 0) {
                 if (it.startsWithAny("plugin__")) {
                     plugins.add(it.replaceAll("plugin__", ""))
-                } else if (it.startsWithAny("kapt__")) {
-                    plugins.add("kotlin-kapt")
                 }
             }
         }
     }
+    plugins.add("kotlin-kapt")
     println "younger__modulePlugins__modulename: ${modulename}, plugins: ${plugins}"
     return plugins
 }

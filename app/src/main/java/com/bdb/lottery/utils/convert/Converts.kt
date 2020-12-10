@@ -2,9 +2,14 @@ package com.bdb.lottery.utils.convert
 
 import android.annotation.SuppressLint
 import com.bdb.lottery.const.MEM
+import com.bdb.lottery.extension.isSpace
+import java.io.*
+import java.nio.charset.Charset
+import java.util.*
 import kotlin.experimental.and
 
 object Converts {
+    private const val BUFFER_SIZE = 8192
     private val HEX_DIGITS_UPPER =
         charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')
     private val HEX_DIGITS_LOWER =
@@ -59,5 +64,83 @@ object Converts {
             i++
         }
         return String(ret)
+    }
+
+    /**
+     * Input stream to bytes.
+     */
+    fun inputStream2Bytes(ins: InputStream?): ByteArray? {
+        return if (ins == null) null else input2OutputStream(
+            ins)?.toByteArray()
+    }
+
+    /**
+     * Bytes to input stream.
+     */
+    fun bytes2InputStream(bytes: ByteArray?): InputStream? {
+        return if (bytes == null || bytes.size <= 0) null else ByteArrayInputStream(bytes)
+    }
+
+    /**
+     * Input stream to output stream.
+     */
+    fun input2OutputStream(ins: InputStream?): ByteArrayOutputStream? {
+        return if (ins == null) null else try {
+            val os = ByteArrayOutputStream()
+            val b = ByteArray(BUFFER_SIZE)
+            var len: Int
+            while (ins.read(b, 0, BUFFER_SIZE).also {
+                    len = it
+                } != -1) {
+                os.write(b, 0, len)
+            }
+            os
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        } finally {
+            try {
+                ins.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun inputStream2Lines(ins: InputStream?): List<String?>? {
+        return inputStream2Lines(ins, "")
+    }
+
+    fun inputStream2Lines(
+        ins: InputStream?,
+        charsetName: String,
+    ): List<String?>? {
+        var reader: BufferedReader? = null
+        return try {
+            val list: MutableList<String?> = ArrayList()
+            reader = BufferedReader(InputStreamReader(ins, getSafeCharset(charsetName)))
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                list.add(line)
+            }
+            list
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        } finally {
+            try {
+                reader?.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun getSafeCharset(charsetName: String): String? {
+        var cn = charsetName
+        if (charsetName.isSpace() || !Charset.isSupported(charsetName)) {
+            cn = "UTF-8"
+        }
+        return cn
     }
 }

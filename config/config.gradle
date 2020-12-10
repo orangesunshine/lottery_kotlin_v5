@@ -55,6 +55,7 @@ def expandablelayout_version = "2.9.2"
 def flowlayout_version = "1.1.2"
 def permissionsdispatcher_version = "4.8.0"
 def filedownloader_version = "1.7.7"
+def $room_version = "2.2.5"
 
 def DEPS = [:]
 ext.DEPS = DEPS
@@ -180,6 +181,12 @@ def BUGLY = []
 DEPS.BUGLY = BUGLY
 BUGLY << "com.tencent.bugly:crashreport:latest.release"//其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
 BUGLY << "com.tencent.bugly:nativecrashreport:latest.release"//其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
+
+def ROOM = []
+DEPS.ROOM = ROOM
+ROOM << "androidx.room:room-runtime:$room_version"
+ROOM << "androidx.room:room-ktx:$room_version"
+ROOM << "kapt__androidx.room:room-compiler:$room_version"
 
 if (!ext.has("config")) {
     def config = parseConfig()

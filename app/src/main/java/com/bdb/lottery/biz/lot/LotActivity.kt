@@ -90,6 +90,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         }
 
         //data
+        vm.getLotType()
         vm.setGameId(mGameId)
         vm.bindService(mGameId)
         vm.getHistoryByGameId(mGameId.toString())

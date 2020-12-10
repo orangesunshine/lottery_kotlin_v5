@@ -9,6 +9,7 @@ import android.os.IBinder
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.database.lot.LotDatabase
 import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotRemoteDs
@@ -100,6 +101,11 @@ class LotViewModel @ViewModelInject @Inject constructor(
     //下注
     fun lot(param: LotParam, success: (LotData?) -> Unit, error: (token: String) -> Unit) {
         lotRemoteDs.lot(param, success, error)
+    }
+
+    fun getLotType(){
+        val queryLotType = LotDatabase.getInstance(context).lotTypeDao().queryLotType()
+        Timber.d("queryLotType: ${queryLotType}")
     }
 
     //region 跳转彩票页面
