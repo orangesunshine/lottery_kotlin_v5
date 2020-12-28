@@ -172,4 +172,16 @@ class ExampleUnitTest {
         val chpier = phonenum.replace("(\\d{3})\\d{4}(\\d{4})".toRegex(), "$1****$2")
         println(chpier)
     }
+
+    @Test
+    fun match(){
+        val compile = Pattern.compile("(http|https)://([\\w.]+/?)\\w*")
+        val matcher = compile.matcher("fjdsfjlk你好吗http://www.baidu.com/你好啊")
+        if (matcher.find()) {
+            val group = matcher.group()
+            val start = matcher.start()
+            val end = matcher.end()
+            println("group: ${group}, start: ${start}, end: ${end}")
+        }
+    }
 }

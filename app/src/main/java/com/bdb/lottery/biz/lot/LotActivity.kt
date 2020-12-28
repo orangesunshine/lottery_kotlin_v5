@@ -529,6 +529,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                             Timber.d("playId: ${playId}, mSubPlayMethod: ${mSubPlayMethod}")
                                         }
                                     }
+                                    mShowMenu = false
+                                    lotMenuLl.visible(false)
                                 }
                             }
                         }

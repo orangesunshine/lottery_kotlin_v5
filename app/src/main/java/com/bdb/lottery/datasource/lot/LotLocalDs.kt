@@ -21,17 +21,22 @@ class LotLocalDs @Inject constructor(
     init {
         val lotteryDbPath = tPath.lotteryDbPath()
         if (Files.isFileExists(lotteryDbPath)) {
-            mSubPlayMethodDao = DaoMaster(DaoMaster.DevOpenHelper(context,
-                lotteryDbPath).writableDatabase).newSession().subPlayMethodDao
+            mSubPlayMethodDao = DaoMaster(
+                DaoMaster.DevOpenHelper(
+                    context,
+                    lotteryDbPath
+                ).writableDatabase
+            ).newSession().subPlayMethodDao
         }
     }
 
     //根据玩法id查找玩法配置信息
     fun queryBetTypeByPlayId(playId: Int): List<SubPlayMethod>? {
         return mSubPlayMethodDao?.queryBuilder()
-            ?.where(SubPlayMethodDao.Properties.Parent_play_method.eq(playId),
-                SubPlayMethodDao.Properties.Enable.eq(true),
-                PropertyCondition(SubPlayMethodDao.Properties.Belongto, " NOT LIKE ?", "PK10"))
+            ?.where(
+                SubPlayMethodDao.Properties.Play_method_id.eq(playId),
+                SubPlayMethodDao.Properties.Enable.eq(true)
+            )
             ?.list()
     }
 }
