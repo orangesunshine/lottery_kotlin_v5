@@ -18,6 +18,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
@@ -47,6 +48,7 @@ import kotlinx.android.synthetic.main.actionbar_lot_layout.*
 import kotlinx.android.synthetic.main.lot_activity.*
 import kotlinx.android.synthetic.main.lot_jd_money_unit.*
 import permissions.dispatcher.*
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -90,7 +92,6 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         }
 
         //data
-        vm.getLotType()
         vm.setGameId(mGameId)
         vm.bindService(mGameId)
         vm.getHistoryByGameId(mGameId.toString())
@@ -450,6 +451,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     //region 二级玩法、二级玩法组
     private var mPlayLayer1Tmp = -1
+    private var mSubPlayMethod: SubPlayMethod? = null
     private fun updatePlayLayer2List(playLayer1: Int, betTypeItem: PlayLayer1Item?) {
         mPlayLayer1Tmp = playLayer1
         val padding = Sizes.dp2px(4f)
@@ -501,7 +503,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                         isSelected(holder) && (mPlayGroup == groupPosition) && (mPlayLayer1Tmp == mPlayLayer1)
                                 }
                             }.apply {
-                                setOnItemClickListener { _: BaseQuickAdapter<*, *>, _: View, position: Int ->
+                                setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
                                     //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
                                     if (mPlayLayer1 == mPlayLayer1Tmp && mPlayGroup == groupPosition && mPlayLayer2 == position) return@setOnItemClickListener
                                     if (mPlayLayer1 != mPlayLayer1Tmp) {
@@ -517,6 +519,16 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                     notifySelectedPositionWithPayLoads(position)
                                     mPlayGroup = groupPosition
                                     mPlayLayer2 = position
+                                    adapter.getItemOrNull(position)?.let {
+                                        if (it is PlayLayer2Item) {
+                                            //玩法id
+                                            val playId = it.betType
+                                            val lotType = vm.getLotType(playId)
+                                            if (!lotType.isNullOrEmpty()) mSubPlayMethod =
+                                                lotType.first()
+                                            Timber.d("playId: ${playId}, mSubPlayMethod: ${mSubPlayMethod}")
+                                        }
+                                    }
                                 }
                             }
                         }

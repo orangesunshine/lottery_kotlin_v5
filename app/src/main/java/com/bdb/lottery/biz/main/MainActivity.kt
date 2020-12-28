@@ -12,9 +12,7 @@ import com.bdb.lottery.biz.main.home.HomeFragment
 import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.biz.main.user.UserFragment
 import com.bdb.lottery.const.CONST
-import com.bdb.lottery.database.lot.LotDatabase
 import com.bdb.lottery.extension.statusbar
-import com.bdb.lottery.utils.thread.Threads
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main_activity.*
@@ -61,9 +59,6 @@ class MainActivity : FragmentActivity() {
         mainPromotionRb.setOnClickListener { selectNavTab(1) }
         mainFindRb.setOnClickListener { selectNavTab(2) }
         mainUserRb.setOnClickListener { selectNavTab(3) }
-        Schedulers.io().scheduleDirect{
-            LotDatabase.existOrCreateDb(this@MainActivity.filesDir.absolutePath)
-        }
     }
 
     //底部导航（彩票大厅、优惠、发现、我的）

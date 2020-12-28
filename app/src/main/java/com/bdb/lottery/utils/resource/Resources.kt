@@ -8,6 +8,7 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.convert.Converts
 import com.bdb.lottery.utils.file.FileIOs
+import timber.log.Timber
 import java.io.IOException
 import java.io.InputStream
 import java.io.UnsupportedEncodingException
@@ -164,7 +165,7 @@ object Resources {
                 )
             }
         } catch (e: IOException) {
-            e.printStackTrace()
+            Timber.e(e)
         }
         return false
     }

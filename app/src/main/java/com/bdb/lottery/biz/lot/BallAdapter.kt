@@ -17,7 +17,7 @@ import dagger.hilt.android.EntryPointAccessors
 class BallAdapter(
     private val gameType: Int,
     private val ballSize: Int,//球大小
-    data: MutableList<HistoryData.HistoryItem>? = null
+    data: MutableList<HistoryData.HistoryItem>? = null,
 ) : BaseQuickAdapter<HistoryData.HistoryItem, BaseViewHolder>(R.layout.lot_history_item, data) {
     private val tGame by lazy {
         EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTGame()
@@ -51,7 +51,7 @@ class BallAdapter(
         textView.gravity = Gravity.CENTER
         textView.text = num
         textView.setBackgroundResource(R.drawable.lot_open_nums_white_circle_shape)
-        if (brightLists.contains(position + 1)) 1f else 0.6f
+        textView.alpha = if (brightLists.contains(position + 1)) 1f else 0.6f
         return textView
     }
 

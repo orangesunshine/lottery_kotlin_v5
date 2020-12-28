@@ -41,6 +41,12 @@ android {
         exclude 'META-INF/*'
     }
 
+    greendao {
+        schemaVersion 23  //数据库版本
+        daoPackage AndroidConfigVersion.appId //包名
+        targetGenDir 'src/main/java'
+    }
+
     dexOptions {
         preDexLibraries true
         preDexLibraries true

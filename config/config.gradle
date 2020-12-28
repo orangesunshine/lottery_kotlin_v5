@@ -36,13 +36,13 @@ def work_version = "2.4.0"
 def navigation_version = "2.1.0"
 def mmkv_version = "1.2.2"
 def timber_version = "4.7.1"
-def multidex_version = "2.0.1"
+def multi_dex_version = "2.0.1"
 def lottie_version = "2.7.0"
 def gson_version = "2.8.0"
 def eventbus_version = "3.2.0"
 def autosize_version = "1.2.1"
 def viewpager2_version = "1.0.0"
-def baserecyclerviewadapterhelper_version = "3.0.4"
+def base_recyclerview_adapter_helper_version = "3.0.4"
 def glide_version = "4.11.0"
 def immersionbar_version = "3.0.0"
 def gradle_version = "4.0.1"
@@ -50,12 +50,12 @@ def banner_version = "2.1.0"
 def refresh_version = "2.0.1"
 def marquee_version = "1.4.1"
 def material_version = "1.2.0"
-def constraintlayout_version = "2.0.4"
-def expandablelayout_version = "2.9.2"
-def flowlayout_version = "1.1.2"
-def permissionsdispatcher_version = "4.8.0"
-def filedownloader_version = "1.7.7"
-def $room_version = "2.2.5"
+def constraint_layout_version = "2.0.4"
+def expandable_layout_version = "2.9.2"
+def flow_layout_version = "1.1.2"
+def permissions_dispatcher_version = "4.8.0"
+def file_downloader_version = "1.7.7"
+def green_dao_version = "3.3.0"
 
 def DEPS = [:]
 ext.DEPS = DEPS
@@ -115,11 +115,11 @@ DEPS.put("GSON", "com.google.code.gson:gson:$gson_version")
 DEPS.put("EVENTBUS", "org.greenrobot:eventbus:$eventbus_version")
 DEPS.put("LOTTIE", "com.airbnb.android:lottie:$lottie_version")
 DEPS.put("VIEWPAGER2", "androidx.viewpager2:viewpager2:$viewpager2_version")
-DEPS.put("BASERECYCLERVIEWADAPTERHELPER", "com.github.CymChad:BaseRecyclerViewAdapterHelper:$baserecyclerviewadapterhelper_version")
+DEPS.put("BASERECYCLERVIEWADAPTERHELPER", "com.github.CymChad:BaseRecyclerViewAdapterHelper:$base_recyclerview_adapter_helper_version")
 def PERMISSIONSDISPATCHER = []
 DEPS.PERMISSIONSDISPATCHER = PERMISSIONSDISPATCHER
-PERMISSIONSDISPATCHER << "org.permissionsdispatcher:permissionsdispatcher:$permissionsdispatcher_version"
-PERMISSIONSDISPATCHER << "kapt__org.permissionsdispatcher:permissionsdispatcher-processor:$permissionsdispatcher_version"
+PERMISSIONSDISPATCHER << "org.permissionsdispatcher:permissionsdispatcher:$permissions_dispatcher_version"
+PERMISSIONSDISPATCHER << "kapt__org.permissionsdispatcher:permissionsdispatcher-processor:$permissions_dispatcher_version"
 
 if (ktx) {
     DEPS.put("ACTIVITY", "androidx.activity:activity-ktx:$activity_version")
@@ -147,17 +147,17 @@ if (ktx) {
 DEPS.put("VIEWMODEL_SAVEDSTATE", "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
 DEPS.put("MMKV", "com.tencent:mmkv-static:$mmkv_version")
 DEPS.put("TIMBER", "com.jakewharton.timber:timber:$timber_version")
-DEPS.put("MULTIDEX", "androidx.multidex:multidex:$multidex_version")
+DEPS.put("MULTIDEX", "androidx.multidex:multidex:$multi_dex_version")
 DEPS.put("AUTOSIZE", "me.jessyan:autosize:$autosize_version")
 DEPS.put("COMMONS-CODEC", "commons-codec:commons-codec:1.3")
 DEPS.put("BANNER", "com.youth.banner:banner:$banner_version")
 DEPS.put("MARQUEE", "com.sunfusheng:MarqueeView:$marquee_version")
 DEPS.put("MATERIAL", "com.google.android.material:material:$material_version")
-DEPS.put("CONSTRAINTLAYOUT", "androidx.constraintlayout:constraintlayout:$constraintlayout_version")
-DEPS.put("EXPANDABLELAYOUT", "net.cachapa.expandablelayout:expandablelayout:$expandablelayout_version")
-DEPS.put("FLOWLAYOUT", "com.hyman:flowlayout-lib:$flowlayout_version")
+DEPS.put("CONSTRAINTLAYOUT", "androidx.constraintlayout:constraintlayout:$constraint_layout_version")
+DEPS.put("EXPANDABLELAYOUT", "net.cachapa.expandablelayout:expandablelayout:$expandable_layout_version")
+DEPS.put("FLOWLAYOUT", "com.hyman:flowlayout-lib:$flow_layout_version")
 DEPS.put("ANDROIDANIMATIONS", "com.daimajia.androidanimations:library:2.4@aar")
-DEPS.put("FILEDOWNLOADER", "com.liulishuo.filedownloader:library:$filedownloader_version")
+DEPS.put("FILEDOWNLOADER", "com.liulishuo.filedownloader:library:$file_downloader_version")
 DEPS.put("ZIP", "org.zeroturnaround:zt-zip:1.14")
 DEPS.put("TABLAYOUT", "com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar")
 
@@ -187,6 +187,12 @@ DEPS.ROOM = ROOM
 ROOM << "androidx.room:room-runtime:$room_version"
 ROOM << "androidx.room:room-ktx:$room_version"
 ROOM << "kapt__androidx.room:room-compiler:$room_version"
+
+def GREEN_DAO = []
+DEPS.GREEN_DAO = GREEN_DAO
+GREEN_DAO << "classpath__org.greenrobot:greendao-gradle-plugin:$green_dao_version"
+GREEN_DAO << "plugin__org.greenrobot.greendao"
+GREEN_DAO << "org.greenrobot:greendao:$green_dao_version"
 
 if (!ext.has("config")) {
     def config = parseConfig()
