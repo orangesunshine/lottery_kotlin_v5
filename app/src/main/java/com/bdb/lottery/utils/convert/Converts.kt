@@ -71,7 +71,8 @@ object Converts {
      */
     fun inputStream2Bytes(ins: InputStream?): ByteArray? {
         return if (ins == null) null else input2OutputStream(
-            ins)?.toByteArray()
+            ins
+        )?.toByteArray()
     }
 
     /**
@@ -142,5 +143,16 @@ object Converts {
             cn = "UTF-8"
         }
         return cn
+    }
+
+    //下注单位转换
+    fun unit2String(unit: Int): String {
+        return when (unit) {
+            1 -> "元"
+            2 -> "角"
+            3 -> "分"
+            4 -> "厘"
+            else -> ""
+        }
     }
 }

@@ -58,13 +58,25 @@ class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
                 setPadding(Sizes.dp2px(4f))
                 adapter = HomeAllGameAdapter(it).apply {
                     setOnSubItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
-                        val item: AllGameItemData =
-                            adapter.getItem(position) as AllGameItemData
+                        val itemOrNull = adapter.getItemOrNull(position)
 
-                        //彩票、游戏
-                        val gameId = item.gameId
-                        val gameType = item.gameType
-                        val gameName = item.name
+                        val item: AllGameItemData? =
+                            itemOrNull?.let { if (it is AllGameItemData) it else null }
+                        //彩票
+                        var jdEnable: Boolean? = false
+                        var trEnable: Boolean? = false
+                        var wtEnable: Boolean? = false
+                        var gameId: Int? = null
+                        var gameType: Int? = null
+                        var gameName: String? = null
+                        if (null != item) {
+                            jdEnable = item.ptEnable
+                            trEnable = item.kgEnable
+                            wtEnable = item.wtEnable
+                            gameId = item.gameId
+                            gameType = item.gameType
+                            gameName = item.name
+                        }
 
                         if (null == gameId || null == gameType) {
                             toast.showWarning("彩种异常")
@@ -75,6 +87,9 @@ class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
                             it.putExtra(EXTRA.ID_GAME_EXTRA, gameId)
                             it.putExtra(EXTRA.TYPE_GAME_EXTRA, gameType)
                             it.putExtra(EXTRA.NAME_GAME_EXTRA, gameName)
+                            it.putExtra(EXTRA.JD_ENABLE_GAME_EXTRA, jdEnable)
+                            it.putExtra(EXTRA.TR_ENABLE_GAME_EXTRA, trEnable)
+                            it.putExtra(EXTRA.WT_ENABLE_GAME_EXTRA, wtEnable)
                         }
                     }
                 }

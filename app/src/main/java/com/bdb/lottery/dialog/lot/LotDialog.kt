@@ -9,6 +9,7 @@ import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.visible
+import com.bdb.lottery.utils.convert.Converts
 import com.bdb.lottery.utils.time.TTime
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
@@ -125,8 +126,8 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
 
     //总额
     private var mAmount: String? = null
-    fun lotAmount(amount: Double): LotDialog {
-        mAmount = String.format("%f 元", amount)
+    fun lotAmount(amount: Double, amountUnit: Int): LotDialog {
+        mAmount = String.format("%f ${Converts.unit2String(amountUnit)}", amount)
         return this
     }
 

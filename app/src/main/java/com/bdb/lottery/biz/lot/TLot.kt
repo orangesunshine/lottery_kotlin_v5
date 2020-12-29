@@ -2,7 +2,6 @@ package com.bdb.lottery.biz.lot
 
 import android.app.Activity
 import android.content.Context
-import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
@@ -10,15 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
 import com.bdb.lottery.biz.lot.jd.LotJdFragment
-import com.bdb.lottery.biz.lot.tr.LotTrFragment
-import com.bdb.lottery.biz.lot.wt.LotWtFragment
+import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
-import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.extension.visible
-import com.bdb.lottery.utils.game.Games
 import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.time.TTime
-import com.bdb.lottery.utils.time.Times
 import com.bdb.lottery.utils.ui.keyboard.KeyBoards
 import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
@@ -33,52 +27,12 @@ class TLot @Inject constructor(
     private val tGame: TGame,
     private val tTime: TTime
 ) {
-    private val JD_FRAGMENT_TAG: String = "JD_FRAGMENT_TAG"
-    private val TR_FRAGMENT_TAG: String = "TR_FRAGMENT_TAG"
-    private val WT_FRAGMENT_TAG: String = "WT_FRAGMENT_TAG"
-
-    private val tags: Array<String> = arrayOf(
-        JD_FRAGMENT_TAG,
-        TR_FRAGMENT_TAG,
-        WT_FRAGMENT_TAG
-    )
-
-    //初始化fragment
-    fun initFragment(
-        gameType: Int,
-        gameId: Int,
-        gameName: String?,
-        bundle: Bundle?
-    ): Array<Fragment> {
-        val saveStates = null != bundle
-        val fm = (context as FragmentActivity).supportFragmentManager
-        val jd = fm.findFragmentByTag(tags[0])
-        val tr = fm.findFragmentByTag(tags[1])
-        val wt = fm.findFragmentByTag(tags[2])
-        return arrayOf(
-            if (saveStates && null != jd) jd else LotJdFragment.newInstance(
-                gameType,
-                gameId,
-                gameName
-            ),
-            if (saveStates && null != tr) tr else LotTrFragment.newInstance(
-                gameType,
-                gameId,
-                gameName
-            ),
-            if (saveStates && null != wt) wt else LotWtFragment.newInstance(
-                gameType,
-                gameId,
-                gameName
-            )
-        )
-    }
-
     //region 切换fragment
     private var mFragmentIndex = -1// 0经典 1传统 2微投
     fun switchFragment(
         index: Int,
-        fragments: Array<Fragment>,
+        tags: Array<String>,
+        fragments: List<Fragment>,
         afterSwitch: ((Int) -> Unit)? = null
     ) {
         if (mFragmentIndex == index) return
@@ -162,16 +116,4 @@ class TLot @Inject constructor(
         }
     }
     //endregion
-
-    //jd切换单复式
-    fun updateJdParams(lotJdFragment: LotJdFragment?, isSingleStyle: Boolean) {
-        //更新经典状态
-        lotJdFragment?.switchDanFuStyle(isSingleStyle)
-    }
-
-    //获取jdFragment
-    fun getJdFragment(fragments: Array<Fragment>, sign: String): LotJdFragment? {
-        if (!sign.contains("1")) return null;
-        return if (!fragments.isNullOrEmpty()) fragments[0] as LotJdFragment else null
-    }
 }

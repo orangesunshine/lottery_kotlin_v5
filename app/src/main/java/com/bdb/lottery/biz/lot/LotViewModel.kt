@@ -8,9 +8,6 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
-import com.bdb.lottery.const.EXTRA
-import com.bdb.lottery.database.lot.entity.SubPlayMethod
-import com.bdb.lottery.database.lot.entity.SubPlayMethodDesc
 import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotLocalDs
@@ -19,7 +16,6 @@ import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotData
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
-import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
 import com.bdb.lottery.service.CountDownService.CountDownSub
@@ -38,7 +34,6 @@ class LotViewModel @ViewModelInject @Inject constructor(
     val countDown = LiveDataWraper<CountDownData.CurrentTime?>()
     val curIssue = LiveDataWraper<HistoryData.HistoryItem?>()
     val historyIssue = LiveDataWraper<List<HistoryData.HistoryItem>?>()
-    val subPlayMethod = LiveDataWraper<SubPlayMethod?>()
     private var mGameId = -1
     fun setGameId(gameId: Int) {
         mGameId = gameId
@@ -107,28 +102,16 @@ class LotViewModel @ViewModelInject @Inject constructor(
         lotRemoteDs.lot(param, success, error)
     }
 
-    //数据库查找玩法说明
-    fun getLotType(playId: Int) {
-        subPlayMethod.setData(lotLocalDs.queryBetTypeByPlayId(playId)
-            ?.let {
-                if (it.size > 1) {
-                    it.last { !it.belongto.contains("PK10") }
-                } else {
-                    if (!it.isNullOrEmpty()) it.last() else null
-                }
-            })
-    }
-
     //region 跳转彩票页面
-    companion object {
-        fun start(context: Context, gameId: String, gameType: String, gameName: String?) {
-            context.startActivity(Intent(context, LotActivity::class.java).apply {
-                putExtra(EXTRA.ID_GAME_EXTRA, gameId)
-                putExtra(EXTRA.TYPE_GAME_EXTRA, gameType)
-                if (!gameName.isSpace())
-                    putExtra(EXTRA.NAME_GAME_EXTRA, gameName)
-            })
-        }
-    }
+//    companion object {
+//        fun start(context: Context, gameId: String, gameType: String, gameName: String?) {
+//            context.startActivity(Intent(context, LotActivity::class.java).apply {
+//                putExtra(EXTRA.ID_GAME_EXTRA, gameId)
+//                putExtra(EXTRA.TYPE_GAME_EXTRA, gameType)
+//                if (!gameName.isSpace())
+//                    putExtra(EXTRA.NAME_GAME_EXTRA, gameName)
+//            })
+//        }
+//    }
     //endregion
 }

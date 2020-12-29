@@ -55,7 +55,8 @@
         android:id="@+id/li_line_tv"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#454852" />
+        android:background="#454852"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/lot_jd_money_unit_li_tv"
@@ -66,6 +67,7 @@
         android:gravity="center"
         android:text="@string/lot_jd_money_unit_li"
         android:textColor="#EBEBEB"
-        android:textSize="15dp" />
+        android:textSize="15dp"
+        android:visibility="gone" />
 
 </LinearLayout>

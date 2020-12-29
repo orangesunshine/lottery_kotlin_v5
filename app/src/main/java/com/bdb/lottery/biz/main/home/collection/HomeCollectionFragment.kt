@@ -79,26 +79,36 @@ class HomeCollectionFragment : BaseFragment(R.layout.recyclerview_single_layout)
                             val collectType = item.collectType
                             if (collectType.equalsNSpace("-1")) {
                                 //收藏
-                            } else {
-                                //彩票、游戏
+                            } else if(collectType.equalsNSpace("0")){
+                                //彩票
+                                var jdEnable: Boolean? = false
+                                var trEnable: Boolean? = false
+                                var wtEnable: Boolean? = false
                                 val gameId = item.gameId
                                 val gameType = item.gameType
                                 val gameName = item.gameName
-
-                                when {
-                                    collectType.equalsNSpace("0") -> item.gameInfo?.name
-                                    collectType.equalsNSpace("1") -> item.thirdGameInfo?.name
-                                    else -> null
+                                val gameInfo = item.gameInfo
+                                if (null != gameInfo) {
+                                    jdEnable = gameInfo.ptEnable
+                                    trEnable = gameInfo.kgEnable
+                                    wtEnable = gameInfo.wtEnable
                                 }
+
                                 if (null == gameId || null == gameType) {
                                     toast.showWarning("彩种异常")
                                     return@setOnItemClickListener
                                 }
+
                                 startWithArgs<LotActivity> {
                                     it.putExtra(EXTRA.ID_GAME_EXTRA, gameId)
                                     it.putExtra(EXTRA.TYPE_GAME_EXTRA, gameType)
                                     it.putExtra(EXTRA.NAME_GAME_EXTRA, gameName)
+                                    it.putExtra(EXTRA.JD_ENABLE_GAME_EXTRA, jdEnable)
+                                    it.putExtra(EXTRA.TR_ENABLE_GAME_EXTRA, trEnable)
+                                    it.putExtra(EXTRA.WT_ENABLE_GAME_EXTRA, wtEnable)
                                 }
+                            }else{
+                                //游戏
                             }
                         }
                     }

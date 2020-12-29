@@ -2,22 +2,31 @@ package com.bdb.lottery.biz.lot.jd
 
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputType
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
+import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.lot.LotActivity
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
+import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
+import com.bdb.lottery.datasource.lot.data.jd.PlayLayer1Item
+import com.bdb.lottery.datasource.lot.data.jd.PlayLayer2Item
 import com.bdb.lottery.dialog.ConfirmDialog
+import com.bdb.lottery.extension.setListOrUpdate
+import com.bdb.lottery.extension.validIndex
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
-import com.bdb.lottery.utils.ui.popup.ALIGN_ANCHOR
-import com.bdb.lottery.utils.ui.popup.TPopupWindow
-import com.bdb.lottery.utils.ui.size.Sizes
+import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.convert.Converts
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.lot_activity.*
 import kotlinx.android.synthetic.main.lot_jd_fragment.*
 import javax.inject.Inject
 
@@ -29,11 +38,11 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     lateinit var mConfirmDialog: ConfirmDialog
 
     @Inject
-    lateinit var mTPopupWindow: TPopupWindow
+    lateinit var mUnitPopWindow: UnitPopWindow
 
     private val MODE_SINGLE = 0//单式
     private val MODE_DUPLEX = 1//复式
-    private var mMode = MODE_SINGLE//模式
+    private var mMode = MODE_DUPLEX//模式
     private var mAmountUnit = 1//默认元
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,24 +62,21 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         //投注参数
         initAmountUnitPopWin()//单位
         log_jd_money_unit_tv.setOnClickListener {
-            mTPopupWindow.showAtScreenLocation(
-                log_jd_money_unit_tv,
-                Gravity.TOP or Gravity.START, -Sizes.dp2px(16f), -Sizes.dp2px(8f), ALIGN_ANCHOR
-            )
+            mUnitPopWindow.show(log_jd_money_unit_tv)
         }
 
         //倍数
         lot_jd_multiple_et.addTextChangedListener(object : TextWatcherAdapter() {
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    val toInt = s.toString().toInt()
-                    if (toInt < 1) {
+                    val toLong = s.toString().toLong()
+                    if (toLong < 1) {
                         lot_jd_multiple_et.setText("1")
                         lot_jd_multiple_et.setSelection(lot_jd_multiple_et.length())
                     }
                 } catch (e: Exception) {
                     lot_jd_multiple_et.setText("1")
-
+                    lot_jd_multiple_et.setSelection(lot_jd_multiple_et.length())
                 }
             }
         })
@@ -79,7 +85,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_direct_betting_tv.setOnClickListener {
             val multiple = lot_jd_multiple_et.text.toString().trim()
             val nums = if (mIsSingleStyle) lot_jd_single_input_et.text.toString().trim() else null
-            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken, nums, multiple, null) {
+            aliveActivity<LotActivity>()?.lotByDialog(
+                vm.mToken, nums, multiple, mAmountUnit, null
+            ) {
                 vm.mToken = it
             }
         }
@@ -94,19 +102,20 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     override fun observe() {
         vm.mGameInitData.getLiveData().observe(this) {}
         vm.mGameBetTypeData.getLiveData().observe(this) { updatePlayMenu(it) }
+        vm.subPlayMethod.getLiveData()
+            .observe(this, { switchDanFuStyle(it?.subPlayMethodDesc?.isdanshi ?: true) })//玩法相关
     }
 
     //切换单式、复式
     private var mIsSingleStyle: Boolean = false
-    fun switchDanFuStyle(isSingleStyle: Boolean) {
-        mIsSingleStyle = isSingleStyle
+    private fun switchDanFuStyle(isSingleStyle: Boolean) {
+        mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
     }
 
     //玩法菜单
     private fun updatePlayMenu(betTypeData: GameBetTypeData?) {
         if (!betTypeData.isNullOrEmpty()) {
-            val lotActivity = aliveActivity<LotActivity>()
-            lotActivity?.updatePlayLayer1List(betTypeData)
+            updatePlayLayer1List(betTypeData)
         }
     }
 
@@ -185,28 +194,27 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             mGameType = it.getInt(EXTRA.TYPE_GAME_EXTRA)
             mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
         }
+        playMenuParamsCache(mGameId)
     }
     //endregion
 
     //region 金额单位popup
-    private var mUnitPattern:String? = null
+    private var mUnitPattern: String? = null
+    fun setUnitPattern(unitPattern: String) {
+        mUnitPattern = unitPattern
+        mUnitPopWindow.setPattern(unitPattern)
+    }
+
     private fun initAmountUnitPopWin() {
-        mTPopupWindow.setPopWinWidth(100, true).content {
-            val content = layoutInflater.inflate(R.layout.lot_jd_money_unit, null)
-            val listener: (View) -> Unit = { view: View ->
-                mTPopupWindow.dismiss()
-                when (view.id) {
-                    R.id.lot_jd_money_unit_yuan_tv -> mAmountUnit = 1
-                    R.id.lot_jd_money_unit_jiao_tv -> mAmountUnit = 2
-                    R.id.lot_jd_money_unit_fen_tv -> mAmountUnit = 3
-                    R.id.lot_jd_money_unit_li_tv -> mAmountUnit = 4
-                }
+        mUnitPopWindow.init { view: View ->
+            mUnitPopWindow.dismiss()
+            when (view.id) {
+                R.id.lot_jd_money_unit_yuan_tv -> mAmountUnit = 1
+                R.id.lot_jd_money_unit_jiao_tv -> mAmountUnit = 2
+                R.id.lot_jd_money_unit_fen_tv -> mAmountUnit = 3
+                R.id.lot_jd_money_unit_li_tv -> mAmountUnit = 4
             }
-            content.findViewById<View>(R.id.lot_jd_money_unit_yuan_tv).setOnClickListener(listener)
-            content.findViewById<View>(R.id.lot_jd_money_unit_jiao_tv).setOnClickListener(listener)
-            content.findViewById<View>(R.id.lot_jd_money_unit_fen_tv).setOnClickListener(listener)
-            content.findViewById<View>(R.id.lot_jd_money_unit_li_tv).setOnClickListener(listener)
-            content
+            log_jd_money_unit_tv.text = Converts.unit2String(mAmountUnit)
         }
     }
     //endregion
@@ -241,4 +249,153 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mClosed = closed
     }
     //endregion
+
+    //region 经典：玩法下标
+    private var mPlayLayer1: Int = 0
+    private var mPlayGroup: Int = 0
+    private var mPlayLayer2: Int = 0
+    private var mPlayId: Int = 0
+
+    //读取该cb选中下标
+    private fun playMenuParamsCache(gameId: Int) {
+        mPlayLayer1 = tCache.playLayer1Cache4GameId(gameId)
+        mPlayGroup = tCache.playGroupCache4GameId(gameId)
+        mPlayLayer2 = tCache.playLayer2Cache4GameId(gameId)
+        mPlayId = tCache.playIdCache4GameId(gameId)
+    }
+    //endregion
+
+    //region 一级玩法
+    private fun updatePlayLayer1List(betTypeDatas: GameBetTypeData?) {
+        aliveActivity<LotActivity>()?.lotMenuPlayLayer1Rv?.setListOrUpdate(betTypeDatas) {
+            LotPlayAdapter(betTypeDatas).apply {
+                setOnItemClickListener { _: BaseQuickAdapter<*, *>, _: View, position: Int ->
+                    //一级玩法选中
+                    notifySelectedPositionWithPayLoads(position)
+                    updatePlayLayer2List(position, betTypeDatas?.get(position))
+                }
+            }
+        }
+        aliveActivity<LotActivity>()?.lotMenuPlayLayer1Rv?.adapter?.let {
+            if (it is BaseSelectedQuickAdapter<*, *>) it.notifySelectedPosition(
+                mPlayLayer1
+            )
+        }
+        updatePlayLayer2List(
+            mPlayLayer1,
+            if (betTypeDatas.validIndex(mPlayLayer1)) betTypeDatas?.get(mPlayLayer1) else null
+        )
+    }
+    //endregion
+
+    //region 二级玩法、二级玩法组
+    private var mPlayLayer1Tmp = -1
+    private fun updatePlayLayer2List(playLayer1: Int, betTypeItem: PlayLayer1Item?) {
+        updatePlaySelected(betTypeItem)
+        mPlayLayer1Tmp = playLayer1
+        aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.setListOrUpdate(betTypeItem?.list) {
+            object : BaseSelectedQuickAdapter<PlayGroupItem, BaseViewHolder>(
+                R.layout.lot_jd_play_group_item,
+                it?.toMutableList()
+            ) {
+                override fun convert(groupHolder: BaseViewHolder, item: PlayGroupItem) {
+                    val groupPosition = groupHolder.adapterPosition
+                    groupHolder.setText(R.id.lot_jd_play_group_name_tv, item.name + "：")
+                    groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).run {
+                        layoutManager =
+                            GridLayoutManager(context, 3, RecyclerView.VERTICAL, false)
+                        setListOrUpdate(item.list) {
+                            object : LotBetAdapter(it) {
+                                override fun convert(
+                                    holder: BaseViewHolder,
+                                    item: PlayLayer2Item,
+                                ) {
+                                    super.convert(holder, item)
+                                    holder.getView<TextView>(R.id.text_common_tv).isSelected =
+                                        isSelected(holder) && mPlayGroup == groupPosition && mPlayLayer1Tmp == mPlayLayer1
+                                }
+
+                                override fun convert(
+                                    holder: BaseViewHolder,
+                                    item: PlayLayer2Item,
+                                    payloads: List<Any>,
+                                ) {
+                                    holder.getView<TextView>(R.id.text_common_tv).isSelected =
+                                        isSelected(holder) && (mPlayGroup == groupPosition) && (mPlayLayer1Tmp == mPlayLayer1)
+                                }
+                            }.apply {
+                                setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
+                                    //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
+                                    if (mPlayLayer1 == mPlayLayer1Tmp && mPlayGroup == groupPosition && mPlayLayer2 == position) return@setOnItemClickListener
+                                    if (mPlayLayer1 != mPlayLayer1Tmp) {
+                                        mPlayLayer1 = mPlayLayer1Tmp
+                                    } else {
+                                        if (mPlayGroup != groupPosition) {
+                                            val preGroupPosition = mPlayGroup
+                                            aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.adapter?.notifyItemChanged(
+                                                preGroupPosition, PAY_LOADS_SELECTED
+                                            )
+                                        }
+                                    }
+                                    notifySelectedPositionWithPayLoads(position)
+                                    mPlayGroup = groupPosition
+                                    mPlayLayer2 = position
+                                    adapter.getItemOrNull(position)?.let {
+                                        if (it is PlayLayer2Item) {
+                                            aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
+                                            //玩法id
+                                            val playId = it.betType
+                                            vm.getLotType(playId)
+                                        }
+                                    }
+                                    aliveActivity<LotActivity>()?.gonePlayMenu()
+                                }
+                            }
+                        }
+                    }
+
+                    if (groupPosition == mPlayGroup)
+                        groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
+                            if (it is BaseSelectedQuickAdapter<*, *>) {
+                                it.notifySelectedPosition(mPlayLayer2)
+                            }
+                        }
+                }
+
+                override fun convert(
+                    holder: BaseViewHolder,
+                    item: PlayGroupItem,
+                    payloads: List<Any>,
+                ) {
+                    holder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
+                        if (it is BaseSelectedQuickAdapter<*, *>) {
+                            it.notifyUnSelectedAllWithPayLoads()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //endregion
+
+    private fun updatePlaySelected(item: PlayLayer1Item?) {
+        item?.list?.let {
+            if (mPlayGroup < it.size) {
+                it.get(mPlayGroup).list?.let {
+                    if (mPlayLayer2 < it.size) {
+                        val playItem = it.get(mPlayLayer2)
+                        aliveActivity<LotActivity>()?.updateMarqueeView(playItem.getPlayTitle())
+                        setUnitPattern(playItem.pattern)
+                    }
+                }
+            }
+        }
+    }
+
+    @Inject
+    lateinit var tCache: TCache
+    override fun onDestroyView() {
+        super.onDestroyView()
+        tCache.cachePlay4GameId(mGameId, mPlayLayer1, mPlayGroup, mPlayLayer2, mPlayId)
+    }
 }
