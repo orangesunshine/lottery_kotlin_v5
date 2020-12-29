@@ -10,6 +10,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
+import com.bdb.lottery.database.lot.entity.SubPlayMethodDesc
 import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotLocalDs
@@ -37,6 +38,7 @@ class LotViewModel @ViewModelInject @Inject constructor(
     val countDown = LiveDataWraper<CountDownData.CurrentTime?>()
     val curIssue = LiveDataWraper<HistoryData.HistoryItem?>()
     val historyIssue = LiveDataWraper<List<HistoryData.HistoryItem>?>()
+    val subPlayMethod = LiveDataWraper<SubPlayMethod?>()
     private var mGameId = -1
     fun setGameId(gameId: Int) {
         mGameId = gameId
@@ -105,8 +107,16 @@ class LotViewModel @ViewModelInject @Inject constructor(
         lotRemoteDs.lot(param, success, error)
     }
 
-    fun getLotType(playId: Int): List<SubPlayMethod>? {
-        return lotLocalDs.queryBetTypeByPlayId(playId)
+    //数据库查找玩法说明
+    fun getLotType(playId: Int) {
+        subPlayMethod.setData(lotLocalDs.queryBetTypeByPlayId(playId)
+            ?.let {
+                if (it.size > 1) {
+                    it.last { !it.belongto.contains("PK10") }
+                } else {
+                    if (!it.isNullOrEmpty()) it.last() else null
+                }
+            })
     }
 
     //region 跳转彩票页面

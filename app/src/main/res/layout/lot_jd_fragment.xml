@@ -49,11 +49,11 @@
             android:layout_weight="1"
             app:cardCornerRadius="8dp">
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.bdb.lottery.widget.DanStyleInputEditView
                 android:id="@+id/lot_jd_single_input_et"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@null"
+                android:background="@color/white"
                 android:gravity="top|left"
                 android:hint="请输入投注号码"
                 android:padding="8dp"

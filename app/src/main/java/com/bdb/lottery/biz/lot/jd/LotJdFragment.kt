@@ -2,6 +2,7 @@ package com.bdb.lottery.biz.lot.jd
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -33,7 +34,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private val MODE_SINGLE = 0//单式
     private val MODE_DUPLEX = 1//复式
     private var mMode = MODE_SINGLE//模式
-    private var mMultiple = 1//默认1倍
     private var mAmountUnit = 1//默认元
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,8 +51,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         clearNums()
 
         //投注参数
-        //单位
-        initAmountUnitPopWin()
+        initAmountUnitPopWin()//单位
         log_jd_money_unit_tv.setOnClickListener {
             mTPopupWindow.showAtScreenLocation(
                 log_jd_money_unit_tv,
@@ -60,12 +59,27 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             )
         }
 
-        lot_jd_multiple_et.setOnClickListener {}//倍数
+        //倍数
+        lot_jd_multiple_et.addTextChangedListener(object : TextWatcherAdapter() {
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    val toInt = s.toString().toInt()
+                    if (toInt < 1) {
+                        lot_jd_multiple_et.setText("1")
+                        lot_jd_multiple_et.setSelection(lot_jd_multiple_et.length())
+                    }
+                } catch (e: Exception) {
+                    lot_jd_multiple_et.setText("1")
+
+                }
+            }
+        })
 
         //下注
         lot_jd_direct_betting_tv.setOnClickListener {
             val multiple = lot_jd_multiple_et.text.toString().trim()
-            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken!!, multiple, null) {
+            val nums = if (mIsSingleStyle) lot_jd_single_input_et.text.toString().trim() else null
+            aliveActivity<LotActivity>()?.lotByDialog(vm.mToken, nums, multiple, null) {
                 vm.mToken = it
             }
         }
@@ -80,6 +94,12 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     override fun observe() {
         vm.mGameInitData.getLiveData().observe(this) {}
         vm.mGameBetTypeData.getLiveData().observe(this) { updatePlayMenu(it) }
+    }
+
+    //切换单式、复式
+    private var mIsSingleStyle: Boolean = false
+    fun switchDanFuStyle(isSingleStyle: Boolean) {
+        mIsSingleStyle = isSingleStyle
     }
 
     //玩法菜单
@@ -169,6 +189,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //endregion
 
     //region 金额单位popup
+    private var mUnitPattern:String? = null
     private fun initAmountUnitPopWin() {
         mTPopupWindow.setPopWinWidth(100, true).content {
             val content = layoutInflater.inflate(R.layout.lot_jd_money_unit, null)

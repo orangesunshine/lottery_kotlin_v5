@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
+import com.bdb.lottery.biz.lot.jd.LotJdFragment
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.cocos.TCocos
@@ -48,7 +49,6 @@ import kotlinx.android.synthetic.main.actionbar_lot_layout.*
 import kotlinx.android.synthetic.main.lot_activity.*
 import kotlinx.android.synthetic.main.lot_jd_money_unit.*
 import permissions.dispatcher.*
-import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -101,6 +101,15 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         vm.countDown.getLiveData().observe(this, { countdown(it) })//倒计时
         vm.curIssue.getLiveData().observe(this, { curIssueNums(it) })//开奖号码
         vm.historyIssue.getLiveData().observe(this, { historyIssueNums(it) })//历史开奖号码
+        vm.subPlayMethod.getLiveData().observe(this, { updateBetType(it) })//玩法相关
+    }
+
+    private var mIsDanshi: Boolean = false;
+    private fun updateBetType(subPlayMethod: SubPlayMethod?) {
+        subPlayMethod?.let {
+            mIsDanshi = it.subPlayMethodDesc.isdanshi
+            tLot.updateJdParams(fragments[0] as LotJdFragment?, mIsDanshi)
+        }
     }
 
     @Inject
@@ -112,11 +121,11 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         tCache.cachePlay4GameId(mGameId, mPlayLayer1, mPlayGroup, mPlayLayer2, mPlayId)
     }
 
-
     //region 初始化gameId、gameType、gameName、fragment
     private var mGameId: Int = -1
     private var mGameType: Int = -1
     private var mGameName: String? = null
+    private var mPlayName: String? = null
     private lateinit var fragments: Array<Fragment>
     override fun initVar(bundle: Bundle?) {
         super.initVar(bundle)
@@ -127,7 +136,6 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             finish()
         }
         playMenuParamsCache(mGameId)
-
         fragments = tLot.initFragment(mGameType, mGameId, mGameName, bundle)
     }
     //endregion
@@ -193,7 +201,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                 lazyLoadCocos()
             }
             mOpenFormatTime = Times.formatHMS(it.lotteryTime)
-            val data = tLot.countDownData(it, fragments)
+            val data = tLot.countDownData(it, fragments[0] as LotJdFragment)
             val showHour = data.size > 2
             lotCountdownDotFirstTv.visible(showHour)
             lotCountdownFourthTv.visible(!showHour)
@@ -229,11 +237,30 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 跑马灯title
-    private var mMarqueeView: MarqueeView<String>? = null
+    private lateinit var mMarqueeView: MarqueeView<String>
     override fun actbarCenter(center: View) {
         mMarqueeView = center as MarqueeView<String>
-        val playName = "五星直选"
-        mMarqueeView?.startWithList(listOf(playName, mGameName))
+        updateMarqueeView("")
+    }
+
+    fun updateMarqueeView(playName: String?) {
+        mPlayName = playName;
+        mMarqueeView.startWithList(
+            if (playName.isSpace()) listOf(mGameName, playName)
+            else listOf(playName, mGameName)
+        )
+    }
+
+    private fun updateMarqueeView(item: PlayLayer1Item?) {
+        item?.list?.let {
+            if (mPlayGroup < it.size) {
+                it.get(mPlayGroup).list?.let {
+                    if (mPlayLayer2 < it.size) {
+                        updateMarqueeView(it.get(mPlayLayer2).getPlayTitle())
+                    }
+                }
+            }
+        }
     }
 
     override fun onStart() {
@@ -451,8 +478,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     //region 二级玩法、二级玩法组
     private var mPlayLayer1Tmp = -1
-    private var mSubPlayMethod: SubPlayMethod? = null
     private fun updatePlayLayer2List(playLayer1: Int, betTypeItem: PlayLayer1Item?) {
+        updateMarqueeView(betTypeItem)
         mPlayLayer1Tmp = playLayer1
         val padding = Sizes.dp2px(4f)
         val margin = Sizes.dp2px(8f)
@@ -521,12 +548,10 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                     mPlayLayer2 = position
                                     adapter.getItemOrNull(position)?.let {
                                         if (it is PlayLayer2Item) {
+                                            updateMarqueeView(it.getPlayTitle())
                                             //玩法id
                                             val playId = it.betType
-                                            val lotType = vm.getLotType(playId)
-                                            if (!lotType.isNullOrEmpty()) mSubPlayMethod =
-                                                lotType.first()
-                                            Timber.d("playId: ${playId}, mSubPlayMethod: ${mSubPlayMethod}")
+                                            vm.getLotType(playId)
                                         }
                                     }
                                     mShowMenu = false
@@ -538,9 +563,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
                     if (groupPosition == mPlayGroup)
                         groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
-                            if (it is BaseSelectedQuickAdapter<*, *>) it.notifySelectedPosition(
-                                mPlayLayer2
-                            )
+                            if (it is BaseSelectedQuickAdapter<*, *>) {
+                                it.notifySelectedPosition(mPlayLayer2)
+                            }
                         }
                 }
 
@@ -574,12 +599,14 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     @Inject
     lateinit var lotDialog: LotDialog
     fun lotByDialog(
-        token: String,
+        token: String?,
+        nums: String?,
         multiply: String,
         success: (() -> Unit)? = null,
         error: ((String) -> Unit)? = null,
     ) {
-        lotDialog.gameId(mGameId).lotName(mGameName).lotMultiply(multiply)
+        lotDialog.gameId(mGameId).lotName(mGameName).lotPlayName(mPlayName).lotNums(nums)
+            .lotMultiply(multiply)
         lotDialog.show(supportFragmentManager)
     }
     //endregion

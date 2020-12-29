@@ -2,12 +2,13 @@ package com.bdb.lottery.datasource.lot
 
 import android.content.Context
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
+import com.bdb.lottery.database.lot.entity.SubPlayMethodDesc
 import com.bdb.lottery.utils.file.Files
 import com.bdb.lottery.utils.file.TPath
 import com.orange.bdb.DaoMaster
 import com.orange.bdb.SubPlayMethodDao
+import com.orange.bdb.SubPlayMethodDescDao
 import dagger.hilt.android.qualifiers.ApplicationContext
-import org.greenrobot.greendao.query.WhereCondition.PropertyCondition
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,12 +17,12 @@ class LotLocalDs @Inject constructor(
     tPath: TPath,
     @ApplicationContext private val context: Context,
 ) {
-    private var mSubPlayMethodDao: SubPlayMethodDao? = null
+    private var mSubPlayMethodcDao: SubPlayMethodDao? = null
 
     init {
         val lotteryDbPath = tPath.lotteryDbPath()
         if (Files.isFileExists(lotteryDbPath)) {
-            mSubPlayMethodDao = DaoMaster(
+            mSubPlayMethodcDao = DaoMaster(
                 DaoMaster.DevOpenHelper(
                     context,
                     lotteryDbPath
@@ -32,11 +33,9 @@ class LotLocalDs @Inject constructor(
 
     //根据玩法id查找玩法配置信息
     fun queryBetTypeByPlayId(playId: Int): List<SubPlayMethod>? {
-        return mSubPlayMethodDao?.queryBuilder()
-            ?.where(
-                SubPlayMethodDao.Properties.Play_method_id.eq(playId),
-                SubPlayMethodDao.Properties.Enable.eq(true)
-            )
-            ?.list()
+        return mSubPlayMethodcDao?.queryBuilder()?.where(
+            SubPlayMethodDao.Properties.Play_method_id.eq(playId),
+            SubPlayMethodDao.Properties.Enable.eq(true)
+        )?.list()
     }
 }

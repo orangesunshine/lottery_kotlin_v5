@@ -32,4 +32,9 @@ data class PlayLayer2Item(
     var rootName: String,
     var singleMaxBetCount: Int,
     var singleMaxMoney: Double,
-)
+) {
+    //玩法title
+    fun getPlayTitle(): String {
+        return rootName + " · " + betName;
+    }
+}

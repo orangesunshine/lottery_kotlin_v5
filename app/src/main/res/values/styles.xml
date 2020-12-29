@@ -88,7 +88,7 @@
 
     <style name="big_bt">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_height">44dp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/text_18</item>
         <item name="android:gravity">center</item>

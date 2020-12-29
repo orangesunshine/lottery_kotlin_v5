@@ -11,8 +11,6 @@ import org.greenrobot.greendao.internal.SqlUtils;
 import org.greenrobot.greendao.internal.DaoConfig;
 import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.DatabaseStatement;
-import org.greenrobot.greendao.query.Query;
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import com.bdb.lottery.database.lot.entity.SubPlayMethodDesc;
 
@@ -41,7 +39,6 @@ public class SubPlayMethodDao extends AbstractDao<SubPlayMethod, Long> {
 
     private DaoSession daoSession;
 
-    private Query<SubPlayMethod> subPlayMethodDesc_SubPlayMethodListQuery;
 
     public SubPlayMethodDao(DaoConfig config) {
         super(config);
@@ -149,20 +146,6 @@ public class SubPlayMethodDao extends AbstractDao<SubPlayMethod, Long> {
         return true;
     }
     
-    /** Internal query to resolve the "subPlayMethodList" to-many relationship of SubPlayMethodDesc. */
-    public List<SubPlayMethod> _querySubPlayMethodDesc_SubPlayMethodList(long method_desc_id) {
-        synchronized (this) {
-            if (subPlayMethodDesc_SubPlayMethodListQuery == null) {
-                QueryBuilder<SubPlayMethod> queryBuilder = queryBuilder();
-                queryBuilder.where(Properties.Method_desc_id.eq(null));
-                subPlayMethodDesc_SubPlayMethodListQuery = queryBuilder.build();
-            }
-        }
-        Query<SubPlayMethod> query = subPlayMethodDesc_SubPlayMethodListQuery.forCurrentThread();
-        query.setParameter(0, method_desc_id);
-        return query.list();
-    }
-
     private String selectDeep;
 
     protected String getSelectDeep() {

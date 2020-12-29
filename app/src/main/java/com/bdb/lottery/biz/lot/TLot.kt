@@ -138,7 +138,7 @@ class TLot @Inject constructor(
     //region 倒计时返回：状态、时分秒
     fun countDownData(
         currentTime: CountDownData.CurrentTime,
-        fragments: Array<Fragment>
+        lotJdFragment: LotJdFragment?
     ): Array<String> {
         val isClosed = currentTime.isclose
         val showHour = currentTime.betTotalTime / 1000 / 60 / 60 > 0//是否显示小时
@@ -154,9 +154,7 @@ class TLot @Inject constructor(
             if (split.size > 2) split[2] else if (split.size > 1) split[1] else if (split.isNotEmpty()) split[0] else "00"
 
         //更新经典状态
-        if (mFragmentIndex == 0 && fragments.isNotEmpty()) {
-            (fragments[0] as LotJdFragment).updateStatus(isClosed)
-        }
+        lotJdFragment?.updateStatus(isClosed)
         return if (showHourReal) {
             arrayOf(hour, minute, second)
         } else {
@@ -164,4 +162,16 @@ class TLot @Inject constructor(
         }
     }
     //endregion
+
+    //jd切换单复式
+    fun updateJdParams(lotJdFragment: LotJdFragment?, isSingleStyle: Boolean) {
+        //更新经典状态
+        lotJdFragment?.switchDanFuStyle(isSingleStyle)
+    }
+
+    //获取jdFragment
+    fun getJdFragment(fragments: Array<Fragment>, sign: String): LotJdFragment? {
+        if (!sign.contains("1")) return null;
+        return if (!fragments.isNullOrEmpty()) fragments[0] as LotJdFragment else null
+    }
 }

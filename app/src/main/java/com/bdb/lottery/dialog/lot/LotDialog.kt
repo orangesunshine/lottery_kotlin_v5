@@ -1,6 +1,7 @@
 package com.bdb.lottery.dialog.lot
 
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.bdb.lottery.R
@@ -18,23 +19,23 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     private val LOT_DIALOG_TAG = "lot_dialog_tag"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mShowBottomEnable = true
-    }
+    override var mShowBottomEnable = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lot_dialog_game_name_tv.text = mName//彩票名称
+        lot_dialog_status_tv.text = mStatus//投注状态
+        lot_dialog_play_name_tv.text = mPlayName//玩法名称
+        lot_dialog_nums_tv.text = mNums//号码
+        lot_dialog_nums_tv.movementMethod = ScrollingMovementMethod.getInstance();
+        lot_dialog_notes_tv.text =
+            if (mNoteCount > 0) String.format("%d 注", mNoteCount) else null//注数
+        lot_dialog_multiple_tv.text =
+            if (!mMultiple.isSpace()) String.format("%s 倍", mMultiple) else null//倍数
+        lot_dialog_amount_tv.text = mAmount//总额
+        lot_dialog_tips_tv.text = mTips//单挑、限红
+        lot_dialog_submit_bt.setOnClickListener { mSubmitCallback?.invoke() }
         lot_dialog_close_iv.setOnClickListener { dismiss() }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        lot_dialog_game_name_tv.text = mLotName
-        lot_dialog_status_tv.text = mLotStatus
-        if (!mLotMultiple.isSpace())
-            lot_dialog_multiple_tv.text = String.format("%s 倍", mLotMultiple)
     }
 
     //设置gameId
@@ -63,7 +64,7 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
                 if (split.size > 2) split[2] else if (split.size > 1) split[1] else if (split.isNotEmpty()) split[0] else "00"
 
             lot_dialog_countdown_hour_tv.visible(showHourReal)
-            lot_dialog_countdown_hour_dot_tv.visible(!showHourReal)
+            lot_dialog_countdown_hour_dot_tv.visible(showHourReal)
             lot_dialog_issue_tv.text = String.format("第%s期", currentTime.issueno)
             lot_dialog_status_tv.text = if (it.isclose) "封盘中" else "受注中"
             if (showHourReal) lot_dialog_countdown_hour_tv.text = hour
@@ -74,70 +75,76 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     //endregion
 
     //加载cb 的logo
-    private var mLotUrl: String? = null
+    private var mImgUrl: String? = null
     fun loadLotUrl(url: String): LotDialog {
-        mLotUrl = url
+        mImgUrl = url
         return this
     }
 
     //cb名称
-    private var mLotName: String? = null
+    private var mName: String? = null
     fun lotName(name: String?): LotDialog {
-        mLotName = name
+        mName = name
         return this
     }
 
     //投注状态
-    private var mLotStatus: String? = null
+    private var mStatus: String? = null
     fun lotStatus(status: String): LotDialog {
-        mLotStatus = status
+        mStatus = status
         return this
     }
 
     //投注玩法名称
-    fun lotPlayName(playName: String): LotDialog {
-        lot_dialog_play_name_tv.text = playName
+    private var mPlayName: String? = null
+    fun lotPlayName(playName: String?): LotDialog {
+        mPlayName = playName
         return this
     }
 
     //投注号码
-    fun lotNums(nums: String): LotDialog {
-        lot_dialog_nums_tv.text = nums
+    private var mNums: String? = null
+    fun lotNums(nums: String?): LotDialog {
+        mNums = nums
         return this
     }
 
     //注数
-    fun lotNotesCount(notesCount: Int) {
-        lot_dialog_notes_tv.text = String.format("%d 注", notesCount)
+    private var mNoteCount: Int = 0
+    fun lotNotesCount(notesCount: Int): LotDialog {
+        mNoteCount = notesCount
+        return this
     }
 
     //倍数
-    private var mLotMultiple: String? = null
+    private var mMultiple: String? = null
     fun lotMultiply(multiply: String): LotDialog {
-        mLotMultiple = multiply
+        mMultiple = multiply
         return this
     }
 
     //总额
+    private var mAmount: String? = null
     fun lotAmount(amount: Double): LotDialog {
-        lot_dialog_amount_tv.text = String.format("%f 元", amount)
+        mAmount = String.format("%f 元", amount)
         return this
     }
 
     //单挑、限红
+    private var mTips: String? = null
     fun lotSingledOutNdLimit(tips: String): LotDialog {
-        lot_dialog_tips_tv.text = tips
+        mTips = tips
         return this
     }
 
     //确定
+    private var mSubmitCallback: (() -> Unit)? = null
     fun submit(submit: () -> Unit): LotDialog {
-        lot_dialog_submit_bt.setOnClickListener { submit() }
+        mSubmitCallback = submit
         return this
     }
 
     fun show(manager: FragmentManager) {
         super.show(manager, LOT_DIALOG_TAG)
     }
-
 }

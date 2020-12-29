@@ -7,6 +7,7 @@ import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
+
 import com.orange.bdb.DaoSession;
 import com.orange.bdb.SubPlayMethodDescDao;
 import com.orange.bdb.SubPlayMethodDao;
@@ -21,21 +22,25 @@ public class SubPlayMethod {
     private int play_method_id;
     @NotNull
     private long method_desc_id;
-    @ToOne(joinProperty = "method_desc_id")
-    private SubPlayMethodDesc subPlayMethodDesc;
     private int parent_play_method;
     private String belongto;
     private boolean enable;
-    /** Used to resolve relations */
+    @ToOne(joinProperty = "method_desc_id")
+    private SubPlayMethodDesc subPlayMethodDesc;
+    /**
+     * Used to resolve relations
+     */
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
-    /** Used for active entity operations. */
+    /**
+     * Used for active entity operations.
+     */
     @Generated(hash = 1771332282)
     private transient SubPlayMethodDao myDao;
 
     @Generated(hash = 62422120)
     public SubPlayMethod(Long row_id, int play_method_id, long method_desc_id,
-            int parent_play_method, String belongto, boolean enable) {
+                         int parent_play_method, String belongto, boolean enable) {
         this.row_id = row_id;
         this.play_method_id = play_method_id;
         this.method_desc_id = method_desc_id;
@@ -99,11 +104,26 @@ public class SubPlayMethod {
         this.enable = enable;
     }
 
+    @Override
+    public String toString() {
+        return "SubPlayMethod{" +
+                "row_id=" + row_id +
+                ", play_method_id=" + play_method_id +
+                ", method_desc_id=" + method_desc_id +
+                ", parent_play_method=" + parent_play_method +
+                ", belongto='" + belongto + '\'' +
+                ", enable=" + enable +
+                ", subPlayMethodDesc_get=" + getSubPlayMethodDesc() +
+                '}';
+    }
+
     public boolean getEnable() {
         return this.enable;
     }
 
-    /** To-one relationship, resolved on first access. */
+    /**
+     * To-one relationship, resolved on first access.
+     */
     @Generated(hash = 1347186837)
     public SubPlayMethodDesc getSubPlayMethodDesc() {
         long __key = this.method_desc_id;
@@ -123,7 +143,9 @@ public class SubPlayMethod {
         return subPlayMethodDesc;
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 395912771)
     public void setSubPlayMethodDesc(@NotNull SubPlayMethodDesc subPlayMethodDesc) {
         if (subPlayMethodDesc == null) {
@@ -173,23 +195,12 @@ public class SubPlayMethod {
         myDao.update(this);
     }
 
-    /** called by internal mechanisms, do not call yourself. */
+    /**
+     * called by internal mechanisms, do not call yourself.
+     */
     @Generated(hash = 299391704)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
         myDao = daoSession != null ? daoSession.getSubPlayMethodDao() : null;
-    }
-
-    @Override
-    public String toString() {
-        return "SubPlayMethod{" +
-                "row_id=" + row_id +
-                ", play_method_id=" + play_method_id +
-                ", method_desc_id=" + method_desc_id +
-                ", subPlayMethodDesc=" + subPlayMethodDesc +
-                ", parent_play_method=" + parent_play_method +
-                ", belongto='" + belongto + '\'' +
-                ", enable=" + enable +
-                '}';
     }
 }

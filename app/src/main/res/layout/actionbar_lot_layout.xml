@@ -34,10 +34,13 @@
         <com.sunfusheng.marqueeview.MarqueeView
             android:id="@id/actionbar_center_id"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             app:mvAnimDuration="1000"
             app:mvDirection="bottom_to_top"
+            app:mvGravity="center"
             app:mvInterval="3000"
             app:mvSingleLine="true"
             app:mvTextColor="@color/white"
@@ -47,7 +50,6 @@
             android:layout_width="8dp"
             android:layout_height="8dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="8dp"
             android:layout_toRightOf="@id/actionbar_center_id"
             android:src="@drawable/lot_jd_title_arrow_ic" />
 

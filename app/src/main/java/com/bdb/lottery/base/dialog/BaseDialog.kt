@@ -16,7 +16,7 @@ import javax.inject.Inject
 open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     private var rootView: View? = null
     var mDimAmount = 0.5f //背景昏暗度
-    var mShowBottomEnable = false//是否底部显示
+    open var mShowBottomEnable = false//是否底部显示
     var mMargin = 0f //左右边距
     var mAnimStyle = 0 //进入退出动画
     var mOutCancel = true //点击外部取消

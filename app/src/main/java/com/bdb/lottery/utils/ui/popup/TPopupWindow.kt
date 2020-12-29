@@ -26,15 +26,21 @@ open class TPopupWindow @Inject constructor(@ActivityContext private val context
 
     fun content(convert: () -> View): TPopupWindow {
         mContent = convert()
-        mPopWin = PopupWindow(mContent,
+        mPopWin = PopupWindow(
+            mContent,
             mPopWidth,
             WindowManager.LayoutParams.WRAP_CONTENT,
-            true)
+            true
+        )
         mPopWin.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         mPopWin.isOutsideTouchable = true
         mPopWin.isTouchable = true
         mPopWin.animationStyle = R.style.popwin_anim_style
         return this
+    }
+
+    fun isShow(): Boolean {
+        return mPopWin.isShowing
     }
 
     fun dismiss() {
