@@ -42,5 +42,5 @@ object CACHE {
     const val LOT_PLAY_LAYER1_CACHE = "LOT_PLAY_LAYER1_CACHE"//经典玩法第一层(五星、龙湖)
     const val LOT_PLAY_GROUP_CACHE = "LOT_PLAY_GROUP_CACHE"//直选、组选
     const val LOT_PLAY_LAYER2_CACHE = "LOT_PLAY_LAYER2_CACHE"//经典玩法第二层(直选单式、组选20)
-    const val LOT_PLAY_ID_CACHE = "LOT_PLAY_LAYER2_CACHE"//玩法id
+    const val LOT_PLAY_ID_CACHE = "LOT_PLAY_ID_CACHE"//玩法id
 }

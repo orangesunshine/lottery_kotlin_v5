@@ -15,8 +15,8 @@ import com.bdb.lottery.biz.lot.LotActivity
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
-import com.bdb.lottery.datasource.lot.data.jd.PlayLayer1Item
-import com.bdb.lottery.datasource.lot.data.jd.PlayLayer2Item
+import com.bdb.lottery.datasource.lot.data.jd.PlayItem
+import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.dialog.ConfirmDialog
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.validIndex
@@ -76,33 +76,16 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //下注
         lot_jd_direct_betting_tv.setOnClickListener {
-            val subPlayMethod = vm.subPlayMethod.getLiveData().value
-            if (null == subPlayMethod) {
-                vm.getBetType()
-                toast.showWarning("正在获取玩法配置")
-                return@setOnClickListener
-            }
-            //验证digit，选中位置个数
-
-            //验证注数大于0
-            vm.repeatNdErrorNums(
-                lot_jd_single_input_et.text.toString().trim()
-                    .replace(",", "")
-            )
-            if (vm.mNoteCount < 1) {
-                toast.showWarning("请按玩法规则进行投注")
-                return@setOnClickListener
-            }
-            val nums =
-                if (MODE_SINGLE == mMode) lot_jd_single_input_et.text.toString().trim() else null
-
-            val multiple = lot_jd_multiple_et.text.toString().trim()//倍数
-
-            aliveActivity<LotActivity>()?.lotByDialog(
-                vm.mToken, nums, multiple, vm.mAmountUnit, null
-            ) {
-                vm.mToken = it//失败刷新token
-            }
+            vm.checkNdGenLotParams(
+                lot_jd_single_input_et.text.toString().trim(),
+                lot_jd_multiple_et.text.toString().trim(),
+                { toast.showWarning(it) },
+                { lotParams: LotParams?, error: (String) -> Unit ->
+                    aliveActivity<LotActivity>()?.lotByDialog(
+                        lotParams,
+                        error = error
+                    )
+                })
         }
     }
 
@@ -117,26 +100,11 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     private var mUserBonus: Double? = 0.0
     override fun observe() {
-        vm.mGameInitData.getLiveData().observe(this) {
-            mUserBonus = it?.userBonus
-        }
         vm.mGameBetTypeData.getLiveData().observe(this) {
             vm.renderPlayNdBet { playSelectedPos, betSelectedPos ->
                 updatePlayList(betTypeDatas = it, playSelectedPos, betSelectedPos)
             }
         }
-        vm.subPlayMethod.getLiveData()
-            .observe(this, {
-                switchDanFuStyle(it?.subPlayMethodDesc?.isdanshi ?: true)
-            })//玩法相关
-    }
-
-    //切换单式、复式
-    private val MODE_SINGLE = 0//单式
-    private val MODE_DUPLEX = 1//复式
-    private var mMode = MODE_DUPLEX//模式
-    private fun switchDanFuStyle(isSingleStyle: Boolean) {
-        mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
     }
 
     //region 单式输入框
@@ -168,7 +136,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             if (end) {
                 s?.toString()?.replace(",", "")?.let {
                     if (it.length <= vm.mSingleNumCount) return@let
-                    vm.repeatNdErrorNums(it)
+                    repeatNdErrorNums(it)
                 }
             }
         }
@@ -229,11 +197,11 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private fun InitclearNums() {
         //清空确认弹窗
         mConfirmDialog.contentText("是否清除已选择号码").onConfirm {
-            if (mMode == MODE_SINGLE) {
+            if (vm.isSingleStyle()) {
                 //单式
                 lot_jd_single_input_et.setText("")
 
-            } else if (mMode == MODE_DUPLEX) {
+            } else {
                 //复式
             }
         }
@@ -281,14 +249,13 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //endregion
 
     //region 二级玩法、二级玩法组
-    private var mPlayConfig: PlayLayer2Item? = null
     private var mPlaySelectedTmpRef = -1
     private fun updatePlayLayer2List(
-        betTypeItem: PlayLayer1Item?, playSelectedPos: Int,
+        betTypeItem: PlayItem?, playSelectedPos: Int,
         betSelectedPos: Int
     ) {
         mPlaySelectedTmpRef = playSelectedPos
-        vm.onBetSelected(betTypeItem) { onBetSelected(it) }
+        vm.initBetSelected(betTypeItem) { onBetSelected(it) }
         aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.setListOrUpdate(betTypeItem?.list) {
             object : BaseSelectedQuickAdapter<PlayGroupItem, BaseViewHolder>(
                 R.layout.lot_jd_play_group_item,
@@ -304,7 +271,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                             object : LotBetAdapter(it) {
                                 override fun convert(
                                     holder: BaseViewHolder,
-                                    item: PlayLayer2Item,
+                                    item: BetItem,
                                 ) {
                                     super.convert(holder, item)
                                     holder.getView<TextView>(R.id.text_common_tv).isSelected =
@@ -315,7 +282,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
                                 override fun convert(
                                     holder: BaseViewHolder,
-                                    item: PlayLayer2Item,
+                                    item: BetItem,
                                     payloads: List<Any>,
                                 ) {
                                     holder.getView<TextView>(R.id.text_common_tv).isSelected =
@@ -326,7 +293,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                             }.apply {
                                 setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
                                     //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
-                                    vm.onBetSelectedByClick(
+                                    vm.setSelectedPosOnBetSelected(
                                         mPlaySelectedTmpRef,
                                         groupPosition,
                                         position
@@ -335,9 +302,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                                             it, PAY_LOADS_SELECTED
                                         )
                                     }
-                                    notifySelectedPositionWithPayLoads(position)
+                                    notifySelectedPositionWithPayLoads(position, false)
                                     adapter.getItemOrNull(position)?.let {
-                                        if (it is PlayLayer2Item) {
+                                        if (it is BetItem) {
+                                            vm.setSelectedBetItem(it)
                                             onBetSelected(it)
                                         }
                                     }
@@ -373,8 +341,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //endregion
 
     //更新玩法时：title、玩法配置、投注单位更新
-    private fun onBetSelected(item: PlayLayer2Item?) {
-        mPlayConfig = item
+    private fun onBetSelected(item: BetItem?) {
         item?.let {
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
 

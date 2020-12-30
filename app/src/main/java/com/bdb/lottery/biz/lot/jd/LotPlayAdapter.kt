@@ -8,20 +8,20 @@ import androidx.core.view.setPadding
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
-import com.bdb.lottery.datasource.lot.data.jd.PlayLayer1Item
+import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.extension.margin
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 
 class LotPlayAdapter constructor(betTypeDatas: GameBetTypeData?) :
-    BaseSelectedQuickAdapter<PlayLayer1Item, BaseViewHolder>(
+    BaseSelectedQuickAdapter<PlayItem, BaseViewHolder>(
         R.layout.text_single_item,
         betTypeDatas?.toMutableList()
     ) {
     private val padding = Sizes.dp2px(2.5f)
     private val margin = Sizes.dp2px(8f)
 
-    override fun convert(holder: BaseViewHolder, item: PlayLayer1Item) {
+    override fun convert(holder: BaseViewHolder, item: PlayItem) {
         holder.getView<TextView>(R.id.text_common_tv).run {
             margin(margin * 3, margin / 2, margin * 3, margin / 2)
             gravity = Gravity.CENTER
@@ -41,7 +41,7 @@ class LotPlayAdapter constructor(betTypeDatas: GameBetTypeData?) :
 
     override fun convert(
         holder: BaseViewHolder,
-        item: PlayLayer1Item,
+        item: PlayItem,
         payloads: List<Any>,
     ) {
         holder.getView<TextView>(R.id.text_common_tv).isSelected = isSelected(holder)

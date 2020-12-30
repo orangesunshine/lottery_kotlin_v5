@@ -1,20 +1,20 @@
 package com.bdb.lottery.datasource.lot.data.jd
 
-class GameBetTypeData : ArrayList<PlayLayer1Item>()
+class GameBetTypeData : ArrayList<PlayItem>()
 
-data class PlayLayer1Item(
+data class PlayItem(
     var list: List<PlayGroupItem>?,
     var name: String,
     var ranking: Int,
 )
 
 data class PlayGroupItem(
-    var list: List<PlayLayer2Item>?,
+    var list: List<BetItem>?,
     var name: String,
     var ranking: Int,
 )
 
-data class PlayLayer2Item(
+data class BetItem(
     var baseScale: Double,
     var betLossId: Int,
     var betName: String,

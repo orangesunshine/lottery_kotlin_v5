@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.lot.jd.LotJdFragment
+import com.bdb.lottery.biz.lot.jd.LotParams
 import com.bdb.lottery.biz.lot.tr.LotTrFragment
 import com.bdb.lottery.biz.lot.wt.LotWtFragment
 import com.bdb.lottery.const.EXTRA
@@ -439,10 +440,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     @Inject
     lateinit var lotDialog: LotDialog
     fun lotByDialog(
-        token: String?,
-        nums: String?,
-        multiply: String,
-        unit: Int,
+        lotParams: LotParams?,
         success: (() -> Unit)? = null,
         error: ((String) -> Unit)? = null,
     ) {
@@ -458,9 +456,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             return
         }
 
-        lotDialog.gameId(mGameId).lotName(mGameName).lotPlayName(mPlayName).lotNums(nums)
-            .lotMultiply(multiply).lotAmount(2.0, unit)
-        lotDialog.show(supportFragmentManager)
+        lotDialog.lotParams(lotParams).show(supportFragmentManager)
     }
     //endregion
 }

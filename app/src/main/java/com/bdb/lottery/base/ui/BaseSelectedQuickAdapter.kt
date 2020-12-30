@@ -46,8 +46,8 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
             notifyItemChanged(preSelectedPosition)
     }
 
-    fun notifySelectedPositionWithPayLoads(selectedPosition: Int) {
-        if (mSelectedPosition == selectedPosition) return
+    fun notifySelectedPositionWithPayLoads(selectedPosition: Int, checkIndex: Boolean = true) {
+        if (mSelectedPosition == selectedPosition && checkIndex) return
         val preSelectedPosition = mSelectedPosition
         mSelectedPosition = selectedPosition
         if (data.validIndex(selectedPosition))

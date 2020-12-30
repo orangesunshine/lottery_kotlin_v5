@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.BaseDialog
+import com.bdb.lottery.biz.lot.jd.LotParams
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.visible
@@ -37,6 +38,12 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
         lot_dialog_tips_tv.text = mTips//单挑、限红
         lot_dialog_submit_bt.setOnClickListener { mSubmitCallback?.invoke() }
         lot_dialog_close_iv.setOnClickListener { dismiss() }
+    }
+
+    private var mLotParams: LotParams? = null
+    fun lotParams(lotParams: LotParams?): LotDialog {
+        mLotParams = lotParams
+        return this
     }
 
     //设置gameId

@@ -156,4 +156,15 @@ object Converts {
             else -> ""
         }
     }
+
+    //下注单位转换
+    fun unit2Enum(unit: Int): AmountUnit {
+        return when (unit) {
+            1 -> AmountUnit.YUAN
+            2 -> AmountUnit.JIAO
+            3 -> AmountUnit.FEN
+            4 -> AmountUnit.LI
+            else -> AmountUnit.YUAN
+        }
+    }
 }

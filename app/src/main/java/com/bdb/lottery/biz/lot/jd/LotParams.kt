@@ -1,7 +1,7 @@
 package com.bdb.lottery.biz.lot.jd
 
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
-import com.bdb.lottery.datasource.lot.data.jd.PlayLayer2Item
+import com.bdb.lottery.datasource.lot.data.jd.BetItem
 
 data class LotParams(
     val playId: Int,//玩法ID
@@ -26,37 +26,39 @@ data class LotParams(
     val digitTitles: String?,
     val amountUnit: AmountUnit//金额单位
 ) {
-    //单式投注参数生成
-    fun genLotParamsByPlayConfig(
-        noteCount: Int,
-        multiple: Int,
-        betNums: String,
-        amountUnit: AmountUnit,
-        playConfig: PlayLayer2Item?,
-        subPlayMethod: SubPlayMethod?,
-    ): LotParams? {
-        return subPlayMethod?.let {
-            LotParams(
-                playId = it.play_method_id,
-                false,
-                null,
-                multiple = multiple,
-                betNums = betNums,
-                null,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                "",
-                noteCount = noteCount,
-                isSingle = it.subPlayMethodDesc.isdanshi,
-                totalDigit = it.subPlayMethodDesc.digit,
-                totalPlayName = playConfig?.getPlayTitle(),
-                isShowDigit = it.subPlayMethodDesc.is_need_show_weizhi,
-                isBuildAll = it.subPlayMethodDesc.isBuildAll,
-                digitTitles = it.subPlayMethodDesc.digit_titles,
-                amountUnit
-            )
+    companion object {
+        //单式投注参数生成
+        fun genLotParamsByPlayConfig(
+            noteCount: Int,
+            multiple: Int,
+            betNums: String,
+            amountUnit: AmountUnit,
+            betItem: BetItem?,
+            subPlayMethod: SubPlayMethod?,
+        ): LotParams? {
+            return subPlayMethod?.let {
+                LotParams(
+                    playId = it.play_method_id,
+                    false,
+                    null,
+                    multiple = multiple,
+                    betNums = betNums,
+                    null,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    "",
+                    noteCount = noteCount,
+                    isSingle = it.subPlayMethodDesc.isdanshi,
+                    totalDigit = it.subPlayMethodDesc.digit,
+                    totalPlayName = betItem?.getPlayTitle(),
+                    isShowDigit = it.subPlayMethodDesc.is_need_show_weizhi,
+                    isBuildAll = it.subPlayMethodDesc.isBuildAll,
+                    digitTitles = it.subPlayMethodDesc.digit_titles,
+                    amountUnit
+                )
+            }
         }
     }
 }

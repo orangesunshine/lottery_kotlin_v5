@@ -8,11 +8,11 @@ import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotLocalDs
 import com.bdb.lottery.datasource.lot.LotRemoteDs
+import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
-import com.bdb.lottery.datasource.lot.data.jd.GameInitData
-import com.bdb.lottery.datasource.lot.data.jd.PlayLayer1Item
-import com.bdb.lottery.datasource.lot.data.jd.PlayLayer2Item
+import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.convert.Converts
 import javax.inject.Inject
 
 class LotJdViewModel @ViewModelInject @Inject constructor(
@@ -21,14 +21,13 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {
     var mToken: String? = null
-    val mGameInitData = LiveDataWraper<GameInitData?>()
     val mGameBetTypeData = LiveDataWraper<GameBetTypeData?>()
-    val subPlayMethod = LiveDataWraper<SubPlayMethod?>()
 
     //region 初始化彩票
+    private var mUserBonus: Double? = 0.0
     fun initGame() {
         lotRemoteDs.initGame(mGameId.toString()) {
-            mGameInitData.setData(it)
+            mUserBonus = it?.userBonus
             mToken = it?.token
         }
     }
@@ -43,15 +42,17 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region 数据库查找玩法说明
+    private var mSubPlayMethod: SubPlayMethod? = null
     fun getLocalBetType(playId: Int) {
-        subPlayMethod.setData(lotLocalDs.queryBetTypeByPlayId(playId)
+        lotLocalDs.queryBetTypeByPlayId(playId)
             ?.let {
-                if (it.size > 1) {
+                mSubPlayMethod = if (it.size > 1) {
                     it.last { !it.belongto.contains("PK10") }
                 } else {
                     if (!it.isNullOrEmpty()) it.last() else null
                 }
-            })
+                switchDanFuStyle(mSubPlayMethod?.subPlayMethodDesc?.isdanshi ?: true)
+            }
     }
     //endregion
 
@@ -130,7 +131,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region 玩法选中
-    fun onBetSelectedByClick(
+    fun setSelectedPosOnBetSelected(
         playSelectedPos: Int,
         groupSelectedPos: Int,
         betSelectedPos: Int,
@@ -151,12 +152,20 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
 
     //初始化玩法选中
-    fun onBetSelected(item: PlayLayer1Item?, onBetSelected: (item: PlayLayer2Item?) -> Unit) {
+    private var mSelectedBetItem: BetItem? = null
+    fun setSelectedBetItem(selectedBetItem: BetItem?) {
+        mSelectedBetItem = selectedBetItem
+    }
+
+    fun initBetSelected(item: PlayItem?, onBetSelected: (item: BetItem?) -> Unit) {
         item?.list?.let {
             if (mGroupSelectedPos < it.size) {
                 it.get(mGroupSelectedPos).list?.let {
                     if (mBetSelectedPos < it.size) {
-                        onBetSelected.invoke(it[mBetSelectedPos])
+                        val item = it[mBetSelectedPos]
+                        mSelectedBetItem = item
+                        mPlayId = item.betType
+                        onBetSelected.invoke(item)
                     }
                 }
             }
@@ -170,4 +179,44 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         mAmountUnit = unit
     }
     //endregion
+
+    //region 切换单式、复式
+    private val MODE_SINGLE = 0//单式
+    private val MODE_DUPLEX = 1//复式
+    private var mMode = MODE_DUPLEX//模式
+    private fun switchDanFuStyle(isSingleStyle: Boolean) {
+        mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
+    }
+
+    fun isSingleStyle(): Boolean {
+        return MODE_SINGLE == mMode
+    }
+    //endregion
+
+    fun checkNdGenLotParams(
+        betNums: String,//投注号码
+        multiple: String,//倍数
+        toast: (String) -> Unit,
+        lot: (params: LotParams?, error: (String) -> Unit) -> Unit
+    ) {
+        if (null == mSubPlayMethod) {
+            getBetType()
+            toast.invoke("正在获取玩法配置")
+            return
+        }
+        //验证digit，选中位置个数
+
+        //验证注数大于0
+        repeatNdErrorNums(betNums)
+        if (mNoteCount < 1) {
+            toast.invoke("请按玩法规则进行投注")
+            return
+        }
+        lot.invoke(
+            LotParams.genLotParamsByPlayConfig(
+                mNoteCount, multiple = multiple.toInt(), betNums,
+                Converts.unit2Enum(mAmountUnit), mSelectedBetItem, mSubPlayMethod
+            )
+        ) { mToken = it }
+    }
 }
