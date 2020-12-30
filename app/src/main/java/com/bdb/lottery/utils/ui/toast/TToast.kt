@@ -26,6 +26,7 @@ import com.bdb.lottery.widget.CustomToastView
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityScoped
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 class ActivityToast @Inject constructor(
@@ -109,9 +110,9 @@ class ActivityToast @Inject constructor(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
             if (null != tips && tips) {
-                mToastView.tipsText(text)//温馨提示
+                mToastView?.tipsText(text)//温馨提示
             } else {
-                mToastView.setText(text)//带图片
+                mToastView?.setText(text)//带图片
             }
             lp.gravity = mToast.gravity
             lp.bottomMargin = mToast.yOffset + Sizes.getNavBarHeight()
@@ -196,9 +197,9 @@ class SystemToast @Inject constructor(
     override fun show(text: CharSequence?, duration: Long, tips: Boolean?) {
         mToast.duration = duration.toInt()
         if (null != tips && tips) {
-            mToastView.tipsText(text)//温馨提示
+            mToastView?.tipsText(text)//温馨提示
         } else {
-            mToastView.setText(text)//带图片
+            mToastView?.setText(text)//带图片
         }
         mToast.show()
     }
@@ -210,25 +211,40 @@ class WindowManagerToast @Inject constructor(
     @ActivityContext private val context: Context,
 ) :
     AbsToast(context) {
+    private var isHide = AtomicBoolean(true)
     private var mWM: WindowManager? = null
     private val mParams: WindowManager.LayoutParams = WindowManager.LayoutParams()
 
     override fun show(text: CharSequence?, duration: Long, tips: Boolean?) {
-        cancel()
+        if (null == mToastView) return
         if (null != tips && tips) {
-            mToastView.tipsText(text)//温馨提示
+            mToastView?.tipsText(text)//温馨提示
         } else {
-            mToastView.setText(text)//带图片
+            mToastView?.setText(text)//带图片
         }
         mWM = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
-        try {
-            mWM?.addView(mToastView, mParams)
-        } catch (ignored: Exception) { /**/
-        }
+        addView()
         tThread.runOnUiThreadDelayed(
-            { cancel() },
+            { hideView() },
             duration
         )
+    }
+
+    private fun addView() {
+        if (isHide.compareAndSet(true, false))
+            try {
+                mWM?.addView(mToastView, mParams)
+            } catch (ignored: Exception) { /**/
+            }
+    }
+
+    private fun hideView() {
+        if (isHide.compareAndSet(false, true)) {
+            try {
+                mWM?.removeViewImmediate(mToastView)
+            } catch (ignored: java.lang.Exception) { /**/
+            }
+        }
     }
 
     private fun buildParams() {
@@ -260,15 +276,12 @@ class WindowManagerToast @Inject constructor(
             mWM = null
         } catch (ignored: Exception) { /**/
         }
-        super.cancel()
+        mToastView = null
     }
 
     init {
         mParams.type =
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) WindowManager.LayoutParams.TYPE_TOAST else WindowManager.LayoutParams.LAST_APPLICATION_WINDOW
-    }
-
-    init {
         buildParams()
     }
 }
@@ -278,7 +291,7 @@ abstract class AbsToast constructor(
 ) :
     IToast {
     var mToast: Toast = Toast(context)
-    protected val mToastView: CustomToastView = CustomToastView(context)
+    protected var mToastView: CustomToastView? = CustomToastView(context)
 
     init {
         mToast.view = mToastView
@@ -297,17 +310,17 @@ abstract class AbsToast constructor(
     }
 
     fun showWarning(text: CharSequence?) {
-        mToastView.setToastDrawable(R.drawable.toast_warning)
+        mToastView?.setToastDrawable(R.drawable.toast_warning)
         show(text, autoDuration(text))
     }
 
     fun showError(text: CharSequence?) {
-        mToastView.setToastDrawable(R.drawable.toast_error)
+        mToastView?.setToastDrawable(R.drawable.toast_error)
         show(text, autoDuration(text))
     }
 
     fun showSuccess(text: CharSequence?) {
-        mToastView.setToastDrawable(R.drawable.toast_succes)
+        mToastView?.setToastDrawable(R.drawable.toast_succes)
         show(text, autoDuration(text))
     }
 

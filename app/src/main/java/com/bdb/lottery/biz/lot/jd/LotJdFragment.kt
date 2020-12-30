@@ -13,10 +13,10 @@ import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.lot.LotActivity
 import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
 import com.bdb.lottery.datasource.lot.data.jd.PlayItem
-import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.dialog.ConfirmDialog
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.validIndex
@@ -50,7 +50,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
 
         //清空号码
-        InitclearNums()
+        initclearNums()
+
+        //初始化万、千、百、十、个
+        initDigit();
 
         //投注参数
         initAmountUnitPopWin()//单位
@@ -76,7 +79,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //下注
         lot_jd_direct_betting_tv.setOnClickListener {
-            vm.checkNdGenLotParams(
+            vm.verifyNdGenLotParams(
                 lot_jd_single_input_et.text.toString().trim(),
                 lot_jd_multiple_et.text.toString().trim(),
                 { toast.showWarning(it) },
@@ -98,7 +101,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         vm.getBetType()
     }
 
-    private var mUserBonus: Double? = 0.0
     override fun observe() {
         vm.mGameBetTypeData.getLiveData().observe(this) {
             vm.renderPlayNdBet { playSelectedPos, betSelectedPos ->
@@ -194,7 +196,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //endregion
 
     //region 清空号码
-    private fun InitclearNums() {
+    private fun initclearNums() {
         //清空确认弹窗
         mConfirmDialog.contentText("是否清除已选择号码").onConfirm {
             if (vm.isSingleStyle()) {
@@ -226,7 +228,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //region 一级玩法
     private fun updatePlayList(
         betTypeDatas: GameBetTypeData?, playSelectedPos: Int,
-        betSelectedPos: Int
+        betSelectedPos: Int,
     ) {
         aliveActivity<LotActivity>()?.lotMenuPlayLayer1Rv?.setListOrUpdate(betTypeDatas) {
             LotPlayAdapter(betTypeDatas).apply {
@@ -252,7 +254,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mPlaySelectedTmpRef = -1
     private fun updatePlayLayer2List(
         betTypeItem: PlayItem?, playSelectedPos: Int,
-        betSelectedPos: Int
+        betSelectedPos: Int,
     ) {
         mPlaySelectedTmpRef = playSelectedPos
         vm.initBetSelected(betTypeItem) { onBetSelected(it) }
@@ -356,4 +358,73 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         super.onDestroyView()
         vm.cachePlay4GameId()
     }
+
+    //region digit万、千、百、十个
+    private fun initDigit() {
+
+    }
+
+    private fun setLeastDigit(leastDigit: Int) {
+        lot_jd_bet_digit_ge_cb.isChecked = leastDigit >= 1
+        lot_jd_bet_digit_shi_cb.isChecked = leastDigit >= 2
+        lot_jd_bet_digit_bai_cb.isChecked = leastDigit >= 3
+        lot_jd_bet_digit_qian_cb.isChecked = leastDigit >= 4
+        lot_jd_bet_digit_wan_cb.isChecked = leastDigit >= 5
+    }
+
+    private fun clearAllDigit() {
+        lot_jd_bet_digit_ge_cb.isChecked = false
+        lot_jd_bet_digit_shi_cb.isChecked = false
+        lot_jd_bet_digit_bai_cb.isChecked = false
+        lot_jd_bet_digit_qian_cb.isChecked = false
+        lot_jd_bet_digit_wan_cb.isChecked = false
+    }
+
+    private fun getSelectedDigit() {
+        val sb = StringBuilder()
+        if (lot_jd_bet_digit_wan_cb.isChecked()) {
+            sb.append("0").append(",")
+        }
+        if (lot_jd_bet_digit_qian_cb.isChecked()) {
+            sb.append("1").append(",")
+        }
+        if (lot_jd_bet_digit_bai_cb.isChecked()) {
+            sb.append("2").append(",")
+        }
+        if (lot_jd_bet_digit_shi_cb.isChecked()) {
+            sb.append("3").append(",")
+        }
+        if (lot_jd_bet_digit_ge_cb.isChecked()) {
+            sb.append("4").append(",")
+        }
+
+        //移除最后一个“,”
+
+        //移除最后一个“,”
+        if (sb.length > 1) {
+            sb.deleteCharAt(sb.length - 1)
+        }
+    }
+
+    private fun verifyDigit(leastDigit: Int): Boolean {
+        var correct = false
+        var checkedCount: Short = 0
+        if (lot_jd_bet_digit_wan_cb.isChecked()) {
+            checkedCount++
+        }
+        if (lot_jd_bet_digit_qian_cb.isChecked()) {
+            checkedCount++
+        }
+        if (lot_jd_bet_digit_bai_cb.isChecked()) {
+            checkedCount++
+        }
+        if (lot_jd_bet_digit_shi_cb.isChecked()) {
+            checkedCount++
+        }
+        if (lot_jd_bet_digit_ge_cb.isChecked()) {
+            checkedCount++
+        }
+        return checkedCount >= leastDigit
+    }
+    //endregion
 }

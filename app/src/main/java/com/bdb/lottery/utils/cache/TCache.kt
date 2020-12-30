@@ -176,19 +176,19 @@ class TCache @Inject constructor() {
         Caches.putInt(gameIdText + CACHE.LOT_PLAY_ID_CACHE, playId)
     }
 
-    fun playLayer1Cache4GameId(gameId: Int): Int {
+    fun playCacheByGameId(gameId: Int): Int {
         return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_LAYER1_CACHE, 0)
     }
 
-    fun playGroupCache4GameId(gameId: Int): Int {
+    fun playGroupCacheByGameId(gameId: Int): Int {
         return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_GROUP_CACHE, 0)
     }
 
-    fun playLayer2Cache4GameId(gameId: Int): Int {
+    fun betCacheByGameId(gameId: Int): Int {
         return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_LAYER2_CACHE, 0)
     }
 
-    fun playIdCache4GameId(gameId: Int): Int {
+    fun playIdCacheByGameId(gameId: Int): Int {
         return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_ID_CACHE, 0)
     }
     //endregion

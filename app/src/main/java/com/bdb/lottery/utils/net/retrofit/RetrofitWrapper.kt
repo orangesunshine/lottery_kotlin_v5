@@ -51,7 +51,7 @@ class RetrofitWrapper @Inject constructor(
                 {
                     val code = it.code
                     val msg = it.msg
-                    Timber.d("observe__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
+                    Timber.d("observe__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}, class: ${it.javaClass.simpleName}")
                     toast.showError(msg)
                     error?.invoke(code, msg)
                     if (code >= 500) domainLocalDs.clearDomain()

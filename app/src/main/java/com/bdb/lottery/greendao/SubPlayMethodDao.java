@@ -1,4 +1,4 @@
-package com.orange.bdb;
+package com.bdb.lottery.greendao;
 
 import java.util.List;
 import java.util.ArrayList;

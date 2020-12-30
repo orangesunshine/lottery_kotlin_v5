@@ -57,6 +57,11 @@
     <string name="lot_jd_put_shopping_bar">加入购彩篮</string>
     <string name="lot_jd_closed">封盘中</string>
     <string name="lot_jd_direct_betting">直接投注</string>
+    <string name="lot_jd_bet_digit_wan">万位</string>
+    <string name="lot_jd_bet_digit_qian">千位</string>
+    <string name="lot_jd_bet_digit_bai">百位</string>
+    <string name="lot_jd_bet_digit_shi">十位</string>
+    <string name="lot_jd_bet_digit_ge">个位</string>
 
     <!--dialog-->
     <string name="cancel_bt_text">取消</string>

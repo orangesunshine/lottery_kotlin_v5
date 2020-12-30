@@ -1,7 +1,9 @@
 package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
+import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.CODE
+import com.bdb.lottery.datasource.account.AccountLocalDs
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.gson.Gsons
@@ -20,7 +22,6 @@ import okhttp3.ResponseBody
 import okio.Buffer
 import retrofit2.Converter
 import retrofit2.Retrofit
-import timber.log.Timber
 import java.io.*
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -31,6 +32,7 @@ import javax.inject.Singleton
 @Singleton
 class BdbGsonConverterFactory @Inject constructor(
     private val gson: Gson,
+    private val accountLocalDs: AccountLocalDs,
     private val tActivityLifecycle: TActivityLifecycle,
 ) : Converter.Factory() {
     override fun responseBodyConverter(
@@ -51,7 +53,10 @@ class BdbGsonConverterFactory @Inject constructor(
         methodAnnotations: Array<Annotation>,
         retrofit: Retrofit,
     ): Converter<*, RequestBody> {
-        return BdbGsonRequestBodyConverter(gson, gson.getAdapter(TypeToken.get(type)))
+        return BdbGsonRequestBodyConverter(gson,
+            gson.getAdapter(TypeToken.get(type)),
+            accountLocalDs,
+            tActivityLifecycle)
     }
 }
 
@@ -62,7 +67,7 @@ internal class BdbGsonResponseBodyConverter<T>(
     private val tActivityLifecycle: TActivityLifecycle,
 ) :
     Converter<ResponseBody, T> {
-    @Throws(IOException::class)
+    @Throws(Exception::class)
     override fun convert(value: ResponseBody): T {
         var bufferedReader: BufferedReader? = null
         val string = value.string()
@@ -80,7 +85,6 @@ internal class BdbGsonResponseBodyConverter<T>(
                 }
                 return result
             } catch (e: Exception) {
-                Timber.d("BdbGsonRequestBodyConverter: ${e}")
                 //ApiException返回自定义
                 throw ApiException(BaseResponse(e.code, e.msg, string))
             } finally {
@@ -97,7 +101,7 @@ internal class BdbGsonResponseBodyConverter<T>(
 
 internal class GsonResponseBodyConverter<T>(
     private val gson: Gson,
-    private val adapter: TypeAdapter<T>
+    private val adapter: TypeAdapter<T>,
 ) :
     Converter<ResponseBody, T> {
     @Throws(IOException::class)
@@ -120,9 +124,11 @@ internal class GsonResponseBodyConverter<T>(
 internal class BdbGsonRequestBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
+    private val accountLocalDs: AccountLocalDs,
+    private val tActivityLifecycle: TActivityLifecycle,
 ) :
     Converter<T, RequestBody> {
-    @Throws(IOException::class)
+    @Throws(Exception::class)
     override fun convert(value: T): RequestBody {
         val buffer = Buffer()
         val writer: Writer = OutputStreamWriter(buffer.outputStream(), UTF_8)

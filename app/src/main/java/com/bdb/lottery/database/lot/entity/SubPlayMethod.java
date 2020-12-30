@@ -7,10 +7,9 @@ import org.greenrobot.greendao.annotation.Property;
 import org.greenrobot.greendao.annotation.ToOne;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.DaoException;
-
-import com.orange.bdb.DaoSession;
-import com.orange.bdb.SubPlayMethodDescDao;
-import com.orange.bdb.SubPlayMethodDao;
+import com.bdb.lottery.greendao.DaoSession;
+import com.bdb.lottery.greendao.SubPlayMethodDescDao;
+import com.bdb.lottery.greendao.SubPlayMethodDao;
 
 //active:为true可以增删改，@Transient 表示不存储在数据库中
 @Entity(nameInDb = "Sub_play_method", createInDb = false)
@@ -195,9 +194,7 @@ public class SubPlayMethod {
         myDao.update(this);
     }
 
-    /**
-     * called by internal mechanisms, do not call yourself.
-     */
+    /** called by internal mechanisms, do not call yourself. */
     @Generated(hash = 299391704)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;

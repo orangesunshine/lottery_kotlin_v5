@@ -9,7 +9,7 @@ AndroidConfigVersion.targetSdkVersion = 29
 AndroidConfigVersion.versionCode = 1
 AndroidConfigVersion.versionName = "1.0"
 AndroidConfigVersion.buildToolsVersion = "30.0.2"
-AndroidConfigVersion.appId = "com.orange.bdb"
+AndroidConfigVersion.appId = "com.bdb.lottery"
 
 def appcompat_version = "1.2.0"
 def espresso_core_version = "3.3.0"

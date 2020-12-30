@@ -8,10 +8,6 @@ import org.greenrobot.greendao.annotation.ToMany;
 
 import java.util.List;
 import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
-import com.orange.bdb.DaoSession;
-import com.orange.bdb.SubPlayMethodDao;
-import com.orange.bdb.SubPlayMethodDescDao;
 
 @Entity(nameInDb = "Sub_play_method_desc", createInDb = false)
 public class SubPlayMethodDesc {

@@ -19,6 +19,7 @@ import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.statusbar
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.widget.LoadingLayout
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -150,6 +151,7 @@ open class BaseActivity(
 
     override fun onDestroy() {
         super.onDestroy()
+        toast.cancel()
         mActivity?.clear()
         mActivity = null
     }

@@ -9,6 +9,7 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.CODE
+import com.bdb.lottery.datasource.account.AccountLocalDs
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.thread.TThread
 import com.bdb.lottery.utils.ui.keyboard.KeyBoards
@@ -20,7 +21,8 @@ import javax.inject.Singleton
 
 @Singleton
 class TActivityLifecycle @Inject constructor(
-    private val tThread: TThread,
+    val tThread: TThread,
+    private val accountLocalDs: AccountLocalDs,
 ) :
     Application.ActivityLifecycleCallbacks {
 
@@ -162,7 +164,7 @@ class TActivityLifecycle @Inject constructor(
         return getTopActivity() ?: BdbApp.sApp
     }
 
-    private fun getTopActivity(): Activity? {
+    fun getTopActivity(): Activity? {
         for (activity in getActivityList()) {
             if (Activitys.isActivityAlive(activity))
                 return activity
@@ -171,26 +173,36 @@ class TActivityLifecycle @Inject constructor(
     }
 
     //顶层activity打开页面
-    private inline fun <reified T : Activity> topStartActivity() {
+    inline fun <reified T : Activity> topStartActivity(delayMills: Long = 0) {
         val topActivity = getTopActivity()
         if (isAppForeground() && topActivity !is T) {
-            topActivity?.start<T>()
-            popAllActivity()
+            if (delayMills > 0) {
+                tThread.retrofitNewThreadDelayed({
+                    topActivity?.start<T>()
+                    popAllActivity()
+                }, delayMills)
+            } else {
+                topActivity?.start<T>()
+                popAllActivity()
+            }
         }
     }
 
-    private fun popAllActivity() {
-        var pop = mActivityStack.pop()
-        while (null != pop) {
-            pop.finish()
-            pop = mActivityStack.pop()
+    fun popAllActivity() {
+        val iterator = mActivityStack.iterator()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            iterator.remove()
+            next.finish()
         }
     }
 
     //根据后端code跳转登录
     fun topLogin(response: BaseResponse<*>) {
-        if (CODE.LIST_TOLOGIN.contains(response.code))
-            topStartActivity<LoginActivity>()
+        if (CODE.LIST_TOLOGIN.contains(response.code)) {
+            accountLocalDs.saveIsLogin(false)
+            topStartActivity<LoginActivity>(500)
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////

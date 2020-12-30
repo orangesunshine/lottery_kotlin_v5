@@ -101,10 +101,10 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
 
     private fun playCacheByGameId(gameId: Int) {
-        mPlaySelectedPos = tCache.playLayer1Cache4GameId(gameId)
-        mGroupSelectedPos = tCache.playGroupCache4GameId(gameId)
-        mBetSelectedPos = tCache.playLayer2Cache4GameId(gameId)
-        mPlayId = tCache.playIdCache4GameId(gameId)
+        mPlaySelectedPos = tCache.playCacheByGameId(gameId)
+        mGroupSelectedPos = tCache.playGroupCacheByGameId(gameId)
+        mBetSelectedPos = tCache.betCacheByGameId(gameId)
+        mPlayId = tCache.playIdCacheByGameId(gameId)
     }
 
     fun cachePlay4GameId() {
@@ -193,7 +193,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
-    fun checkNdGenLotParams(
+    fun verifyNdGenLotParams(
         betNums: String,//投注号码
         multiple: String,//倍数
         toast: (String) -> Unit,

@@ -43,7 +43,7 @@ android {
 
     greendao {
         schemaVersion 23  //数据库版本
-        daoPackage AndroidConfigVersion.appId //包名
+        daoPackage AndroidConfigVersion.appId+".greendao" //包名
         targetGenDir 'src/main/java'
     }
 

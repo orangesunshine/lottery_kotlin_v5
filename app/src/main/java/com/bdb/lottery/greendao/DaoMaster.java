@@ -1,4 +1,4 @@
-package com.orange.bdb;
+package com.bdb.lottery.greendao;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

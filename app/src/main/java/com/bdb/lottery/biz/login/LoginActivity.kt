@@ -82,7 +82,6 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
 
             //校验验证码
             val verifycode: String = loginVerifyCodeEt.text.toString()
-
             vm.login(username, pwd, rememberPwd, verifycode) { startNdFinish<MainActivity>() }
         }
 
@@ -108,7 +107,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
     }
 
     //显示验证码
-    fun showValidate(validate: Boolean?) {
+    private fun showValidate(validate: Boolean?) {
         validate?.let {
             if (it) {
                 login_verifycode_ll.visible(true)
