@@ -35,6 +35,6 @@ data class PlayLayer2Item(
 ) {
     //玩法title
     fun getPlayTitle(): String {
-        return rootName + " · " + betName;
+        return "$rootName · $betName";
     }
 }

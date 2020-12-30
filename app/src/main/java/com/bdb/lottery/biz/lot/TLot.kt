@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
 import com.bdb.lottery.biz.lot.jd.LotJdFragment
-import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.time.TTime
@@ -18,7 +17,6 @@ import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
-import kotlinx.android.synthetic.main.lot_activity.*
 import javax.inject.Inject
 
 @ActivityScoped
@@ -108,7 +106,7 @@ class TLot @Inject constructor(
             if (split.size > 2) split[2] else if (split.size > 1) split[1] else if (split.isNotEmpty()) split[0] else "00"
 
         //更新经典状态
-        lotJdFragment?.updateStatus(isClosed)
+        lotJdFragment?.updateLotStatus(isClosed)
         return if (showHourReal) {
             arrayOf(hour, minute, second)
         } else {

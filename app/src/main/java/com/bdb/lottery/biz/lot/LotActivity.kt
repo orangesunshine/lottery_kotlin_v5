@@ -32,6 +32,7 @@ import com.bdb.lottery.utils.ui.activity.Activitys
 import com.bdb.lottery.utils.ui.keyboard.KeyBoards
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.bdb.lottery.utils.webview.TWebView
+import com.bdb.lottery.widget.LoadingLayout
 import com.google.android.material.tabs.TabLayout
 import com.sunfusheng.marqueeview.MarqueeView
 import dagger.hilt.android.AndroidEntryPoint
@@ -65,10 +66,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private val vm by viewModels<LotViewModel>()
     private var mExplContent = 0//0开奖记录、1coco动画、2直播
     private var mPlayMenuVisible = false
+    lateinit var mPlayLoadingLayout: LoadingLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //views
         initCup()//奖杯
+        mPlayLoadingLayout = LoadingLayout.wrap(lotMenuLl)
         initCocosWebView()//初始化cocoswebview、并下载cocos动画文件
         lotHistoryRv.layoutManager = LinearLayoutManager(this)
         lotMenuPlayLayer1Rv.layoutManager = GridLayoutManager(this, 3, RecyclerView.VERTICAL, false)
@@ -216,8 +219,10 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 倒计时
     @Inject
     lateinit var tTime: TTime
+    private var mIsClose = false
     private fun countdown(currentTime: CountDownData.CurrentTime?) {
         currentTime?.let {
+            mIsClose = it.isclose
             if (mCountDownGeted.compareAndSet(false, true)) {
                 lazyLoadCocos()
             }
@@ -228,7 +233,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             lotCountdownFourthTv.visible(!showHour)
             val issue = Games.shortIssueText(currentTime.issueno, mGameType)
             lotIssueStatusTv.text = StringBuilder().append(issue).append("期 ")
-                .append(if (it.isclose) "封盘中" else "受注中").toString()
+                .append(if (mIsClose) "封盘中" else "受注中").toString()
             lotCountdownFirstTv.text = if (showHour) data[0] else data[0].let {
                 val charArray = it.toCharArray()
                 if (charArray.isNotEmpty()) charArray[0].toString() else "0"
@@ -274,12 +279,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     override fun onStart() {
         super.onStart()
-        mMarqueeView?.startFlipping()
+        mMarqueeView.startFlipping()
     }
 
     override fun onStop() {
         super.onStop()
-        mMarqueeView?.stopFlipping()
+        mMarqueeView.stopFlipping()
     }
     //endregion
 
@@ -441,6 +446,18 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         success: (() -> Unit)? = null,
         error: ((String) -> Unit)? = null,
     ) {
+        //验证倒计时相关：是否获取倒计时、彩种是否休市、彩种是否封盘
+        if (!mCountDownGeted.get()) {
+            vm.bindService(mGameId)
+            toast.showWarning("正在获取期号数据，请稍后再试")
+            return
+        }
+
+        if (mIsClose) {
+            toast.showWarning("当前彩种已封盘")
+            return
+        }
+
         lotDialog.gameId(mGameId).lotName(mGameName).lotPlayName(mPlayName).lotNums(nums)
             .lotMultiply(multiply).lotAmount(2.0, unit)
         lotDialog.show(supportFragmentManager)

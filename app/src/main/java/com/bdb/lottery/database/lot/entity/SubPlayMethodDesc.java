@@ -23,7 +23,7 @@ public class SubPlayMethodDesc {
     private String group_name;
     private String play_method_description;
     private String icon_ids;
-    private String digit;
+    private String digit;//位数(万、千、百、十、个对应0,1,2,3,4)
     private String one_zhu_item_counts;
     private String ball_groups_item_title;
     private String belongto;

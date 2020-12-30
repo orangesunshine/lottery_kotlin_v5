@@ -46,6 +46,9 @@ class LoadingLayout @JvmOverloads constructor(
     var mEmptyText: CharSequence?
     var mErrorImage: Int
     var mErrorText: CharSequence?
+    var mRetryClickListener: OnClickListener = OnClickListener {
+        mRetryListener?.onClick(it)
+    }
     var mRetryListener: OnClickListener? = null
     var mTextColor: Int
     var mTextSize: Int
@@ -196,7 +199,9 @@ class LoadingLayout @JvmOverloads constructor(
                 setTextColor(mTextColor)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextSize.toFloat())
             }
-            mRetryListener?.let { layout.setOnClickListener(it) }
+            layout.setOnClickListener {
+                mRetryClickListener.onClick(it)
+            }
         }
         return layout
     }
