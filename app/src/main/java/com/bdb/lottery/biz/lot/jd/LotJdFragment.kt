@@ -13,6 +13,7 @@ import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.lot.LotActivity
 import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
@@ -20,6 +21,7 @@ import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.dialog.ConfirmDialog
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.validIndex
+import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import com.bdb.lottery.utils.convert.Converts
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -45,15 +47,12 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_remove_repeat_nums_tv.setOnClickListener {
             mTextWatcher.repeatNdErrorNums(
                 lot_jd_single_input_et.text.toString().trim()
-                    .replace(",", "")
+                    .replace(",", ""), false
             )
         }
 
         //清空号码
         initclearNums()
-
-        //初始化万、千、百、十、个
-        initDigit();
 
         //投注参数
         initAmountUnitPopWin()//单位
@@ -79,16 +78,24 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //下注
         lot_jd_direct_betting_tv.setOnClickListener {
+            mTextWatcher.repeatNdErrorNums(
+                lot_jd_single_input_et.text.toString().trim().replace(",", ""), false
+            )
             vm.verifyNdGenLotParams(
                 lot_jd_single_input_et.text.toString().trim(),
                 lot_jd_multiple_et.text.toString().trim(),
-                { toast.showWarning(it) },
-                { lotParams: LotParams?, error: (String) -> Unit ->
-                    aliveActivity<LotActivity>()?.lotByDialog(
-                        lotParams,
-                        error = error
-                    )
-                })
+                mMoneyUnit,
+                getSelectedDigit(),
+                verifyDigit(mAtLeastDigit),
+                mAtLeastDigit,
+                mNoteCount,
+                toast,
+            ) { lotParam: LotParam?, error: (String) -> Unit ->
+                aliveActivity<LotActivity>()?.lotByDialog(
+                    lotParam,
+                    error = error
+                )
+            }
         }
     }
 
@@ -97,19 +104,38 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         aliveActivity<LotActivity>()?.mPlayLoadingLayout?.setRetryListener {
             vm.getBetType()
         }
+        vm.initAmountUnit {
+            mMoneyUnit = it
+            log_jd_money_unit_tv.text = Converts.unit2String(it)
+        }
         vm.initGame()
         vm.getBetType()
     }
 
+    private var mNeedDigit: Boolean? = null
+    private var mAtLeastDigit: Int? = null
     override fun observe() {
         vm.mGameBetTypeData.getLiveData().observe(this) {
             vm.renderPlayNdBet { playSelectedPos, betSelectedPos ->
                 updatePlayList(betTypeDatas = it, playSelectedPos, betSelectedPos)
             }
         }
+        vm.mNeedDigit.getLiveData().observe(this) {
+            lot_jd_bet_digit_ll.visible(it)
+            mNeedDigit = it
+        }
+        vm.mIsSingleStyle.getLiveData().observe(this) {
+            switchDanFuStyle(it)
+        }
+        vm.mAtLeastDigit.getLiveData().observe(this) {
+            mAtLeastDigit = it
+            setAtLeastDigit(mAtLeastDigit)
+        }
     }
 
     //region 单式输入框
+    var mSingleNumCount: Int = 5//单注号码数
+    var mNoteCount: Int = 0//投注注数
     private val mTextWatcher = object : TextWatcherAdapter() {
         var end = false
         var canPutBasket = true
@@ -123,7 +149,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 watcher = true
                 return
             }
-            val oneNote = s?.length ?: 0 >= vm.mSingleNumCount//一注
+            val oneNote = s?.length ?: 0 >= mSingleNumCount//一注
             if (canPutBasket != oneNote) {
                 //输入或清空
                 canPutBasket = oneNote
@@ -137,15 +163,26 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
             if (end) {
                 s?.toString()?.replace(",", "")?.let {
-                    if (it.length <= vm.mSingleNumCount) return@let
+                    if (it.length <= mSingleNumCount) return@let
                     repeatNdErrorNums(it)
                 }
             }
         }
 
-        //删除错误重复号码
-        fun repeatNdErrorNums(text: String) {
-            val repeatNdErrorNums = vm.repeatNdErrorNums(text)
+        fun repeatNdErrorNums(text: String, fromInput: Boolean = true) {
+            mNoteCount = 0
+            if (text.length <= mSingleNumCount) return
+            val buff = StringBuilder(text)
+            var offset = mSingleNumCount
+            while (offset < buff.length && offset > 0) {
+                buff.insert(offset, ",")
+                offset += 1 + mSingleNumCount
+                mNoteCount++
+            }
+            val repeatNdErrorNums =
+                if (!fromInput && buff.isNotEmpty() && buff.length - buff.lastIndexOf(",") <= mSingleNumCount) {
+                    buff.substring(0, buff.lastIndexOf(","))
+                } else buff.toString()
             watcher = false
             lot_jd_single_input_et.setText(repeatNdErrorNums)
             lot_jd_single_input_et.setSelection(repeatNdErrorNums?.length ?: 0)
@@ -179,18 +216,17 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mUnitPopWindow.setPattern(unitPattern)
     }
 
+    private var mMoneyUnit: Int = 1
     private fun initAmountUnitPopWin() {
         mUnitPopWindow.init { view: View ->
             mUnitPopWindow.dismiss()
-            var amountUnit = 1
             when (view.id) {
-                R.id.lot_jd_money_unit_yuan_tv -> amountUnit = 1
-                R.id.lot_jd_money_unit_jiao_tv -> amountUnit = 2
-                R.id.lot_jd_money_unit_fen_tv -> amountUnit = 3
-                R.id.lot_jd_money_unit_li_tv -> amountUnit = 4
+                R.id.lot_jd_money_unit_yuan_tv -> mMoneyUnit = 1
+                R.id.lot_jd_money_unit_jiao_tv -> mMoneyUnit = 2
+                R.id.lot_jd_money_unit_fen_tv -> mMoneyUnit = 3
+                R.id.lot_jd_money_unit_li_tv -> mMoneyUnit = 4
             }
-            vm.setAmountUnit(amountUnit)
-            log_jd_money_unit_tv.text = Converts.unit2String(amountUnit)
+            log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
         }
     }
     //endregion
@@ -199,7 +235,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private fun initclearNums() {
         //清空确认弹窗
         mConfirmDialog.contentText("是否清除已选择号码").onConfirm {
-            if (vm.isSingleStyle()) {
+            if (MODE_SINGLE == mMode) {
                 //单式
                 lot_jd_single_input_et.setText("")
 
@@ -356,31 +392,25 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        vm.cacheMoneyUnit(mMoneyUnit)
         vm.cachePlay4GameId()
     }
 
     //region digit万、千、百、十个
-    private fun initDigit() {
-
+    private fun setAtLeastDigit(atLeastDigit: Int?) {
+        val visible = null != atLeastDigit
+        lot_jd_bet_digit_ll.visible(visible)
+        if (visible) {
+            lot_jd_bet_digit_ge_cb.isChecked = atLeastDigit!! >= 1
+            lot_jd_bet_digit_shi_cb.isChecked = atLeastDigit >= 2
+            lot_jd_bet_digit_bai_cb.isChecked = atLeastDigit >= 3
+            lot_jd_bet_digit_qian_cb.isChecked = atLeastDigit >= 4
+            lot_jd_bet_digit_wan_cb.isChecked = atLeastDigit >= 5
+        }
     }
 
-    private fun setLeastDigit(leastDigit: Int) {
-        lot_jd_bet_digit_ge_cb.isChecked = leastDigit >= 1
-        lot_jd_bet_digit_shi_cb.isChecked = leastDigit >= 2
-        lot_jd_bet_digit_bai_cb.isChecked = leastDigit >= 3
-        lot_jd_bet_digit_qian_cb.isChecked = leastDigit >= 4
-        lot_jd_bet_digit_wan_cb.isChecked = leastDigit >= 5
-    }
-
-    private fun clearAllDigit() {
-        lot_jd_bet_digit_ge_cb.isChecked = false
-        lot_jd_bet_digit_shi_cb.isChecked = false
-        lot_jd_bet_digit_bai_cb.isChecked = false
-        lot_jd_bet_digit_qian_cb.isChecked = false
-        lot_jd_bet_digit_wan_cb.isChecked = false
-    }
-
-    private fun getSelectedDigit() {
+    private fun getSelectedDigit(): String {
+        if (mNeedDigit != true) return ""
         val sb = StringBuilder()
         if (lot_jd_bet_digit_wan_cb.isChecked()) {
             sb.append("0").append(",")
@@ -399,32 +429,44 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
 
         //移除最后一个“,”
-
-        //移除最后一个“,”
         if (sb.length > 1) {
             sb.deleteCharAt(sb.length - 1)
         }
+        return sb.toString()
     }
 
-    private fun verifyDigit(leastDigit: Int): Boolean {
-        var correct = false
+    private fun verifyDigit(atLeastDigit: Int?): Boolean {
+        if (null == atLeastDigit) return true
         var checkedCount: Short = 0
-        if (lot_jd_bet_digit_wan_cb.isChecked()) {
+        if (lot_jd_bet_digit_wan_cb.isChecked) {
             checkedCount++
         }
-        if (lot_jd_bet_digit_qian_cb.isChecked()) {
+        if (lot_jd_bet_digit_qian_cb.isChecked) {
             checkedCount++
         }
-        if (lot_jd_bet_digit_bai_cb.isChecked()) {
+        if (lot_jd_bet_digit_bai_cb.isChecked) {
             checkedCount++
         }
-        if (lot_jd_bet_digit_shi_cb.isChecked()) {
+        if (lot_jd_bet_digit_shi_cb.isChecked) {
             checkedCount++
         }
-        if (lot_jd_bet_digit_ge_cb.isChecked()) {
+        if (lot_jd_bet_digit_ge_cb.isChecked) {
             checkedCount++
         }
-        return checkedCount >= leastDigit
+        return checkedCount >= atLeastDigit
+    }
+    //endregion
+
+    //region 切换单式、复式
+    private val MODE_SINGLE = 0//单式
+    private val MODE_DUPLEX = 1//复式
+    private var mMode = MODE_DUPLEX//模式
+    private fun switchDanFuStyle(isSingleStyle: Boolean) {
+        mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
+    }
+
+    fun isSingleStyle(): Boolean {
+        return MODE_SINGLE == mMode
     }
     //endregion
 }

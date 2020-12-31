@@ -168,28 +168,36 @@ class TCache @Inject constructor() {
     //endregion
 
     //region 经典：gameid对应cb选中玩法缓存
-    fun cachePlay4GameId(gameId: Int, layer1: Int, group: Int, layer2: Int, playId: Int) {
+    fun cachePlay4GameId(gameId: Int, play: Int, group: Int, bet: Int, playId: Int) {
         val gameIdText = gameId.toString()
-        Caches.putInt(gameIdText + CACHE.LOT_PLAY_LAYER1_CACHE, layer1)
-        Caches.putInt(gameIdText + CACHE.LOT_PLAY_GROUP_CACHE, group)
-        Caches.putInt(gameIdText + CACHE.LOT_PLAY_LAYER2_CACHE, layer2)
-        Caches.putInt(gameIdText + CACHE.LOT_PLAY_ID_CACHE, playId)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_CACHE, play)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_GROUP_CACHE, group)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_BET_CACHE, bet)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_ID_CACHE, playId)
     }
 
     fun playCacheByGameId(gameId: Int): Int {
-        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_LAYER1_CACHE, 0)
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PLAY_CACHE, 0)
     }
 
     fun playGroupCacheByGameId(gameId: Int): Int {
-        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_GROUP_CACHE, 0)
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_GROUP_CACHE, 0)
     }
 
     fun betCacheByGameId(gameId: Int): Int {
-        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_LAYER2_CACHE, 0)
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_BET_CACHE, 0)
     }
 
     fun playIdCacheByGameId(gameId: Int): Int {
-        return Caches.getInt(gameId.toString() + CACHE.LOT_PLAY_ID_CACHE, 0)
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PLAY_ID_CACHE, 0)
     }
     //endregion
+
+    fun cacheMoneyUnit(gameId: Int, playId: Int, amountUnit: Int) {
+        Caches.putInt("$gameId${CACHE.LOT_JD_MONEY_UNIT_CACHE}$playId", amountUnit)
+    }
+
+    fun moneyUnitCache(gameId: Int, playId: Int): Int {
+        return Caches.getInt("$gameId${CACHE.LOT_JD_MONEY_UNIT_CACHE}$playId", 1)
+    }
 }

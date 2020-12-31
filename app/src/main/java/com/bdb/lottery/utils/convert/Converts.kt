@@ -157,6 +157,16 @@ object Converts {
         }
     }
 
+    fun unit2Params(unit: Int): Int {
+        return when (unit) {
+            1 -> 1
+            2 -> 10
+            3 -> 100
+            4 -> 1000
+            else -> 1
+        }
+    }
+
     //下注单位转换
     fun unit2Enum(unit: Int): AmountUnit {
         return when (unit) {

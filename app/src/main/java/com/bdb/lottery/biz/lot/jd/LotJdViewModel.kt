@@ -8,11 +8,16 @@ import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.common.LiveDataWraper
 import com.bdb.lottery.datasource.lot.LotLocalDs
 import com.bdb.lottery.datasource.lot.LotRemoteDs
+import com.bdb.lottery.datasource.lot.data.LotParam
+import com.bdb.lottery.datasource.lot.data.SingleBet
+import com.bdb.lottery.datasource.lot.data.TouZhuHaoMa
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayItem
+import com.bdb.lottery.datasource.lot.data.jd.SingledInfo
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
+import com.bdb.lottery.utils.ui.toast.AbsToast
 import javax.inject.Inject
 
 class LotJdViewModel @ViewModelInject @Inject constructor(
@@ -22,12 +27,20 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 ) : BaseViewModel() {
     var mToken: String? = null
     val mGameBetTypeData = LiveDataWraper<GameBetTypeData?>()
+    val mNeedDigit = LiveDataWraper<Boolean>()
+    val mIsSingleStyle = LiveDataWraper<Boolean>()
+    val mAtLeastDigit = LiveDataWraper<Int?>()
+    private var mSubPlayMethod: SubPlayMethod? = null
 
     //region 初始化彩票
-    private var mUserBonus: Double? = 0.0
+    private var mUserBonus: Double = 0.0
+    private var mUserRebate: Double = 0.0
+    private var mSingledInfo: SingledInfo? = null
     fun initGame() {
         lotRemoteDs.initGame(mGameId.toString()) {
-            mUserBonus = it?.userBonus
+            mSingledInfo = it?.singledInfo
+            mUserBonus = it?.userBonus ?: 0.0
+            mUserRebate = it?.user ?: 0.0
             mToken = it?.token
         }
     }
@@ -42,7 +55,6 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region 数据库查找玩法说明
-    private var mSubPlayMethod: SubPlayMethod? = null
     fun getLocalBetType(playId: Int) {
         lotLocalDs.queryBetTypeByPlayId(playId)
             ?.let {
@@ -51,27 +63,10 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
                 } else {
                     if (!it.isNullOrEmpty()) it.last() else null
                 }
-                switchDanFuStyle(mSubPlayMethod?.subPlayMethodDesc?.isdanshi ?: true)
+                mNeedDigit.setData(mSubPlayMethod?.subPlayMethodDesc?.is_need_show_weizhi == true)
+                mAtLeastDigit.setData(mSubPlayMethod?.subPlayMethodDesc?.atleast_wei_shu?.toInt())
+                mIsSingleStyle.setData(mSubPlayMethod?.subPlayMethodDesc?.isdanshi != false)
             }
-    }
-    //endregion
-
-    //region 删除重复号码
-    var mSingleNumCount: Int = 5//单注号码数
-
-    var mNoteCount: Int = 0//投注注数
-
-    fun repeatNdErrorNums(text: String): String? {
-        mNoteCount = 0
-        if (text.length <= mSingleNumCount) return null
-        val buff = StringBuilder(text)
-        var offset = mSingleNumCount
-        while (offset < buff.length && offset > 0) {
-            buff.insert(offset, ",")
-            offset += 1 + mSingleNumCount
-            mNoteCount++
-        }
-        return buff.toString()
     }
     //endregion
 
@@ -162,10 +157,10 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             if (mGroupSelectedPos < it.size) {
                 it.get(mGroupSelectedPos).list?.let {
                     if (mBetSelectedPos < it.size) {
-                        val item = it[mBetSelectedPos]
-                        mSelectedBetItem = item
-                        mPlayId = item.betType
-                        onBetSelected.invoke(item)
+                        val bet = it[mBetSelectedPos]
+                        mSelectedBetItem = bet
+                        mPlayId = bet.betType
+                        onBetSelected.invoke(bet)
                     }
                 }
             }
@@ -174,49 +169,187 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region 金额单位
-    var mAmountUnit: Int = 1//默认元
-    fun setAmountUnit(unit: Int) {
-        mAmountUnit = unit
-    }
-    //endregion
-
-    //region 切换单式、复式
-    private val MODE_SINGLE = 0//单式
-    private val MODE_DUPLEX = 1//复式
-    private var mMode = MODE_DUPLEX//模式
-    private fun switchDanFuStyle(isSingleStyle: Boolean) {
-        mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
+    fun initAmountUnit(amountUnit: (Int) -> Unit) {
+        amountUnit.invoke(moneyUnitCache())
     }
 
-    fun isSingleStyle(): Boolean {
-        return MODE_SINGLE == mMode
+    fun cacheMoneyUnit(moneyUnit: Int) {
+        tCache.cacheMoneyUnit(mGameId, mPlayId, moneyUnit)
+    }
+
+    private fun moneyUnitCache(): Int {
+        return tCache.moneyUnitCache(mGameId, mPlayId)
     }
     //endregion
 
     fun verifyNdGenLotParams(
         betNums: String,//投注号码
         multiple: String,//倍数
-        toast: (String) -> Unit,
-        lot: (params: LotParams?, error: (String) -> Unit) -> Unit
+        moneyUnit: Int,//金额单位
+        digit: String,//用户选中digit
+        verifyDigit: Boolean,//验证位置
+        atLeastDigit: Int?,//最少位置
+        noteCount: Int,//注数
+        toast: AbsToast,
+        lot: (lotParam: LotParam, error: (String) -> Unit) -> Unit
     ) {
-        if (null == mSubPlayMethod) {
+        if (null == mSelectedBetItem || null == mSubPlayMethod) {
             getBetType()
-            toast.invoke("正在获取玩法配置")
+            toast.showWarning("正在获取玩法配置")
             return
         }
+
+        if (null == mToken) {
+            initGame()
+            toast.showWarning("正在初始化彩票")
+            return
+        }
+
         //验证digit，选中位置个数
+        if (!verifyDigit) {
+            toast.showError("请至少选择${atLeastDigit}个位置")
+            return
+        }
 
         //验证注数大于0
-        repeatNdErrorNums(betNums)
-        if (mNoteCount < 1) {
-            toast.invoke("请按玩法规则进行投注")
+        if (noteCount < 1) {
+            toast.showError("请按玩法规则进行投注")
             return
         }
+
+        val touZhuHaoMa = genTouZhuHaoMa(
+            betNums,
+            multiple.toInt(),
+            moneyUnit,
+            digit,
+            verifyDigit,
+            atLeastDigit,
+            noteCount,
+            getAmount(noteCount, moneyUnit, multiple.toInt()),
+            getSingleMoney(mUserRebate, mSelectedBetItem!!.baseScale, multiple.toInt()),
+            mSelectedBetItem!!,
+            mSingledInfo,
+            toast
+        ) ?: return
         lot.invoke(
-            LotParams.genLotParamsByPlayConfig(
-                mNoteCount, multiple = multiple.toInt(), betNums,
-                Converts.unit2Enum(mAmountUnit), mSelectedBetItem, mSubPlayMethod
+            LotParam(
+                mGameId.toString(), mGameName.toString(), null, false,
+                true, mToken!!, listOf(touZhuHaoMa), null
             )
         ) { mToken = it }
     }
+
+    //总额
+    private fun getAmount(noteCount: Int, moneyUnit: Int, multiple: Int): Double {
+        return 2 * noteCount * multiple * Math.pow(10.0, (1 - moneyUnit).toDouble())
+    }
+
+    //理论最高奖金
+    private fun getSingleMoney(
+        userRebate: Double,
+        baseScale: Double,
+        multiple: Int,
+        amountModleValue: Double = 1.0
+    ): Double {
+        val scale = multiple * userRebate
+        return (baseScale + scale) * amountModleValue
+    }
+
+    private fun genTouZhuHaoMa(
+        betNums: String,
+        multiple: Int,
+        moneyUnit: Int,
+        digit: String,//用户选中digit
+        verifyDigit: Boolean,//验证位置
+        atLeastDigit: Int?,//最少位置
+        noteCount: Int,
+        amount: Double,
+        singleMoney: Double,
+        betItem: BetItem,
+        singledInfo: SingledInfo?,
+        toast: AbsToast,
+    ): TouZhuHaoMa? {
+        //验证digit，选中位置个数
+        if (!verifyDigit) {
+            toast.showError("请至少选择${atLeastDigit}个位置")
+            return null
+        }
+        val isDanTiao = isDanTiao(noteCount, betItem)
+        return TouZhuHaoMa(
+            baseScale = singleMoney * multiple,
+            singleMoney = singleMoney,
+            bouse = mUserBonus,
+            danZhuJinEDanWei = Converts.unit2Params(moneyUnit),
+            digit = digit,
+            model = Converts.unit2Enum(moneyUnit).toString(),
+            playtypename = mSelectedBetItem?.getPlayTitle(),
+            touZhuBeiShu = multiple,
+            yongHuSuoTiaoFanDian = 0.0,
+            zhuShu = noteCount,
+            wanFaID = mPlayId,
+            amount = amount,
+            touZhuHaoMa = betNums,
+            isDanTiao = isDanTiao,
+            singleBet = SingleBet(
+                isDanTiao,
+                if (isDanTiao) getDanTiaoMaxMoney(betItem, singledInfo) else 0.0
+            )
+        )
+    }
+
+    //region 单挑
+    //判断是不是单挑
+    private fun isDanTiao(
+        noteCount: Int,
+        betItem: BetItem
+    ): Boolean {
+        return betItem.singleMaxBetCount > noteCount
+    }
+
+    private fun danTiaoTips(betItem: BetItem, singledInfo: SingledInfo): String {
+        val maxBetCount = betItem.maxBetCount
+        var scale = 0.0
+        var maxMoney = 0.0
+        if (maxBetCount >= 10000) {
+            scale = singledInfo.scales
+            maxMoney = singledInfo.maxmoney
+        } else if (maxBetCount in 1000..9999) {
+            scale = singledInfo.scales2
+            maxMoney = singledInfo.maxmoney2
+        } else if (maxBetCount in 100..999) {
+            scale = singledInfo.scales3
+            maxMoney = singledInfo.maxmoney3
+        } else if (maxBetCount in 10..99) {
+            scale = singledInfo.scales4
+            maxMoney = singledInfo.maxmoney4
+        }
+        val sb = StringBuffer()
+        sb.append("该玩法下注注数小于最高注数的")
+        sb.append(scale)
+        sb.append("%即为单挑,最高中奖额为")
+        sb.append(maxMoney)
+        sb.append("元")
+        return sb.toString()
+    }
+
+    private fun getDanTiaoMaxMoney(
+        betItem: BetItem?,
+        singledInfo: SingledInfo?
+    ): Double {
+        var maxMoney = 0.0
+        if (singledInfo != null && betItem != null) {
+            val maxBetCount: Int = betItem.maxBetCount
+            if (maxBetCount >= 10000) {
+                maxMoney = singledInfo.maxmoney
+            } else if (maxBetCount in 1000..9999) {
+                maxMoney = singledInfo.maxmoney2
+            } else if (maxBetCount in 100..999) {
+                maxMoney = singledInfo.maxmoney3
+            } else if (maxBetCount in 10..99) {
+                maxMoney = singledInfo.maxmoney4
+            }
+        }
+        return maxMoney
+    }
+    //endregion
 }

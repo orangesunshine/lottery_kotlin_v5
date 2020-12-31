@@ -7,7 +7,7 @@ data class GameInitData(
     var oddInfo: List<OddInfo>,
     var singledInfo: SingledInfo,
     var token: String,
-    var user: Double,
+    var user: Double,//游戏返点
     var userBonus: Double,
     var userparent: Int
 )

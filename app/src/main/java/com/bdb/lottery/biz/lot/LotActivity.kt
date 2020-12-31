@@ -14,12 +14,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.lot.jd.LotJdFragment
-import com.bdb.lottery.biz.lot.jd.LotParams
 import com.bdb.lottery.biz.lot.tr.LotTrFragment
 import com.bdb.lottery.biz.lot.wt.LotWtFragment
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
+import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.dialog.lot.LotDialog
 import com.bdb.lottery.extension.*
@@ -223,6 +223,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private var mIsClose = false
     private fun countdown(currentTime: CountDownData.CurrentTime?) {
         currentTime?.let {
+            mCurIssue = it.issueno
             mIsClose = it.isclose
             if (mCountDownGeted.compareAndSet(false, true)) {
                 lazyLoadCocos()
@@ -440,7 +441,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     @Inject
     lateinit var lotDialog: LotDialog
     fun lotByDialog(
-        lotParams: LotParams?,
+        lotParam: LotParam?,
         success: (() -> Unit)? = null,
         error: ((String) -> Unit)? = null,
     ) {
@@ -456,7 +457,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             return
         }
 
-        lotDialog.lotParams(lotParams).show(supportFragmentManager)
+        lotDialog.lotParams(lotParam).show(supportFragmentManager)
     }
     //endregion
 }
