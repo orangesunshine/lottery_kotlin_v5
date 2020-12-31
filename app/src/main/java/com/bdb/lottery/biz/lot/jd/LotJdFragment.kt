@@ -90,9 +90,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 mAtLeastDigit,
                 mNoteCount,
                 toast,
-            ) { lotParam: LotParam?, error: (String) -> Unit ->
+            ) { lotParam: LotParam, error: (String) -> Unit ->
                 aliveActivity<LotActivity>()?.lotByDialog(
                     lotParam,
+                    danTiaoTips = vm.danTiaoTips(),
                     error = error
                 )
             }
@@ -171,13 +172,16 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         fun repeatNdErrorNums(text: String, fromInput: Boolean = true) {
             mNoteCount = 0
-            if (text.length <= mSingleNumCount) return
+            if (text.length < mSingleNumCount) {
+                mNoteCount = 0
+                return
+            }
+            mNoteCount = if (mSingleNumCount == 0) 0 else text.length / mSingleNumCount
             val buff = StringBuilder(text)
             var offset = mSingleNumCount
             while (offset < buff.length && offset > 0) {
                 buff.insert(offset, ",")
                 offset += 1 + mSingleNumCount
-                mNoteCount++
             }
             val repeatNdErrorNums =
                 if (!fromInput && buff.isNotEmpty() && buff.length - buff.lastIndexOf(",") <= mSingleNumCount) {

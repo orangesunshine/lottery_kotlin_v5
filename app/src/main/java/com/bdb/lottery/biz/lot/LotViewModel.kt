@@ -10,7 +10,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.cocos.CocosRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWraper
-import com.bdb.lottery.datasource.lot.LotLocalDs
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotData
@@ -27,7 +26,6 @@ import javax.inject.Inject
 class LotViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
     private val tThread: TThread,
-    private val lotLocalDs: LotLocalDs,
     private val lotRemoteDs: LotRemoteDs,
     private val cocosRemoteDs: CocosRemoteDs,
 ) : BaseViewModel() {

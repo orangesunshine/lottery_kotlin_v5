@@ -36,21 +36,25 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private var mUserBonus: Double = 0.0
     private var mUserRebate: Double = 0.0
     private var mSingledInfo: SingledInfo? = null
+    private var mAlreadyInitGame = false
     fun initGame() {
-        lotRemoteDs.initGame(mGameId.toString()) {
+        lotRemoteDs.initGame(mGameId.toString(), {
             mSingledInfo = it?.singledInfo
             mUserBonus = it?.userBonus ?: 0.0
             mUserRebate = it?.user ?: 0.0
             mToken = it?.token
+        }) {
+            mAlreadyInitGame = true
         }
     }
     //endregion
 
     //region 获取彩票玩法
+    private var mAlreadyGetBetType = false
     fun getBetType() {
-        lotRemoteDs.getBetType(mGameId.toString()) {
+        lotRemoteDs.getBetType(mGameId.toString(), {
             mGameBetTypeData.setData(it)
-        }
+        }) { mAlreadyGetBetType = true }
     }
     //endregion
 
@@ -90,7 +94,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private var mBetSelectedPos: Int = 0
     private var mPlayId: Int = 0
     fun renderPlayNdBet(
-        play: (playSelectedPos: Int, betSelectedPos: Int) -> Unit
+        play: (playSelectedPos: Int, betSelectedPos: Int) -> Unit,
     ) {
         play.invoke(mPlaySelectedPos, mBetSelectedPos)
     }
@@ -130,7 +134,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         playSelectedPos: Int,
         groupSelectedPos: Int,
         betSelectedPos: Int,
-        unSelectPre: (preGroupPosition: Int) -> Unit
+        unSelectPre: (preGroupPosition: Int) -> Unit,
     ) {
         //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
         if (mPlaySelectedPos == playSelectedPos && mGroupSelectedPos == groupSelectedPos && mBetSelectedPos == betSelectedPos) return
@@ -191,15 +195,15 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         atLeastDigit: Int?,//最少位置
         noteCount: Int,//注数
         toast: AbsToast,
-        lot: (lotParam: LotParam, error: (String) -> Unit) -> Unit
+        lot: (lotParam: LotParam, error: (String) -> Unit) -> Unit,
     ) {
-        if (null == mSelectedBetItem || null == mSubPlayMethod) {
+        if (!mAlreadyGetBetType) {
             getBetType()
             toast.showWarning("正在获取玩法配置")
             return
         }
 
-        if (null == mToken) {
+        if (!mAlreadyInitGame) {
             initGame()
             toast.showWarning("正在初始化彩票")
             return
@@ -226,8 +230,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             atLeastDigit,
             noteCount,
             getAmount(noteCount, moneyUnit, multiple.toInt()),
-            getSingleMoney(mUserRebate, mSelectedBetItem!!.baseScale, multiple.toInt()),
-            mSelectedBetItem!!,
+            getSingleMoney(mUserRebate, mSelectedBetItem?.baseScale ?: 0.0, multiple.toInt()),
+            mSelectedBetItem,
             mSingledInfo,
             toast
         ) ?: return
@@ -249,7 +253,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         userRebate: Double,
         baseScale: Double,
         multiple: Int,
-        amountModleValue: Double = 1.0
+        amountModleValue: Double = 1.0,
     ): Double {
         val scale = multiple * userRebate
         return (baseScale + scale) * amountModleValue
@@ -265,7 +269,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         noteCount: Int,
         amount: Double,
         singleMoney: Double,
-        betItem: BetItem,
+        betItem: BetItem?,
         singledInfo: SingledInfo?,
         toast: AbsToast,
     ): TouZhuHaoMa? {
@@ -301,12 +305,18 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //判断是不是单挑
     private fun isDanTiao(
         noteCount: Int,
-        betItem: BetItem
+        betItem: BetItem?,
     ): Boolean {
-        return betItem.singleMaxBetCount > noteCount
+        val singleMaxBetCount = betItem?.singleMaxBetCount ?: 0
+        return singleMaxBetCount > noteCount
     }
 
-    private fun danTiaoTips(betItem: BetItem, singledInfo: SingledInfo): String {
+    fun danTiaoTips(): String? {
+        if (null == mSelectedBetItem || null == mSingledInfo) return null
+        return danTiaoTips(mSelectedBetItem!!, mSingledInfo!!)
+    }
+
+    fun danTiaoTips(betItem: BetItem, singledInfo: SingledInfo): String {
         val maxBetCount = betItem.maxBetCount
         var scale = 0.0
         var maxMoney = 0.0
@@ -334,7 +344,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     private fun getDanTiaoMaxMoney(
         betItem: BetItem?,
-        singledInfo: SingledInfo?
+        singledInfo: SingledInfo?,
     ): Double {
         var maxMoney = 0.0
         if (singledInfo != null && betItem != null) {

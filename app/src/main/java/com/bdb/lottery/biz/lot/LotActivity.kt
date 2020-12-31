@@ -21,7 +21,7 @@ import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
-import com.bdb.lottery.dialog.lot.LotDialog
+import com.bdb.lottery.biz.lot.dialog.LotDialog
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
 import com.bdb.lottery.utils.game.Games
@@ -39,7 +39,6 @@ import com.sunfusheng.marqueeview.MarqueeView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.actionbar_lot_layout.*
 import kotlinx.android.synthetic.main.lot_activity.*
-import kotlinx.android.synthetic.main.lot_jd_money_unit.*
 import permissions.dispatcher.*
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -441,7 +440,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     @Inject
     lateinit var lotDialog: LotDialog
     fun lotByDialog(
-        lotParam: LotParam?,
+        lotParam: LotParam,
+        danTiaoTips: String? = null,
         success: (() -> Unit)? = null,
         error: ((String) -> Unit)? = null,
     ) {
@@ -456,8 +456,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             toast.showWarning("当前彩种已封盘")
             return
         }
-
-        lotDialog.lotParams(lotParam).show(supportFragmentManager)
+        lotParam.issueNo = mCurIssue//当前期号
+        lotDialog.lotParams(lotParam).setDanTiaoTips(danTiaoTips).show(supportFragmentManager)
     }
     //endregion
 }

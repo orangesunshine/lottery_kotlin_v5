@@ -53,31 +53,31 @@ class LotRemoteDs @Inject constructor(
     }
 
     //region 经典
-    fun initGame(gameId: String,success: (GameInitData?) -> Unit) {
-        retrofitWrapper.observe(lotApi.initGame(gameId), success)
+    fun initGame(gameId: String, success: (GameInitData?) -> Unit, complete: () -> Unit) {
+        retrofitWrapper.observe(lotApi.initGame(gameId), success, complete = complete)
     }
 
-    fun getBetType(gameId: String,success: (GameBetTypeData?) -> Unit) {
-        retrofitWrapper.observe(lotApi.getBetType(gameId), success)
+    fun getBetType(gameId: String, success: (GameBetTypeData?) -> Unit, complete: () -> Unit) {
+        retrofitWrapper.observe(lotApi.getBetType(gameId), success, complete = complete)
     }
     //endregion
 
     //region 传统
-    fun initKgGame(gameId: String,success: (KgInitData?) -> Unit) {
+    fun initKgGame(gameId: String, success: (KgInitData?) -> Unit) {
         retrofitWrapper.observe(lotApi.initKgGame(gameId), success)
     }
 
-    fun getKgBetType(gameId: String,success: (KgBetTypeData?) -> Unit) {
+    fun getKgBetType(gameId: String, success: (KgBetTypeData?) -> Unit) {
         retrofitWrapper.observe(lotApi.getKgBetType(gameId), success)
     }
     //endregion
 
     //region 微投
-    fun initWtGame(gameId: String,success: (WtInitData?) -> Unit) {
+    fun initWtGame(gameId: String, success: (WtInitData?) -> Unit) {
         retrofitWrapper.observe(lotApi.initWtGame(gameId), success)
     }
 
-    fun getWtBetType(gameId: String,success: (WtBetTypeData?) -> Unit) {
+    fun getWtBetType(gameId: String, success: (WtBetTypeData?) -> Unit) {
         retrofitWrapper.observe(lotApi.getWtBetType(gameId), success)
     }
     //endregion

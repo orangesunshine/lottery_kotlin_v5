@@ -8,9 +8,31 @@ data class LotParam(
     var tingZhiZhuiHao: Boolean,
     var token: String,
     var touZhuHaoMa: List<TouZhuHaoMa>?,
-    var zhuiHaoQiHao: List<ZhuiHaoQiHao>?
+    var zhuiHaoQiHao: List<ZhuiHaoQiHao>?,
 ) {
+    fun isDanTiao(): Boolean {
+        return if (!touZhuHaoMa.isNullOrEmpty()) touZhuHaoMa!![0].isDanTiao else false
+    }
 
+    fun getPlayTypeName(): String? {
+        return if (!touZhuHaoMa.isNullOrEmpty()) touZhuHaoMa!![0].playtypename else null
+    }
+
+    fun getNums(): String? {
+        return if (!touZhuHaoMa.isNullOrEmpty()) touZhuHaoMa!![0].touZhuHaoMa else null
+    }
+
+    fun getNoteCount(): Int {
+        return if (!touZhuHaoMa.isNullOrEmpty()) touZhuHaoMa!![0].zhuShu else 0
+    }
+
+    fun getMultiple(): Int {
+        return if (!touZhuHaoMa.isNullOrEmpty()) touZhuHaoMa!![0].touZhuBeiShu else 0
+    }
+
+    fun getAmount(): Double {
+        return if (!touZhuHaoMa.isNullOrEmpty()) touZhuHaoMa!![0].amount else 0.0
+    }
 }
 
 data class TouZhuHaoMa(
@@ -25,26 +47,18 @@ data class TouZhuHaoMa(
     var singleBet: SingleBet,
     var singleMoney: Double,
     var touZhuBeiShu: Int,
-    var touZhuHaoMa: String,
+    var touZhuHaoMa: String?,
     var wanFaID: Int,
     var yongHuSuoTiaoFanDian: Double,
-    var zhuShu: Int
-) {
-    companion object {
-        fun genTouZhuHaoMa(
-
-        ) {
-
-        }
-    }
-}
+    var zhuShu: Int,
+)
 
 data class ZhuiHaoQiHao(
     var beiShu: Int,
-    var qiHao: String
+    var qiHao: String,
 )
 
 data class SingleBet(
     var isSingleBet: Boolean,
-    var maxMoney: Double
+    var maxMoney: Double,
 )
