@@ -33,17 +33,12 @@ class RetrofitWrapper @Inject constructor(
         complete: (() -> Unit)? = null,
         viewState: LiveDataWrapper<ViewState?>? = null,
     ) {
-        observable
-            .subscribeOn(Schedulers.io())
-            .apply {
-                if (null != onStart || null != viewState) {
-                    doOnSubscribe {
-                        onStart?.invoke(it)
-                        viewState?.setData(ViewState(true))
-                    }
-                    subscribeOn(AndroidSchedulers.mainThread())
-                }
+        observable.subscribeOn(Schedulers.io())
+            .doOnSubscribe {
+                onStart?.invoke(it)
+                viewState?.setData(ViewState(true))
             }
+            .subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 success?.invoke(it.data)
@@ -77,15 +72,11 @@ class RetrofitWrapper @Inject constructor(
     ) {
         domainRemoteDs.getDomain {
             observable.subscribeOn(Schedulers.io())
-                .apply {
-                    if (null != onStart || null != viewState) {
-                        doOnSubscribe {
-                            onStart?.invoke(it)
-                            viewState?.setData(ViewState(true))
-                        }
-                        subscribeOn(AndroidSchedulers.mainThread())
-                    }
+                .doOnSubscribe {
+                    onStart?.invoke(it)
+                    viewState?.setData(ViewState(true))
                 }
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     success?.invoke(it.data)
