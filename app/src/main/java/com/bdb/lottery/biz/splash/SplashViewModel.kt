@@ -3,7 +3,7 @@ package com.bdb.lottery.biz.splash
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.app.AppRemoteDs
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.domain.DomainRemoteDs
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
@@ -12,7 +12,7 @@ class SplashViewModel @ViewModelInject @Inject constructor(
     private val remoteDomainDs: DomainRemoteDs,
     private val appDs: AppRemoteDs
 ) : BaseViewModel() {
-    val ldDomainRet = LiveDataWraper<Boolean>()
+    val ldDomainRet = LiveDataWrapper<Boolean>()
 
     //初始化域名
     fun initDomain() {

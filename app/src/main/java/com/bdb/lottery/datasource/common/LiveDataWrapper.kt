@@ -3,7 +3,7 @@ package com.bdb.lottery.datasource.common
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
-class LiveDataWraper<Data>() {
+class LiveDataWrapper<Data>() {
     private val domainMld: MutableLiveData<Data> = MutableLiveData()
     private val domainLd: LiveData<Data> = domainMld
 

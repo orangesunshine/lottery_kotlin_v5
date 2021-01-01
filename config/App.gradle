@@ -139,3 +139,7 @@ android.applicationVariants.all {
             outputFileName = "${variant.name}-v${variant.versionName}.apk"
         }
 }
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+}

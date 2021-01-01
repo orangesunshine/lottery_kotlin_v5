@@ -9,7 +9,7 @@ import android.os.IBinder
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.cocos.CocosRemoteDs
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotData
@@ -29,9 +29,9 @@ class LotViewModel @ViewModelInject @Inject constructor(
     private val lotRemoteDs: LotRemoteDs,
     private val cocosRemoteDs: CocosRemoteDs,
 ) : BaseViewModel() {
-    val countDown = LiveDataWraper<CountDownData.CurrentTime?>()
-    val curIssue = LiveDataWraper<HistoryData.HistoryItem?>()
-    val historyIssue = LiveDataWraper<List<HistoryData.HistoryItem>?>()
+    val countDown = LiveDataWrapper<CountDownData.CurrentTime?>()
+    val curIssue = LiveDataWrapper<HistoryData.HistoryItem?>()
+    val historyIssue = LiveDataWrapper<List<HistoryData.HistoryItem>?>()
     private var mGameId = -1
     fun setGameId(gameId: Int) {
         mGameId = gameId

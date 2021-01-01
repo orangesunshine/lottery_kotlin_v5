@@ -4,7 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.app.data.PlatformData
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.game.data.AllGameDataMapper
 import com.bdb.lottery.datasource.game.data.AllGameItemData
@@ -14,7 +14,7 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
     private val gameRemoteDs: GameRemoteDs,
     private val appRemoteDs: AppRemoteDs,
 ) : BaseViewModel() {
-    val allGameLd = LiveDataWraper<MutableList<AllGameDataMapper>?>()
+    val allGameLd = LiveDataWrapper<MutableList<AllGameDataMapper>?>()
 
     //全部彩种
     fun allGame() {

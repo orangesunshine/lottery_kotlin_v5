@@ -6,7 +6,7 @@ import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
 import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.app.AppApi
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.toast
 import com.bdb.lottery.utils.encrypt.TEncrypt
@@ -34,7 +34,7 @@ class AccountRemoteDs @Inject constructor(
         browserInfo: String,
         success: () -> Unit,
         error: (validate: Boolean) -> Unit,
-        viewState: LiveDataWraper<ViewState?>
+        viewState: LiveDataWrapper<ViewState?>
     ) {
         val key = tCache.rsaPublicKeyCache()
         if (key.isSpace()) {
@@ -97,7 +97,7 @@ class AccountRemoteDs @Inject constructor(
         browserInfo: String,
         success: () -> Unit,
         error: (validate: Boolean) -> Unit,
-        viewState: LiveDataWraper<ViewState?>
+        viewState: LiveDataWrapper<ViewState?>
     ) {
         val params = HashMap<String, Any>()
         params["username"] = username
@@ -135,7 +135,7 @@ class AccountRemoteDs @Inject constructor(
     }
 
     //试玩
-    fun trialPlay(success: () -> Unit, viewState: LiveDataWraper<ViewState?>) {
+    fun trialPlay(success: () -> Unit, viewState: LiveDataWrapper<ViewState?>) {
         retrofitWrapper.observe(accountApi.trialPlay(), {
             success()
             //缓存用户已登录

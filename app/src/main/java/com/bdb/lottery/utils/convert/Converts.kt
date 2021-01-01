@@ -1,7 +1,7 @@
 package com.bdb.lottery.utils.convert
 
 import android.annotation.SuppressLint
-import com.bdb.lottery.biz.lot.jd.AmountUnit
+import com.bdb.lottery.biz.lot.jd.single.AmountUnit
 import com.bdb.lottery.const.MEM
 import com.bdb.lottery.extension.isSpace
 import java.io.*

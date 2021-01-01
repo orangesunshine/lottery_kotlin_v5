@@ -6,7 +6,7 @@ import com.bdb.lottery.BuildConfig
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.utils.cache.TCache
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
@@ -17,8 +17,8 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     private val accountRemoteDs: AccountRemoteDs,
     private val appRemoteDs: AppRemoteDs
 ) : BaseViewModel() {
-    val validateLd = LiveDataWraper<Boolean>()
-    val needValidated = LiveDataWraper<Boolean>()
+    val validateLd = LiveDataWrapper<Boolean>()
+    val needValidated = LiveDataWrapper<Boolean>()
 
     fun login(
         username: String,

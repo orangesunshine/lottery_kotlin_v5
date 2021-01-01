@@ -1,11 +1,13 @@
 package com.bdb.lottery.biz.lot.jd
 
 import android.os.Bundle
+import android.widget.EditText
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.biz.base.BaseViewModel
+import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.lot.LotLocalDs
 import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.LotParam
@@ -15,9 +17,12 @@ import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.datasource.lot.data.jd.SingledInfo
+import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
+import com.bdb.lottery.utils.thread.Threads
 import com.bdb.lottery.utils.ui.toast.AbsToast
+import timber.log.Timber
 import javax.inject.Inject
 
 class LotJdViewModel @ViewModelInject @Inject constructor(
@@ -26,10 +31,12 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {
     var mToken: String? = null
-    val mGameBetTypeData = LiveDataWraper<GameBetTypeData?>()
-    val mNeedDigit = LiveDataWraper<Boolean>()
-    val mIsSingleStyle = LiveDataWraper<Boolean>()
-    val mAtLeastDigit = LiveDataWraper<Int?>()
+    val mGameBetTypeData = LiveDataWrapper<GameBetTypeData?>()
+    val mNeedDigit = LiveDataWrapper<Boolean>()
+    val mIsSingleStyle = LiveDataWrapper<Boolean>()
+    val mOnLocalBetType = LiveDataWrapper<Boolean>()
+    val mAtLeastDigit = LiveDataWrapper<Int?>()
+    val mNoteCount = LiveDataWrapper<Int>()
     private var mSubPlayMethod: SubPlayMethod? = null
 
     //region 初始化彩票
@@ -67,9 +74,11 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
                 } else {
                     if (!it.isNullOrEmpty()) it.last() else null
                 }
+                mSingleNumCount = mSubPlayMethod?.subPlayMethodDesc?.single_num_counts ?: 0
                 mNeedDigit.setData(mSubPlayMethod?.subPlayMethodDesc?.is_need_show_weizhi == true)
                 mAtLeastDigit.setData(mSubPlayMethod?.subPlayMethodDesc?.atleast_wei_shu?.toInt())
                 mIsSingleStyle.setData(mSubPlayMethod?.subPlayMethodDesc?.isdanshi != false)
+                mOnLocalBetType.setData(true)
             }
     }
     //endregion
@@ -152,22 +161,24 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     //初始化玩法选中
     private var mSelectedBetItem: BetItem? = null
-    fun setSelectedBetItem(selectedBetItem: BetItem?) {
+    fun setSelectedBetItem(selectedBetItem: BetItem) {
         mSelectedBetItem = selectedBetItem
+        mPlayId = selectedBetItem.betType
     }
 
-    fun initBetSelected(item: PlayItem?, onBetSelected: (item: BetItem?) -> Unit) {
-        item?.list?.let {
+    fun getInitBet(item: PlayItem?): BetItem? {
+        var betItem: BetItem? = null
+        return item?.list?.let {
             if (mGroupSelectedPos < it.size) {
-                it.get(mGroupSelectedPos).list?.let {
+                it[mGroupSelectedPos].list?.let {
                     if (mBetSelectedPos < it.size) {
-                        val bet = it[mBetSelectedPos]
-                        mSelectedBetItem = bet
-                        mPlayId = bet.betType
-                        onBetSelected.invoke(bet)
+                        val betItemTmp = it[mBetSelectedPos]
+                        betItem = betItemTmp
+                        setSelectedBetItem(betItemTmp)
                     }
                 }
             }
+            betItem
         }
     }
     //endregion
@@ -191,8 +202,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         multiple: String,//倍数
         moneyUnit: Int,//金额单位
         digit: String,//用户选中digit
-        verifyDigit: Boolean,//验证位置
-        atLeastDigit: Int?,//最少位置
+        needDigit: Boolean?,//最少位置
+        verifyDigit: String?,//验证位置
         noteCount: Int,//注数
         toast: AbsToast,
         lot: (lotParam: LotParam, error: (String) -> Unit) -> Unit,
@@ -210,8 +221,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         }
 
         //验证digit，选中位置个数
-        if (!verifyDigit) {
-            toast.showError("请至少选择${atLeastDigit}个位置")
+        if (needDigit == true && !verifyDigit.isSpace()) {
+            toast.showError(verifyDigit)
             return
         }
 
@@ -225,9 +236,9 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             betNums,
             multiple.toInt(),
             moneyUnit,
-            digit,
+            getDigit(needDigit, digit, mSubPlayMethod),
             verifyDigit,
-            atLeastDigit,
+            needDigit,
             noteCount,
             getAmount(noteCount, moneyUnit, multiple.toInt()),
             getSingleMoney(mUserRebate, mSelectedBetItem?.baseScale ?: 0.0, multiple.toInt()),
@@ -237,15 +248,27 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         ) ?: return
         lot.invoke(
             LotParam(
-                mGameId.toString(), mGameName.toString(), null, false,
-                true, mToken!!, listOf(touZhuHaoMa), null
+                mGameId.toString(), mGameName.toString(), null,
+                kg = false,
+                tingZhiZhuiHao = true,
+                token = mToken!!,
+                touZhuHaoMa = listOf(touZhuHaoMa),
+                zhuiHaoQiHao = null
             )
         ) { mToken = it }
     }
 
     //总额
-    private fun getAmount(noteCount: Int, moneyUnit: Int, multiple: Int): Double {
+    fun getAmount(noteCount: Int, moneyUnit: Int, multiple: Int): Double {
         return 2 * noteCount * multiple * Math.pow(10.0, (1 - moneyUnit).toDouble())
+    }
+
+    private fun getDigit(
+        needDigit: Boolean?,
+        digit: String,
+        subPlayMethod: SubPlayMethod?
+    ): String {
+        return if (needDigit == true) digit else subPlayMethod?.subPlayMethodDesc?.digit ?: ""
     }
 
     //理论最高奖金
@@ -264,8 +287,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         multiple: Int,
         moneyUnit: Int,
         digit: String,//用户选中digit
-        verifyDigit: Boolean,//验证位置
-        atLeastDigit: Int?,//最少位置
+        verifyDigit: String?,//验证位置
+        needDigit: Boolean?,//最少位置
         noteCount: Int,
         amount: Double,
         singleMoney: Double,
@@ -274,8 +297,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         toast: AbsToast,
     ): TouZhuHaoMa? {
         //验证digit，选中位置个数
-        if (!verifyDigit) {
-            toast.showError("请至少选择${atLeastDigit}个位置")
+        if (needDigit == true && !verifyDigit.isSpace()) {
+            toast.showError(verifyDigit)
             return null
         }
         val isDanTiao = isDanTiao(noteCount, betItem)
@@ -316,7 +339,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         return danTiaoTips(mSelectedBetItem!!, mSingledInfo!!)
     }
 
-    fun danTiaoTips(betItem: BetItem, singledInfo: SingledInfo): String {
+    private fun danTiaoTips(betItem: BetItem, singledInfo: SingledInfo): String {
         val maxBetCount = betItem.maxBetCount
         var scale = 0.0
         var maxMoney = 0.0
@@ -362,4 +385,22 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         return maxMoney
     }
     //endregion
+
+    var mSingleNumCount: Int = 5//单注号码数
+    fun createSingleTextWatcher(
+        singleInputEt: EditText,
+        digit: String,
+        loading: () -> Unit,
+        dismiss: () -> Unit,
+        error: (String?) -> Unit,
+    ): SingleTextWatcher {
+        return SingleTextWatcher(
+            singleInputEt,
+            mSingleNumCount,
+            mGameType,
+            mPlayId,
+            getDigit(mNeedDigit.getLiveData().value, digit, mSubPlayMethod),
+            { Threads.retrofitUIThread { mNoteCount.setData(it) } }, loading, dismiss, error
+        )
+    }
 }

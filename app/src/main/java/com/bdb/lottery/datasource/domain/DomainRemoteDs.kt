@@ -11,7 +11,7 @@ import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.const.DEBUGCONFIG
 import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.app.data.PlatformData
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.inject.TConfig
@@ -279,7 +279,7 @@ class DomainRemoteDs @Inject constructor(
         error: ((code: Int, msg: String?) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
-        viewState: LiveDataWraper<ViewState>? = null,
+        viewState: LiveDataWrapper<ViewState>? = null,
     ) {
         observable
             .subscribeOn(Schedulers.io())

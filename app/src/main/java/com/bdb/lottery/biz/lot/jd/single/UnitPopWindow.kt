@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.lot.jd
+package com.bdb.lottery.biz.lot.jd.single
 
 import android.content.Context
 import android.view.Gravity

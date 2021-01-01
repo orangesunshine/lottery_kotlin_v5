@@ -8,7 +8,7 @@ fun CharSequence?.isSpace(): Boolean {
         val len = this.length
         if (0 == len) return@let true
         for (i in 0 until len) {
-            if (!Character.isWhitespace(this.get(i))) return@let false
+            if (!Character.isWhitespace(this[i])) return@let false
         }
         true
     } ?: true

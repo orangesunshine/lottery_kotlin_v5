@@ -2,7 +2,7 @@ package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.domain.DomainLocalDs
 import com.bdb.lottery.datasource.domain.DomainRemoteDs
 import com.bdb.lottery.extension.code
@@ -31,7 +31,7 @@ class RetrofitWrapper @Inject constructor(
         error: ((code: Int, msg: String?) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
-        viewState: LiveDataWraper<ViewState?>? = null,
+        viewState: LiveDataWrapper<ViewState?>? = null,
     ) {
         observable
             .subscribeOn(Schedulers.io())
@@ -73,7 +73,7 @@ class RetrofitWrapper @Inject constructor(
         error: ((BaseResponse<*>) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
-        viewState: LiveDataWraper<ViewState?>? = null,
+        viewState: LiveDataWrapper<ViewState?>? = null,
     ) {
         domainRemoteDs.getDomain {
             observable.subscribeOn(Schedulers.io())

@@ -5,7 +5,7 @@ import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.cocos.CocosRemoteDs
-import com.bdb.lottery.datasource.common.LiveDataWraper
+import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.home.HomeRemoteDs
 import com.bdb.lottery.datasource.home.data.BannerMapper
@@ -20,9 +20,9 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     private val appRemoteDs: AppRemoteDs,
     private val cocosRemoteDs: CocosRemoteDs
 ) : BaseViewModel() {
-    val balanceLd = LiveDataWraper<String>()//余额
-    val bannerLd = LiveDataWraper<List<BannerMapper>?>()//轮播图
-    val noticeLd = LiveDataWraper<String>()//公告
+    val balanceLd = LiveDataWrapper<String>()//余额
+    val bannerLd = LiveDataWrapper<List<BannerMapper>?>()//轮播图
+    val noticeLd = LiveDataWrapper<String>()//公告
 
     //预加载
     fun preload() {
