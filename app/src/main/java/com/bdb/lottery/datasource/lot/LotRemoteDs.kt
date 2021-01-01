@@ -43,13 +43,18 @@ class LotRemoteDs @Inject constructor(
     }
 
     //下注
-    fun lot(lotParam: LotParam, success: (LotData?) -> Unit, error: (token: String) -> Unit) {
+    fun lot(
+        lotParam: LotParam,
+        success: (LotData?) -> Unit,
+        error: (token: String) -> Unit,
+        onStart: ((Disposable) -> Unit)? = null,
+        complete: (() -> Unit)? = null,
+    ) {
         val json = Gsons.toJson(lotParam)
-        Timber.d("json: ${json}")
-        retrofitWrapper.observeErrorData(lotApi.lot(json!!), success, {
+        retrofitWrapper.observeErrorData(lotApi.lot(json), success, {
             it.errorData<Map<String, String>>()
-                ?.let { error(it.get("token") ?: "") }
-        })
+                ?.let { error(it["token"] ?: "") }
+        }, onStart, complete)
     }
 
     //region 经典

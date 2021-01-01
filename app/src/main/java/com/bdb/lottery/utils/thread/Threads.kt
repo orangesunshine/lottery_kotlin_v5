@@ -35,4 +35,12 @@ object Threads {
     fun runOnUiThreadDelayed(runnable: Runnable, delayMillis: Long) {
         HANDLER.postDelayed(runnable, delayMillis)
     }
+
+    fun removeUiThreadRunnable(runnable: Runnable){
+        HANDLER.removeCallbacks(runnable)
+    }
+
+    fun removeUiThreadCallbacksAndMessages(){
+        HANDLER.removeCallbacksAndMessages(null)
+    }
 }

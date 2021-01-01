@@ -2,8 +2,10 @@ package com.bdb.lottery.biz.lot.jd
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.method.ScrollingMovementMethod
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -23,6 +25,7 @@ import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
 import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.dialog.ConfirmDialog
+import com.bdb.lottery.extension.money
 import com.bdb.lottery.extension.setListOrUpdate
 import com.bdb.lottery.extension.validIndex
 import com.bdb.lottery.extension.visible
@@ -32,6 +35,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.lot_activity.*
+import kotlinx.android.synthetic.main.lot_dialog.*
 import kotlinx.android.synthetic.main.lot_jd_fragment.*
 import javax.inject.Inject
 
@@ -44,8 +48,18 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     @Inject
     lateinit var mUnitPopWindow: UnitPopWindow
+    private var mInputHeight: Int = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lot_jd_single_input_et.movementMethod = ScrollingMovementMethod.getInstance();
+        lot_jd_single_input_et.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                mInputHeight = lot_jd_single_input_et.height
+                if (mInputHeight > 0)
+                    lot_jd_single_input_et.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
         //删除重复、错误号码
         lot_jd_remove_repeat_nums_tv.setOnClickListener {
             mTextWatcher?.filterRepeatNdErrorNums(
@@ -95,8 +109,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 ) { lotParam: LotParam, error: (String) -> Unit ->
                     aliveActivity<LotActivity>()?.lotByDialog(
                         lotParam,
-                        danTiaoTips = vm.danTiaoTips(),
-                        error = error
+                        vm.danTiaoTips(),
+                        ::clearNums,
+                        error
                     )
                 }
             }
@@ -160,6 +175,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             val canPutBasket = it > 0
             if (mCanPutBasket != canPutBasket) {
                 //加入购物篮切换
+                if (canPutBasket) lot_jd_bet_info_expl.expand() else lot_jd_bet_info_expl.collapse()
                 lot_jd_add_to_shopping_bar_tv.setTextSize(
                     TypedValue.COMPLEX_UNIT_DIP,
                     if (canPutBasket) 12f else 15f
@@ -169,8 +185,18 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 mCanPutBasket = canPutBasket
             }
             if (mNoteCount != it) {
+                val multiple = lot_jd_multiple_et.text.toString().trim().toInt()
                 mAmount =
-                    vm.getAmount(it, mMoneyUnit, lot_jd_multiple_et.text.toString().trim().toInt())
+                    vm.getAmount(it, mMoneyUnit, multiple)
+                val money = mAmount.money()
+                val format = String.format(getString(R.string.lot_jd_total_money_text), money)
+                lot_jd_total_amount_tv.text =
+                    format//总额
+                lot_jd_selected_notes_tv.text =
+                    String.format(getString(R.string.lot_jd_selected_notes_text), it)//注数
+                lot_jd_max_bonus_tv.text =
+                    String.format(getString(R.string.lot_jd_max_bonus_text),
+                        vm.getSingleMoney(multiple = multiple).money())//最高理论奖金
                 mNoteCount = it
             }
         }
@@ -221,16 +247,19 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private fun initClearNums() {
         //清空确认弹窗
         mConfirmDialog.contentText("是否清除已选择号码").onConfirm {
-            if (MODE_SINGLE == mMode) {
-                //单式
-                lot_jd_single_input_et.setText("")
-
-            } else {
-                //复式
-            }
+            clearNums()
         }
         lot_jd_input_clear_iv.setOnClickListener {
             mConfirmDialog.show(childFragmentManager)
+        }
+    }
+
+    private fun clearNums() {
+        if (MODE_SINGLE == mMode) {
+            //单式
+            lot_jd_single_input_et.setText("")
+        } else {
+            //复式
         }
     }
 
@@ -452,10 +481,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mMode = MODE_DUPLEX//模式
     private fun switchDanFuStyle(isSingleStyle: Boolean) {
         mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
-    }
-
-    fun isSingleStyle(): Boolean {
-        return MODE_SINGLE == mMode
     }
     //endregion
 }

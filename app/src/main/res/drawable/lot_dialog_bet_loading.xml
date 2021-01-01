@@ -1,0 +1,43 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape
+            android:shape="oval"
+            android:useLevel="false">
+            <solid android:color="#f43f22" />
+            <padding
+                android:bottom="1dp"
+                android:left="1dp"
+                android:right="1dp"
+                android:top="1dp" />
+            <solid android:color="#f43f22" />
+            <size
+                android:width="40dp"
+                android:height="40dp" />
+        </shape>
+    </item>
+
+    <item>
+        <rotate
+            android:fromDegrees="0"
+            android:pivotX="50%"
+            android:pivotY="50%"
+            android:toDegrees="1080" >
+
+            <shape
+                android:innerRadiusRatio="3"
+                android:shape="ring"
+                android:thicknessRatio="60"
+                android:useLevel="false" >
+                <gradient
+                    android:centerColor="#00FFFFFF"
+                    android:endColor="#00FFFFFF"
+                    android:startColor="#FFFFFF"
+                    android:type="sweep" />
+
+            </shape>
+
+        </rotate>
+    </item>
+
+
+</layer-list>

@@ -266,15 +266,15 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private fun getDigit(
         needDigit: Boolean?,
         digit: String,
-        subPlayMethod: SubPlayMethod?
+        subPlayMethod: SubPlayMethod?,
     ): String {
         return if (needDigit == true) digit else subPlayMethod?.subPlayMethodDesc?.digit ?: ""
     }
 
     //理论最高奖金
-    private fun getSingleMoney(
-        userRebate: Double,
-        baseScale: Double,
+    fun getSingleMoney(
+        userRebate: Double = mUserRebate,
+        baseScale: Double = mSelectedBetItem?.baseScale ?: 0.0,
         multiple: Int,
         amountModleValue: Double = 1.0,
     ): Double {
@@ -386,7 +386,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
-    var mSingleNumCount: Int = 5//单注号码数
+    var mSingleNumCount: Int = 0//单注号码数
     fun createSingleTextWatcher(
         singleInputEt: EditText,
         digit: String,

@@ -16,7 +16,7 @@ class SingleTextWatcher constructor(
     private val noteCountBlock: (Int) -> Unit,
     private val loading: () -> Unit,
     private val dismissLoading: () -> Unit,
-    private val error: (String?) -> Unit
+    private val error: (String?) -> Unit,
 ) :
     TextWatcherAdapter() {
     private var end = false
@@ -36,7 +36,7 @@ class SingleTextWatcher constructor(
     fun filterRepeatNdErrorNums(
         text: String,
         fromInput: Boolean = true,
-        overBlock: ((String) -> Unit)? = null
+        overBlock: ((String) -> Unit)? = null,
     ) {
         if (!end && fromInput) return
         if (text.length < singleNumCount || singleNumCount == 0) {
@@ -79,8 +79,10 @@ class SingleTextWatcher constructor(
                 watcher = false
                 if (needLoading) mEtText.text.clear()
                 mEtText.setText(it)
-                mEtText.setSelection(it?.length ?: 0)
-                overBlock?.invoke(BetCenter.newNums ?: "")
+                val length = it?.length ?: 0
+                mEtText.setSelection(length)
+                overBlock?.invoke(it?.let { if (length > 200) it.substring(0, 200) + "..." else it }
+                    ?: "")
             }, { if (!fromInput) error(it.message) }, { if (needLoading) dismissLoading() })
     }
 

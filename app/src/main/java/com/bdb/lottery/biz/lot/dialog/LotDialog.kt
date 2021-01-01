@@ -3,17 +3,22 @@ package com.bdb.lottery.biz.lot.dialog
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.view.View
+import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.extension.money
 import com.bdb.lottery.extension.visible
+import com.bdb.lottery.utils.thread.Threads
 import com.bdb.lottery.utils.time.TTime
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.android.synthetic.main.lot_dialog.*
+import java.lang.Error
 import javax.inject.Inject
 
 @ActivityScoped
@@ -21,6 +26,8 @@ import javax.inject.Inject
 class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     private val LOT_DIALOG_TAG = "lot_dialog_tag"
     override var mShowBottomEnable = true
+    private var mCanBet = true//请求过投注不能再次下注
+    private val vm by viewModels<LotDialogViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,13 +44,60 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
         lot_dialog_multiple_tv.text = String.format("%d 倍", multiple) //倍数
         lot_dialog_amount_tv.text = String.format("%s 元", mLotParam.getAmount().money())//总额
         lot_dialog_tips_tv.text = mDanTiaoTips//单挑、限红
-        lot_dialog_submit_bt.setOnClickListener { mSubmitCallback?.invoke() }
-        lot_dialog_close_iv.setOnClickListener { dismiss() }
+        lot_dialog_submit_bt.setOnClickListener {
+            if (!mCanBet) {
+                dismiss()
+                return@setOnClickListener
+            }
+            vm.lot(mLotParam, {
+                mSuccess?.invoke()
+                lot_dialog_succuess_tv.visible(true)
+                Threads.runOnUiThreadDelayed({ dismiss() }, 700)
+                mSubmitCallback?.invoke()//清空号码
+            }, {
+                mError?.invoke(it)
+                lot_dialog_bet_content_ll.visible(false)
+                lot_dialog_error_ll.visible(true)
+                lot_dialog_bet_confirm_ll.visible(true)
+            }, {
+                loading()
+                lot_dialog_error_ll.visible(false)
+                lot_dialog_bet_confirm_ll.visible(false)
+            }, {
+                dismissLoading()
+                mCanBet = false
+            })
+        }
+        lot_dialog_close_iv.setOnClickListener { dismissLoading() }
+    }
+
+    private fun loading() {
+        lot_dialog_loading_success_ll.visible(true)
+        lot_dialog_loading_success_iv.setImageResource(R.drawable.lot_dialog_bet_loading)
+        lot_dialog_loading_success_iv.startAnimation(AnimationUtils.loadAnimation(context,
+            R.anim.rotate_anim).apply { interpolator = LinearInterpolator() })
+    }
+
+    private fun dismissLoading() {
+        lot_dialog_loading_success_ll.visible(false)
+        lot_dialog_loading_success_iv.clearAnimation()
     }
 
     private lateinit var mLotParam: LotParam
     fun lotParams(lotParam: LotParam): LotDialog {
         mLotParam = lotParam
+        return this
+    }
+
+    private var mSuccess: (() -> Unit)? = null
+    fun lotSuccess(success: (() -> Unit)? = null): LotDialog {
+        mSuccess = success
+        return this
+    }
+
+    private var mError: ((String) -> Unit)? = null
+    fun lotError(error: ((String) -> Unit)? = null): LotDialog {
+        mError = error
         return this
     }
 
@@ -91,5 +145,11 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
 
     fun show(manager: FragmentManager) {
         super.show(manager, LOT_DIALOG_TAG)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mCanBet = true
+        Threads.removeUiThreadCallbacksAndMessages()
     }
 }

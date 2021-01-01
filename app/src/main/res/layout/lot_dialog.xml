@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/lot_dialog_iv"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginLeft="8dp"
             android:src="@drawable/main_nav_shortcut_ic"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -151,12 +151,14 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:minHeight="120dp">
 
         <LinearLayout
+            android:id="@+id/lot_dialog_bet_content_ll"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
@@ -214,7 +216,7 @@
                     android:id="@+id/lot_dialog_nums_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxWidth="250dp"
+                    android:maxWidth="200dp"
                     android:maxLines="3"
                     android:scrollbars="vertical"
                     android:textColor="@color/color_333333"
@@ -282,6 +284,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/lot_dialog_error_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -296,35 +299,80 @@
                 android:src="@drawable/lot_dialog_warning" />
 
             <TextView
+                android:id="@+id/lot_dialog_error_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxWidth="200dp"
+                android:maxLines="2"
+                android:text="投注失败"
                 android:textColor="@color/color_333333"
-                android:textSize="15dp"
-                tools:text="投注失败" />
+                android:textSize="15dp" />
         </LinearLayout>
     </FrameLayout>
 
-    <!--单挑、限红-->
-    <TextView
-        android:id="@+id/lot_dialog_tips_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:gravity="center"
-        android:maxWidth="200dp"
-        android:textColor="#f88c2c"
-        android:textSize="13dp"
-        android:visibility="invisible"
-        tools:text="单挑模式最高利润 20000 元" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="8dp">
 
-    <TextView
-        android:id="@+id/lot_dialog_submit_bt"
-        style="@style/big_bt"
-        android:layout_margin="16dp"
-        android:background="@drawable/lot_dialog_bt_selector"
-        android:fontFamily="sans-serif-medium"
-        android:letterSpacing="0.5"
-        android:text="@string/confirm_bt_text"
-        android:textColor="@color/white" />
+        <LinearLayout
+            android:id="@+id/lot_dialog_bet_confirm_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+            <!--单挑、限红-->
+            <TextView
+                android:id="@+id/lot_dialog_tips_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxWidth="200dp"
+                android:maxLines="2"
+                android:textColor="#f88c2c"
+                android:textSize="13dp"
+                android:visibility="invisible"
+                tools:text="单挑模式最高利润 20000 元" />
+
+            <TextView
+                android:id="@+id/lot_dialog_submit_bt"
+                style="@style/big_bt"
+                android:layout_margin="8dp"
+                android:background="@drawable/lot_dialog_bt_selector"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.5"
+                android:text="@string/confirm_bt_text"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lot_dialog_loading_success_ll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/lot_dialog_loading_success_iv"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                tools:src="@drawable/lot_dialog_bet_loading" />
+
+            <TextView
+                android:id="@+id/lot_dialog_succuess_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="投注成功"
+                android:textColor="@color/color_333333"
+                android:textSize="15dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

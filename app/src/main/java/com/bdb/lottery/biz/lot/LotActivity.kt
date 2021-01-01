@@ -457,7 +457,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             return
         }
         lotParam.issueNo = mCurIssue//当前期号
-        lotDialog.lotParams(lotParam).setDanTiaoTips(danTiaoTips).show(supportFragmentManager)
+        lotDialog.lotParams(lotParam).lotSuccess(success).lotError(error)
+            .setDanTiaoTips(danTiaoTips).show(supportFragmentManager)
     }
     //endregion
 }
