@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.Html
 import android.util.TypedValue
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,7 +28,9 @@ import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.dialog.ConfirmDialog
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
+import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
+import com.bdb.lottery.utils.thread.Threads
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,26 +42,38 @@ import javax.inject.Inject
 class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private val vm by viewModels<LotJdViewModel>()
 
-    @Inject
-    lateinit var mConfirmDialog: ConfirmDialog
-
-    @Inject
-    lateinit var mUnitPopWindow: UnitPopWindow
     private var mMultiple: Int = 1
+
+    //region 生命周期方法
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        requestDatas()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        vm.cacheMoneyUnit(mMoneyUnit)
+        vm.cachePlay4GameId(mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos)
+    }
+    //endregion
+
+    //region 删除重复错误号码、下注点击事件监听，单位弹窗、倍数窗口初始化
+    private fun initView() {
         //删除重复、错误号码
         lot_jd_remove_repeat_nums_tv.setOnClickListener {
             mTextWatcher?.filterRepeatNdErrorNums(
                 lot_jd_single_input_et.text.toString().trim(), false
             )
         }
-
         //清空号码
         initClearNums()
-
         //投注参数
-        initAmountUnitPopWin()//单位
+        initAmountUnitPopWin()//金额单位
         log_jd_money_unit_tv.setOnClickListener {
             mUnitPopWindow.show(log_jd_money_unit_tv)
         }
@@ -91,35 +106,51 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     it,
                     mMultiple,
                     mMoneyUnit,
-                    getSelectedDigit(),
+                    vm.getDigit(mNeedDigit, getSelectedDigit()),
                     mNeedDigit,
                     verifyDigit(mNeedDigit, mAtLeastDigit),
                     mNoteCount,
+                    mSelectedBetItem,
                     toast,
                 ) { lotParam: LotParam, error: (String) -> Unit ->
                     aliveActivity<LotActivity>()?.lotByDialog(
                         lotParam,
-                        vm.danTiaoTips(),
+                        vm.danTiaoTips(mSelectedBetItem),
                         ::clearNums,
                         error
                     )
                 }
             }
         }
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        //玩法菜单数据获取失败，点击重新请求数据
         aliveActivity<LotActivity>()?.mPlayLoadingLayout?.setRetryListener {
             vm.getBetType()
         }
+
+        val listener = CompoundButton.OnCheckedChangeListener { _, _ ->
+            mTextWatcher?.setDigit(vm.getDigit(mNeedDigit,
+                getSelectedDigit()))
+        }
+        lot_jd_bet_digit_ge_cb.setOnCheckedChangeListener(listener)
+        lot_jd_bet_digit_shi_cb.setOnCheckedChangeListener(listener)
+        lot_jd_bet_digit_bai_cb.setOnCheckedChangeListener(listener)
+        lot_jd_bet_digit_qian_cb.setOnCheckedChangeListener(listener)
+        lot_jd_bet_digit_wan_cb.setOnCheckedChangeListener(listener)
+    }
+    //endregion
+
+    //region 请求参数：初始化彩票、玩法配置接口，金额单位缓存
+    private fun requestDatas() {
+        //初始化金额单位：根据gameId读取金额单位缓存，没有缓存默认1（元）
         vm.initAmountUnit {
             mMoneyUnit = it ?: 1
             log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
         }
-        vm.initGame()
-        vm.getBetType()
+        vm.initGame()//初始化彩票
+        vm.getBetType()//玩法配置接口
     }
+    //endregion
 
     @Inject
     lateinit var accountManager: AccountManager
@@ -129,7 +160,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mNoteCount: Int = 0//投注数量
     private var mCanPutBasket: Boolean = false//能否加入购物篮
     private var mAmount: Double = 0.0//总额
+    var mSingleNumCount: Int = 0//单注号码数
     override fun observe() {
+        //账户余额、今日彩票盈亏
         ob(accountManager.mUserBalance.getLiveData()) {
             lot_jd_account_balance_tv.text = String.format(
                 getString(R.string.lot_jd_account_balance_text),
@@ -138,67 +171,71 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             val profit = it?.getTodayJdProfit() ?: 0.0
             lot_jd_today_profit_tv.text = Html.fromHtml(
                 String.format(
-                    getString(R.string.lot_jd_account_balance_text),
+                    getString(R.string.lot_jd_today_loss_profit_text),
                     (profit).money()
                         .h5Color(if (profit > 0) "#FA4529" else if (profit < 0) "#66CC66" else "#333333")
                 )
             )
         }
+        //获取玩法配置，更新玩法列表，根据缓存选中玩法，没有缓存默认第一个玩法
         vm.gameBetTypeDataLd.getLiveData().observe(this) {
-            vm.renderPlayNdBet { playSelectedPos, betSelectedPos ->
-                updatePlayList(betTypeDatas = it, playSelectedPos, betSelectedPos)
-            }
+            updatePlayList(it)
         }
-        vm.eedDigitLd.getLiveData().observe(this) {
-            lot_jd_bet_digit_ll.visible(it)
-            mNeedDigit = it
-        }
-        vm.isSingleStyleLd.getLiveData().observe(this) {
-            switchDanFuStyle(it)
-        }
+        //数据库查找玩法成功
+        vm.subPlayMethodLd.getLiveData().observe(this) {
+            mSingleNumCount = it?.subPlayMethodDesc?.single_num_counts ?: 0
+            mTextWatcher?.setSingleNumCount(mSingleNumCount)
 
-        vm.onLocalBetTypeLd.getLiveData().observe(this) {
-            if (it && null == mTextWatcher) {
+            mMode = if (it?.subPlayMethodDesc?.isdanshi != false) MODE_SINGLE else MODE_DUPLEX
+            switchDanFuStyle(mMode == MODE_SINGLE)
+
+            mNeedDigit = it?.subPlayMethodDesc?.is_need_show_weizhi == true
+            lot_jd_bet_digit_ll.visible(mNeedDigit == true)
+
+            if (mNeedDigit == true) {
+                mAtLeastDigit = it?.subPlayMethodDesc?.atleast_wei_shu?.toInt()
+                setAtLeastDigit(mAtLeastDigit)
+            }
+            mTextWatcher?.setDigit(vm.getDigit(mNeedDigit, getSelectedDigit()), false)
+
+            if (null == mTextWatcher) {
                 mTextWatcher = vm.createSingleTextWatcher(
                     lot_jd_single_input_et,
-                    getSelectedDigit(),
+                    mSingleNumCount,
+                    vm.getDigit(mNeedDigit, getSelectedDigit()),
+                    {
+                        Threads.retrofitUIThread {
+                            val canPutBasket = it > 0
+                            if (mCanPutBasket != canPutBasket) {
+                                //加入购物篮切换
+                                if (canPutBasket) lot_jd_bet_info_expl.expand() else lot_jd_bet_info_expl.collapse(
+                                    false)
+                                lot_jd_add_to_shopping_bar_tv.setTextSize(
+                                    TypedValue.COMPLEX_UNIT_DIP,
+                                    if (canPutBasket) 12f else 15f
+                                )
+                                lot_jd_add_to_shopping_bar_tv.text =
+                                    getString(if (canPutBasket) R.string.lot_jd_put_shopping_bar else R.string.lot_jd_shopping_bar)
+                                mCanPutBasket = canPutBasket
+                            }
+                            if (mNoteCount != it) {
+                                lot_jd_selected_notes_tv.text =
+                                    String.format(getString(R.string.lot_jd_selected_notes_text),
+                                        it)//注数
+                                mNoteCount = it
+                                reCalculateAmountNdSingleMoney()
+                            }
+                        }
+                    },
                     toast::showError
                 )
                 lot_jd_single_input_et.addTextChangedListener(mTextWatcher)
             }
         }
-
-        vm.atLeastDigitLd.getLiveData().observe(this) {
-            if (mAtLeastDigit != it) {
-                setAtLeastDigit(it)
-                mAtLeastDigit = it
-            }
-        }
-
-        vm.noteCountLd.getLiveData().observe(this) {
-            val canPutBasket = it > 0
-            if (mCanPutBasket != canPutBasket) {
-                //加入购物篮切换
-                if (canPutBasket) lot_jd_bet_info_expl.expand() else lot_jd_bet_info_expl.collapse()
-                lot_jd_add_to_shopping_bar_tv.setTextSize(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    if (canPutBasket) 12f else 15f
-                )
-                lot_jd_add_to_shopping_bar_tv.text =
-                    getString(if (canPutBasket) R.string.lot_jd_put_shopping_bar else R.string.lot_jd_shopping_bar)
-                mCanPutBasket = canPutBasket
-            }
-            if (mNoteCount != it) {
-                lot_jd_selected_notes_tv.text =
-                    String.format(getString(R.string.lot_jd_selected_notes_text), it)//注数
-                mNoteCount = it
-                reCalculateAmountNdSingleMoney()
-            }
-        }
     }
 
 
-    //region 传递参数gameType、gameId、gameName
+    //region 构造方法：传递参数gameType、gameId、gameName
     companion object {
         fun newInstance(gameType: Int, gameId: Int, gameName: String?): LotJdFragment {
             val fragment = LotJdFragment()
@@ -211,20 +248,30 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
     }
 
+    private var mPlaySelectedPos: Int = 0
+    private var mGroupSelectedPos: Int = 0
+    private var mBetSelectedPos: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         vm.initExtraVar(arguments)
+        vm.playCacheByGameId { gameId: Int, tCache: TCache ->
+            mPlaySelectedPos = tCache.playCacheByGameId(gameId) ?: 0
+            mGroupSelectedPos = tCache.playGroupCacheByGameId(gameId) ?: 0
+            mBetSelectedPos = tCache.betCacheByGameId(gameId) ?: 0
+        }
     }
     //endregion
 
     //region 金额单位popup
+    @Inject
+    lateinit var mUnitPopWindow: UnitPopWindow
     private var mUnitPattern: String? = null
     private fun setUnitPattern(unitPattern: String) {
         mUnitPattern = unitPattern
         mUnitPopWindow.setPattern(unitPattern)
     }
 
-    private var mMoneyUnit: Int = 1
+    private var mMoneyUnit: Int = 1//1：元，2角，3分，4厘（默认元）
     private fun initAmountUnitPopWin() {
         mUnitPopWindow.init { view: View ->
             mUnitPopWindow.dismiss()
@@ -241,6 +288,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //endregion
 
     //region 清空号码
+    @Inject
+    lateinit var mConfirmDialog: ConfirmDialog
     private fun initClearNums() {
         //清空确认弹窗
         mConfirmDialog.contentText("是否清除已选择号码").onConfirm {
@@ -276,38 +325,36 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //region 一级玩法
     private fun updatePlayList(
-        betTypeDatas: GameBetTypeData?, playSelectedPos: Int,
-        betSelectedPos: Int,
+        betTypeDatas: GameBetTypeData?,
     ) {
         aliveActivity<LotActivity>()?.lotMenuPlayLayer1Rv?.setListOrUpdate(betTypeDatas) {
             LotPlayAdapter(betTypeDatas).apply {
                 setOnItemClickListener { _: BaseQuickAdapter<*, *>, _: View, position: Int ->
                     //一级玩法选中
                     notifySelectedPositionWithPayLoads(position)
-                    updatePlayLayer2List(betTypeDatas?.get(position), position, betSelectedPos)
+                    updatePlayLayer2List(betTypeDatas?.get(position), position)
                 }
             }
         }
         aliveActivity<LotActivity>()?.lotMenuPlayLayer1Rv?.adapter?.let {
-            if (it is BaseSelectedQuickAdapter<*, *>) it.notifySelectedPosition(playSelectedPos)
+            if (it is BaseSelectedQuickAdapter<*, *>) it.notifySelectedPosition(mPlaySelectedPos)
         }
         updatePlayLayer2List(
-            if (betTypeDatas.validIndex(playSelectedPos)) betTypeDatas?.get(playSelectedPos) else null,
-            playSelectedPos,
-            betSelectedPos
+            if (betTypeDatas.validIndex(mPlaySelectedPos)) betTypeDatas?.get(mPlaySelectedPos) else null,
+            mPlaySelectedPos
         )
     }
     //endregion
 
     //region 二级玩法、二级玩法组
     private var mPlaySelectedTmpRef = -1
+    private var mSelectedBetItem: BetItem? = null
     private fun updatePlayLayer2List(
-        betTypeItem: PlayItem?, playSelectedPos: Int,
-        betSelectedPos: Int,
+        playItem: PlayItem?, playSelectedPos: Int,
     ) {
         mPlaySelectedTmpRef = playSelectedPos
-        onBetSelected(vm.getInitBet(betTypeItem))
-        aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.setListOrUpdate(betTypeItem?.list) {
+        onBetSelected(vm.play2BetByPos(playItem, mGroupSelectedPos, mBetSelectedPos))
+        aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.setListOrUpdate(playItem?.list) {
             object : BaseSelectedQuickAdapter<PlayGroupItem, BaseViewHolder>(
                 R.layout.lot_jd_play_group_item,
                 it?.toMutableList()
@@ -326,9 +373,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                                 ) {
                                     super.convert(holder, item)
                                     holder.getView<TextView>(R.id.text_common_tv).isSelected =
-                                        isSelected(holder) && vm.isCurPlayNdGroup(
-                                            mPlaySelectedTmpRef, groupPosition
-                                        )
+                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
                                 }
 
                                 override fun convert(
@@ -337,22 +382,24 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                                     payloads: List<Any>,
                                 ) {
                                     holder.getView<TextView>(R.id.text_common_tv).isSelected =
-                                        isSelected(holder) && vm.isCurPlayNdGroup(
-                                            mPlaySelectedTmpRef, groupPosition
-                                        )
+                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
                                 }
                             }.apply {
                                 setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
                                     //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
-                                    vm.setSelectedPosOnBetSelected(
-                                        mPlaySelectedTmpRef,
-                                        groupPosition,
-                                        position
-                                    ) {
-                                        aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.adapter?.notifyItemChanged(
-                                            it, PAY_LOADS_SELECTED
-                                        )
+                                    if (mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition && mBetSelectedPos == position) return@setOnItemClickListener
+                                    if (mPlaySelectedPos != mPlaySelectedTmpRef) {
+                                        mPlaySelectedPos = mPlaySelectedTmpRef
+                                    } else {
+                                        if (mGroupSelectedPos != groupPosition) {
+                                            val preGroupPosition = mGroupSelectedPos
+                                            aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.adapter?.notifyItemChanged(
+                                                preGroupPosition, PAY_LOADS_SELECTED
+                                            )
+                                        }
                                     }
+                                    mGroupSelectedPos = groupPosition
+                                    mBetSelectedPos = position
                                     notifySelectedPositionWithPayLoads(position, false)
                                     adapter.getItemOrNull(position)?.let {
                                         if (it is BetItem) {
@@ -365,10 +412,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                         }
                     }
 
-                    if (vm.isCurGroup(groupPosition)) {
+                    if (groupPosition == mGroupSelectedPos) {
                         groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
                             if (it is BaseSelectedQuickAdapter<*, *>) {
-                                it.notifySelectedPosition(betSelectedPos)
+                                it.notifySelectedPosition(mBetSelectedPos)
                             }
                         }
                     }
@@ -393,17 +440,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //region 更新玩法时：title、玩法配置、投注单位更新
     private fun onBetSelected(item: BetItem?) {
         clearNums()
-        vm.setSelectedBetItem(item)
+        mSelectedBetItem = item
+        val playId = item?.betType ?: 0//玩法id
+        vm.setCurPlayId(playId)
         item?.let {
-            mTextWatcher?.setPlayId(it.betType)
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
-
-            val playId = it.betType//玩法id
             vm.getLocalBetType(playId)//获取玩法配置
-
             setUnitPattern(it.pattern)//更新投注单位
         }
-
     }
     //endregion
 
@@ -421,19 +465,13 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_max_bonus_tv.text = Html.fromHtml(
             String.format(
                 getString(R.string.lot_jd_max_bonus_text),
-                (vm.getSingleMoney() * mMultiple / Converts.unit2Params(mMoneyUnit)).money()
+                (vm.getSingleMoney(mSelectedBetItem) * mMultiple / Converts.unit2Params(mMoneyUnit)).money()
                     .h5Color("#F7831C")
             )
         )
         //最高理论奖金
     }
     //endregion
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        vm.cacheMoneyUnit(mMoneyUnit)
-        vm.cachePlay4GameId()
-    }
 
     //region digit万、千、百、十个
     private fun setAtLeastDigit(atLeastDigit: Int?) {
@@ -451,19 +489,19 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private fun getSelectedDigit(): String {
         if (mNeedDigit != true) return ""
         val sb = StringBuilder()
-        if (lot_jd_bet_digit_wan_cb.isChecked()) {
+        if (lot_jd_bet_digit_wan_cb.isChecked) {
             sb.append("0").append(",")
         }
-        if (lot_jd_bet_digit_qian_cb.isChecked()) {
+        if (lot_jd_bet_digit_qian_cb.isChecked) {
             sb.append("1").append(",")
         }
-        if (lot_jd_bet_digit_bai_cb.isChecked()) {
+        if (lot_jd_bet_digit_bai_cb.isChecked) {
             sb.append("2").append(",")
         }
-        if (lot_jd_bet_digit_shi_cb.isChecked()) {
+        if (lot_jd_bet_digit_shi_cb.isChecked) {
             sb.append("3").append(",")
         }
-        if (lot_jd_bet_digit_ge_cb.isChecked()) {
+        if (lot_jd_bet_digit_ge_cb.isChecked) {
             sb.append("4").append(",")
         }
 

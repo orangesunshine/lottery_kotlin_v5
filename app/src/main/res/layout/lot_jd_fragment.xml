@@ -32,10 +32,39 @@
 
             <TextView
                 android:id="@+id/lot_jd_play_desc_tv"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:lines="1" />
+                android:lines="1"
+                android:textSize="10dp" />
+
+            <View style="@style/weight" />
+
+            <TextView
+                android:id="@+id/lot_jd_play_hot_tv"
+                android:layout_width="46dp"
+                android:layout_height="23dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/lot_jd_hot_omission_bg"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:lines="1"
+                android:text="冷热"
+                android:textColor="@color/color_444444"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/lot_jd_play_omission_tv"
+                android:layout_width="46dp"
+                android:layout_height="23dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/lot_jd_hot_omission_bg"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:lines="1"
+                android:text="遗漏"
+                android:textColor="@color/color_444444"
+                android:visibility="gone" />
         </LinearLayout>
 
         <View
@@ -51,7 +80,7 @@
         <LinearLayout
             android:id="@+id/lot_jd_bet_digit_ll"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="40dp"
             android:orientation="horizontal"
             android:paddingLeft="15dp"
             android:paddingTop="5dp"

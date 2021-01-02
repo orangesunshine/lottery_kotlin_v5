@@ -18,7 +18,6 @@ import com.bdb.lottery.utils.time.TTime
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.android.synthetic.main.lot_dialog.*
-import java.lang.Error
 import javax.inject.Inject
 
 @ActivityScoped
@@ -32,7 +31,7 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         lot_dialog_singled_out_tv.visible(mLotParam.isDanTiao())
-        lot_dialog_tips_tv.visibility = if (mLotParam.isDanTiao()) View.VISIBLE else View.INVISIBLE
+        lot_dialog_tips_tv.visible(mLotParam.isDanTiao())
         lot_dialog_game_name_tv.text = mLotParam.gameName//彩票名称
         lot_dialog_play_name_tv.text = mLotParam.getPlayTypeName()//玩法名称
         lot_dialog_nums_tv.text = mLotParam.getNums()//号码
@@ -44,6 +43,9 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
         lot_dialog_multiple_tv.text = String.format("%d 倍", multiple) //倍数
         lot_dialog_amount_tv.text = String.format("%s 元", mLotParam.getAmount().money())//总额
         lot_dialog_tips_tv.text = mDanTiaoTips//单挑、限红
+        lot_dialog_close_iv.setOnClickListener {
+            dismiss()
+        }
         lot_dialog_submit_bt.setOnClickListener {
             if (!mCanBet) {
                 dismiss()
@@ -58,11 +60,11 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
                 mError?.invoke(it)
                 lot_dialog_bet_content_ll.visible(false)
                 lot_dialog_error_ll.visible(true)
-                lot_dialog_bet_confirm_ll.visible(true)
+                lot_dialog_submit_bt.visible(true)
             }, {
                 loading()
                 lot_dialog_error_ll.visible(false)
-                lot_dialog_bet_confirm_ll.visible(false)
+                lot_dialog_submit_bt.visible(false)
             }, {
                 dismissLoading()
                 mCanBet = false

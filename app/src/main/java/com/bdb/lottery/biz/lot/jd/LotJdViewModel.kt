@@ -20,7 +20,6 @@ import com.bdb.lottery.datasource.lot.data.jd.SingledInfo
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
-import com.bdb.lottery.utils.thread.Threads
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import javax.inject.Inject
 
@@ -29,14 +28,10 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private val lotLocalDs: LotLocalDs,
     private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {
-    val gameBetTypeDataLd = LiveDataWrapper<GameBetTypeData?>()
-    val eedDigitLd = LiveDataWrapper<Boolean>()
-    val isSingleStyleLd = LiveDataWrapper<Boolean>()
-    val onLocalBetTypeLd = LiveDataWrapper<Boolean>()
-    val atLeastDigitLd = LiveDataWrapper<Int?>()
-    val noteCountLd = LiveDataWrapper<Int>()
-    var mToken: String? = null
-    private var mSubPlayMethod: SubPlayMethod? = null
+    val gameBetTypeDataLd = LiveDataWrapper<GameBetTypeData?>()//玩法接口
+    var subPlayMethodLd = LiveDataWrapper<SubPlayMethod?>()
+
+    private var mToken: String? = null
 
     //region 初始化彩票
     private var mUserBonus: Double = 0.0
@@ -68,18 +63,11 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     fun getLocalBetType(playId: Int) {
         lotLocalDs.queryBetTypeByPlayId(playId)
             ?.let {
-                mSubPlayMethod = if (it.size > 1) {
+                subPlayMethodLd.setData(if (it.size > 1) {
                     it.last { !it.belongto.contains("PK10") }
                 } else {
                     if (!it.isNullOrEmpty()) it.last() else null
-                }
-                mSingleNumCount = mSubPlayMethod?.subPlayMethodDesc?.single_num_counts ?: 0
-                val needDigit = mSubPlayMethod?.subPlayMethodDesc?.is_need_show_weizhi == true
-                eedDigitLd.setData(needDigit)
-                if (needDigit)
-                    atLeastDigitLd.setData(mSubPlayMethod?.subPlayMethodDesc?.atleast_wei_shu?.toInt())
-                isSingleStyleLd.setData(mSubPlayMethod?.subPlayMethodDesc?.isdanshi != false)
-                onLocalBetTypeLd.setData(true)
+                })
             }
     }
     //endregion
@@ -94,86 +82,39 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             mGameType = it.getInt(EXTRA.TYPE_GAME_EXTRA)
             mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
         }
-        playCacheByGameId(mGameId)
     }
     //endregion
 
     //region 经典：玩法下标-缓存初始化
-    private var mPlaySelectedPos: Int = 0
-    private var mGroupSelectedPos: Int = 0
-    private var mBetSelectedPos: Int = 0
     private var mPlayId: Int = 0
-    fun renderPlayNdBet(
-        play: (playSelectedPos: Int, betSelectedPos: Int) -> Unit,
-    ) {
-        play.invoke(mPlaySelectedPos, mBetSelectedPos)
+    fun playCacheByGameId(cacheBlock: (gameId: Int, TCache) -> Unit) {
+        cacheBlock.invoke(mGameId, tCache)
+        mPlayId = tCache.playIdCacheByGameId(mGameId) ?: 0
     }
 
-    private fun playCacheByGameId(gameId: Int) {
-        mPlaySelectedPos = tCache.playCacheByGameId(gameId)?:0
-        mGroupSelectedPos = tCache.playGroupCacheByGameId(gameId)?:0
-        mBetSelectedPos = tCache.betCacheByGameId(gameId)?:0
-        mPlayId = tCache.playIdCacheByGameId(gameId)?:0
-    }
-
-    fun cachePlay4GameId() {
+    fun cachePlay4GameId(playSelectedPos: Int, groupSelectedPos: Int, betSelectedPos: Int) {
         tCache.cachePlay4GameId(
             mGameId,
-            mPlaySelectedPos,
-            mGroupSelectedPos,
-            mBetSelectedPos,
+            playSelectedPos,
+            groupSelectedPos,
+            betSelectedPos,
             mPlayId
         )
     }
     //endregion
 
-    //region 判断是不是当前选中的一级玩法
-    fun isCurPlayNdGroup(playIndex: Int, groupIndex: Int): Boolean {
-        return mPlaySelectedPos == playIndex && mGroupSelectedPos == groupIndex
-    }
-    //endregion
-
-    //region 判断是不是当前选中二级玩法分组
-    fun isCurGroup(groupPosition: Int): Boolean {
-        return mGroupSelectedPos == groupPosition
-    }
-    //endregion
-
-    //region 玩法选中
-    fun setSelectedPosOnBetSelected(
-        playSelectedPos: Int,
-        groupSelectedPos: Int,
-        betSelectedPos: Int,
-        unSelectPre: (preGroupPosition: Int) -> Unit,
-    ) {
-        //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
-        if (mPlaySelectedPos == playSelectedPos && mGroupSelectedPos == groupSelectedPos && mBetSelectedPos == betSelectedPos) return
-        if (mPlaySelectedPos != playSelectedPos) {
-            mPlaySelectedPos = playSelectedPos
-        } else {
-            if (mGroupSelectedPos != groupSelectedPos) {
-                val preGroupPosition = mGroupSelectedPos
-                unSelectPre.invoke(preGroupPosition)
-            }
-        }
-        mGroupSelectedPos = groupSelectedPos
-        mBetSelectedPos = betSelectedPos
-    }
-
     //初始化玩法选中
-    private var mSelectedBetItem: BetItem? = null
-    fun setSelectedBetItem(selectedBetItem: BetItem?) {
-        mSelectedBetItem = selectedBetItem
-        mPlayId = selectedBetItem?.betType ?: 0
+    fun setCurPlayId(playId: Int) {
+        mPlayId = playId
     }
 
-    fun getInitBet(item: PlayItem?): BetItem? {
+    fun play2BetByPos(item: PlayItem?, groupSelectedPos: Int, betSelectedPos: Int): BetItem? {
         var betItem: BetItem? = null
         return item?.list?.let {
-            if (mGroupSelectedPos < it.size) {
-                it[mGroupSelectedPos].list?.let {
-                    if (mBetSelectedPos < it.size) {
-                        val betItemTmp = it[mBetSelectedPos]
+            if (groupSelectedPos < it.size) {
+                it[groupSelectedPos].list?.let {
+                    if (betSelectedPos < it.size) {
+                        val betItemTmp = it[betSelectedPos]
                         betItem = betItemTmp
                     }
                 }
@@ -197,6 +138,13 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
+    //region 根据玩法配置获取当前位置
+    fun getDigit(needDigit: Boolean?, digit: String): String {
+        return if (needDigit == true) digit else subPlayMethodLd.getLiveData().value?.subPlayMethodDesc?.digit
+            ?: ""
+    }
+    //endregion
+
     fun verifyNdGenLotParams(
         betNums: String,//投注号码
         multiple: Int,//倍数
@@ -205,6 +153,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         needDigit: Boolean?,//最少位置
         verifyDigit: String?,//验证位置
         noteCount: Int,//注数
+        betItem: BetItem?,
         toast: AbsToast,
         lot: (lotParam: LotParam, error: (String) -> Unit) -> Unit,
     ) {
@@ -236,13 +185,13 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             betNums,
             multiple,
             moneyUnit,
-            getDigit(needDigit, digit, mSubPlayMethod),
+            digit,
             verifyDigit,
             needDigit,
             noteCount,
             getAmount(noteCount, moneyUnit, multiple),
-            getSingleMoney(mUserRebate, mSelectedBetItem?.baseScale ?: 0.0),
-            mSelectedBetItem,
+            getSingleMoney(betItem),
+            betItem,
             mSingledInfo,
             toast
         ) ?: return
@@ -263,21 +212,14 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         return 2 * noteCount * multiple * Math.pow(10.0, (1 - moneyUnit).toDouble())
     }
 
-    private fun getDigit(
-        needDigit: Boolean?,
-        digit: String,
-        subPlayMethod: SubPlayMethod?,
-    ): String {
-        return if (needDigit == true) digit else subPlayMethod?.subPlayMethodDesc?.digit ?: ""
-    }
-
     //理论最高奖金
     fun getSingleMoney(
+        betItem: BetItem?,
         userRebate: Double = mUserRebate,
-        baseScale: Double = mSelectedBetItem?.baseScale ?: 0.0,
         amountModelValue: Double = 1.0,
     ): Double {
-        val scale = userRebate * (mSelectedBetItem?.multiple ?: 0.0)
+        val baseScale = betItem?.baseScale ?: 0.0
+        val scale = userRebate * (betItem?.multiple ?: 0.0)
         return (baseScale + scale) * amountModelValue
     }
 
@@ -308,7 +250,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             danZhuJinEDanWei = Converts.unit2Params(moneyUnit),
             digit = digit,
             model = Converts.unit2Enum(moneyUnit).toString(),
-            playtypename = mSelectedBetItem?.getPlayTitle(),
+            playtypename = betItem?.getPlayTitle(),
             touZhuBeiShu = multiple,
             yongHuSuoTiaoFanDian = 0.0,
             zhuShu = noteCount,
@@ -333,9 +275,9 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         return singleMaxBetCount > noteCount
     }
 
-    fun danTiaoTips(): String? {
-        if (null == mSelectedBetItem || null == mSingledInfo) return null
-        return danTiaoTips(mSelectedBetItem!!, mSingledInfo!!)
+    fun danTiaoTips(betItem: BetItem?): String? {
+        if (null == betItem || null == mSingledInfo) return null
+        return danTiaoTips(betItem, mSingledInfo!!)
     }
 
     private fun danTiaoTips(betItem: BetItem, singledInfo: SingledInfo): String {
@@ -385,19 +327,20 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
-    var mSingleNumCount: Int = 0//单注号码数
     fun createSingleTextWatcher(
         singleInputEt: EditText,
+        singleNumCount:Int,
         digit: String,
+        noteCountBlock: (Int) -> Unit,
         error: (String?) -> Unit,
     ): SingleTextWatcher {
         return SingleTextWatcher(
             singleInputEt,
-            mSingleNumCount,
+            singleNumCount,
             mGameType,
             mPlayId,
-            getDigit(eedDigitLd.getLiveData().value, digit, mSubPlayMethod),
-            { Threads.retrofitUIThread { noteCountLd.setData(it) } }, error
+            digit,
+            noteCountBlock, error
         )
     }
 }

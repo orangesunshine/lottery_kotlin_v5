@@ -6,14 +6,13 @@ import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 
 class SingleTextWatcher constructor(
     private val mEtText: EditText,
-    private val singleNumCount: Int,
+    private var singleNumCount: Int,
     private val lotType: Int,
     private var playId: Int,
-    private val digits: String?,
+    private var digit: String?,
     private val noteCountBlock: (Int) -> Unit,
     private val error: (String?) -> Unit,
 ) :
@@ -22,6 +21,15 @@ class SingleTextWatcher constructor(
     private var watcher = true
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         end = s?.let { it.length == mEtText.selectionEnd } ?: false
+    }
+
+    fun setDigit(digit: String?, needFilter: Boolean = true) {
+        this.digit = digit
+        filterRepeatNdErrorNums(mEtText.text.toString().trim(), true)
+    }
+
+    fun setSingleNumCount(singleNumCount: Int) {
+        this.singleNumCount = singleNumCount
     }
 
     override fun afterTextChanged(s: Editable?) {
@@ -35,7 +43,7 @@ class SingleTextWatcher constructor(
     fun filterRepeatNdErrorNums(
         text: String,
         fromInput: Boolean = true,
-        overBlock: ((String) -> Unit)? = null,
+        lotDialogNumsBlock: ((String) -> Unit)? = null,
     ) {
         if (!end && fromInput) return
         if (text.length < singleNumCount || singleNumCount == 0) {
@@ -55,7 +63,7 @@ class SingleTextWatcher constructor(
                     BetCenter.computeSingleAvailableBetCount(
                         if (!fromInput && buff.isNotEmpty() && buff.length - buff.lastIndexOf(",") <= singleNumCount) {
                             buff.substring(0, buff.lastIndexOf(","))
-                        } else buff.toString(), lotType, playId, digits, fromInput
+                        } else buff.toString(), lotType, playId, digit, fromInput
                     )
                 } catch (e: Exception) {
                     if (!fromInput) throw e else -1
@@ -71,12 +79,11 @@ class SingleTextWatcher constructor(
                 val length = it?.length ?: 0
                 mEtText.setText(it)
                 mEtText.setSelection(length)
-                overBlock?.invoke(it?.let { if (length > 200) it.substring(0, 200) + "..." else it }
+                lotDialogNumsBlock?.invoke(it?.let {
+                    if (length > 200) it.substring(0,
+                        200) + "..." else it
+                }
                     ?: "")
             }) { if (!fromInput) error(it.message) }
-    }
-
-    fun setPlayId(playId: Int) {
-        this.playId = playId
     }
 }
