@@ -12,6 +12,7 @@ object CACHE {
     const val DOMAIN_URL_CACHE = "DOMAIN_URL_CACHE"//域名
     const val DEVICE_ID_CACHE = "DEVICE_ID_CACHE"//设备号
     const val PUBLIC_RSA_KEY_CACHE = "PUBLIC_RSA_KEY_CACHE"//公钥
+    const val USER_BALANCE_CACHE = "USER_BALANCE_CACHE"//用户余额
 //        val CUSTOM_SERVICE_URL_CACHE = "CUSTOM_SERVICE_URL_CACHE"//客服url
 //        val APK_VERSION_CACHE = "APK_VERSION_CACHE"//apk版本信息
 //        val PLATEFORM_CACHE = "PLATEFORM_CACHE"//平台

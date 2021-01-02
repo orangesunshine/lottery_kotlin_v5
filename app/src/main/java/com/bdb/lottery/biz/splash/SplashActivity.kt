@@ -8,7 +8,7 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.MainActivity
-import com.bdb.lottery.datasource.account.AccountLocalDs
+import com.bdb.lottery.biz.account.AccountManager
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
@@ -26,7 +26,7 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
     lateinit var tCache: TCache
 
     @Inject
-    lateinit var accountLocalDs: AccountLocalDs
+    lateinit var accountManager: AccountManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +59,8 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
             if (it) {
                 //获取域名成功
                 dismissSplashLoading()
-                if (tCache.splashGuideCache()) {
-                    if (accountLocalDs.isLogin()) {
+                if (tCache.splashGuideCache() == true) {
+                    if (accountManager.isLogin()) {
                         startNdFinish<MainActivity>()
                     } else {
                         startNdFinish<LoginActivity>()

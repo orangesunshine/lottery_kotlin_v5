@@ -4,7 +4,8 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
-import com.bdb.lottery.datasource.account.data.BalanceData
+import com.bdb.lottery.biz.account.AccountManager
+import com.bdb.lottery.datasource.account.data.UserBalanceData
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.extension.isSpace
@@ -21,7 +22,7 @@ class AccountRemoteDs @Inject constructor(
     private val appApi: AppApi,
     private val tEncrypt: TEncrypt,
     private val accountApi: AccountApi,
-    private val accountLocalDs: AccountLocalDs,
+    private val accountManager: AccountManager,
     private val retrofitWrapper: RetrofitWrapper
 ) {
 
@@ -61,13 +62,13 @@ class AccountRemoteDs @Inject constructor(
                         observable
                     }, {
                     //缓存用户已登录
-                    accountLocalDs.saveIsLogin(true)
+                    accountManager.saveIsLogin(true)
                     tCache.cacheToken(it)
                     success()
                 },
                 { response ->
                     //缓存用户未登录
-                    accountLocalDs.saveIsLogin(false)
+                    accountManager.saveIsLogin(false)
                     response.errorData<Map<String, Boolean>>()
                         ?.let { error(it.get("needValidateCode") ?: false) }
                 }, viewState = viewState
@@ -112,7 +113,7 @@ class AccountRemoteDs @Inject constructor(
                     accountApi.login(it),
                     {
                         //缓存用户已登录
-                        accountLocalDs.saveIsLogin(true)
+                        accountManager.saveIsLogin(true)
                         tCache.cacheToken(it)
                         success()
                     },
@@ -139,18 +140,18 @@ class AccountRemoteDs @Inject constructor(
         retrofitWrapper.observe(accountApi.trialPlay(), {
             success()
             //缓存用户已登录
-            accountLocalDs.saveIsLogin(true)
+            accountManager.saveIsLogin(true)
             it?.let {
                 tCache.cacheToken(it.token)
             }
         }, { code, msg ->
             //缓存用户未登录
-            accountLocalDs.saveIsLogin(false)
+            accountManager.saveIsLogin(false)
         }, viewState = viewState)
     }
 
     //用户信息
-    fun loginInfo() {
+    fun userInfo() {
         retrofitWrapper.observe(accountApi.userinfo(), {
             //缓存用户登录信息
             tCache.cacheUserInfo(it)
@@ -158,7 +159,7 @@ class AccountRemoteDs @Inject constructor(
     }
 
     //余额
-    fun balance(success: (BalanceData?) -> Unit) {
+    fun balance(success: (UserBalanceData?) -> Unit) {
         retrofitWrapper.observe(accountApi.balance(), success)
     }
 }

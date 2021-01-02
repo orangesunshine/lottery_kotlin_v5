@@ -129,7 +129,7 @@ object Activitys {
                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
             } else {
                 val tag = activity.window.decorView.getTag(-123) as? Int ?: return
-                Threads.runOnUiThreadDelayed(Runnable {
+                Threads.retrofitUIThreadDelayed({
                     try {
                         val window = activity.window
                         window?.setSoftInputMode(tag)

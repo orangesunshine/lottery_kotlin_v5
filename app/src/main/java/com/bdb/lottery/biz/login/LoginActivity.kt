@@ -62,19 +62,19 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
         }
 
         //登录
-        login_bt.setOnClickListener {
+        login_bt.deBounce {
             //校验用户名
             val username: String = login_username_et.text.toString()
             if (username.isEmpty()) {
                 toast(R.string.login_username_error_hint)
-                return@setOnClickListener
+                return@deBounce
             }
 
             //校验密码
             val pwd: String = loginPwdEt.text.toString()
             if (pwd.isEmpty()) {
                 toast(R.string.login_pwd_error_hint)
-                return@setOnClickListener
+                return@deBounce
             }
 
             //记住密码

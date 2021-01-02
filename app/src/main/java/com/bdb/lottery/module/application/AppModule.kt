@@ -20,7 +20,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideMmkv(): MMKV {
+    fun provideMmkv(): MMKV? {
         return MMKV.defaultMMKV();
     }
 }

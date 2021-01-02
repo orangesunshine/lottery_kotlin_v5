@@ -1,6 +1,7 @@
 package com.bdb.lottery.biz.main.home
 
 import androidx.hilt.lifecycle.ViewModelInject
+import com.bdb.lottery.biz.account.AccountManager
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
@@ -9,8 +10,11 @@ import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.home.HomeRemoteDs
 import com.bdb.lottery.datasource.home.data.BannerMapper
+import com.bdb.lottery.event.BalanceEvent
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 import javax.inject.Inject
 
 class HomeViewModel @ViewModelInject @Inject constructor(
@@ -18,11 +22,25 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     private val homeAppRemoteDs: HomeRemoteDs,
     private val gameRemoteDs: GameRemoteDs,
     private val appRemoteDs: AppRemoteDs,
+    private val accountManager: AccountManager,
     private val cocosRemoteDs: CocosRemoteDs
 ) : BaseViewModel() {
-    val balanceLd = LiveDataWrapper<String>()//余额
     val bannerLd = LiveDataWrapper<List<BannerMapper>?>()//轮播图
     val noticeLd = LiveDataWrapper<String>()//公告
+
+    init {
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe
+    fun onBalanceEvent(event: BalanceEvent) {
+        getBalance()
+    }
 
     //预加载
     fun preload() {
@@ -33,7 +51,11 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 
     //余额
     fun getBalance() {
-        accountRemoteDs.balance { it?.let { balanceLd.setData(it.center.money()) } }
+        accountRemoteDs.balance {
+            it?.let {
+                accountManager.mUserBalance.setData(it)
+            }
+        }
     }
 
     //根据类型查询彩种

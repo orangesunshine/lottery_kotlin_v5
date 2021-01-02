@@ -157,9 +157,9 @@
             android:id="@+id/lot_jd_bet_info_expl"
             android:layout_width="0dp"
             android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
             app:el_duration="300"
             app:el_expanded="false"
-            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toTopOf="@id/lot_jd_bottom_bar_ll"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -176,14 +176,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
+                    android:textColor="@color/color_666666"
                     tools:text="@string/lot_jd_account_balance_text" />
 
                 <TextView
-                    android:id="@+id/lot_jd_loss_profit_tv"
+                    android:id="@+id/lot_jd_today_profit_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
+                    android:textColor="@color/color_666666"
                     tools:text="@string/lot_jd_today_loss_profit_text" />
 
                 <TextView
@@ -199,6 +201,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="16dp"
                     android:layout_toLeftOf="@id/lot_jd_total_amount_tv"
+                    android:textColor="@color/color_666666"
                     tools:text="@string/lot_jd_selected_notes_text" />
 
                 <TextView
@@ -207,6 +210,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentBottom="true"
+                    android:textColor="@color/color_666666"
                     tools:text="@string/lot_jd_max_bonus_text" />
             </RelativeLayout>
         </net.cachapa.expandablelayout.ExpandableLayout>

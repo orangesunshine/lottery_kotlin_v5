@@ -55,7 +55,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     }
 
     fun userInfo() {
-        accountRemoteDs.loginInfo()
+        accountRemoteDs.userInfo()
     }
 
     //进入登录页面是否需要显示验证码

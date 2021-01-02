@@ -1,9 +1,8 @@
 package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
-import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.CODE
-import com.bdb.lottery.datasource.account.AccountLocalDs
+import com.bdb.lottery.biz.account.AccountManager
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.gson.Gsons
@@ -32,7 +31,7 @@ import javax.inject.Singleton
 @Singleton
 class BdbGsonConverterFactory @Inject constructor(
     private val gson: Gson,
-    private val accountLocalDs: AccountLocalDs,
+    private val accountManager: AccountManager,
     private val tActivityLifecycle: TActivityLifecycle,
 ) : Converter.Factory() {
     override fun responseBodyConverter(
@@ -55,7 +54,7 @@ class BdbGsonConverterFactory @Inject constructor(
     ): Converter<*, RequestBody> {
         return BdbGsonRequestBodyConverter(gson,
             gson.getAdapter(TypeToken.get(type)),
-            accountLocalDs,
+            accountManager,
             tActivityLifecycle)
     }
 }
@@ -124,7 +123,7 @@ internal class GsonResponseBodyConverter<T>(
 internal class BdbGsonRequestBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
-    private val accountLocalDs: AccountLocalDs,
+    private val accountManager: AccountManager,
     private val tActivityLifecycle: TActivityLifecycle,
 ) :
     Converter<T, RequestBody> {

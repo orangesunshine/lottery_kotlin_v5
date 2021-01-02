@@ -11,7 +11,7 @@ class TThread @Inject constructor() {
     }
 
     fun runOnUiThreadDelayed(runnable: Runnable, delayMillis: Long) {
-        Threads.runOnUiThreadDelayed(runnable, delayMillis)
+        Threads.retrofitUIThreadDelayed(runnable, delayMillis)
     }
 
     fun retrofitNewThread(runnable: Runnable) {

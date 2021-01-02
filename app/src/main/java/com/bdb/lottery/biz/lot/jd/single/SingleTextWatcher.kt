@@ -6,6 +6,7 @@ import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import timber.log.Timber
 
 class SingleTextWatcher constructor(
     private val mEtText: EditText,
@@ -14,8 +15,6 @@ class SingleTextWatcher constructor(
     private var playId: Int,
     private val digits: String?,
     private val noteCountBlock: (Int) -> Unit,
-    private val loading: () -> Unit,
-    private val dismissLoading: () -> Unit,
     private val error: (String?) -> Unit,
 ) :
     TextWatcherAdapter() {
@@ -43,16 +42,7 @@ class SingleTextWatcher constructor(
             noteCountBlock(0)
             return
         }
-        val needLoading = text.length > 10000
         Observable.just(text)
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .apply {
-                if (needLoading) {
-                    doOnSubscribe {
-                        loading()
-                    }
-                }
-            }
             .observeOn(Schedulers.computation())
             .map {
                 val buff = StringBuilder(text.replace(",", ""))
@@ -72,18 +62,18 @@ class SingleTextWatcher constructor(
                 }
                 if (-1 != noteCount)
                     noteCountBlock(noteCount)
-                if (needLoading || !fromInput) BetCenter.newNums else buff.toString()
+                if (!fromInput) BetCenter.newNums else buff.toString()
             }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 watcher = false
-                if (needLoading) mEtText.text.clear()
-                mEtText.setText(it)
+                if (!fromInput) mEtText.text.clear()
                 val length = it?.length ?: 0
+                mEtText.setText(it)
                 mEtText.setSelection(length)
                 overBlock?.invoke(it?.let { if (length > 200) it.substring(0, 200) + "..." else it }
                     ?: "")
-            }, { if (!fromInput) error(it.message) }, { if (needLoading) dismissLoading() })
+            }) { if (!fromInput) error(it.message) }
     }
 
     fun setPlayId(playId: Int) {

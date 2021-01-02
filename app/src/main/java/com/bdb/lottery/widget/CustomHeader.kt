@@ -178,8 +178,12 @@ class CustomHeader @JvmOverloads constructor(
     init {
         inflate(context, R.layout.refresh_header_common_layout, this)
         HEADER_LAST_UPDATE_TIME_CACHE += context.javaClass.name
+        val currentTimeMillis = System.currentTimeMillis()
         mLastTime =
-            Date(tCache.refreshTimeCache(HEADER_LAST_UPDATE_TIME_CACHE, System.currentTimeMillis()))
+            Date(
+                tCache.refreshTimeCache(HEADER_LAST_UPDATE_TIME_CACHE, currentTimeMillis)
+                    ?: currentTimeMillis
+            )
         mProgressDrawable = ProgressDrawable()
         ivProgress = findViewById(R.id.srl_classics_progress)
         ivResult = findViewById(R.id.iv_refresh_result)

@@ -2,8 +2,8 @@ package com.bdb.lottery.datasource.account
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.URL
-import com.bdb.lottery.datasource.account.data.BalanceData
 import com.bdb.lottery.datasource.account.data.TokenData
+import com.bdb.lottery.datasource.account.data.UserBalanceData
 import com.bdb.lottery.datasource.account.data.UserInfoData
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.http.Field
@@ -34,7 +34,7 @@ interface AccountApi {
     //余额
     @POST(URL.ULR_BALANCE)
     fun balance(
-    ): Observable<BaseResponse<BalanceData?>>
+    ): Observable<BaseResponse<UserBalanceData?>>
 
     //用户信息
     @POST(URL.URL_USERINFO)

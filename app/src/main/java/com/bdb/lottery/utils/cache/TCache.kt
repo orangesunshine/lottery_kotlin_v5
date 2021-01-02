@@ -42,11 +42,11 @@ class TCache @Inject constructor() {
         Caches.putLong(key, mills)
     }
 
-    fun refreshTimeCache(key: String): Long {
+    fun refreshTimeCache(key: String): Long? {
         return Caches.getLong(key)
     }
 
-    fun refreshTimeCache(key: String, mills: Long): Long {
+    fun refreshTimeCache(key: String, mills: Long): Long? {
         return Caches.getLong(key, mills)
     }
     //endregion
@@ -67,7 +67,7 @@ class TCache @Inject constructor() {
         Caches.putBoolean(CACHE.GUIDE_CACHE, true)
     }
 
-    fun splashGuideCache(): Boolean {
+    fun splashGuideCache(): Boolean? {
         return Caches.getBoolean(CACHE.GUIDE_CACHE, false)
     }
     //endregion
@@ -142,7 +142,7 @@ class TCache @Inject constructor() {
         Caches.putBoolean(CACHE.ISLOGIN_CACHE, isLogin)
     }
 
-    fun loginStatusCache(): Boolean {
+    fun loginStatusCache(): Boolean? {
         return Caches.getBoolean(CACHE.ISLOGIN_CACHE)
     }
     //endregion
@@ -176,19 +176,19 @@ class TCache @Inject constructor() {
         Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_ID_CACHE, playId)
     }
 
-    fun playCacheByGameId(gameId: Int): Int {
+    fun playCacheByGameId(gameId: Int): Int? {
         return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PLAY_CACHE, 0)
     }
 
-    fun playGroupCacheByGameId(gameId: Int): Int {
+    fun playGroupCacheByGameId(gameId: Int): Int? {
         return Caches.getInt(gameId.toString() + CACHE.LOT_JD_GROUP_CACHE, 0)
     }
 
-    fun betCacheByGameId(gameId: Int): Int {
+    fun betCacheByGameId(gameId: Int): Int? {
         return Caches.getInt(gameId.toString() + CACHE.LOT_JD_BET_CACHE, 0)
     }
 
-    fun playIdCacheByGameId(gameId: Int): Int {
+    fun playIdCacheByGameId(gameId: Int): Int? {
         return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PLAY_ID_CACHE, 0)
     }
     //endregion
@@ -197,7 +197,7 @@ class TCache @Inject constructor() {
         Caches.putInt("$gameId${CACHE.LOT_JD_MONEY_UNIT_CACHE}$playId", amountUnit)
     }
 
-    fun moneyUnitCache(gameId: Int, playId: Int): Int {
+    fun moneyUnitCache(gameId: Int, playId: Int): Int? {
         return Caches.getInt("$gameId${CACHE.LOT_JD_MONEY_UNIT_CACHE}$playId", 1)
     }
 }

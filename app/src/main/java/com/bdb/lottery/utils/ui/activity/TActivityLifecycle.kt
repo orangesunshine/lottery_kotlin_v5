@@ -9,7 +9,7 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.CODE
-import com.bdb.lottery.datasource.account.AccountLocalDs
+import com.bdb.lottery.biz.account.AccountManager
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.thread.TThread
 import com.bdb.lottery.utils.ui.keyboard.KeyBoards
@@ -22,7 +22,7 @@ import javax.inject.Singleton
 @Singleton
 class TActivityLifecycle @Inject constructor(
     val tThread: TThread,
-    private val accountLocalDs: AccountLocalDs,
+    private val accountManager: AccountManager,
 ) :
     Application.ActivityLifecycleCallbacks {
 
@@ -200,7 +200,7 @@ class TActivityLifecycle @Inject constructor(
     //根据后端code跳转登录
     fun topLogin(response: BaseResponse<*>) {
         if (CODE.LIST_TOLOGIN.contains(response.code)) {
-            accountLocalDs.saveIsLogin(false)
+            accountManager.saveIsLogin(false)
             topStartActivity<LoginActivity>(500)
         }
     }

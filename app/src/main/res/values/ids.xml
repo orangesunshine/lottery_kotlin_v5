@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="tag_shake_id" type="id" />
     <item name="statusbar_layout_id" type="id" />
     <item name="actionbar_left_id" type="id" />
     <item name="actionbar_center_id" type="id" />

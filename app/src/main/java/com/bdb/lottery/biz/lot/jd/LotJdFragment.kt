@@ -2,10 +2,9 @@ package com.bdb.lottery.biz.lot.jd
 
 import android.os.Bundle
 import android.text.Editable
-import android.text.method.ScrollingMovementMethod
+import android.text.Html
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewTreeObserver
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
+import com.bdb.lottery.biz.account.AccountManager
 import com.bdb.lottery.biz.lot.LotActivity
 import com.bdb.lottery.biz.lot.jd.single.LotBetAdapter
 import com.bdb.lottery.biz.lot.jd.single.LotPlayAdapter
@@ -25,17 +25,13 @@ import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
 import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.dialog.ConfirmDialog
-import com.bdb.lottery.extension.money
-import com.bdb.lottery.extension.setListOrUpdate
-import com.bdb.lottery.extension.validIndex
-import com.bdb.lottery.extension.visible
+import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import com.bdb.lottery.utils.convert.Converts
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.lot_activity.*
-import kotlinx.android.synthetic.main.lot_dialog.*
 import kotlinx.android.synthetic.main.lot_jd_fragment.*
 import javax.inject.Inject
 
@@ -48,18 +44,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     @Inject
     lateinit var mUnitPopWindow: UnitPopWindow
-    private var mInputHeight: Int = 0
+    private var mMultiple: Int = 1
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        lot_jd_single_input_et.movementMethod = ScrollingMovementMethod.getInstance();
-        lot_jd_single_input_et.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                mInputHeight = lot_jd_single_input_et.height
-                if (mInputHeight > 0)
-                    lot_jd_single_input_et.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        })
         //删除重复、错误号码
         lot_jd_remove_repeat_nums_tv.setOnClickListener {
             mTextWatcher?.filterRepeatNdErrorNums(
@@ -80,14 +67,17 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_multiple_et.addTextChangedListener(object : TextWatcherAdapter() {
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    val toLong = s.toString().toLong()
-                    if (toLong < 1) {
+                    mMultiple = s.toString().toInt()
+                    if (mMultiple < 1) {
                         lot_jd_multiple_et.setText("1")
                         lot_jd_multiple_et.setSelection(lot_jd_multiple_et.length())
                     }
                 } catch (e: Exception) {
                     lot_jd_multiple_et.setText("1")
                     lot_jd_multiple_et.setSelection(lot_jd_multiple_et.length())
+                }
+                if (mCanPutBasket) {
+                    reCalculateAmountNdSingleMoney()
                 }
             }
         })
@@ -99,7 +89,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             ) {
                 vm.verifyNdGenLotParams(
                     it,
-                    lot_jd_multiple_et.text.toString().trim(),
+                    mMultiple,
                     mMoneyUnit,
                     getSelectedDigit(),
                     mNeedDigit,
@@ -124,13 +114,15 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             vm.getBetType()
         }
         vm.initAmountUnit {
-            mMoneyUnit = it
-            log_jd_money_unit_tv.text = Converts.unit2String(it)
+            mMoneyUnit = it ?: 1
+            log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
         }
         vm.initGame()
         vm.getBetType()
     }
 
+    @Inject
+    lateinit var accountManager: AccountManager
     private var mNeedDigit: Boolean? = null//是否需要验证位置
     private var mAtLeastDigit: Int? = null//最少位置
     private var mTextWatcher: SingleTextWatcher? = null
@@ -138,40 +130,52 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mCanPutBasket: Boolean = false//能否加入购物篮
     private var mAmount: Double = 0.0//总额
     override fun observe() {
-        vm.mGameBetTypeData.getLiveData().observe(this) {
+        ob(accountManager.mUserBalance.getLiveData()) {
+            lot_jd_account_balance_tv.text = String.format(
+                getString(R.string.lot_jd_account_balance_text),
+                (it?.center ?: 0.0).money()
+            )
+            val profit = it?.getTodayJdProfit() ?: 0.0
+            lot_jd_today_profit_tv.text = Html.fromHtml(
+                String.format(
+                    getString(R.string.lot_jd_account_balance_text),
+                    (profit).money()
+                        .h5Color(if (profit > 0) "#FA4529" else if (profit < 0) "#66CC66" else "#333333")
+                )
+            )
+        }
+        vm.gameBetTypeDataLd.getLiveData().observe(this) {
             vm.renderPlayNdBet { playSelectedPos, betSelectedPos ->
                 updatePlayList(betTypeDatas = it, playSelectedPos, betSelectedPos)
             }
         }
-        vm.mNeedDigit.getLiveData().observe(this) {
+        vm.eedDigitLd.getLiveData().observe(this) {
             lot_jd_bet_digit_ll.visible(it)
             mNeedDigit = it
         }
-        vm.mIsSingleStyle.getLiveData().observe(this) {
+        vm.isSingleStyleLd.getLiveData().observe(this) {
             switchDanFuStyle(it)
         }
 
-        vm.mOnLocalBetType.getLiveData().observe(this) {
+        vm.onLocalBetTypeLd.getLiveData().observe(this) {
             if (it && null == mTextWatcher) {
                 mTextWatcher = vm.createSingleTextWatcher(
                     lot_jd_single_input_et,
                     getSelectedDigit(),
-                    ::show,
-                    ::hide,
                     toast::showError
                 )
                 lot_jd_single_input_et.addTextChangedListener(mTextWatcher)
             }
         }
 
-        vm.mAtLeastDigit.getLiveData().observe(this) {
+        vm.atLeastDigitLd.getLiveData().observe(this) {
             if (mAtLeastDigit != it) {
                 setAtLeastDigit(it)
                 mAtLeastDigit = it
             }
         }
 
-        vm.mNoteCount.getLiveData().observe(this) {
+        vm.noteCountLd.getLiveData().observe(this) {
             val canPutBasket = it > 0
             if (mCanPutBasket != canPutBasket) {
                 //加入购物篮切换
@@ -185,22 +189,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 mCanPutBasket = canPutBasket
             }
             if (mNoteCount != it) {
-                val multiple = lot_jd_multiple_et.text.toString().trim().toInt()
-                mAmount =
-                    vm.getAmount(it, mMoneyUnit, multiple)
-                val money = mAmount.money()
-                val format = String.format(getString(R.string.lot_jd_total_money_text), money)
-                lot_jd_total_amount_tv.text =
-                    format//总额
                 lot_jd_selected_notes_tv.text =
                     String.format(getString(R.string.lot_jd_selected_notes_text), it)//注数
-                lot_jd_max_bonus_tv.text =
-                    String.format(getString(R.string.lot_jd_max_bonus_text),
-                        vm.getSingleMoney(multiple = multiple).money())//最高理论奖金
                 mNoteCount = it
+                reCalculateAmountNdSingleMoney()
             }
         }
     }
+
 
     //region 传递参数gameType、gameId、gameName
     companion object {
@@ -239,6 +235,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 R.id.lot_jd_money_unit_li_tv -> mMoneyUnit = 4
             }
             log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
+            reCalculateAmountNdSingleMoney()
         }
     }
     //endregion
@@ -254,6 +251,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
     }
 
+    //投注成功、点击清空按钮、切换玩法
     private fun clearNums() {
         if (MODE_SINGLE == mMode) {
             //单式
@@ -308,8 +306,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         betSelectedPos: Int,
     ) {
         mPlaySelectedTmpRef = playSelectedPos
-        val initBet = vm.getInitBet(betTypeItem)
-        onBetSelected(initBet)
+        onBetSelected(vm.getInitBet(betTypeItem))
         aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.setListOrUpdate(betTypeItem?.list) {
             object : BaseSelectedQuickAdapter<PlayGroupItem, BaseViewHolder>(
                 R.layout.lot_jd_play_group_item,
@@ -359,7 +356,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                                     notifySelectedPositionWithPayLoads(position, false)
                                     adapter.getItemOrNull(position)?.let {
                                         if (it is BetItem) {
-                                            vm.setSelectedBetItem(it)
                                             onBetSelected(it)
                                         }
                                     }
@@ -394,8 +390,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
-    //更新玩法时：title、玩法配置、投注单位更新
+    //region 更新玩法时：title、玩法配置、投注单位更新
     private fun onBetSelected(item: BetItem?) {
+        clearNums()
+        vm.setSelectedBetItem(item)
         item?.let {
             mTextWatcher?.setPlayId(it.betType)
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
@@ -407,6 +405,29 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
 
     }
+    //endregion
+
+    //region 注数、金额单位切换、倍率改变时调用（重新计算：投注总额、理论最高奖金）
+    private fun reCalculateAmountNdSingleMoney() {
+        mAmount =
+            vm.getAmount(mNoteCount, mMoneyUnit, mMultiple)
+        lot_jd_total_amount_tv.text =
+            Html.fromHtml(
+                String.format(
+                    getString(R.string.lot_jd_total_money_text),
+                    mAmount.money().h5Color("#fa4529")
+                )
+            ) //总额
+        lot_jd_max_bonus_tv.text = Html.fromHtml(
+            String.format(
+                getString(R.string.lot_jd_max_bonus_text),
+                (vm.getSingleMoney() * mMultiple / Converts.unit2Params(mMoneyUnit)).money()
+                    .h5Color("#F7831C")
+            )
+        )
+        //最高理论奖金
+    }
+    //endregion
 
     override fun onDestroyView() {
         super.onDestroyView()

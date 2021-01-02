@@ -24,3 +24,9 @@ fun CharSequence?.equalsNSpace(other: CharSequence?): Boolean {
     return !isSpace() && TextUtils.equals(this, other)
 }
 
+fun CharSequence?.h5Color(argb: String): String? {
+    return this?.let {
+        "<font color='$argb'>$it</font>"
+    }
+}
+

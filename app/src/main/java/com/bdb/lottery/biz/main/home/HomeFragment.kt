@@ -14,6 +14,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
+import com.bdb.lottery.biz.account.AccountManager
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
@@ -36,6 +37,7 @@ import com.youth.banner.util.BannerUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_home_fragment.*
 import permissions.dispatcher.*
+import javax.inject.Inject
 
 
 //主页home
@@ -153,8 +155,12 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         vm.preload()//预加载 收藏、全部game、娱乐
     }
 
+    @Inject
+    lateinit var accountManager: AccountManager
     override fun observe() {
-        ob(vm.balanceLd.getLiveData()) { home_balance_tv.text = it }
+        ob(accountManager.mUserBalance.getLiveData()) {
+            home_balance_tv.text = (it?.center ?: 0.0).money()
+        }
         ob(vm.bannerLd.getLiveData()) {
             loadBanner(it)
         }

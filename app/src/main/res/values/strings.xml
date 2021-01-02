@@ -47,8 +47,8 @@
 
     <!--lot-->
     <string name="lot_jd_single_remove_repeat_text">删除重复和错误号码</string>
-    <string name="lot_jd_account_balance_text">账户余额：%f 元</string>
-    <string name="lot_jd_today_loss_profit_text">今日输赢：%f 元</string>
+    <string name="lot_jd_account_balance_text">账户余额：%s 元</string>
+    <string name="lot_jd_today_loss_profit_text">今日输赢：%s 元</string>
     <string name="lot_jd_selected_notes_text">已选 %d 注</string>
     <string name="lot_jd_total_money_text">共 %s 元</string>
     <string name="lot_jd_max_bonus_text">理论最高奖金 %s 元</string>

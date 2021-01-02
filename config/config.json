@@ -1,6 +1,7 @@
 {
   "app": [
     "ACTIVITY",
+    "ANDROIDANIMATIONS",
     "AUTOSIZE",
     "BANNER",
     "BASERECYCLERVIEWADAPTERHELPER",

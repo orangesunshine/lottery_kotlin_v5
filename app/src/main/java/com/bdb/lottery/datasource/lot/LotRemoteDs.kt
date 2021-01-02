@@ -58,12 +58,12 @@ class LotRemoteDs @Inject constructor(
     }
 
     //region 经典
-    fun initGame(gameId: String, success: (GameInitData?) -> Unit, complete: () -> Unit) {
-        retrofitWrapper.observe(lotApi.initGame(gameId), success, complete = complete)
+    fun initGame(gameId: String, success: (GameInitData?) -> Unit) {
+        retrofitWrapper.observe(lotApi.initGame(gameId), success)
     }
 
-    fun getBetType(gameId: String, success: (GameBetTypeData?) -> Unit, complete: () -> Unit) {
-        retrofitWrapper.observe(lotApi.getBetType(gameId), success, complete = complete)
+    fun getBetType(gameId: String, success: (GameBetTypeData?) -> Unit) {
+        retrofitWrapper.observe(lotApi.getBetType(gameId), success)
     }
     //endregion
 

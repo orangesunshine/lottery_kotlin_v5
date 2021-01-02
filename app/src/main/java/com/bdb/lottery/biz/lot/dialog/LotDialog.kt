@@ -52,7 +52,7 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
             vm.lot(mLotParam, {
                 mSuccess?.invoke()
                 lot_dialog_succuess_tv.visible(true)
-                Threads.runOnUiThreadDelayed({ dismiss() }, 700)
+                Threads.retrofitUIThreadDelayed({ dismiss() }, 1000)
                 mSubmitCallback?.invoke()//清空号码
             }, {
                 mError?.invoke(it)
@@ -74,8 +74,10 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     private fun loading() {
         lot_dialog_loading_success_ll.visible(true)
         lot_dialog_loading_success_iv.setImageResource(R.drawable.lot_dialog_bet_loading)
-        lot_dialog_loading_success_iv.startAnimation(AnimationUtils.loadAnimation(context,
-            R.anim.rotate_anim).apply { interpolator = LinearInterpolator() })
+        lot_dialog_loading_success_iv.startAnimation(AnimationUtils.loadAnimation(
+            context,
+            R.anim.rotate_anim
+        ).apply { interpolator = LinearInterpolator() })
     }
 
     private fun dismissLoading() {
@@ -150,6 +152,7 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     override fun onDestroyView() {
         super.onDestroyView()
         mCanBet = true
+        lot_dialog_loading_success_iv.clearAnimation()
         Threads.removeUiThreadCallbacksAndMessages()
     }
 }
