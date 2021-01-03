@@ -11,20 +11,19 @@ import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
-import com.bdb.lottery.dialog.LoadingDialog
 import com.bdb.lottery.biz.base.BaseViewModel
-import com.bdb.lottery.const.TAG
+import com.bdb.lottery.biz.globallivedata.AccountManager
+import com.bdb.lottery.dialog.LoadingDialog
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.statusbar
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.widget.LoadingLayout
-import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 open class BaseActivity(
-    var layoutId: Int
+    var layoutId: Int,
 ) : FragmentActivity() {
 
     //vars
@@ -32,9 +31,10 @@ open class BaseActivity(
 
     //uis
     @Inject
-    lateinit var loading: LoadingDialog
-    @Inject
     lateinit var toast: AbsToast
+
+    @Inject
+    lateinit var loading: LoadingDialog
     private val loadingLayout: LoadingLayout?
         get() = findViewById(R.id.loadinglayout_id)
     protected val content: ViewGroup?
@@ -50,7 +50,6 @@ open class BaseActivity(
     private val actbarCenter: View?
         get() = findViewById(R.id.actionbar_center_id)
     protected var mActivity: WeakReference<FragmentActivity>? = null//当前activity引用
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //初始化变量
@@ -132,21 +131,8 @@ open class BaseActivity(
     }
 
     @CallSuper
-    open fun initVar(bundle:Bundle?) {
+    open fun initVar(bundle: Bundle?) {
         mActivity = WeakReference(this)
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            onBack()
-            return false
-        } else {
-            return super.onKeyDown(keyCode, event)
-        }
-    }
-
-    protected open fun onBack() {
-        finish()
     }
 
     override fun onDestroy() {
@@ -178,6 +164,11 @@ open class BaseActivity(
                 }
             }
         }
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.left_in, R.anim.right_out)
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -229,7 +220,7 @@ open class BaseActivity(
     }
 
     protected open fun actbarLeft(left: View) {
-        left.setOnClickListener { onBack() }
+        left.setOnClickListener { finish() }
     }
 
     protected open fun actbarRight(right: View) {

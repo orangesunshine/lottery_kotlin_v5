@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
-import com.bdb.lottery.biz.lot.LotActivity
+import com.bdb.lottery.biz.lot.activity.LotActivity
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.game.data.AllGameItemData
 import com.bdb.lottery.extension.ob

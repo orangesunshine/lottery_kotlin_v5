@@ -33,7 +33,7 @@ class HomeCollectionViewModel @ViewModelInject @Inject constructor(
                 null
             )
             it?.let { data: LotteryFavoritesData ->
-                appRemoteDs.cachePriPlatformParams { platform: PlatformData? ->
+                appRemoteDs.cachePrePlatformParams { platform: PlatformData? ->
                     favouritesLd.setData(
                         (data.gameTypeList ?: data.defaultList)?.map { it.homeMapper(platform) }
                             ?.toMutableList()?.apply { add(collectionEnter) } ?: mutableListOf(

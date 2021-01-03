@@ -14,7 +14,7 @@ class DomainLocalDs @Inject constructor(val tCache: TCache) {
 
     fun saveDomain(domain: String): Boolean {
         return domain.isDomainUrl().apply {
-            alreadySave.set(this)
+            alreadySave.set(true)
             if (this) {
                 mSelectDomain = domain
                 tCache.cacheDomain(domain)

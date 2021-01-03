@@ -108,7 +108,7 @@ class DomainRemoteDs @Inject constructor(
     /**
      * 获取前端配置
      */
-    fun debugDomain(
+    private fun debugDomain(
         success: ((PlatformData?) -> Any)? = null,
         error: ((String?) -> Any)? = null,
     ) {
@@ -134,9 +134,9 @@ class DomainRemoteDs @Inject constructor(
      * @param success: 成功回调
      * @param error: 失败回调->对应平台配置local_http_url内置域名，调用getLocalDomain获取内置域名
      */
-    fun onlineDomain(
-        success: ((PlatformData?) -> Any)? = null,
-        error: ((String?) -> Any)? = null,
+    private fun onlineDomain(
+        success: ((PlatformData?) -> Unit)? = null,
+        error: ((String?) -> Unit)? = null,
     ) {
         Timber.d("getOnlineDomain")
         val configPath = BdbApp.context.getString(R.string.api_txt_path)
@@ -184,13 +184,13 @@ class DomainRemoteDs @Inject constructor(
                         }
 
                         //处理配置文件
-                        success?.run { this(it) }
+                        success?.invoke(it)
 
                         //缓存
                         cache.invoke(it)
                     }
                 }
-            }, { code, msg ->
+            }, { _, msg ->
                 //获取域名失败
                 if (!already.get()) {
                     Timber.d("online__onError：${msg}")
@@ -201,7 +201,7 @@ class DomainRemoteDs @Inject constructor(
                     //数据解析问题
                     if (!already.get()) {
                         Timber.d("online__onComplete")
-                        error?.run { this("数据异常") }
+                        error?.invoke("数据异常")
                     }
                 })
         }
@@ -212,10 +212,10 @@ class DomainRemoteDs @Inject constructor(
      * @param success: 成功回调
      * @param error: 失败回调
      */
-    fun localDomain(
+    private fun localDomain(
         @StringRes localDomainStringId: Int,
-        success: ((PlatformData?) -> Any)? = null,
-        error: (() -> Any)? = null,
+        success: ((PlatformData?) -> Unit)? = null,
+        error: (() -> Unit)? = null,
     ) {
         Timber.d("getLocalDomain")
         val localDomain = BdbApp.context.getString(localDomainStringId)
@@ -244,7 +244,7 @@ class DomainRemoteDs @Inject constructor(
                                 }
 
                                 //处理配置文件
-                                success?.run { this(it) }
+                                success?.invoke(it)
 
                                 //缓存
                                 cache.invoke(it)
@@ -252,7 +252,7 @@ class DomainRemoteDs @Inject constructor(
                         }
 
                     },
-                    { code, msg ->
+                    { _, msg ->
                         //获取域名失败
                         if (!already.get()) {
                             Timber.d("local__onError：${msg}")

@@ -54,7 +54,7 @@ class TPath @Inject constructor(@ApplicationContext private val context: Context
             getRoot()
             if (!Files.isDir(rootPath)) return null
         }
-        cocosDownloadPath = rootPath + File.separator + "cocos" + File.separator
+        cocosDownloadPath = rootPath + File.separator + "cocos"
         return cocosDownloadPath
     }
     //endregion
@@ -69,7 +69,7 @@ class TPath @Inject constructor(@ApplicationContext private val context: Context
             getRoot()
             if (!Files.isDir(rootPath)) return null
         }
-        apkDownloadPath = rootPath + File.separator + "apk" + File.separator
+        apkDownloadPath = rootPath + File.separator + "apk"
         return apkDownloadPath
     }
     //endregion

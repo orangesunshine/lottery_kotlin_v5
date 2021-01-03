@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.lot.dialog
+package com.bdb.lottery.biz.lot.dialog.lot
 
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod

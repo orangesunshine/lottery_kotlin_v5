@@ -2,6 +2,7 @@ package com.bdb.lottery.biz.lot.jd.single
 
 import android.text.Editable
 import android.widget.EditText
+import com.bdb.lottery.biz.lot.BetCenter
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -23,13 +24,18 @@ class SingleTextWatcher constructor(
         end = s?.let { it.length == mEtText.selectionEnd } ?: false
     }
 
-    fun setDigit(digit: String?, needFilter: Boolean = true) {
+    fun setDigit(digit: String?) {
         this.digit = digit
         filterRepeatNdErrorNums(mEtText.text.toString().trim(), true)
     }
 
-    fun setSingleNumCount(singleNumCount: Int) {
+    fun onBetChange(singleNumCount: Int, digit: String?) {
         this.singleNumCount = singleNumCount
+        this.digit = digit
+    }
+
+    fun setPlayId(playId: Int) {
+        this.playId = playId
     }
 
     override fun afterTextChanged(s: Editable?) {

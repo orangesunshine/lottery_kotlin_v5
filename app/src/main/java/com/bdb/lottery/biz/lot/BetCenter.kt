@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.lot.jd.single
+package com.bdb.lottery.biz.lot
 
 import com.bdb.lottery.algorithm.*
 import com.bdb.lottery.const.GAME

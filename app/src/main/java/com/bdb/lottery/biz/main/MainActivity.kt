@@ -1,6 +1,8 @@
 package com.bdb.lottery.biz.main
 
 import android.os.Bundle
+import android.os.SystemClock
+import android.view.KeyEvent
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.RadioButton
@@ -13,9 +15,12 @@ import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.biz.main.user.UserFragment
 import com.bdb.lottery.const.CONST
 import com.bdb.lottery.extension.statusbar
+import com.bdb.lottery.utils.ui.app.Apps
+import com.bdb.lottery.utils.ui.toast.AbsToast
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main_activity.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
@@ -81,4 +86,22 @@ class MainActivity : FragmentActivity() {
         rbs[index].isChecked = true
         mIndex = index
     }
+
+    //region 2秒内连续2次，退出应用
+    @Inject
+    lateinit var toast: AbsToast
+    private var mLastBackTime: Long = 0
+    private val mTerminateInternal = 2000L
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        val elapsedRealtime = SystemClock.elapsedRealtime()
+        return if (elapsedRealtime - mLastBackTime > mTerminateInternal) {
+            mLastBackTime = elapsedRealtime
+            toast.showWarning("再次按下退出")
+            true
+        } else {
+            Apps.killApp()
+            super.onKeyDown(keyCode, event)
+        }
+    }
+    //endregion
 }

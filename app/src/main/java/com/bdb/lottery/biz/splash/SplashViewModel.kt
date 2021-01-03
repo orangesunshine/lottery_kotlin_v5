@@ -31,7 +31,7 @@ class SplashViewModel @ViewModelInject @Inject constructor(
 
     //获取apk版本
     private fun preApkVersion() {
-        appDs.preApkVersion {
+        appDs.refreshApkVersionCache {
             it?.let {
                 //发送粘性事件，MainActivity打开处理
                 EventBus.getDefault().postSticky(it)

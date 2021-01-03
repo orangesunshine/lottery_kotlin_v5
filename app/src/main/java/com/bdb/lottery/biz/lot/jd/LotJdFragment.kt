@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
-import com.bdb.lottery.biz.account.AccountManager
-import com.bdb.lottery.biz.lot.LotActivity
+import com.bdb.lottery.biz.globallivedata.AccountManager
+import com.bdb.lottery.biz.lot.UnitPopWindow
+import com.bdb.lottery.biz.lot.activity.LotActivity
+import com.bdb.lottery.biz.lot.dialog.playdesc.LotPlayDescDialog
 import com.bdb.lottery.biz.lot.jd.single.LotBetAdapter
 import com.bdb.lottery.biz.lot.jd.single.LotPlayAdapter
 import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
-import com.bdb.lottery.biz.lot.jd.single.UnitPopWindow
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
@@ -141,6 +142,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //endregion
 
     //region 请求参数：初始化彩票、玩法配置接口，金额单位缓存
+    @Inject
+    lateinit var lotPlayDescDialog: LotPlayDescDialog
     private fun requestDatas() {
         //初始化金额单位：根据gameId读取金额单位缓存，没有缓存默认1（元）
         vm.initAmountUnit {
@@ -149,6 +152,16 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
         vm.initGame()//初始化彩票
         vm.getBetType()//玩法配置接口
+        lot_jd_play_desc_tv.setOnClickListener {
+            vm.cachePreHowToPlay { gameType: Int, playDesc: String? ->
+                playDesc?.let {
+                    //玩法说明弹窗
+                    lotPlayDescDialog.setGameType(gameType)
+                    lotPlayDescDialog.setPlayDescContent(it)
+                    lotPlayDescDialog.show(childFragmentManager)
+                }
+            }
+        }
     }
     //endregion
 
@@ -184,7 +197,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         //数据库查找玩法成功
         vm.subPlayMethodLd.getLiveData().observe(this) {
             mSingleNumCount = it?.subPlayMethodDesc?.single_num_counts ?: 0
-            mTextWatcher?.setSingleNumCount(mSingleNumCount)
+            mTextWatcher?.onBetChange(mSingleNumCount,
+                vm.getDigit(mNeedDigit, getSelectedDigit()))
 
             mMode = if (it?.subPlayMethodDesc?.isdanshi != false) MODE_SINGLE else MODE_DUPLEX
             switchDanFuStyle(mMode == MODE_SINGLE)
@@ -196,7 +210,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 mAtLeastDigit = it?.subPlayMethodDesc?.atleast_wei_shu?.toInt()
                 setAtLeastDigit(mAtLeastDigit)
             }
-            mTextWatcher?.setDigit(vm.getDigit(mNeedDigit, getSelectedDigit()), false)
 
             if (null == mTextWatcher) {
                 mTextWatcher = vm.createSingleTextWatcher(
@@ -443,10 +456,16 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mSelectedBetItem = item
         val playId = item?.betType ?: 0//玩法id
         vm.setCurPlayId(playId)
+        mTextWatcher?.setPlayId(playId)
         item?.let {
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
             vm.getLocalBetType(playId)//获取玩法配置
             setUnitPattern(it.pattern)//更新投注单位
+            //玩法说明
+            vm.cachePreHowToPlay { _: Int, playDesc: String? ->
+                lot_jd_play_desc_tv.text = playDesc ?: "该玩法暂无玩法说明"
+            }
+            mTextWatcher?.filterRepeatNdErrorNums(lot_jd_single_input_et.text.toString().trim())
         }
     }
     //endregion
@@ -540,6 +559,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mMode = MODE_DUPLEX//模式
     private fun switchDanFuStyle(isSingleStyle: Boolean) {
         mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
+        lot_jd_bet_input_cv.visible(isSingleStyle)
     }
     //endregion
 }

@@ -32,7 +32,7 @@ class TCocos @Inject constructor() {
     //批量cocos文件条件1.本地文件校验失败，2.内存空间足够下载
     fun checkCocosBatchDownload(
         cocosDownloadPath: String,
-        cocos: CocosData.CocosDataItem
+        cocos: CocosData.CocosDataItem,
     ): Boolean {
         return !checkCocosLocal(cocosDownloadPath, cocos) && checkStorage4BatchCocosUrl(cocos)
     }
@@ -48,7 +48,7 @@ class TCocos @Inject constructor() {
     //单个cocos文件条件1.本地文件校验失败，2.内存空间足够下载
     fun checkCocosSingleDownload(
         cocosDownloadPath: String,
-        cocos: CocosData.CocosDataItem
+        cocos: CocosData.CocosDataItem,
     ): Boolean {
         return !checkCocosLocal(cocosDownloadPath, cocos) && checkStorage4SingleCocosUrl(cocos)
     }
@@ -63,7 +63,7 @@ class TCocos @Inject constructor() {
     //cocos本地文件校验
     private fun checkCocosLocal(
         cocosDownloadPath: String,
-        cocos: CocosData.CocosDataItem
+        cocos: CocosData.CocosDataItem,
     ): Boolean {
         val url = cocos.androidZipUrl
         if (!Regexs.isURL(url)) {
@@ -154,9 +154,9 @@ class TCocos @Inject constructor() {
 
     private fun cocosDecompressDirFullName(
         cocosDownloadPath: String,
-        name: String
+        name: String,
     ): String {
-        return cocosDownloadPath + "decompress" + File.separator + name + File.separator
+        return cocosDownloadPath + File.separator + "decompress" + File.separator + name
     }
 
     //获取加载cocos本地路径url
@@ -198,7 +198,7 @@ class TCocos @Inject constructor() {
         cocosDownloadPath: String,
         name: String,
         webView: WebView,
-        inited: (() -> Unit)? = null
+        inited: (() -> Unit)? = null,
     ) {
         webView.loadUrl(cocosLoadUrl(cocosDownloadPath, name))
         val cocosH5: Cocos2H5 = object : TCocos.Cocos2H5() {
@@ -220,7 +220,7 @@ class TCocos @Inject constructor() {
         webView: WebView, openNums: String?,
         issue: String?,
         openTime: String?,
-        name: String?
+        name: String?,
     ) {
         WebViews.loadUrl(
             webView,

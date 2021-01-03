@@ -9,7 +9,7 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.const.CODE
-import com.bdb.lottery.biz.account.AccountManager
+import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.extension.start
 import com.bdb.lottery.utils.thread.TThread
 import com.bdb.lottery.utils.ui.keyboard.KeyBoards
@@ -173,7 +173,7 @@ class TActivityLifecycle @Inject constructor(
     }
 
     //顶层activity打开页面
-    inline fun <reified T : Activity> topStartActivity(delayMills: Long = 0) {
+    private inline fun <reified T : Activity> topStartActivity(delayMills: Long = 0) {
         val topActivity = getTopActivity()
         if (isAppForeground() && topActivity !is T) {
             if (delayMills > 0) {

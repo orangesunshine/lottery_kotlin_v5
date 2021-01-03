@@ -1,6 +1,7 @@
 package com.bdb.lottery.datasource.lot
 
 import com.bdb.lottery.base.response.errorData
+import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotData
 import com.bdb.lottery.datasource.lot.data.LotParam
@@ -11,14 +12,19 @@ import com.bdb.lottery.datasource.lot.data.kg.KgBetTypeData
 import com.bdb.lottery.datasource.lot.data.kg.KgInitData
 import com.bdb.lottery.datasource.lot.data.wt.WtBetTypeData
 import com.bdb.lottery.datasource.lot.data.wt.WtInitData
+import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.utils.cache.Caches
 import com.bdb.lottery.utils.gson.Gsons
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
 class LotRemoteDs @Inject constructor(
     private val retrofitWrapper: RetrofitWrapper,
+    private val appRemoteDs: AppRemoteDs,
     private val lotApi: LotApi,
 ) {
 
@@ -86,4 +92,77 @@ class LotRemoteDs @Inject constructor(
         retrofitWrapper.observe(lotApi.getWtBetType(gameId), success)
     }
     //endregion
+
+    //缓存玩法说明
+    fun refreshHowToPlayCache() {
+        appRemoteDs.cachePrePlatformParams {
+            it?.let {
+                val howToPlayUrl = it.getHowToPlayUrl()
+                Timber.d("howToPlayUrl:$howToPlayUrl")
+                lotApi.getJs(howToPlayUrl).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                        Caches.putString(howToPlayUrl,
+                            it.replace("var _wfsm=", "").replace("\r\n\t", "").replace("\r\n", ""))
+                    }
+            }
+        }
+    }
+
+    //缓存优先：获取玩法说明数据
+    fun cachePreHowToPlay(
+        success: (String?) -> Unit,
+    ) {
+        appRemoteDs.cachePrePlatformParams {
+            it?.let {
+                val howToPlayUrl = it.getHowToPlayUrl()
+                val cache = Caches.getString(howToPlayUrl)
+                if (!cache.isSpace()) {
+                    success.invoke(cache)
+                } else {
+                    lotApi.getJs(howToPlayUrl).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                            val ret = it.replace("var _wfsm=", "").replace("\r\n\t", "")
+                            Caches.putString(howToPlayUrl, ret)
+                            success.invoke(ret)
+                        }
+                }
+            }
+        }
+    }
+
+    //缓存官方说明
+    fun refreshOfficialDescCache() {
+        appRemoteDs.cachePrePlatformParams {
+            it?.let {
+                val gameOfficialDescUrl = it.getGameOfficialDescUrl()
+                lotApi.getJs(gameOfficialDescUrl).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                        Caches.putString(gameOfficialDescUrl,
+                            it.replace("var _Gameshows =", "").replace("\r\n\t", "")
+                                .replace("\r\n", ""))
+                    }
+            }
+        }
+    }
+
+    //缓存优先：获取官方说明数据
+    fun cachePreOfficialDesc(success: (String?) -> Unit) {
+        appRemoteDs.cachePrePlatformParams {
+            it?.let {
+                val gameOfficialDescUrl = it.getGameOfficialDescUrl()
+                val cache = Caches.getString(gameOfficialDescUrl)
+                if (!cache.isSpace()) {
+                    success.invoke(cache)
+                } else {
+                    lotApi.getJs(gameOfficialDescUrl).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                            Caches.putString(gameOfficialDescUrl,
+                                it.replace("var _Gameshows =", "").replace("\r\n\t", "")
+                                    .replace("\r\n", ""))
+                            success.invoke(it)
+                        }
+                }
+            }
+        }
+    }
 }

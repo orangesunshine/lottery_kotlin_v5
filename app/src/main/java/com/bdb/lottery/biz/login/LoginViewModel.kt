@@ -15,7 +15,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
     val tCache: TCache,
     private val accountRemoteDs: AccountRemoteDs,
-    private val appRemoteDs: AppRemoteDs
+    private val appRemoteDs: AppRemoteDs,
 ) : BaseViewModel() {
     val validateLd = LiveDataWrapper<Boolean>()
     val needValidated = LiveDataWrapper<Boolean>()
@@ -25,7 +25,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
         pwd: String,
         rememberPwd: Boolean,
         verifyCode: String,
-        success: () -> Unit
+        success: () -> Unit,
     ) {
         val pushClientId = ""
         val appVersionCode = BuildConfig.VERSION_NAME //APP版本号
@@ -40,9 +40,10 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     }
 
     fun cachePriCustomServiceUrl() {
-        appRemoteDs.cachePriCustomServiceUrl()
+        appRemoteDs.cachePreCustomServiceUrl()
     }
 
+    //缓存优先（版本信息）
     fun cachePriApkVersion() {
         appRemoteDs.cachePriApkVersion()
     }

@@ -20,6 +20,7 @@ import com.bdb.lottery.datasource.lot.data.jd.SingledInfo
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
+import com.bdb.lottery.utils.gson.Gsons
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import javax.inject.Inject
 
@@ -71,6 +72,29 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             }
     }
     //endregion
+
+    private var lotteryHowToPlayMap: Map<String, Map<String, String>>? = null
+    fun cachePreHowToPlay(dialogBlock: ((gameType: Int, desc: String?) -> Unit)? = null) {
+        if (null != lotteryHowToPlayMap) {
+            dialogBlock?.invoke(mGameType, lotteryHowToPlayMap2Desc(lotteryHowToPlayMap))
+        } else {
+            lotRemoteDs.cachePreHowToPlay {
+                it?.let {
+                    lotteryHowToPlayMap =
+                        Gsons.fromJsonByTokeType<Map<String, Map<String, String>>>(it)
+                    dialogBlock?.invoke(mGameType, lotteryHowToPlayMap2Desc(lotteryHowToPlayMap))
+                }
+            }
+        }
+    }
+
+    fun lotteryHowToPlayMap2Desc(lotteryHowToPlayMap: Map<String, Map<String, String>>?): String? {
+        if (lotteryHowToPlayMap.isNullOrEmpty()) return null
+        val ctMap = lotteryHowToPlayMap.get("ct")
+        if (ctMap.isNullOrEmpty()) return null
+        val key = "gameKind${mGameType}_$mPlayId"
+        return ctMap[key] ?: ctMap[mPlayId.toString()]
+    }
 
     //region 初始化彩票参数、玩法下标
     private var mGameId: Int = -1
@@ -329,7 +353,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     fun createSingleTextWatcher(
         singleInputEt: EditText,
-        singleNumCount:Int,
+        singleNumCount: Int,
         digit: String,
         noteCountBlock: (Int) -> Unit,
         error: (String?) -> Unit,

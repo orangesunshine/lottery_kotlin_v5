@@ -1,7 +1,7 @@
 package com.bdb.lottery.biz.main.home
 
 import androidx.hilt.lifecycle.ViewModelInject
-import com.bdb.lottery.biz.account.AccountManager
+import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.account.AccountRemoteDs
 import com.bdb.lottery.datasource.app.AppRemoteDs
@@ -10,9 +10,9 @@ import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.home.HomeRemoteDs
 import com.bdb.lottery.datasource.home.data.BannerMapper
+import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.event.BalanceEvent
 import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.extension.money
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import javax.inject.Inject
@@ -23,7 +23,8 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     private val gameRemoteDs: GameRemoteDs,
     private val appRemoteDs: AppRemoteDs,
     private val accountManager: AccountManager,
-    private val cocosRemoteDs: CocosRemoteDs
+    private val cocosRemoteDs: CocosRemoteDs,
+    private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {
     val bannerLd = LiveDataWrapper<List<BannerMapper>?>()//轮播图
     val noticeLd = LiveDataWrapper<String>()//公告
@@ -43,17 +44,18 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     }
 
     //预加载
-    fun preload() {
-        gameRemoteDs.preLotteryFavorites()
-        gameRemoteDs.preAllGame()
-        gameRemoteDs.preOtherGame()
+    fun refreshCache() {
+        gameRemoteDs.refreshLotteryFavoritesCache()//推荐收藏
+        gameRemoteDs.refreshAllGame()//全部彩票
+        gameRemoteDs.refreshOtherGameCache()//三方游戏
+        lotRemoteDs.refreshHowToPlayCache()//玩法说明
     }
 
     //余额
     fun getBalance() {
         accountRemoteDs.balance {
             it?.let {
-                accountManager.mUserBalance.setData(it)
+                accountManager.saveUserBalance(it)
             }
         }
     }
@@ -63,29 +65,9 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 
     }
 
-    //试玩
-    fun trialPlay() {
-
-    }
-
-    //获取玩法说明地址
-    fun getPlayDesAddr() {
-
-    }
-
-    //玩法说明
+    //官方验证
     fun getGameOfficialDes() {
-
-    }
-
-    //获取三方平台
-    fun getThirdPlatform() {
-
-    }
-
-    //获取其他平台
-    fun getOtherGamePlatform() {
-
+        lotRemoteDs.refreshOfficialDescCache()
     }
 
     //快捷转账
@@ -131,7 +113,7 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 
                 val serverUrl = it.serverUrl
                 if (serverUrl.isSpace()) {
-                    appRemoteDs.cachePriPlatformParams() {
+                    appRemoteDs.cachePrePlatformParams() {
                         mapper(it?.imgurl ?: "")
                     }
                 } else {

@@ -17,11 +17,11 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     private var rootView: View? = null
     var mDimAmount = 0.5f //背景昏暗度
     open var mShowBottomEnable = false//是否底部显示
-    var mMargin = 0f //左右边距
-    var mAnimStyle = 0 //进入退出动画
-    var mOutCancel = true //点击外部取消
-    var mWidth = 0f
-    var mHeight = 0f
+    open var mMargin = 0f //左右边距
+    open var mAnimStyle = 0 //进入退出动画
+    open var mOutCancel = true //点击外部取消
+    open var mWidth = 0f//dp
+    open var mHeight = 0f
 
     @Inject
     lateinit var tScreen: TScreen;
@@ -40,7 +40,7 @@ open class BaseDialog(@LayoutRes var layoutId: Int) : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         rootView = super.onCreateView(inflater, container, savedInstanceState)
         return if (null != rootView) rootView else inflater.inflate(layoutId, container, false)

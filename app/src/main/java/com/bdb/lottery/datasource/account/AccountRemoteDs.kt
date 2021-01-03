@@ -4,7 +4,7 @@ import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.base.response.ViewState
 import com.bdb.lottery.base.response.errorData
-import com.bdb.lottery.biz.account.AccountManager
+import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.datasource.account.data.UserBalanceData
 import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWrapper
@@ -23,7 +23,7 @@ class AccountRemoteDs @Inject constructor(
     private val tEncrypt: TEncrypt,
     private val accountApi: AccountApi,
     private val accountManager: AccountManager,
-    private val retrofitWrapper: RetrofitWrapper
+    private val retrofitWrapper: RetrofitWrapper,
 ) {
 
     //登录
@@ -35,7 +35,7 @@ class AccountRemoteDs @Inject constructor(
         browserInfo: String,
         success: () -> Unit,
         error: (validate: Boolean) -> Unit,
-        viewState: LiveDataWrapper<ViewState?>
+        viewState: LiveDataWrapper<ViewState?>,
     ) {
         val key = tCache.rsaPublicKeyCache()
         if (key.isSpace()) {
@@ -98,7 +98,7 @@ class AccountRemoteDs @Inject constructor(
         browserInfo: String,
         success: () -> Unit,
         error: (validate: Boolean) -> Unit,
-        viewState: LiveDataWrapper<ViewState?>
+        viewState: LiveDataWrapper<ViewState?>,
     ) {
         val params = HashMap<String, Any>()
         params["username"] = username

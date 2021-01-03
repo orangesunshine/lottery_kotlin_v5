@@ -8,7 +8,7 @@ import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.biz.guide.GuideActivity
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.MainActivity
-import com.bdb.lottery.biz.account.AccountManager
+import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
@@ -75,9 +75,10 @@ class SplashActivity : BaseActivity(R.layout.splash_activity) {
         }
     }
 
-    override fun onBack() {
-        Apps.killApp()
-    }
+//    override fun onBackPressed() {
+//        super.onBackPressed()
+//        Apps.killApp()
+//    }
 
     override fun attachStatusBar(): Boolean {
         return false

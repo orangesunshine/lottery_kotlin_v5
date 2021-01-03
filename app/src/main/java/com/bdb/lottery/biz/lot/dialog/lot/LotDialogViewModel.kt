@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.lot.dialog
+package com.bdb.lottery.biz.lot.dialog.lot
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject

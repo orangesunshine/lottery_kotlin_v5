@@ -14,7 +14,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
-import com.bdb.lottery.biz.account.AccountManager
+import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
@@ -23,7 +23,6 @@ import com.bdb.lottery.datasource.home.data.BannerMapper
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
 import com.bdb.lottery.utils.ui.activity.Activitys
-import com.bdb.lottery.utils.ui.view.Views
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -152,7 +151,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         vm.noticeData()//公告
         vm.bannerData()//轮播图
         vm.getBalance()//获取余额
-        vm.preload()//预加载 收藏、全部game、娱乐
+        vm.refreshCache()//预加载 收藏、全部game、娱乐
     }
 
     @Inject

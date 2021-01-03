@@ -20,7 +20,7 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
     fun allGame() {
         gameRemoteDs.cachePriAllGame {
             it?.let { list: MutableList<AllGameItemData> ->
-                appRemoteDs.cachePriPlatformParams { platform: PlatformData? ->
+                appRemoteDs.cachePrePlatformParams { platform: PlatformData? ->
                     list.asSequence().map { data: AllGameItemData ->
                         platform?.lotteryFileImgRound(data)
                         data

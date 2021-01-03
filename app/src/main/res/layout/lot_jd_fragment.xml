@@ -32,13 +32,15 @@
 
             <TextView
                 android:id="@+id/lot_jd_play_desc_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="4dp"
+                android:layout_weight="1"
                 android:ellipsize="end"
+                android:gravity="center_vertical"
                 android:lines="1"
+                android:text="该玩法暂无玩法说明"
                 android:textSize="10dp" />
-
-            <View style="@style/weight" />
 
             <TextView
                 android:id="@+id/lot_jd_play_hot_tv"
@@ -87,7 +89,7 @@
             android:paddingRight="15dp"
             android:paddingBottom="5dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_input_cv"
+            app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_area_fl"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lot_jd_desc_divide_view">
@@ -145,31 +147,41 @@
 
         </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/lot_jd_bet_input_cv"
+        <FrameLayout
+            android:id="@+id/lot_jd_bet_area_fl"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginRight="8dp"
-            app:cardCornerRadius="8dp"
             app:layout_constraintBottom_toTopOf="@id/lot_jd_remove_repeat_nums_tv"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_digit_ll"
             app:layout_constraintVertical_weight="1">
 
-            <com.bdb.lottery.widget.DanStyleInputEditView
-                android:id="@+id/lot_jd_single_input_et"
+            <!--单式-->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/lot_jd_bet_input_cv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
-                android:gravity="top|left"
-                android:hint="请输入投注号码"
-                android:padding="8dp"
-                android:textColor="@color/black"
-                android:textSize="13dp" />
-        </androidx.cardview.widget.CardView>
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="8dp"
+                app:cardCornerRadius="8dp">
+
+                <com.bdb.lottery.widget.DanStyleInputEditView
+                    android:id="@+id/lot_jd_single_input_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:gravity="top|left"
+                    android:hint="请输入投注号码"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/lot_jd_remove_repeat_nums_tv"
@@ -180,7 +192,7 @@
             app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_info_expl"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_input_cv" />
+            app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_area_fl" />
 
         <net.cachapa.expandablelayout.ExpandableLayout
             android:id="@+id/lot_jd_bet_info_expl"
@@ -287,16 +299,17 @@
 
             <EditText
                 android:id="@+id/lot_jd_multiple_et"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
                 android:background="@drawable/lot_jd_money_unit_bg"
                 android:gravity="center"
                 android:inputType="number"
-                android:maxLength="8"
-                android:minWidth="50dp"
+                android:lines="1"
+                android:maxLength="6"
                 android:text="1"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="14dp" />
 
             <View style="@style/weight" />
 

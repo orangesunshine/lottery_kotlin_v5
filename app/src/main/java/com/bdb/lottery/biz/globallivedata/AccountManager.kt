@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.account
+package com.bdb.lottery.biz.globallivedata
 
 import com.bdb.lottery.datasource.account.data.UserBalanceData
 import com.bdb.lottery.datasource.common.LiveDataWrapper
@@ -17,7 +17,7 @@ class AccountManager @Inject constructor() {
 
     //缓存登录状态
     fun saveIsLogin(isLogin: Boolean) {
-        this.isLogin = isLogin() == true
+        this.isLogin = isLogin
         tCache.cacheLoginStatus(isLogin)
     }
 

@@ -2,6 +2,7 @@ package com.bdb.lottery.datasource.lot
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.URL
+import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotData
 import com.bdb.lottery.datasource.lot.data.TodayLotteryNumsData
@@ -13,9 +14,7 @@ import com.bdb.lottery.datasource.lot.data.kg.KgInitData
 import com.bdb.lottery.datasource.lot.data.wt.WtBetTypeData
 import com.bdb.lottery.datasource.lot.data.wt.WtInitData
 import io.reactivex.rxjava3.core.Observable
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface LotApi {
     //获取今日开奖（露珠图）
@@ -85,4 +84,9 @@ interface LotApi {
     @POST(URL.URL_CATHECTIC)
     @FormUrlEncoded
     fun lot(@Field("json") lotParams: String): Observable<BaseResponse<LotData?>>
+
+    //玩法说明、官方验证读取js数据
+    @GET
+    @Headers("domainIntercept: false", "headerIntercept:false")
+    fun getJs(@Url url: String): Observable<String>
 }

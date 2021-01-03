@@ -33,30 +33,30 @@ class RetrofitWrapper @Inject constructor(
         complete: (() -> Unit)? = null,
         viewState: LiveDataWrapper<ViewState?>? = null,
     ) {
-        observable.subscribeOn(Schedulers.io())
-            .doOnSubscribe {
-                onStart?.invoke(it)
-                viewState?.setData(ViewState(true))
-            }
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                success?.invoke(it.data)
-            },
-                {
-                    val code = it.code
-                    val msg = it.msg
-                    Timber.d("observe__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}, class: ${it.javaClass.simpleName}")
-                    error?.invoke(code, msg) ?: let { toast.showError(msg) }
-                    if (code >= 500) domainLocalDs.clearDomain()
-                    viewState?.setData(ViewState(false))
-                    complete?.invoke()
-                },
-                {
-                    viewState?.setData(ViewState(false))
-                    complete?.invoke()
-                })
         domainRemoteDs.getDomain {
+            observable.subscribeOn(Schedulers.io())
+                .doOnSubscribe {
+                    onStart?.invoke(it)
+                    viewState?.setData(ViewState(true))
+                }
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    success?.invoke(it.data)
+                },
+                    {
+                        val code = it.code
+                        val msg = it.msg
+                        Timber.d("observe__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}, class: ${it.javaClass.simpleName}")
+                        error?.invoke(code, msg) ?: let { toast.showError(msg) }
+                        if (code >= 500) domainLocalDs.clearDomain()
+                        viewState?.setData(ViewState(false))
+                        complete?.invoke()
+                    },
+                    {
+                        viewState?.setData(ViewState(false))
+                        complete?.invoke()
+                    })
         }
     }
 
@@ -97,28 +97,8 @@ class RetrofitWrapper @Inject constructor(
         }
     }
 
-    //预加载
-    fun <Data> preload(
-        cacheKey: String,
-        observable: Observable<BaseResponse<Data?>>,
-        success: ((Data?) -> Unit)? = null,
-    ) {
-        Caches.putString(cacheKey)//清空缓存
-        observe(
-            observable,
-            {
-                it?.let {
-                    Caches.putString(
-                        cacheKey,
-                        GsonBuilder().create().toJson(it)
-                    )
-                    success?.invoke(it)
-                }
-            })
-    }
-
-    //优先读取缓存，无缓存网络请求
-    inline fun <reified Data> cachePriLoad(
+    //缓存优先（有缓存则用缓存，没有请求网络数据）
+    inline fun <reified Data> cachePre(
         cacheKey: String,
         observable: Observable<BaseResponse<Data?>>,
         noinline success: ((Data?) -> Unit)? = null,
@@ -155,5 +135,66 @@ class RetrofitWrapper @Inject constructor(
                 }
             })
         }
+    }
+
+    //刷新缓存
+    fun <Data> refreshCache(
+        cacheKey: String,
+        observable: Observable<BaseResponse<Data?>>,
+        success: ((Data?) -> Unit)? = null,
+    ) {
+        Caches.putString(cacheKey)//清空缓存
+        observe(
+            observable,
+            {
+                it?.let {
+                    Caches.putString(
+                        cacheKey,
+                        GsonBuilder().create().toJson(it)
+                    )
+                    success?.invoke(it)
+                }
+            })
+    }
+
+    //缓存先行（先读取缓存，在网络请求网络请求）
+    inline fun <reified Data> cachePri(
+        cacheKey: String,
+        observable: Observable<BaseResponse<Data?>>,
+        noinline success: ((Data?) -> Unit)? = null,
+    ) {
+        //先缓存
+        val cache = Caches.getString(cacheKey)
+        Timber.d("cache: ${cache}")
+        if (!cache.isSpace()) {
+            try {
+                val fromJson: Data =
+                    GsonBuilder().create().fromJson(cache, object : TypeToken<Data>() {}.type)
+                Timber.d("cacheKey: ${cacheKey}==>success: ${fromJson}")
+                success?.invoke(fromJson)
+            } catch (e: Exception) {
+                Timber.d("cacheKey: ${cacheKey}==>error:${e.msg}")
+                observe(observable, {
+                    it?.let {
+                        Caches.putString(
+                            cacheKey,
+                            GsonBuilder().create().toJson(it)
+                        )
+                        success?.invoke(it)
+                    }
+                })
+            }
+        }
+        //在网络请求
+        observe(observable, {
+            it?.let {
+                Caches.putString(
+                    cacheKey,
+                    GsonBuilder().create().toJson(it)
+                )
+                success?.invoke(it)
+            }
+        })
+
     }
 }

@@ -12,12 +12,12 @@ class GameRemoteDs @Inject constructor(
     private val gameApi: GameApi,
 ) {
     //region 全部Game
-    fun preAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
-        retrofitWrapper.preload(URL.URL_ALL_GAME, gameApi.allGame(), success)
+    fun refreshAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
+        retrofitWrapper.refreshCache(URL.URL_ALL_GAME, gameApi.allGame(), success)
     }
 
     fun cachePriAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
-        retrofitWrapper.cachePriLoad(URL.URL_ALL_GAME, gameApi.allGame(), success)
+        retrofitWrapper.cachePri(URL.URL_ALL_GAME, gameApi.allGame(), success)
     }
     //endregion
 
@@ -26,12 +26,12 @@ class GameRemoteDs @Inject constructor(
     }
 
     //region othergame
-    fun preOtherGame() {
-        retrofitWrapper.preload(URL.URL_OTHER_GAME, gameApi.otherGame())
+    fun refreshOtherGameCache() {
+        retrofitWrapper.refreshCache(URL.URL_OTHER_GAME, gameApi.otherGame())
     }
 
     fun cachePriOtherGame(success: (OtherPlatformData?) -> Unit) {
-        retrofitWrapper.cachePriLoad(URL.URL_OTHER_GAME, gameApi.otherGame(), success)
+        retrofitWrapper.cachePri(URL.URL_OTHER_GAME, gameApi.otherGame(), success)
     }
     //endregion
 
@@ -40,12 +40,12 @@ class GameRemoteDs @Inject constructor(
     }
 
     //region 收藏
-    fun preLotteryFavorites() {
-        retrofitWrapper.preload(URL.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
+    fun refreshLotteryFavoritesCache() {
+        retrofitWrapper.refreshCache(URL.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
     }
 
     fun cachePriLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
-        retrofitWrapper.cachePriLoad(
+        retrofitWrapper.cachePri(
             URL.URL_LOTTERY_FAVORITES,
             gameApi.lotteryFavorites(),
             success

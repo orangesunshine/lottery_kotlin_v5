@@ -21,13 +21,13 @@ class AppRemoteDs @Inject constructor(
     }
 
     //预加载
-    fun prePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
-        retrofitWrapper.preload(URL.URL_PLATFORM_PARAMS, appApi.platformParams(), success)
+    fun refreshPlatformParamsCache() {
+        retrofitWrapper.refreshCache(URL.URL_PLATFORM_PARAMS, appApi.platformParams())
     }
 
     //缓存优先
-    fun cachePriPlatformParams(success: ((PlatformData?) -> Unit)? = null) {
-        retrofitWrapper.cachePriLoad(
+    fun cachePrePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
+        retrofitWrapper.cachePre(
             URL.URL_PLATFORM_PARAMS,
             appApi.platformParams(),
             success
@@ -37,15 +37,15 @@ class AppRemoteDs @Inject constructor(
 
     //region 客服线
     fun preCustomServiceUrl() {
-        retrofitWrapper.preload(
+        retrofitWrapper.refreshCache(
             URL.URL_CUSTOM_SERVICE,
             appApi.customservice()
         )
     }
 
     //优先缓存，网络请求
-    fun cachePriCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
-        retrofitWrapper.cachePriLoad(
+    fun cachePreCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
+        retrofitWrapper.cachePre(
             URL.URL_CUSTOM_SERVICE,
             appApi.customservice(),
             success
@@ -54,16 +54,23 @@ class AppRemoteDs @Inject constructor(
     //endregion
 
     //region apk版本信息
-    //预加载
-    fun preApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
-        retrofitWrapper.preload(
+    //预加载：刷新本地缓存
+    fun refreshApkVersionCache(success: ((ApkVersionData?) -> Unit)? = null) {
+        retrofitWrapper.refreshCache(
+            URL.URL_APK_VERSION,
+            appApi.apkVersion("android", Apps.getAppVersionCode()), success
+        )
+    }
+
+    fun cachePreApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
+        retrofitWrapper.cachePre(
             URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success
         )
     }
 
     fun cachePriApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
-        retrofitWrapper.cachePriLoad(
+        retrofitWrapper.cachePri(
             URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success
         )

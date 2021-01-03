@@ -5,6 +5,7 @@ import com.bdb.lottery.datasource.game.data.GameInfo
 import com.bdb.lottery.datasource.game.data.OtherPlatformMIR
 import com.bdb.lottery.datasource.game.data.ThirdGameInfo
 import com.bdb.lottery.extension.isSpace
+import timber.log.Timber
 
 data class PlatformData(
     var WebMobileUrl: String,
@@ -84,4 +85,14 @@ data class PlatformData(
                 .append(it.appImgUrl).toString()
         }
     }
+
+    //玩法说明
+    fun getHowToPlayUrl(): String {
+        return "$imgurl/front/file/appwfsm.js"
+    }
+
+    fun getGameOfficialDescUrl(): String {
+        return "$imgurl/front/file/gameQustion.js"
+    }
+
 }

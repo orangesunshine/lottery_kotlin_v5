@@ -21,7 +21,7 @@ class HomeOtherGameViewModel @ViewModelInject @Inject constructor(
             it?.let {
                 val mir = it.MIR
                 mir?.let {
-                    appRemoteDs.cachePriPlatformParams { platform: PlatformData? ->
+                    appRemoteDs.cachePrePlatformParams { platform: PlatformData? ->
                         mir.asSequence().map {
                             platform?.otherGameImgUrl(it)
                             it

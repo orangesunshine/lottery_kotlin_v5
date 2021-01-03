@@ -2,7 +2,7 @@ package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.CODE
-import com.bdb.lottery.biz.account.AccountManager
+import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.gson.Gsons

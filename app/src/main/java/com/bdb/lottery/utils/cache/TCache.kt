@@ -193,6 +193,7 @@ class TCache @Inject constructor() {
     }
     //endregion
 
+    //region lot：金额单位
     fun cacheMoneyUnit(gameId: Int, playId: Int, amountUnit: Int) {
         Caches.putInt("$gameId${CACHE.LOT_JD_MONEY_UNIT_CACHE}$playId", amountUnit)
     }
@@ -200,4 +201,5 @@ class TCache @Inject constructor() {
     fun moneyUnitCache(gameId: Int, playId: Int): Int? {
         return Caches.getInt("$gameId${CACHE.LOT_JD_MONEY_UNIT_CACHE}$playId", 1)
     }
+    //endregion
 }

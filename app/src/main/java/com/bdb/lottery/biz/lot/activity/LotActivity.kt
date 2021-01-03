@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.lot
+package com.bdb.lottery.biz.lot.activity
 
 import android.Manifest
 import android.os.Bundle
@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
+import com.bdb.lottery.biz.lot.BallAdapter
+import com.bdb.lottery.biz.lot.TLot
+import com.bdb.lottery.biz.lot.dialog.lot.LotDialog
 import com.bdb.lottery.biz.lot.jd.LotJdFragment
 import com.bdb.lottery.biz.lot.tr.LotTrFragment
 import com.bdb.lottery.biz.lot.wt.LotWtFragment
@@ -21,8 +24,10 @@ import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
-import com.bdb.lottery.biz.lot.dialog.LotDialog
-import com.bdb.lottery.extension.*
+import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.setListOrUpdate
+import com.bdb.lottery.extension.updateTab
+import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
 import com.bdb.lottery.utils.game.Games
 import com.bdb.lottery.utils.game.TGame

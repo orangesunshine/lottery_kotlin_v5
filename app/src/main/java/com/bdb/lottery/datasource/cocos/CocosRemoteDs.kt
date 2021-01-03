@@ -4,6 +4,7 @@ import android.content.Context
 import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.cocos.data.CocosData
 import com.bdb.lottery.extension.equalsNSpace
+import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.file.Files
 import com.bdb.lottery.utils.file.TPath
@@ -24,7 +25,7 @@ class CocosRemoteDs @Inject constructor(
     private val cocosApi: CocosApi,
     private val tPath: TPath,
     private val tCache: TCache,
-    private val tCocos: TCocos
+    private val tCocos: TCocos,
 ) {
 
     //cocos配置优先缓存
@@ -76,6 +77,12 @@ class CocosRemoteDs @Inject constructor(
                             FileDownloader.getImpl().create(it.androidZipUrl)
                                 .setTag(it)
                                 .setPath(tCocos.cocosZipFileFullName(path, it.name))
+                                .setListener(object : FileDownloadListenerAdapter() {
+                                    override fun error(task: BaseDownloadTask?, e: Throwable?) {
+                                        super.error(task, e)
+                                        Timber.d(e.msg)
+                                    }
+                                })
                         )
                     }
                 }
@@ -98,7 +105,7 @@ class CocosRemoteDs @Inject constructor(
     fun downloadSingleCocos(
         cocosName: String,
         progress: ((soFarBytes: Int, totalBytes: Int, speed: Int) -> Unit)? = null,
-        success: ((String) -> Unit)? = null
+        success: ((String) -> Unit)? = null,
     ) {
         cachePriCocosConfig { data: CocosData?, path: String ->
             data?.let {
@@ -108,15 +115,21 @@ class CocosRemoteDs @Inject constructor(
                         if (tCocos.checkCocosSingleDownload(path, it)) {
                             FileDownloader.getImpl()
                                 .create(it.androidZipUrl)
+                                .setTag(it)
                                 .setPath(path)
                                 .setCallbackProgressMinInterval(200)
                                 .setListener(object : FileDownloadListenerAdapter() {
                                     override fun progress(
                                         task: BaseDownloadTask?,
                                         soFarBytes: Int,
-                                        totalBytes: Int
+                                        totalBytes: Int,
                                     ) {
                                         progress?.invoke(soFarBytes, totalBytes, task?.speed ?: -1)
+                                    }
+
+                                    override fun error(task: BaseDownloadTask?, e: Throwable?) {
+                                        super.error(task, e)
+                                        Timber.d(e.msg)
                                     }
                                 })
                                 .addFinishListener {

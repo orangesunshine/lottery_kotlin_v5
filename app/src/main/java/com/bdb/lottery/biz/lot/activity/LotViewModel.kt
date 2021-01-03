@@ -1,4 +1,4 @@
-package com.bdb.lottery.biz.lot
+package com.bdb.lottery.biz.lot.activity
 
 import android.app.Service
 import android.content.ComponentName
