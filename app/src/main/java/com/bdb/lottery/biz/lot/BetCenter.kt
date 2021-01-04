@@ -41,7 +41,7 @@ object BetCenter {
      * @return
      * @throws
      */
-    fun computeStakeCount(
+    private fun computeStakeCount(
         betNumStr: String?,
         lotteryType: Int,
         subPlayId: Int,
@@ -62,4 +62,6 @@ object BetCenter {
         }
         return count
     }
+
+
 }

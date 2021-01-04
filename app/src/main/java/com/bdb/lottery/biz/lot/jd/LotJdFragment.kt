@@ -6,36 +6,26 @@ import android.text.Html
 import android.util.TypedValue
 import android.view.View
 import android.widget.CompoundButton
-import android.widget.TextView
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
-import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.biz.lot.UnitPopWindow
 import com.bdb.lottery.biz.lot.activity.LotActivity
 import com.bdb.lottery.biz.lot.dialog.playdesc.LotPlayDescDialog
-import com.bdb.lottery.biz.lot.jd.single.LotBetAdapter
-import com.bdb.lottery.biz.lot.jd.single.LotPlayAdapter
 import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
-import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
-import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
-import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.dialog.ConfirmDialog
-import com.bdb.lottery.extension.*
+import com.bdb.lottery.extension.h5Color
+import com.bdb.lottery.extension.money
+import com.bdb.lottery.extension.ob
+import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
-import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
 import com.bdb.lottery.utils.thread.Threads
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.lot_activity.*
 import kotlinx.android.synthetic.main.lot_jd_fragment.*
 import javax.inject.Inject
 
@@ -44,8 +34,20 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private val vm by viewModels<LotJdViewModel>()
 
     private var mMultiple: Int = 1
+    private var mGameId: Int = -1
+    private var mGameType: Int = -1
+    private var mGameName: String? = null
+    private var mPlayId: Int = -1
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            mGameId = it.getInt(EXTRA.ID_GAME_EXTRA)
+            mGameType = it.getInt(EXTRA.TYPE_GAME_EXTRA)
+            mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
+            mPlayId = it.getInt(EXTRA.ID_PLAY_EXTRA)
+        }
+    }
 
-    //region 生命周期方法
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
@@ -58,8 +60,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        vm.cacheMoneyUnit(mMoneyUnit)
-        vm.cachePlay4GameId(mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos)
+        vm.cacheMoneyUnit(mGameId, mPlayId, mMoneyUnit)
     }
     //endregion
 
@@ -104,6 +105,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 lot_jd_single_input_et.text.toString().trim(), false
             ) {
                 vm.verifyNdGenLotParams(
+                    mGameId, mPlayId, mGameName,
                     it,
                     mMultiple,
                     mMoneyUnit,
@@ -126,12 +128,16 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //玩法菜单数据获取失败，点击重新请求数据
         aliveActivity<LotActivity>()?.mPlayLoadingLayout?.setRetryListener {
-            vm.getBetType()
+            vm.getBetType(mGameId)
         }
 
         val listener = CompoundButton.OnCheckedChangeListener { _, _ ->
-            mTextWatcher?.setDigit(vm.getDigit(mNeedDigit,
-                getSelectedDigit()))
+            mTextWatcher?.setDigit(
+                vm.getDigit(
+                    mNeedDigit,
+                    getSelectedDigit()
+                )
+            )
         }
         lot_jd_bet_digit_ge_cb.setOnCheckedChangeListener(listener)
         lot_jd_bet_digit_shi_cb.setOnCheckedChangeListener(listener)
@@ -146,17 +152,17 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     lateinit var lotPlayDescDialog: LotPlayDescDialog
     private fun requestDatas() {
         //初始化金额单位：根据gameId读取金额单位缓存，没有缓存默认1（元）
-        vm.initAmountUnit {
+        vm.initAmountUnit(mGameId, mPlayId) {
             mMoneyUnit = it ?: 1
             log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
         }
-        vm.initGame()//初始化彩票
-        vm.getBetType()//玩法配置接口
+        vm.initGame(mGameId)//初始化彩票
+        vm.getBetType(mGameId)//玩法配置接口
         lot_jd_play_desc_tv.setOnClickListener {
-            vm.cachePreHowToPlay { gameType: Int, playDesc: String? ->
+            vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
                 playDesc?.let {
                     //玩法说明弹窗
-                    lotPlayDescDialog.setGameType(gameType)
+                    lotPlayDescDialog.setGameType(mGameType)
                     lotPlayDescDialog.setPlayDescContent(it)
                     lotPlayDescDialog.show(childFragmentManager)
                 }
@@ -192,13 +198,15 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
         //获取玩法配置，更新玩法列表，根据缓存选中玩法，没有缓存默认第一个玩法
         vm.gameBetTypeDataLd.getLiveData().observe(this) {
-            updatePlayList(it)
+            aliveActivity<LotActivity>()?.updatePlayList(it)
         }
         //数据库查找玩法成功
         vm.subPlayMethodLd.getLiveData().observe(this) {
             mSingleNumCount = it?.subPlayMethodDesc?.single_num_counts ?: 0
-            mTextWatcher?.onBetChange(mSingleNumCount,
-                vm.getDigit(mNeedDigit, getSelectedDigit()))
+            mTextWatcher?.onBetChange(
+                mSingleNumCount,
+                vm.getDigit(mNeedDigit, getSelectedDigit())
+            )
 
             mMode = if (it?.subPlayMethodDesc?.isdanshi != false) MODE_SINGLE else MODE_DUPLEX
             switchDanFuStyle(mMode == MODE_SINGLE)
@@ -213,6 +221,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
             if (null == mTextWatcher) {
                 mTextWatcher = vm.createSingleTextWatcher(
+                    mGameType,
+                    mPlayId,
                     lot_jd_single_input_et,
                     mSingleNumCount,
                     vm.getDigit(mNeedDigit, getSelectedDigit()),
@@ -222,7 +232,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                             if (mCanPutBasket != canPutBasket) {
                                 //加入购物篮切换
                                 if (canPutBasket) lot_jd_bet_info_expl.expand() else lot_jd_bet_info_expl.collapse(
-                                    false)
+                                    false
+                                )
                                 lot_jd_add_to_shopping_bar_tv.setTextSize(
                                     TypedValue.COMPLEX_UNIT_DIP,
                                     if (canPutBasket) 12f else 15f
@@ -233,8 +244,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                             }
                             if (mNoteCount != it) {
                                 lot_jd_selected_notes_tv.text =
-                                    String.format(getString(R.string.lot_jd_selected_notes_text),
-                                        it)//注数
+                                    String.format(
+                                        getString(R.string.lot_jd_selected_notes_text),
+                                        it
+                                    )//注数
                                 mNoteCount = it
                                 reCalculateAmountNdSingleMoney()
                             }
@@ -258,19 +271,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             args.putString(EXTRA.NAME_GAME_EXTRA, gameName)
             fragment.arguments = args
             return fragment
-        }
-    }
-
-    private var mPlaySelectedPos: Int = 0
-    private var mGroupSelectedPos: Int = 0
-    private var mBetSelectedPos: Int = 0
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        vm.initExtraVar(arguments)
-        vm.playCacheByGameId { gameId: Int, tCache: TCache ->
-            mPlaySelectedPos = tCache.playCacheByGameId(gameId) ?: 0
-            mGroupSelectedPos = tCache.playGroupCacheByGameId(gameId) ?: 0
-            mBetSelectedPos = tCache.betCacheByGameId(gameId) ?: 0
         }
     }
     //endregion
@@ -336,133 +336,19 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
-    //region 一级玩法
-    private fun updatePlayList(
-        betTypeDatas: GameBetTypeData?,
-    ) {
-        aliveActivity<LotActivity>()?.lotMenuPlayLayer1Rv?.setListOrUpdate(betTypeDatas) {
-            LotPlayAdapter(betTypeDatas).apply {
-                setOnItemClickListener { _: BaseQuickAdapter<*, *>, _: View, position: Int ->
-                    //一级玩法选中
-                    notifySelectedPositionWithPayLoads(position)
-                    updatePlayLayer2List(betTypeDatas?.get(position), position)
-                }
-            }
-        }
-        aliveActivity<LotActivity>()?.lotMenuPlayLayer1Rv?.adapter?.let {
-            if (it is BaseSelectedQuickAdapter<*, *>) it.notifySelectedPosition(mPlaySelectedPos)
-        }
-        updatePlayLayer2List(
-            if (betTypeDatas.validIndex(mPlaySelectedPos)) betTypeDatas?.get(mPlaySelectedPos) else null,
-            mPlaySelectedPos
-        )
-    }
-    //endregion
-
-    //region 二级玩法、二级玩法组
-    private var mPlaySelectedTmpRef = -1
-    private var mSelectedBetItem: BetItem? = null
-    private fun updatePlayLayer2List(
-        playItem: PlayItem?, playSelectedPos: Int,
-    ) {
-        mPlaySelectedTmpRef = playSelectedPos
-        onBetSelected(vm.play2BetByPos(playItem, mGroupSelectedPos, mBetSelectedPos))
-        aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.setListOrUpdate(playItem?.list) {
-            object : BaseSelectedQuickAdapter<PlayGroupItem, BaseViewHolder>(
-                R.layout.lot_jd_play_group_item,
-                it?.toMutableList()
-            ) {
-                override fun convert(groupHolder: BaseViewHolder, item: PlayGroupItem) {
-                    val groupPosition = groupHolder.adapterPosition
-                    groupHolder.setText(R.id.lot_jd_play_group_name_tv, item.name + "：")
-                    groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).run {
-                        layoutManager =
-                            GridLayoutManager(context, 3, RecyclerView.VERTICAL, false)
-                        setListOrUpdate(item.list) {
-                            object : LotBetAdapter(it) {
-                                override fun convert(
-                                    holder: BaseViewHolder,
-                                    item: BetItem,
-                                ) {
-                                    super.convert(holder, item)
-                                    holder.getView<TextView>(R.id.text_common_tv).isSelected =
-                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
-                                }
-
-                                override fun convert(
-                                    holder: BaseViewHolder,
-                                    item: BetItem,
-                                    payloads: List<Any>,
-                                ) {
-                                    holder.getView<TextView>(R.id.text_common_tv).isSelected =
-                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
-                                }
-                            }.apply {
-                                setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
-                                    //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
-                                    if (mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition && mBetSelectedPos == position) return@setOnItemClickListener
-                                    if (mPlaySelectedPos != mPlaySelectedTmpRef) {
-                                        mPlaySelectedPos = mPlaySelectedTmpRef
-                                    } else {
-                                        if (mGroupSelectedPos != groupPosition) {
-                                            val preGroupPosition = mGroupSelectedPos
-                                            aliveActivity<LotActivity>()?.lotMenuPlayLayer2Rv?.adapter?.notifyItemChanged(
-                                                preGroupPosition, PAY_LOADS_SELECTED
-                                            )
-                                        }
-                                    }
-                                    mGroupSelectedPos = groupPosition
-                                    mBetSelectedPos = position
-                                    notifySelectedPositionWithPayLoads(position, false)
-                                    adapter.getItemOrNull(position)?.let {
-                                        if (it is BetItem) {
-                                            onBetSelected(it)
-                                        }
-                                    }
-                                    aliveActivity<LotActivity>()?.gonePlayMenu()
-                                }
-                            }
-                        }
-                    }
-
-                    if (groupPosition == mGroupSelectedPos) {
-                        groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
-                            if (it is BaseSelectedQuickAdapter<*, *>) {
-                                it.notifySelectedPosition(mBetSelectedPos)
-                            }
-                        }
-                    }
-                }
-
-                override fun convert(
-                    holder: BaseViewHolder,
-                    item: PlayGroupItem,
-                    payloads: List<Any>,
-                ) {
-                    holder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
-                        if (it is BaseSelectedQuickAdapter<*, *>) {
-                            it.notifyUnSelectedAllWithPayLoads()
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //endregion
-
     //region 更新玩法时：title、玩法配置、投注单位更新
-    private fun onBetSelected(item: BetItem?) {
+    private var mSelectedBetItem: BetItem? = null
+    fun onBetSelected(item: BetItem?) {
         clearNums()
         mSelectedBetItem = item
         val playId = item?.betType ?: 0//玩法id
-        vm.setCurPlayId(playId)
         mTextWatcher?.setPlayId(playId)
         item?.let {
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
             vm.getLocalBetType(playId)//获取玩法配置
             setUnitPattern(it.pattern)//更新投注单位
             //玩法说明
-            vm.cachePreHowToPlay { _: Int, playDesc: String? ->
+            vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
                 lot_jd_play_desc_tv.text = playDesc ?: "该玩法暂无玩法说明"
             }
             mTextWatcher?.filterRepeatNdErrorNums(lot_jd_single_input_et.text.toString().trim())

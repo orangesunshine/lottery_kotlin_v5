@@ -15,9 +15,12 @@ import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotData
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
+import com.bdb.lottery.datasource.lot.data.jd.BetItem
+import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
 import com.bdb.lottery.service.CountDownService.CountDownSub
+import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.thread.TThread
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
@@ -25,6 +28,7 @@ import javax.inject.Inject
 
 class LotViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
+    private val tCache: TCache,
     private val tThread: TThread,
     private val lotRemoteDs: LotRemoteDs,
     private val cocosRemoteDs: CocosRemoteDs,
@@ -95,21 +99,49 @@ class LotViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
-    //下注
+    //region 下注
     fun lot(param: LotParam, success: (LotData?) -> Unit, error: (token: String) -> Unit) {
         lotRemoteDs.lot(param, success, error)
     }
+    //endregion
 
-    //region 跳转彩票页面
-//    companion object {
-//        fun start(context: Context, gameId: String, gameType: String, gameName: String?) {
-//            context.startActivity(Intent(context, LotActivity::class.java).apply {
-//                putExtra(EXTRA.ID_GAME_EXTRA, gameId)
-//                putExtra(EXTRA.TYPE_GAME_EXTRA, gameType)
-//                if (!gameName.isSpace())
-//                    putExtra(EXTRA.NAME_GAME_EXTRA, gameName)
-//            })
-//        }
-//    }
+    //region gameId对应玩法下标缓存，并选中
+    fun play2BetByPos(item: PlayItem?, groupSelectedPos: Int, betSelectedPos: Int): BetItem? {
+        var betItem: BetItem? = null
+        return item?.list?.let {
+            if (groupSelectedPos < it.size) {
+                it[groupSelectedPos].list?.let {
+                    if (betSelectedPos < it.size) {
+                        val betItemTmp = it[betSelectedPos]
+                        betItem = betItemTmp
+                    }
+                }
+            }
+            betItem
+        }
+    }
+    //endregion
+
+    //region 根据gameId获取对应的玩法下标缓存
+    fun playByGameIdCache(cacheBlock: (TCache) -> Unit) {
+        cacheBlock.invoke(tCache)
+    }
+    //endregion
+
+    //region 退出页面缓存玩法下标（一级玩法、玩法组、二级玩法）
+    fun cachePlay4GameId(
+        playSelectedPos: Int,
+        groupSelectedPos: Int,
+        betSelectedPos: Int,
+        playId: Int
+    ) {
+        tCache.cachePlay4GameId(
+            mGameId,
+            playSelectedPos,
+            groupSelectedPos,
+            betSelectedPos,
+            playId
+        )
+    }
     //endregion
 }

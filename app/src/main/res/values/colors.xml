@@ -48,5 +48,11 @@
     <color name="color_nav_selected">#ff535a</color>
 
     <!-- lot -->
-    <color name="color_lot_textcolor_default">#c8e2f9</color>
+    <color name="color_lot_text_color_default">#c8e2f9</color>
+    <color name="color_skin_pk_text_color">#FFEBCE</color>
+<!--    <color name="color_skin_pk_duplex_ball_text_color">#826750</color>-->
+<!--    <color name="color_skin_pk_duplex_ball_selected_text_color">#ffffff</color>-->
+    <color name="color_skin_k3_bg">#10523B</color>
+    <color name="color_skin_k3_text_color">#a7dbc8</color>
+    <color name="color_skin_k3_line">#256c53</color>
 </resources>

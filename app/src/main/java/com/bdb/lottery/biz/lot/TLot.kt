@@ -25,42 +25,6 @@ class TLot @Inject constructor(
     private val tGame: TGame,
     private val tTime: TTime
 ) {
-    //region 切换fragment
-    private var mFragmentIndex = -1// 0经典 1传统 2微投
-    fun switchFragment(
-        index: Int,
-        tags: Array<String>,
-        fragments: List<Fragment>,
-        afterSwitch: ((Int) -> Unit)? = null
-    ) {
-        if (mFragmentIndex == index) return
-        //传统显示label
-        (context as FragmentActivity).supportFragmentManager.beginTransaction().let {
-            //上一个页面
-            if (mFragmentIndex < fragments.size && mFragmentIndex >= 0) {
-                val preFragment = fragments[mFragmentIndex]
-                if (preFragment.isAdded) {
-                    it.hide(preFragment)
-                }
-            }
-
-            //当前的页面
-            if (index < fragments.size && index >= 0) {
-                val fragment = fragments[index]
-                val tag = tags[index]
-                if (fragment.isAdded) {
-                    it.show(fragment)
-                } else {
-                    it.add(R.id.lot_rect_content_fl, fragment, tag)
-                }
-            }
-            it.commitAllowingStateLoss()
-        }
-        afterSwitch?.invoke(index)
-        mFragmentIndex = index
-    }
-    //endregion
-
     //region 经典：单式输入法适配
     fun adjustSoftInput(listener: KeyBoards.OnSoftInputChangedListener) {
         val window = (context as Activity).window

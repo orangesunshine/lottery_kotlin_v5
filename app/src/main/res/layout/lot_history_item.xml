@@ -17,8 +17,9 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
+            android:gravity="center"
             android:textColor="#535353"
-            android:textSize="10dp" />
+            android:textSize="12dp" />
 
         <View
             android:id="@+id/lot_history_item_divide_view"
@@ -44,5 +45,7 @@
             android:textSize="11dp" />
     </LinearLayout>
 
-    <View style="@style/line_horizontal" />
+    <View
+        android:id="@+id/lot_history_item_horizontal_divide_view"
+        style="@style/line_horizontal" />
 </LinearLayout>

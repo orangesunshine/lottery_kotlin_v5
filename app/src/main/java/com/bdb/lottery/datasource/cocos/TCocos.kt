@@ -160,11 +160,11 @@ class TCocos @Inject constructor() {
     }
 
     //获取加载cocos本地路径url
-    fun cocosLoadUrl(cocosDownloadPath: String, name: String): String {
+    private fun cocosLoadUrl(cocosDownloadPath: String, name: String): String {
         return "file:///mnt/sdcard/" + cocosDecompressDirFullName(
             cocosDownloadPath,
             name
-        ).let { it.substring(it.indexOf("Android")) + "index.html" }
+        ).let { it.substring(it.indexOf("Android")) + File.separator + "index.html" }
     }
     //endregion
 

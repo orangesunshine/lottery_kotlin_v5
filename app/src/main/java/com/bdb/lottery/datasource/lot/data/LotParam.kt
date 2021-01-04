@@ -2,7 +2,7 @@ package com.bdb.lottery.datasource.lot.data
 
 data class LotParam(
     var gameId: String,
-    var gameName: String,
+    var gameName: String?,
     var issueNo: String?,
     var kg: Boolean,
     var tingZhiZhuiHao: Boolean,

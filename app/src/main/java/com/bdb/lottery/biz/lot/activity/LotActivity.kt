@@ -1,34 +1,42 @@
 package com.bdb.lottery.biz.lot.activity
 
 import android.Manifest
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
+import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.lot.BallAdapter
 import com.bdb.lottery.biz.lot.TLot
 import com.bdb.lottery.biz.lot.dialog.lot.LotDialog
 import com.bdb.lottery.biz.lot.jd.LotJdFragment
+import com.bdb.lottery.biz.lot.jd.single.LotBetAdapter
+import com.bdb.lottery.biz.lot.jd.single.LotPlayAdapter
 import com.bdb.lottery.biz.lot.tr.LotTrFragment
 import com.bdb.lottery.biz.lot.wt.LotWtFragment
 import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.cocos.TCocos
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
-import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.extension.setListOrUpdate
-import com.bdb.lottery.extension.updateTab
-import com.bdb.lottery.extension.visible
+import com.bdb.lottery.datasource.lot.data.jd.BetItem
+import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
+import com.bdb.lottery.datasource.lot.data.jd.PlayGroupItem
+import com.bdb.lottery.datasource.lot.data.jd.PlayItem
+import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
+import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.game.Games
 import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.thread.TThread
@@ -39,6 +47,8 @@ import com.bdb.lottery.utils.ui.keyboard.KeyBoards
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.bdb.lottery.utils.webview.TWebView
 import com.bdb.lottery.widget.LoadingLayout
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.google.android.material.tabs.TabLayout
 import com.sunfusheng.marqueeview.MarqueeView
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,12 +65,6 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private val TR_FRAGMENT_TAG: String = "TR_FRAGMENT_TAG"
     private val WT_FRAGMENT_TAG: String = "WT_FRAGMENT_TAG"
 
-    private val tags: Array<String> = arrayOf(
-        JD_FRAGMENT_TAG,
-        TR_FRAGMENT_TAG,
-        WT_FRAGMENT_TAG
-    )
-
     override var statusbarLight = false;//状态栏是否半透明
 
     @Inject
@@ -76,6 +80,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         super.onCreate(savedInstanceState)
         //views
         initCup()//奖杯
+        skin4GameType(mGameType)//换肤
         mPlayLoadingLayout = LoadingLayout.wrap(lotMenuLl)
         initCocosWebView()//初始化cocoswebview、并下载cocos动画文件
         lotHistoryRv.layoutManager = LinearLayoutManager(this)
@@ -83,14 +88,18 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         lotMenuPlayLayer2Rv.layoutManager = LinearLayoutManager(this)
         initPlayMenuListener()//点击title，弹出玩法菜单窗口
         playMenu()//玩法菜单
-        tLot.switchFragment(0, tags, fragments) { lotNumsLabelFl.visible(1 == it) }//默认选中经典
+        //默认选中经典
+        switchFragment(0, tags, fragments) {
+            //kg显示label
+            lotNumsLabelFl.visible(1 == it)
+        }
 
         //经典玩法、单式输入法适配
         tLot.adjustSoftInput(object : KeyBoards.OnSoftInputChangedListener {
             override fun onSoftInputChanged(height: Int) {
                 val softInputVisible = KeyBoards.isSoftInputVisible(this@LotActivity)
-                if (softInputVisible && lotExpl.isExpanded) {//软键盘弹出，关闭cocos、历史记录窗口
-                    lotExpl.collapse(false)
+                if (softInputVisible && lotOpenHistoryCocosExpl.isExpanded) {//软键盘弹出，关闭cocos、历史记录窗口
+                    lotOpenHistoryCocosExpl.collapse(false)
                 }
             }
         })
@@ -105,6 +114,56 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         vm.getHistoryByGameId(mGameId.toString())
     }
 
+    //region 切换fragment
+    private var mTabIndex = -1//tab下标
+    private fun switchFragment(
+        index: Int,
+        tags: List<String>,
+        fragments: List<Fragment>,
+        afterSwitch: ((Int) -> Unit)? = null
+    ) {
+        if (mTabIndex == index) return
+        //传统显示label
+        supportFragmentManager.beginTransaction().let {
+            //上一个页面
+            if (mTabIndex < fragments.size && mTabIndex >= 0) {
+                val preFragment = fragments[mTabIndex]
+                if (preFragment.isAdded) {
+                    it.hide(preFragment)
+                }
+            }
+
+            //当前的页面
+            if (index < fragments.size && index >= 0) {
+                val fragment = fragments[index]
+                val tag = tags[index]
+                if (fragment.isAdded) {
+                    it.show(fragment)
+                } else {
+                    it.add(R.id.lot_rect_content_fl, fragment, tag)
+                }
+            }
+            it.commitAllowingStateLoss()
+        }
+        afterSwitch?.invoke(index)
+        mTabIndex = index
+        getCurFragmentType(index)
+    }
+
+    private val JD_FRAGMENT_TYPE = 0//经典
+    private val TR_FRAGMENT_TYPE = 1//传统
+    private val WT_FRAGMENT_TYPE = 2//微投
+    private var mCurFragmentType = JD_FRAGMENT_TYPE
+    private fun getCurFragmentType(tabIndex: Int) {
+        mCurFragmentType = when (tabIndex) {
+            0 -> if (!mJdEnable) TR_FRAGMENT_TYPE else if (!mJdEnable && !mTrEnable) WT_FRAGMENT_TYPE else JD_FRAGMENT_TYPE
+            1 -> if (!mJdEnable || !mTrEnable) WT_FRAGMENT_TYPE else TR_FRAGMENT_TYPE
+            2 -> WT_FRAGMENT_TYPE
+            else -> JD_FRAGMENT_TYPE
+        }
+    }
+    //endregion
+
     override fun observe() {
         vm.countDown.getLiveData().observe(this, { countdown(it) })//倒计时
         vm.curIssue.getLiveData().observe(this, { curIssueNums(it) })//开奖号码
@@ -113,6 +172,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     override fun onDestroy() {
         super.onDestroy()
+        vm.cachePlay4GameId(mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos, mPlayId)
         vm.unBindService(mGameId)
         KeyBoards.unregisterSoftInputChangedListener(window)
     }
@@ -129,6 +189,11 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private var mLotTrFragment: LotTrFragment? = null
     private var mLotWtFragment: LotWtFragment? = null
     private var fragments = mutableListOf<Fragment>()
+    private val tags = mutableListOf<String>()
+    private var mPlaySelectedPos: Int = 0
+    private var mGroupSelectedPos: Int = 0
+    private var mBetSelectedPos: Int = 0
+    private var mPlayId: Int = 0
     override fun initVar(bundle: Bundle?) {
         super.initVar(bundle)
         mGameType = intent.getIntExtra(EXTRA.TYPE_GAME_EXTRA, -1)
@@ -137,10 +202,18 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         if (-1 == mGameId || -1 == mGameType) {
             finish()
         }
+        vm.playByGameIdCache { tCache: TCache ->
+            mPlaySelectedPos = tCache.playCacheByGameId(mGameId) ?: 0
+            mGroupSelectedPos = tCache.playGroupCacheByGameId(mGameId) ?: 0
+            mBetSelectedPos = tCache.betCacheByGameId(mGameId) ?: 0
+            mPlayId = tCache.playIdCacheByGameId(mGameId) ?: 0
+        }
+
         initFragment(bundle)
     }
 
     private fun initFragment(bundle: Bundle?) {
+        tags.clear()
         fragments.clear()
         mJdEnable = intent.getBooleanExtra(EXTRA.JD_ENABLE_GAME_EXTRA, false)
         mTrEnable = intent.getBooleanExtra(EXTRA.TR_ENABLE_GAME_EXTRA, false)
@@ -148,6 +221,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         val saveStates = null != bundle
         val fm = supportFragmentManager
         if (mJdEnable) {
+            tags.add(JD_FRAGMENT_TAG)
             val jd = fm.findFragmentByTag(tags[0])
             mLotJdFragment = if (saveStates && null != jd && jd is LotJdFragment) jd
             else LotJdFragment.newInstance(mGameType, mGameId, mGameName)
@@ -155,6 +229,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         }
 
         if (mTrEnable) {
+            tags.add(TR_FRAGMENT_TAG)
             val tr = fm.findFragmentByTag(tags[1])
             mLotTrFragment = if (saveStates && null != tr && tr is LotTrFragment) tr
             else LotTrFragment.newInstance(mGameType, mGameId, mGameName)
@@ -162,11 +237,96 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         }
 
         if (mWtEnable) {
+            tags.add(WT_FRAGMENT_TAG)
             val wt = fm.findFragmentByTag(tags[2])
             mLotWtFragment = if (saveStates && null != wt && wt is LotWtFragment) wt
             else LotWtFragment.newInstance(mGameType, mGameId, mGameName)
             fragments.add(mLotWtFragment!!)
         }
+    }
+    //endregion
+
+    //region 彩种大类换肤
+    private fun skin4GameType(gameType: Int) {
+        //title
+        if (mCurFragmentType == WT_FRAGMENT_TYPE) {
+            lotTitleLl.setBackgroundColor(Color.parseColor("#26262A"))
+        } else {
+            lotTitleLl.setBackgroundResource(
+                when (gameType) {
+                    GAME.TYPE_GAME_K3 -> R.drawable.lot_actionbar_bg_k3
+                    GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.drawable.lot_actionbar_bg_pk
+                    else -> R.drawable.lot_actionbar_bg_default
+                }
+            )
+        }
+
+        //顶部区域（开奖号码、倒计时）
+        lotTopDivide.visible(
+            gameType !in arrayOf(
+                GAME.TYPE_GAME_K3,
+                GAME.TYPE_GAME_PK10,
+                GAME.TYPE_GAME_PK8
+            )
+        )
+        lotTopHorizontalDivide.layoutParams.width =
+            Sizes.dp2px(if (gameType == GAME.TYPE_GAME_PK8 || gameType == GAME.TYPE_GAME_PK10) 3f else 1f)
+        lotTopHorizontalDivide.setBackgroundResource(
+            when (gameType) {
+                GAME.TYPE_GAME_K3 -> R.drawable.lot_top_rect_horizontal_divide_k3
+                GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.drawable.lot_top_rect_horizontal_divide_k3
+                else -> R.drawable.lot_top_rect_horizontal_divide_default
+            }
+        )
+        lotTopAreaLl.setBackgroundResource(
+            when (gameType) {
+                GAME.TYPE_GAME_K3 -> R.drawable.lot_top_rect_bg_k3
+                GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.drawable.lot_top_rect_bg_pk
+                else -> R.drawable.lot_top_rect_bg_default
+            }
+        )
+
+        //开奖历史
+        val k3 = GAME.TYPE_GAME_K3 == gameType
+        if (k3) {
+            val textColor = ContextCompat.getColor(
+                this,
+                R.color.color_skin_k3_text_color
+            )
+            lotJdHistoryLl.setBackgroundResource(R.color.color_skin_k3_bg)
+            lotJdHistoryIssueTv.setTextColor(textColor)
+            lotJdHistoryOpenTv.setTextColor(textColor)
+            lotJdHistoryLabelTv.setTextColor(textColor)
+            lotHistoryLine.setBackgroundResource(R.color.color_skin_k3_line)
+        }
+        lotOpenNumsDivideView.visible(k3)
+        lotJdHistoryLabelTv.visible(!k3)
+
+        //倒计时
+        val skinTextColor = ContextCompat.getColor(
+            this, when (gameType) {
+                GAME.TYPE_GAME_K3 -> R.color.color_skin_k3_text_color
+                GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.color_skin_pk_text_color
+                else -> R.color.white
+            }
+        )
+
+        val skinBg = when (gameType) {
+            GAME.TYPE_GAME_K3 -> R.drawable.lot_countdown_shape_k3
+            GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> if (WT_FRAGMENT_TYPE == mCurFragmentType) R.drawable.lot_countdown_shape_wt_pk else R.drawable.lot_countdown_shape_pk
+            else -> R.drawable.lot_countdown_shape_default
+        }
+        lotCountdownFirstTv.setTextColor(skinTextColor)
+        lotCountdownDotFirstTv.setTextColor(skinTextColor)
+        lotCountdownSecondTv.setTextColor(skinTextColor)
+        lotCountdownDotSecondTv.setTextColor(skinTextColor)
+        lotCountdownThirdTv.setTextColor(skinTextColor)
+        lotCountdownFourthTv.setTextColor(skinTextColor)
+
+        lotCountdownFirstTv.setBackgroundResource(skinBg)
+        lotCountdownSecondTv.setBackgroundResource(skinBg)
+        lotCountdownThirdTv.setBackgroundResource(skinBg)
+        lotCountdownFourthTv.setBackgroundResource(skinBg)
     }
     //endregion
 
@@ -200,12 +360,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     //region 开关cocos、直播窗口
     private fun switchExplContent(expl2Show: Int) {
-        val expanded = lotExpl.isExpanded
+        val expanded = lotOpenHistoryCocosExpl.isExpanded
         if (!expanded) KeyBoards.hideSoftInput(this)
         if (mPlayMenuVisible) {
             gonePlayMenu()
         }
-        if (mExplContent == expl2Show || !expanded) lotExpl.toggle()
+        if (mExplContent == expl2Show || !expanded) lotOpenHistoryCocosExpl.toggle()
         if (mExplContent == expl2Show) return
         lotCocosWv.visibility = if (expl2Show == 1) View.VISIBLE else View.INVISIBLE
         lotHistoryRv.visible(expl2Show == 0)
@@ -216,7 +376,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 历史开奖号码
     private fun historyIssueNums(historyIssues: List<HistoryData.HistoryItem>?) {
         lotHistoryRv.setListOrUpdate(historyIssues?.toMutableList()) {
-            BallAdapter(mGameType, Sizes.dp2px(16f), it?.toMutableList())
+            BallAdapter(mGameType, 0, mPlayId, Sizes.dp2px(16f), it?.toMutableList())
         }
     }
     //endregion
@@ -413,8 +573,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             mPlayMenuVisible = !mPlayMenuVisible
             if (mPlayMenuVisible) {
                 //弹出玩法菜单：关闭cocos、历史记录窗口，软键盘关闭
-                if (lotExpl.isExpanded) {
-                    lotExpl.collapse(false)
+                if (lotOpenHistoryCocosExpl.isExpanded) {
+                    lotOpenHistoryCocosExpl.collapse(false)
                 }
                 KeyBoards.hideSoftInput(this)
             }
@@ -464,6 +624,125 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         lotParam.issueNo = mCurIssue//当前期号
         lotDialog.lotParams(lotParam).lotSuccess(success).lotError(error)
             .setDanTiaoTips(danTiaoTips).show(supportFragmentManager)
+    }
+    //endregion
+
+    //region 一级玩法
+    fun updatePlayList(
+        betTypeDatas: GameBetTypeData?,
+    ) {
+        lotMenuPlayLayer1Rv.setListOrUpdate(betTypeDatas) {
+            LotPlayAdapter(betTypeDatas).apply {
+                setOnItemClickListener { _: BaseQuickAdapter<*, *>, _: View, position: Int ->
+                    //一级玩法选中
+                    notifySelectedPositionWithPayLoads(position)
+                    updatePlayLayer2List(betTypeDatas?.get(position), position)
+                }
+            }
+        }
+        lotMenuPlayLayer1Rv?.adapter?.let {
+            if (it is BaseSelectedQuickAdapter<*, *>) it.notifySelectedPosition(mPlaySelectedPos)
+        }
+        updatePlayLayer2List(
+            if (betTypeDatas.validIndex(mPlaySelectedPos)) betTypeDatas?.get(mPlaySelectedPos) else null,
+            mPlaySelectedPos
+        )
+    }
+    //endregion
+
+    //region 二级玩法、二级玩法组
+    private var mPlaySelectedTmpRef = -1
+    private fun onBetSelected(item: BetItem?) {
+        if (mCurFragmentType == JD_FRAGMENT_TYPE) {
+            mLotJdFragment?.onBetSelected(item)
+        }
+    }
+
+    private fun updatePlayLayer2List(
+        playItem: PlayItem?, playSelectedPos: Int,
+    ) {
+        mPlaySelectedTmpRef = playSelectedPos
+        onBetSelected(vm.play2BetByPos(playItem, mGroupSelectedPos, mBetSelectedPos))
+        lotMenuPlayLayer2Rv.setListOrUpdate(playItem?.list) {
+            object : BaseSelectedQuickAdapter<PlayGroupItem, BaseViewHolder>(
+                R.layout.lot_jd_play_group_item,
+                it?.toMutableList()
+            ) {
+                override fun convert(groupHolder: BaseViewHolder, item: PlayGroupItem) {
+                    val groupPosition = groupHolder.adapterPosition
+                    groupHolder.setText(R.id.lot_jd_play_group_name_tv, item.name + "：")
+                    groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).run {
+                        layoutManager =
+                            GridLayoutManager(context, 3, RecyclerView.VERTICAL, false)
+                        setListOrUpdate(item.list) {
+                            object : LotBetAdapter(it) {
+                                override fun convert(
+                                    holder: BaseViewHolder,
+                                    item: BetItem,
+                                ) {
+                                    super.convert(holder, item)
+                                    holder.getView<TextView>(R.id.text_common_tv).isSelected =
+                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
+                                }
+
+                                override fun convert(
+                                    holder: BaseViewHolder,
+                                    item: BetItem,
+                                    payloads: List<Any>,
+                                ) {
+                                    holder.getView<TextView>(R.id.text_common_tv).isSelected =
+                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
+                                }
+                            }.apply {
+                                setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
+                                    //选中玩法：更新一级玩法下标、二级玩法组下标、二级玩法下标
+                                    if (mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition && mBetSelectedPos == position) return@setOnItemClickListener
+                                    if (mPlaySelectedPos != mPlaySelectedTmpRef) {
+                                        mPlaySelectedPos = mPlaySelectedTmpRef
+                                    } else {
+                                        if (mGroupSelectedPos != groupPosition) {
+                                            val preGroupPosition = mGroupSelectedPos
+                                            lotMenuPlayLayer2Rv?.adapter?.notifyItemChanged(
+                                                preGroupPosition, PAY_LOADS_SELECTED
+                                            )
+                                        }
+                                    }
+                                    mGroupSelectedPos = groupPosition
+                                    mBetSelectedPos = position
+                                    notifySelectedPositionWithPayLoads(position, false)
+                                    adapter.getItemOrNull(position)?.let {
+                                        if (it is BetItem) {
+                                            onBetSelected(it)
+                                        }
+                                    }
+                                    gonePlayMenu()
+                                }
+                            }
+                        }
+                    }
+
+                    if (groupPosition == mGroupSelectedPos) {
+                        groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
+                            if (it is BaseSelectedQuickAdapter<*, *>) {
+                                it.notifySelectedPosition(mBetSelectedPos)
+                            }
+                        }
+                    }
+                }
+
+                override fun convert(
+                    holder: BaseViewHolder,
+                    item: PlayGroupItem,
+                    payloads: List<Any>,
+                ) {
+                    holder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).adapter?.let {
+                        if (it is BaseSelectedQuickAdapter<*, *>) {
+                            it.notifyUnSelectedAllWithPayLoads()
+                        }
+                    }
+                }
+            }
+        }
     }
     //endregion
 }
