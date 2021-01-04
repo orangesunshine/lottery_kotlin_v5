@@ -1,12 +1,16 @@
 package com.bdb.lottery.utils.lot
 
 import android.text.TextUtils
+import com.bdb.lottery.R
 import com.bdb.lottery.const.GAME
+import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.validIndex
 import kotlin.math.max
 import kotlin.math.min
 
 object Lots {
+    //region 形态
     fun getLabel(gameType: Int, parentPlayId: Int, playId: Int, nums: String?): String {
         if (nums.isSpace()) {
             return ""
@@ -453,4 +457,150 @@ object Lots {
         return "龙"
     }
     //endregion
+    //endregion
+
+    //region pk10根据开机号码转换对应图片
+    private val ball_pk = arrayOf(R.drawable.lot_history_ball_pk_num1,
+        R.drawable.lot_history_ball_pk_num2,
+        R.drawable.lot_history_ball_pk_num3,
+        R.drawable.lot_history_ball_pk_num4,
+        R.drawable.lot_history_ball_pk_num5,
+        R.drawable.lot_history_ball_pk_num6,
+        R.drawable.lot_history_ball_pk_num7,
+        R.drawable.lot_history_ball_pk_num8,
+        R.drawable.lot_history_ball_pk_num9,
+        R.drawable.lot_history_ball_pk_num10)
+
+    fun num2Ball4Pk(ball: String?): Int {
+        ball?.let {
+            val index = it.toInt()
+            if (ball_pk.validIndex(index)) return@num2Ball4Pk ball_pk[index]
+        }
+        return -1
+    }
+    //endregion
+
+    //region PC28
+    fun num2Dr4Pc28(ball: String?): Int {
+        var numType: Int = ball2ColorType4Pc28(ball)
+        if (GAME.IS_PC28) numType = getGame6ColourType(ball)
+        return when (numType) {
+            GAME_TYPE_COLOR_ORANGE -> R.drawable.lot_history_ball_pc28_orange
+            GAME_TYPE_COLOR_GREEN -> R.drawable.lot_history_ball_pc28_green
+            GAME_TYPE_COLOR_BLUE -> R.drawable.lot_history_ball_pc28_blue
+            GAME_TYPE_COLOR_RED -> R.drawable.lot_history_ball_pc28_red
+            else -> R.drawable.lot_history_ball_pc28_red
+        }
+    }
+
+    /**
+     * 号码球颜色选择器
+     *
+     * @param bet_ball
+     * @return
+     */
+    const val GAME_TYPE_COLOR_ORANGE: Int = 1
+    const val GAME_TYPE_COLOR_GREEN = 2
+    const val GAME_TYPE_COLOR_BLUE = 3
+    const val GAME_TYPE_COLOR_RED = 4
+    private fun ball2ColorType4Pc28(ball: String?): Int {
+        return when (ball) {
+            "0", "5", "6", "11", "16", "17", "21", "22", "27" -> GAME_TYPE_COLOR_GREEN
+            "3", "4", "9", "10", "14", "15", "20", "25", "26" -> GAME_TYPE_COLOR_BLUE
+            "1", "2", "7", "8", "12", "13", "18", "19", "23", "24" -> GAME_TYPE_COLOR_RED
+            else -> GAME_TYPE_COLOR_ORANGE
+        }
+    }
+
+    /**
+     * 号码球颜色选择器
+     *
+     * @param ball
+     * @return
+     */
+    private fun getGame6ColourType(ball: String?): Int {
+        return when (ball) {
+            "1", "4", "7", "10", "16", "19", "22", "25" -> GAME_TYPE_COLOR_GREEN
+            "2", "5", "8", "11", "17", "20", "23", "26" -> GAME_TYPE_COLOR_BLUE
+            "3", "6", "9", "12", "15", "18", "21", "24" -> GAME_TYPE_COLOR_RED
+            else -> GAME_TYPE_COLOR_ORANGE//"0", "13", "14", "27"
+        }
+    }
+    //endregion
+
+    //region 快三
+    fun ball2Dr4K3(ball: String?): Int {
+        ball?.let {
+            return when (it.toInt()) {
+                1 -> R.drawable.lot_history_ball_k3_1
+                2 -> R.drawable.lot_history_ball_k3_2
+                3 -> R.drawable.lot_history_ball_k3_3
+                4 -> R.drawable.lot_history_ball_k3_4
+                5 -> R.drawable.lot_history_ball_k3_5
+                6 -> R.drawable.lot_history_ball_k3_6
+                else -> 0
+            }
+        }
+        return 0
+    }
+
+    fun ball2Dr4K3New(ball: String?): Int {
+        ball?.let {
+            return when (it.toInt()) {
+                1 -> R.drawable.lot_history_ball_k3_new_1
+                2 -> R.drawable.lot_history_ball_k3_new_2
+                3 -> R.drawable.lot_history_ball_k3_new_3
+                4 -> R.drawable.lot_history_ball_k3_new_4
+                5 -> R.drawable.lot_history_ball_k3_new_5
+                6 -> R.drawable.lot_history_ball_k3_new_6
+                else -> 0
+            }
+        }
+        return 0
+    }
+    //endregion
+
+    //region 六合彩
+    fun ball2Dr4LHC(num: String?, isLHC: Boolean): Int {
+        return when (if (isLHC) ball2ColorType4LHC(num) else ball2ColorType4LHCByDivide(num)) {
+            GAME_TYPE_COLOR_RED -> R.drawable.lot_history_ball_lhc_red
+            GAME_TYPE_COLOR_BLUE -> R.drawable.lot_history_ball_lhc_blue
+            else -> R.drawable.lot_history_ball_lhc_green//GAME_TYPE_COLOR_GREEN
+        }
+    }
+
+    /**
+     * 根据 号码 获取 Game 8  颜色类型 默认为 六合彩类型
+     *
+     * @param bet_ball
+     * @return
+     */
+    private fun ball2ColorType4LHC(ball: String?): Int {
+        return when (ball) {
+            "03", "3", "04", "4", "09", "9", "10", "14", "15", "20", "25", "26", "31", "36", "37", "41", "42", "47", "48" -> GAME_TYPE_COLOR_BLUE
+            "01", "1", "02", "2", "07", "7", "08", "8", "12", "13", "18", "19", "23", "24", "29", "30", "34", "35", "40", "45", "46" -> GAME_TYPE_COLOR_RED
+            else -> GAME_TYPE_COLOR_GREEN//"05", "5", "06", "6", "11", "16", "17", "21", "22", "27", "28", "32", "33", "38", "39", "43", "44", "49"
+        }
+    }
+
+    /**
+     * 根据号码 获取Game 8 类型下的 玩法ID为74的 颜色类型
+     *
+     * @param bet_ball
+     * @return
+     */
+    private fun ball2ColorType4LHCByDivide(ball: String?): Int {
+        return when ((ball?.toInt() ?: 0) % 3) {
+            0 -> GAME_TYPE_COLOR_GREEN
+            1 -> GAME_TYPE_COLOR_BLUE
+            else -> GAME_TYPE_COLOR_RED
+        }
+    }
+    //endregion
+
+    fun deleteInitZero(ball: String?): String? {
+        return if (!ball.isSpace() && ball!!.substring(0, 1)
+                .equalsNSpace("0")
+        ) ball.substring(1) else ball
+    }
 }

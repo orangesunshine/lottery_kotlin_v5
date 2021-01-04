@@ -168,11 +168,15 @@ class TCache @Inject constructor() {
     //endregion
 
     //region 经典：gameid对应cb选中玩法缓存
-    fun cachePlay4GameId(gameId: Int, play: Int, group: Int, bet: Int, playId: Int) {
+    fun cachePlay4GameId(
+        gameId: Int, play: Int, group: Int,
+        bet: Int, parentPlayId: Int, playId: Int,
+    ) {
         val gameIdText = gameId.toString()
         Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_CACHE, play)
         Caches.putInt(gameIdText + CACHE.LOT_JD_GROUP_CACHE, group)
         Caches.putInt(gameIdText + CACHE.LOT_JD_BET_CACHE, bet)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_PARENT_PLAY_ID_CACHE, parentPlayId)
         Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_ID_CACHE, playId)
     }
 
@@ -190,6 +194,10 @@ class TCache @Inject constructor() {
 
     fun playIdCacheByGameId(gameId: Int): Int? {
         return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PLAY_ID_CACHE, 0)
+    }
+
+    fun parentPlayIdCacheByGameId(gameId: Int): Int? {
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PARENT_PLAY_ID_CACHE, 0)
     }
     //endregion
 

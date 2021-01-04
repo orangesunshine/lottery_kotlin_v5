@@ -202,6 +202,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
         //数据库查找玩法成功
         vm.subPlayMethodLd.getLiveData().observe(this) {
+            aliveActivity<LotActivity>()?.updateHistoryLabel(it?.parent_play_method ?: 0)
             mSingleNumCount = it?.subPlayMethodDesc?.single_num_counts ?: 0
             mTextWatcher?.onBetChange(
                 mSingleNumCount,

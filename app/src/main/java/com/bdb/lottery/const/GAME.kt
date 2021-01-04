@@ -10,4 +10,9 @@ object GAME {
     const val TYPE_GAME_KL10FEN = 9 //快乐10分
     const val TYPE_GAME_PC28 = 6 //pc28
     const val TYPE_GAME_LHC = 8 //香港六合彩
+
+    /**
+     * 是否是pc28或pc蛋蛋
+     */
+    const val IS_PC28 = false
 }

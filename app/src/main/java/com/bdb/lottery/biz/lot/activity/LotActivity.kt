@@ -81,6 +81,8 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         //views
         initCup()//奖杯
         skin4GameType(mGameType)//换肤
+        lotJdHistoryLabelTv.layoutParams.width =
+            Sizes.dp2px(if (GAME.TYPE_GAME_SSC == mGameType) 70f else 40f)
         mPlayLoadingLayout = LoadingLayout.wrap(lotMenuLl)
         initCocosWebView()//初始化cocoswebview、并下载cocos动画文件
         lotHistoryRv.layoutManager = LinearLayoutManager(this)
@@ -120,7 +122,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         index: Int,
         tags: List<String>,
         fragments: List<Fragment>,
-        afterSwitch: ((Int) -> Unit)? = null
+        afterSwitch: ((Int) -> Unit)? = null,
     ) {
         if (mTabIndex == index) return
         //传统显示label
@@ -172,7 +174,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     override fun onDestroy() {
         super.onDestroy()
-        vm.cachePlay4GameId(mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos, mPlayId)
+        cachePlay4GameId()
         vm.unBindService(mGameId)
         KeyBoards.unregisterSoftInputChangedListener(window)
     }
@@ -202,12 +204,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         if (-1 == mGameId || -1 == mGameType) {
             finish()
         }
-        vm.playByGameIdCache { tCache: TCache ->
-            mPlaySelectedPos = tCache.playCacheByGameId(mGameId) ?: 0
-            mGroupSelectedPos = tCache.playGroupCacheByGameId(mGameId) ?: 0
-            mBetSelectedPos = tCache.betCacheByGameId(mGameId) ?: 0
-            mPlayId = tCache.playIdCacheByGameId(mGameId) ?: 0
-        }
+        playByGameIdCache()
 
         initFragment(bundle)
     }
@@ -374,9 +371,23 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 历史开奖号码
+    private var mParentPlayId: Int = 0
     private fun historyIssueNums(historyIssues: List<HistoryData.HistoryItem>?) {
         lotHistoryRv.setListOrUpdate(historyIssues?.toMutableList()) {
-            BallAdapter(mGameType, 0, mPlayId, Sizes.dp2px(16f), it?.toMutableList())
+            BallAdapter(mGameType,
+                mGameId,
+                mParentPlayId,
+                mPlayId,
+                it?.toMutableList())
+        }
+    }
+
+    fun updateHistoryLabel(parentPlayId: Int) {
+        mParentPlayId = parentPlayId
+        lotHistoryRv.adapter?.let {
+            if (it is BallAdapter) {
+                it.notifyLabel(parentPlayId)
+            }
         }
     }
     //endregion
@@ -579,6 +590,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                 KeyBoards.hideSoftInput(this)
             }
             lotMenuLl.visible(mPlayMenuVisible)
+            val isJd = mCurFragmentType == JD_FRAGMENT_TYPE
+            lotMenuPlayLayer1Rv.visible(isJd)
+            lotMenuPlayLayer2Rv.visible(isJd)
         }
         lotMenuLl.setOnClickListener {
             gonePlayMenu()
@@ -743,6 +757,28 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                 }
             }
         }
+    }
+    //endregion
+
+    @Inject
+    lateinit var tCache: TCache
+
+    //region 根据gameId获取对应的玩法下标缓存
+    fun playByGameIdCache() {
+        mPlaySelectedPos = tCache.playCacheByGameId(mGameId) ?: 0
+        mGroupSelectedPos = tCache.playGroupCacheByGameId(mGameId) ?: 0
+        mBetSelectedPos = tCache.betCacheByGameId(mGameId) ?: 0
+        mParentPlayId = tCache.parentPlayIdCacheByGameId(mGameId) ?: 0
+        mPlayId = tCache.playIdCacheByGameId(mGameId) ?: 0
+    }
+    //endregion
+
+    //region 退出页面缓存玩法下标（一级玩法、玩法组、二级玩法）
+    fun cachePlay4GameId(
+    ) {
+        tCache.cachePlay4GameId(
+            mGameId, mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos, mParentPlayId, mPlayId
+        )
     }
     //endregion
 }

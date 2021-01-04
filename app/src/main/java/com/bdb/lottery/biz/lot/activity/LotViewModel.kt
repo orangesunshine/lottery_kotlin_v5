@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 class LotViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
-    private val tCache: TCache,
     private val tThread: TThread,
     private val lotRemoteDs: LotRemoteDs,
     private val cocosRemoteDs: CocosRemoteDs,
@@ -119,29 +118,6 @@ class LotViewModel @ViewModelInject @Inject constructor(
             }
             betItem
         }
-    }
-    //endregion
-
-    //region 根据gameId获取对应的玩法下标缓存
-    fun playByGameIdCache(cacheBlock: (TCache) -> Unit) {
-        cacheBlock.invoke(tCache)
-    }
-    //endregion
-
-    //region 退出页面缓存玩法下标（一级玩法、玩法组、二级玩法）
-    fun cachePlay4GameId(
-        playSelectedPos: Int,
-        groupSelectedPos: Int,
-        betSelectedPos: Int,
-        playId: Int
-    ) {
-        tCache.cachePlay4GameId(
-            mGameId,
-            playSelectedPos,
-            groupSelectedPos,
-            betSelectedPos,
-            playId
-        )
     }
     //endregion
 }

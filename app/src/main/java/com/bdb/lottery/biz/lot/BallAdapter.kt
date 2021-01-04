@@ -1,5 +1,6 @@
 package com.bdb.lottery.biz.lot
 
+import android.graphics.Color
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.module.application.AppEntries
 import com.bdb.lottery.utils.lot.Lots
+import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.zhy.view.flowlayout.FlowLayout
@@ -18,11 +20,12 @@ import dagger.hilt.android.EntryPointAccessors
 
 class BallAdapter(
     private val gameType: Int,
-    private val parentPlayId: Int,
+    private val gameId: Int,
+    private var parentPlayId: Int,
     private val playId: Int,
-    private val ballSize: Int,//球大小
     data: MutableList<HistoryData.HistoryItem>? = null,
 ) : BaseQuickAdapter<HistoryData.HistoryItem, BaseViewHolder>(R.layout.lot_history_item, data) {
+    private val PAYLOAD_LABEL = "PAYLOAD_LABEL"
     private val tGame by lazy {
         EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTGame()
     }
@@ -47,13 +50,67 @@ class BallAdapter(
         return Lots.getLabel(gameType, parentPlayId, playId, item.nums)
     }
 
+    private fun ballSize(gameType: Int): Int {
+        return Sizes.dp2px(when (gameType) {
+            GAME.TYPE_GAME_FREQUENCY_LOW, GAME.TYPE_GAME_K3 -> 20f
+            GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> 17f
+            else -> 18f
+        })
+    }
+
+    private fun ballSpace(gameType: Int): Int {
+        return Sizes.dp2px(when (gameType) {
+            GAME.TYPE_GAME_K3, GAME.TYPE_GAME_FREQUENCY_LOW -> 10f
+            GAME.TYPE_GAME_LHC, GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> 3f
+            else -> 8f
+        })
+    }
+
     //球
     fun ball(position: Int, num: String?): TextView {
+        var bgRes = -1
+        var textColor = "#111111"
+        var content: String? = null
+        val isSymbol = "+" == num || "=" == num
+        when (gameType) {
+            GAME.TYPE_GAME_SSC, GAME.TYPE_GAME_KL10FEN, GAME.TYPE_GAME_11X5 -> {
+                textColor = "#E75E44"
+                bgRes = R.drawable.lot_history_item_ssc_bg
+                content = num
+            }
+            GAME.TYPE_GAME_FREQUENCY_LOW -> {
+            }
+            GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> {//pk10,pk8
+                bgRes = Lots.num2Ball4Pk(num)
+            }
+            GAME.TYPE_GAME_PC28 -> {//pc28
+                bgRes = if (isSymbol) -1 else Lots.num2Dr4Pc28(num)
+                content = num
+            }
+            GAME.TYPE_GAME_K3 -> {//快三
+                bgRes = Lots.ball2Dr4K3(num)
+            }
+            GAME.TYPE_GAME_LHC -> {//六合彩
+                bgRes =
+                    if (isSymbol) -1 else Lots.ball2Dr4LHC(Lots.deleteInitZero(num), 74 == gameId)
+                content = num
+            }
+        }
         val textView = TextView(context)
-        textView.layoutParams = ViewGroup.MarginLayoutParams(ballSize, ballSize)
+        textView.text = content
+        if (-1 == bgRes) {
+            textView.background = null
+        } else {
+            textView.setBackgroundResource(bgRes)
+        }
+        //球大小
+        val size = ballSize(gameType)
+        textView.layoutParams = ViewGroup.MarginLayoutParams(size, size)
+        //球间距
+        (textView.layoutParams as ViewGroup.MarginLayoutParams).leftMargin = ballSpace(gameType)
+
         textView.gravity = Gravity.CENTER
-        textView.text = num
-        textView.setBackgroundResource(R.drawable.lot_open_nums_white_circle_shape)
+        textView.setTextColor(Color.parseColor(textColor))
         textView.alpha = if (brightLists.contains(position + 1)) 1f else 0.4f
         return textView
     }
@@ -64,8 +121,13 @@ class BallAdapter(
             R.color.color_skin_k3_line
         )//期号
         holder.setText(R.id.lot_history_item_issue_tv, getIssue(item))//期号
+        holder.getView<View>(R.id.lot_history_item_label_tv).layoutParams.width =
+            Sizes.dp2px(if (GAME.TYPE_GAME_SSC == gameType) 70f else 40f)
         holder.setVisible(R.id.lot_history_item_divide_view, divideVisible(item))
+        //形态
         holder.setText(R.id.lot_history_item_label_tv, labelText(item))
+        holder.getView<View>(R.id.lot_history_item_label_tv).layoutParams.width =
+            Sizes.dp2px(if (GAME.TYPE_GAME_SSC == gameType) 70f else 40f)
         val nums = item.nums
         nums?.let {
             val split = nums.split(" ")
@@ -76,5 +138,18 @@ class BallAdapter(
                     }
                 }
         }
+    }
+
+    override fun convert(
+        holder: BaseViewHolder,
+        item: HistoryData.HistoryItem,
+        payloads: List<Any>,
+    ) {
+        holder.setText(R.id.lot_history_item_label_tv, labelText(item))
+    }
+
+    fun notifyLabel(parentPlayId: Int) {
+        this.parentPlayId = parentPlayId
+        notifyItemRangeChanged(0, itemCount, PAYLOAD_LABEL)
     }
 }
