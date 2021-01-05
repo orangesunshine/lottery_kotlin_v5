@@ -151,7 +151,6 @@
             android:id="@+id/lot_jd_bet_area_fl"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/color_bg"
             app:layout_constraintBottom_toTopOf="@id/lot_jd_remove_repeat_nums_tv"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -163,9 +162,7 @@
                 android:id="@+id/lot_jd_bet_input_cv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="8dp"
+                android:layout_margin="8dp"
                 app:cardCornerRadius="8dp">
 
                 <com.bdb.lottery.widget.DanStyleInputEditView
@@ -184,7 +181,9 @@
         <TextView
             android:id="@+id/lot_jd_remove_repeat_nums_tv"
             style="@style/big_red_bt"
-            android:layout_margin="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/bt_common_red_round_shape"
             android:text="@string/lot_jd_single_remove_repeat_text"
             app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_info_expl"

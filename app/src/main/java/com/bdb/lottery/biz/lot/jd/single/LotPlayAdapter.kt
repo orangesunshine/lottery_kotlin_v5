@@ -18,14 +18,13 @@ class LotPlayAdapter constructor(betTypeDatas: GameBetTypeData?) :
         R.layout.text_single_item,
         betTypeDatas?.toMutableList()
     ) {
-    private val padding = Sizes.dp2px(2.5f)
-    private val margin = Sizes.dp2px(8f)
+    private val dp4 = Sizes.dp2px(4f)
 
     override fun convert(holder: BaseViewHolder, item: PlayItem) {
         holder.getView<TextView>(R.id.text_common_tv).run {
-            margin(margin * 3, margin / 2, margin * 3, margin / 2)
+            margin(0, dp4, 0, dp4)
             gravity = Gravity.CENTER
-            setPadding(padding)
+            setPadding(dp4 * 2, dp4, dp4 * 2, dp4)
             text = item.name
             setTextColor(
                 ContextCompat.getColorStateList(

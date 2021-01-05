@@ -39,9 +39,10 @@
                 <LinearLayout
                     android:id="@+id/lotTopLeftAreaLl"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:gravity="center_horizontal"
+                    android:descendantFocusability="blocksDescendants"
+                    android:gravity="center"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -57,21 +58,34 @@
                             android:textSize="11dp"
                             tools:text="5分11选5 204期" />
 
-                        <TextView
-                            android:id="@+id/lotTopRectHistoryOpenTv"
+                        <LinearLayout
+                            android:id="@+id/lotTopRectHistoryOpenLl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="4dp"
                             android:background="@drawable/lot_top_rect_history_bg_shape"
-                            android:drawableRight="@drawable/lot_top_rect_history_arrow"
-                            android:drawablePadding="8dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
                             android:paddingLeft="8dp"
                             android:paddingTop="1dp"
                             android:paddingRight="8dp"
-                            android:paddingBottom="1dp"
-                            android:text="往期开奖"
-                            android:textColor="@color/color_lot_text_color_default"
-                            android:textSize="10dp" />
+                            android:paddingBottom="1dp">
+
+                            <TextView
+                                android:id="@+id/lotTopRectHistoryOpenTv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="往期开奖"
+                                android:textColor="@color/color_lot_text_color_default"
+                                android:textSize="10dp" />
+
+                            <ImageView
+                                android:id="@+id/lotTopRectHistoryOpenIv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:src="@drawable/lot_top_rect_history_arrow" />
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -79,13 +93,13 @@
                         android:id="@+id/lotOpenNumsFl"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp" />
+                        android:layout_marginTop="8dp" />
 
                     <com.zhy.view.flowlayout.TagFlowLayout
                         android:id="@+id/lotNumsLabelFl"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="4dp"
                         android:visibility="gone" />
                 </LinearLayout>
 
@@ -408,7 +422,7 @@
                         android:background="#f2f4f5"
                         android:orientation="vertical"
                         android:paddingTop="4dp"
-                        android:paddingBottom="4dp" />
+                        android:paddingBottom="16dp" />
                 </LinearLayout>
 
             </FrameLayout>

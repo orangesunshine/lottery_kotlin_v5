@@ -264,11 +264,12 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //region 构造方法：传递参数gameType、gameId、gameName
     companion object {
-        fun newInstance(gameType: Int, gameId: Int, gameName: String?): LotJdFragment {
+        fun newInstance(gameType: Int, gameId: Int, playId: Int, gameName: String?): LotJdFragment {
             val fragment = LotJdFragment()
             val args = Bundle()
             args.putInt(EXTRA.ID_GAME_EXTRA, gameId)
             args.putInt(EXTRA.TYPE_GAME_EXTRA, gameType)
+            args.putInt(EXTRA.ID_PLAY_EXTRA, playId)
             args.putString(EXTRA.NAME_GAME_EXTRA, gameName)
             fragment.arguments = args
             return fragment
@@ -344,6 +345,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mSelectedBetItem = item
         val playId = item?.betType ?: 0//玩法id
         mTextWatcher?.setPlayId(playId)
+        mPlayId = playId
         item?.let {
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
             vm.getLocalBetType(playId)//获取玩法配置

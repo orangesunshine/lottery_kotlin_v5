@@ -16,6 +16,7 @@ import com.bdb.lottery.datasource.lot.data.LotData
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
+import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
@@ -105,9 +106,14 @@ class LotViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region gameId对应玩法下标缓存，并选中
-    fun play2BetByPos(item: PlayItem?, groupSelectedPos: Int, betSelectedPos: Int): BetItem? {
+    fun play2BetByPos(
+        data: GameBetTypeData?,
+        playSelectedPos: Int,
+        groupSelectedPos: Int,
+        betSelectedPos: Int
+    ): BetItem? {
         var betItem: BetItem? = null
-        return item?.list?.let {
+        return data?.get(playSelectedPos)?.list?.let {
             if (groupSelectedPos < it.size) {
                 it[groupSelectedPos].list?.let {
                     if (betSelectedPos < it.size) {

@@ -55,13 +55,16 @@ class HomeAllGameAdapter(datas: MutableList<AllGameDataMapper>?) :
                 )
         }
 
-        item.rightGameType?.let {
-            if (it > 0)
-                holder.setImageResource(
-                    R.id.home_allgame_right_ariv,
-                    tGame.gameTypeRoundDr(it)
-                )
-        }
+        val rightVisible = !item.rightData.isNullOrEmpty()
+        holder.setVisible(R.id.home_allgame_right_ariv, rightVisible)
+        if (rightVisible)
+            item.rightGameType?.let {
+                if (it > 0)
+                    holder.setImageResource(
+                        R.id.home_allgame_right_ariv,
+                        tGame.gameTypeRoundDr(it)
+                    )
+            }
 
         if (null == recyclerView.adapter) {
             recyclerView.setHasFixedSize(true)

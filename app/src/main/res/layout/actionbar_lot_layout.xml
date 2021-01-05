@@ -37,7 +37,7 @@
             android:layout_centerInParent="true"
             android:paddingLeft="16dp"
             android:paddingTop="8dp"
-            android:paddingRight="16dp"
+            android:paddingRight="4dp"
             android:paddingBottom="8dp"
             app:mvAnimDuration="1000"
             app:mvDirection="bottom_to_top"
@@ -48,6 +48,7 @@
             app:mvTextSize="17sp" />
 
         <ImageView
+            android:id="@+id/lot_actionbar_center_arrow_iv"
             android:layout_width="8dp"
             android:layout_height="8dp"
             android:layout_centerVertical="true"

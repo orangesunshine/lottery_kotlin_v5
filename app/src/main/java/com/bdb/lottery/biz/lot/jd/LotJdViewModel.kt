@@ -93,13 +93,13 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         }
     }
 
-    fun lotteryHowToPlayMap2Desc(
+    private fun lotteryHowToPlayMap2Desc(
         gameType: Int,
         playId: Int,
         lotteryHowToPlayMap: Map<String, Map<String, String>>?
     ): String? {
         if (lotteryHowToPlayMap.isNullOrEmpty()) return null
-        val ctMap = lotteryHowToPlayMap.get("ct")
+        val ctMap = lotteryHowToPlayMap["ct"]
         if (ctMap.isNullOrEmpty()) return null
         val key = "gameKind${gameType}_$playId"
         return ctMap[key] ?: ctMap[playId.toString()]

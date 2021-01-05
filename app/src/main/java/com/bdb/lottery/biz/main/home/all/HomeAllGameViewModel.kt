@@ -21,7 +21,13 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
         gameRemoteDs.cachePriAllGame {
             it?.let { list: MutableList<AllGameItemData> ->
                 appRemoteDs.cachePrePlatformParams { platform: PlatformData? ->
-                    list.asSequence().map { data: AllGameItemData ->
+                    list.asSequence().sortedBy {
+                        when (it.gameKind) {
+                            2 -> 10
+                            11 -> 5
+                            else -> it.gameKind
+                        }
+                    }.map { data: AllGameItemData ->
                         platform?.lotteryFileImgRound(data)
                         data
                     }.groupBy {

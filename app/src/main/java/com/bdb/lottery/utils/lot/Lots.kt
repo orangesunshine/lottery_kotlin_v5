@@ -460,7 +460,8 @@ object Lots {
     //endregion
 
     //region pk10根据开机号码转换对应图片
-    private val ball_pk = arrayOf(R.drawable.lot_history_ball_pk_num1,
+    private val ball_pk = arrayOf(
+        R.drawable.lot_history_ball_pk_num1,
         R.drawable.lot_history_ball_pk_num2,
         R.drawable.lot_history_ball_pk_num3,
         R.drawable.lot_history_ball_pk_num4,
@@ -469,11 +470,12 @@ object Lots {
         R.drawable.lot_history_ball_pk_num7,
         R.drawable.lot_history_ball_pk_num8,
         R.drawable.lot_history_ball_pk_num9,
-        R.drawable.lot_history_ball_pk_num10)
+        R.drawable.lot_history_ball_pk_num10
+    )
 
     fun num2Ball4Pk(ball: String?): Int {
         ball?.let {
-            val index = it.toInt()
+            val index = it.toInt() - 1
             if (ball_pk.validIndex(index)) return@num2Ball4Pk ball_pk[index]
         }
         return -1

@@ -25,8 +25,7 @@
             android:id="@+id/lot_history_item_divide_view"
             android:layout_width="5dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/lot_history_issue_divide"
-            android:visibility="gone" />
+            android:background="@drawable/lot_history_issue_divide" />
 
         <com.zhy.view.flowlayout.TagFlowLayout
             android:id="@+id/lot_history_item_nums_fl"
