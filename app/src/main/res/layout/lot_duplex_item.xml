@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp">
+        <!--title-->
+        <TextView
+            android:id="@+id/lot_duplex_item_label"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:background="@drawable/lot_duplex_item_label"
+            android:gravity="center"
+            android:paddingLeft="6dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/color_666666"
+            android:textSize="10dp"
+            tools:text="万位" />
+        <!--号码球-->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lot_duplex_item_rv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+        <!--大小单双-->
+        <RelativeLayout
+            android:id="@+id/lot_duplex_item_dxds_rl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp">
+
+            <TextView
+                android:id="@+id/lot_duplex_item_big"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:background="@drawable/rect_white_corner3_shape"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="大"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/lot_duplex_item_small"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@id/lot_duplex_item_big"
+                android:background="@drawable/rect_white_corner3_shape"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="小"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/lot_duplex_item_single"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_below="@id/lot_duplex_item_big"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rect_white_corner3_shape"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="单"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/lot_duplex_item_double"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_below="@id/lot_duplex_item_small"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_toRightOf="@id/lot_duplex_item_single"
+                android:background="@drawable/rect_white_corner3_shape"
+                android:gravity="center"
+                android:padding="4dp"
+                android:text="双"
+                android:textSize="13dp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <View
+        style="@style/line_horizontal"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
+
+</FrameLayout>

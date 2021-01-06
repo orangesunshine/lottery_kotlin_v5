@@ -15,6 +15,7 @@ import com.bdb.lottery.biz.lot.activity.LotActivity
 import com.bdb.lottery.biz.lot.dialog.playdesc.LotPlayDescDialog
 import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
 import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.dialog.ConfirmDialog
@@ -209,8 +210,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 vm.getDigit(mNeedDigit, getSelectedDigit())
             )
 
+            //单复式
             mMode = if (it?.subPlayMethodDesc?.isdanshi != false) MODE_SINGLE else MODE_DUPLEX
-            switchDanFuStyle(mMode == MODE_SINGLE)
+            switchDanFuStyle(mMode == MODE_SINGLE,it)
 
             mNeedDigit = it?.subPlayMethodDesc?.is_need_show_weizhi == true
             lot_jd_bet_digit_ll.visible(mNeedDigit == true)
@@ -341,20 +343,18 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //region 更新玩法时：title、玩法配置、投注单位更新
     private var mSelectedBetItem: BetItem? = null
     fun onBetSelected(item: BetItem?) {
-        clearNums()
-        mSelectedBetItem = item
+        mSelectedBetItem = item//更新数据
         val playId = item?.betType ?: 0//玩法id
         mTextWatcher?.setPlayId(playId)
         mPlayId = playId
         item?.let {
-            aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())
+            aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())//更新玩法名称，title刷新
             vm.getLocalBetType(playId)//获取玩法配置
             setUnitPattern(it.pattern)//更新投注单位
             //玩法说明
             vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
                 lot_jd_play_desc_tv.text = playDesc ?: "该玩法暂无玩法说明"
             }
-            mTextWatcher?.filterRepeatNdErrorNums(lot_jd_single_input_et.text.toString().trim())
         }
     }
     //endregion
@@ -446,9 +446,13 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private val MODE_SINGLE = 0//单式
     private val MODE_DUPLEX = 1//复式
     private var mMode = MODE_DUPLEX//模式
-    private fun switchDanFuStyle(isSingleStyle: Boolean) {
+    private fun switchDanFuStyle(isSingleStyle: Boolean,subPlayMethod: SubPlayMethod?) {
         mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
+        clearNums()//清空号码
+        //单式
         lot_jd_bet_input_cv.visible(isSingleStyle)
+        //复式
+        subPlayMethod?.subPlayMethodDesc?.ball_groups_counts?:0
     }
     //endregion
 }

@@ -16,48 +16,94 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
         const val PAY_LOADS_SELECTED = "pay_loads_selected"
     }
 
-    private var mSelectedPosition: Int = -1
+    private var mSelectedPosition: MutableList<Int> = mutableListOf()
 
-    fun setSelectedPosition(selectedPosition: Int) {
-        mSelectedPosition = selectedPosition
+    fun setSingleSelectedPos(selectedPosition: Int) {
+        mSelectedPosition.clear()
+        mSelectedPosition.add(selectedPosition)
     }
 
     fun notifyUnSelectedAll() {
-        val preSelectedPosition = mSelectedPosition
-        mSelectedPosition = -1
-        if (data.validIndex(preSelectedPosition))
-            notifyItemChanged(preSelectedPosition)
+        if (!mSelectedPosition.isNullOrEmpty()) {
+            for (pos in mSelectedPosition) {
+                if (data.validIndex(pos))
+                    notifyItemChanged(pos)
+            }
+        }
+        mSelectedPosition.clear()
     }
 
-    fun notifyUnSelectedAllWithPayLoads() {
-        val preSelectedPosition = mSelectedPosition
-        mSelectedPosition = -1
-        if (data.validIndex(preSelectedPosition))
-            notifyItemChanged(preSelectedPosition, PAY_LOADS_SELECTED)
+    fun notifyUnSelectedAllWithPayLoads(payload: String = PAY_LOADS_SELECTED) {
+        if (!mSelectedPosition.isNullOrEmpty()) {
+            for (pos in mSelectedPosition) {
+                if (data.validIndex(pos))
+                    notifyItemChanged(pos, payload)
+            }
+        }
+        mSelectedPosition.clear()
     }
 
-    fun notifySelectedPosition(selectedPosition: Int) {
-        if (mSelectedPosition == selectedPosition) return
-        val preSelectedPosition = mSelectedPosition
-        mSelectedPosition = selectedPosition
+    //region single单选
+    private fun getSingleSelectedPos(): Int {
+        return if (!mSelectedPosition.isNullOrEmpty()) mSelectedPosition[0] else -1
+    }
+
+    //endregion
+
+    fun notifySelectedPosition(selectedPosition: Int, singleSelected: Boolean = true) {
+        //重负选中
+        if (mSelectedPosition.contains(selectedPosition)) {
+            if (!singleSelected) {//多选当前位置不选中
+                mSelectedPosition.remove(selectedPosition)
+                if (data.validIndex(selectedPosition))
+                    notifyItemChanged(selectedPosition)
+            }
+            return
+        }
+        if (singleSelected) {
+            //单选清空之前选中位置
+            val preSelectedPosition = getSingleSelectedPos()
+            mSelectedPosition.clear()
+            if (data.validIndex(preSelectedPosition))
+                notifyItemChanged(preSelectedPosition)
+        }
+        //选中当前位置
+        mSelectedPosition.add(selectedPosition)
         if (data.validIndex(selectedPosition))
             notifyItemChanged(selectedPosition)
-        if (data.validIndex(preSelectedPosition))
-            notifyItemChanged(preSelectedPosition)
     }
 
-    fun notifySelectedPositionWithPayLoads(selectedPosition: Int, checkIndex: Boolean = true) {
-        if (mSelectedPosition == selectedPosition && checkIndex) return
-        val preSelectedPosition = mSelectedPosition
-        mSelectedPosition = selectedPosition
+    fun notifySelectedPositionWithPayLoads(
+        selectedPosition: Int,
+        checkIndex: Boolean = true,
+        singleSelected: Boolean = true,
+        payload: String = PAY_LOADS_SELECTED
+    ) {
+        //重负选中
+        if (mSelectedPosition.contains(selectedPosition)) {
+            if (singleSelected && checkIndex) return
+            if (!singleSelected) {//多选当前位置不选中
+                mSelectedPosition.remove(selectedPosition)
+                if (data.validIndex(selectedPosition))
+                    notifyItemChanged(selectedPosition, payload)
+                return
+            }
+        }
+        if (singleSelected) {
+            //单选清空之前选中位置
+            val preSelectedPosition = getSingleSelectedPos()
+            mSelectedPosition.clear()
+            if (data.validIndex(preSelectedPosition))
+                notifyItemChanged(preSelectedPosition, payload)
+        }
+        //选中当前位置
+        mSelectedPosition.add(selectedPosition)
         if (data.validIndex(selectedPosition))
-            notifyItemChanged(selectedPosition, PAY_LOADS_SELECTED)
-        if (data.validIndex(preSelectedPosition))
-            notifyItemChanged(preSelectedPosition, PAY_LOADS_SELECTED)
+            notifyItemChanged(selectedPosition, payload)
     }
 
     //判断当前holder是否选中
     fun isSelected(holder: VH): Boolean {
-        return mSelectedPosition == holder.adapterPosition
+        return mSelectedPosition.contains(holder.adapterPosition)
     }
 }

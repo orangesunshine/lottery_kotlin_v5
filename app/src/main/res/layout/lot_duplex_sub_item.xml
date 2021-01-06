@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!--号码球-->
+    <TextView
+        android:id="@+id/lot_duplex_sub_item_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!--冷热遗漏-->
+    <TextView
+        android:id="@+id/lot_duplex_sub_item_hot_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
