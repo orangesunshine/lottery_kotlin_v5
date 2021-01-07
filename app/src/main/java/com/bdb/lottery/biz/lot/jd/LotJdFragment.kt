@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.CompoundButton
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.globallivedata.AccountManager
@@ -66,6 +67,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //region 删除重复错误号码、下注点击事件监听，单位弹窗、倍数窗口初始化
     private fun initView() {
+        lot_jd_duplex_rv.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         //删除重复、错误号码
         lot_jd_remove_repeat_nums_tv.setOnClickListener {
             mTextWatcher?.filterRepeatNdErrorNums(
@@ -449,7 +452,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
         clearNums()//清空号码
         //单式
-        lot_jd_bet_input_cv.visible(isSingleStyle)
+        lot_jd_bet_single_ll.visible(isSingleStyle)
         //复式
         lot_jd_duplex_rv.visible(!isSingleStyle)
         if (!isSingleStyle) {
@@ -458,17 +461,29 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             val ballTextList = subPlayMethod?.subPlayMethodDesc?.ball_text_list?.split(",")
             if (ballGroupCount > 0) {
                 val titles = subPlayMethod?.subPlayMethodDesc?.ball_groups_item_title?.split(",")
-                for (i in 0..ballGroupCount) {
-                    lotDuplexDatas.add(LotDuplexData(titles?.get(i),
-                        ballTextList,
-                        true,
-                        false,
-                        false,
-                        false))
+                for (i in 0 until ballGroupCount) {
+                    lotDuplexDatas.add(
+                        LotDuplexData(
+                            titles?.get(i),
+                            subPlayMethod?.subPlayMethodDesc?.item_ball_num_counts ?: 0,
+                            ballTextList,
+                            dxdsVisible = true,
+                            hotVisible = false,
+                            leaveVisible = false,
+                            zeroVisible = false
+                        )
+                    )
                 }
             }
-            lot_jd_duplex_rv.adapter?.notifyDataSetChanged() ?: let {
-                lot_jd_duplex_rv.adapter = LotDuplexAdapter(mGameType, mBetTypeId, ballTextList,lotDuplexDatas)
+            lot_jd_duplex_rv.adapter?.let {
+                if (it is LotDuplexAdapter) it.notifyChange(
+                    mBetTypeId,
+                    ballTextList,
+                    lotDuplexDatas
+                )
+            } ?: let {
+                lot_jd_duplex_rv.adapter =
+                    LotDuplexAdapter(mGameType, mBetTypeId, ballTextList, lotDuplexDatas)
             }
         }
     }

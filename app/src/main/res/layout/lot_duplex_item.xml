@@ -12,7 +12,7 @@
         android:padding="8dp">
         <!--title-->
         <TextView
-            android:id="@+id/lot_duplex_item_label"
+            android:id="@+id/lot_duplex_item_label_tv"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:background="@drawable/lot_duplex_item_label"

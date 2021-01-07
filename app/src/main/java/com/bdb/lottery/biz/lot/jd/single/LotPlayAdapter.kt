@@ -20,11 +20,14 @@ class LotPlayAdapter constructor(betTypeDatas: GameBetTypeData?) :
     private val dp4 = Sizes.dp2px(4f)
 
     override fun convert(holder: BaseViewHolder, item: PlayItem) {
+        val name = item.name
+        val marginHorizontal =
+            if (name.length > 5) 0 else if (name.length > 4) 2 * dp4 else 4 * dp4
         holder.getView<TextView>(R.id.text_common_tv).run {
-            margin(0, dp4, 0, dp4)
+            margin(marginHorizontal, dp4, marginHorizontal, dp4)
             gravity = Gravity.CENTER
             setPadding(dp4 * 2, dp4, dp4 * 2, dp4)
-            text = item.name
+            text = name
             setTextColor(
                 ContextCompat.getColorStateList(
                     context,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,163 +7,164 @@
     android:background="@color/color_bg"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/lot_jd_single_input_ctl"
+    <LinearLayout
+        android:id="@+id/lot_jd_desc_ll"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="40dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/lot_jd_desc_divide_view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/lot_jd_desc_ll"
-            android:layout_width="match_parent"
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/lot_jd_play_des" />
+
+        <TextView
+            android:id="@+id/lot_jd_play_desc_tv"
+            android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@id/lot_jd_desc_divide_view"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:lines="1"
+            android:text="该玩法暂无玩法说明"
+            android:textSize="10dp" />
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/lot_jd_play_des" />
-
-            <TextView
-                android:id="@+id/lot_jd_play_desc_tv"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="4dp"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:lines="1"
-                android:text="该玩法暂无玩法说明"
-                android:textSize="10dp" />
-
-            <TextView
-                android:id="@+id/lot_jd_play_hot_tv"
-                android:layout_width="46dp"
-                android:layout_height="23dp"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/lot_jd_hot_omission_bg"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:lines="1"
-                android:text="冷热"
-                android:textColor="@color/color_444444"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/lot_jd_play_omission_tv"
-                android:layout_width="46dp"
-                android:layout_height="23dp"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/lot_jd_hot_omission_bg"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:lines="1"
-                android:text="遗漏"
-                android:textColor="@color/color_444444"
-                android:visibility="gone" />
-        </LinearLayout>
-
-        <View
-            android:id="@+id/lot_jd_desc_divide_view"
-            style="@style/line_horizontal"
-            android:layout_marginLeft="8dp"
+        <TextView
+            android:id="@+id/lot_jd_play_hot_tv"
+            android:layout_width="46dp"
+            android:layout_height="23dp"
             android:layout_marginRight="8dp"
-            app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_digit_ll"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lot_jd_desc_ll" />
+            android:background="@drawable/lot_jd_hot_omission_bg"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:text="冷热"
+            android:textColor="@color/color_444444"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/lot_jd_play_omission_tv"
+            android:layout_width="46dp"
+            android:layout_height="23dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/lot_jd_hot_omission_bg"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:lines="1"
+            android:text="遗漏"
+            android:textColor="@color/color_444444"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/lot_jd_desc_divide_view"
+        style="@style/line_horizontal"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_digit_ll"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lot_jd_desc_ll" />
+
+    <LinearLayout
+        android:id="@+id/lot_jd_bet_digit_ll"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingTop="5dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="5dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_area_fl"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lot_jd_desc_divide_view">
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/lot_jd_bet_digit_wan_cb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lot_jd_bet_digit_wan"
+            android:textColor="#7A7A7A"
+            android:textSize="11dp"
+            android:theme="@style/MyCheckBox" />
+
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/lot_jd_bet_digit_qian_cb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lot_jd_bet_digit_qian"
+            android:textColor="#7A7A7A"
+            android:textSize="11dp"
+            android:theme="@style/MyCheckBox" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/lot_jd_bet_digit_bai_cb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lot_jd_bet_digit_bai"
+            android:textColor="@color/color_666666"
+            android:textSize="11dp"
+            android:theme="@style/MyCheckBox" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/lot_jd_bet_digit_shi_cb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lot_jd_bet_digit_shi"
+            android:textColor="@color/color_666666"
+            android:textSize="11dp"
+            android:theme="@style/MyCheckBox" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/lot_jd_bet_digit_ge_cb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lot_jd_bet_digit_ge"
+            android:textColor="@color/color_666666"
+            android:textSize="11dp"
+            android:theme="@style/MyCheckBox" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/lot_jd_bet_area_fl"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_info_expl"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_digit_ll"
+        app:layout_constraintVertical_weight="1">
 
         <LinearLayout
-            android:id="@+id/lot_jd_bet_digit_ll"
+            android:id="@+id/lot_jd_bet_single_ll"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:orientation="horizontal"
-            android:paddingLeft="15dp"
-            android:paddingTop="5dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="5dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_area_fl"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lot_jd_desc_divide_view">
-
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/lot_jd_bet_digit_wan_cb"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/lot_jd_bet_digit_wan"
-                android:textColor="#7A7A7A"
-                android:textSize="11dp"
-                android:theme="@style/MyCheckBox" />
-
-
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/lot_jd_bet_digit_qian_cb"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/lot_jd_bet_digit_qian"
-                android:textColor="#7A7A7A"
-                android:textSize="11dp"
-                android:theme="@style/MyCheckBox" />
-
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/lot_jd_bet_digit_bai_cb"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/lot_jd_bet_digit_bai"
-                android:textColor="@color/color_666666"
-                android:textSize="11dp"
-                android:theme="@style/MyCheckBox" />
-
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/lot_jd_bet_digit_shi_cb"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/lot_jd_bet_digit_shi"
-                android:textColor="@color/color_666666"
-                android:textSize="11dp"
-                android:theme="@style/MyCheckBox" />
-
-            <androidx.appcompat.widget.AppCompatCheckBox
-                android:id="@+id/lot_jd_bet_digit_ge_cb"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/lot_jd_bet_digit_ge"
-                android:textColor="@color/color_666666"
-                android:textSize="11dp"
-                android:theme="@style/MyCheckBox" />
-
-        </LinearLayout>
-
-        <FrameLayout
-            android:id="@+id/lot_jd_bet_area_fl"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/lot_jd_remove_repeat_nums_tv"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_digit_ll"
-            app:layout_constraintVertical_weight="1">
-
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
             <!--单式-->
             <androidx.cardview.widget.CardView
-                android:id="@+id/lot_jd_bet_input_cv"
+                android:id="@+id/lot_jd_bet_single_cv"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_margin="8dp"
-                android:visibility="gone"
+                android:layout_weight="1"
                 app:cardCornerRadius="8dp">
 
                 <com.bdb.lottery.widget.DanStyleInputEditView
@@ -178,167 +179,168 @@
                     android:textSize="13dp" />
             </androidx.cardview.widget.CardView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/lot_jd_duplex_rv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone" />
-        </FrameLayout>
+            <TextView
+                android:id="@+id/lot_jd_remove_repeat_nums_tv"
+                style="@style/big_red_bt"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/bt_common_red_round_shape"
+                android:text="@string/lot_jd_single_remove_repeat_text"
+                app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_info_expl"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_area_fl" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lot_jd_duplex_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="16dp"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <net.cachapa.expandablelayout.ExpandableLayout
+        android:id="@+id/lot_jd_bet_info_expl"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        app:el_duration="300"
+        app:el_expanded="false"
+        app:layout_constraintBottom_toTopOf="@id/lot_jd_bottom_bar_ll"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_area_fl">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp">
+
+            <TextView
+                android:id="@+id/lot_jd_account_balance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:textColor="@color/color_666666"
+                tools:text="@string/lot_jd_account_balance_text" />
+
+            <TextView
+                android:id="@+id/lot_jd_today_profit_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:textColor="@color/color_666666"
+                tools:text="@string/lot_jd_today_loss_profit_text" />
+
+            <TextView
+                android:id="@+id/lot_jd_total_amount_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                tools:text="@string/lot_jd_total_money_text" />
+
+            <TextView
+                android:id="@+id/lot_jd_selected_notes_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_toLeftOf="@id/lot_jd_total_amount_tv"
+                android:textColor="@color/color_666666"
+                tools:text="@string/lot_jd_selected_notes_text" />
+
+            <TextView
+                android:id="@+id/lot_jd_max_bonus_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:textColor="@color/color_666666"
+                tools:text="@string/lot_jd_max_bonus_text" />
+        </RelativeLayout>
+    </net.cachapa.expandablelayout.ExpandableLayout>
+
+    <LinearLayout
+        android:id="@+id/lot_jd_bottom_bar_ll"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="#2B2C34"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_info_expl">
+
+        <ImageView
+            android:id="@+id/lot_jd_input_clear_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/lot_jd_input_clear" />
 
         <TextView
-            android:id="@+id/lot_jd_remove_repeat_nums_tv"
-            style="@style/big_red_bt"
+            android:id="@+id/log_jd_money_unit_tv"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/lot_jd_money_unit_bg"
+            android:drawableRight="@drawable/lot_jd_money_unit_arrow"
+            android:gravity="center"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="4dp"
+            android:text="@string/lot_jd_money_unit_yuan"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/bt_common_red_round_shape"
-            android:text="@string/lot_jd_single_remove_repeat_text"
-            app:layout_constraintBottom_toTopOf="@id/lot_jd_bet_info_expl"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_area_fl" />
+            android:text="@string/lot_jd_multiple_text"
+            android:textColor="@color/white" />
 
-        <net.cachapa.expandablelayout.ExpandableLayout
-            android:id="@+id/lot_jd_bet_info_expl"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginBottom="8dp"
-            app:el_duration="300"
-            app:el_expanded="false"
-            app:layout_constraintBottom_toTopOf="@id/lot_jd_bottom_bar_ll"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lot_jd_remove_repeat_nums_tv">
+        <EditText
+            android:id="@+id/lot_jd_multiple_et"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:background="@drawable/lot_jd_money_unit_bg"
+            android:gravity="center"
+            android:inputType="number"
+            android:lines="1"
+            android:maxLength="6"
+            android:text="1"
+            android:textColor="@color/white"
+            android:textSize="14dp" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp">
+        <View style="@style/weight" />
 
-                <TextView
-                    android:id="@+id/lot_jd_account_balance_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:textColor="@color/color_666666"
-                    tools:text="@string/lot_jd_account_balance_text" />
+        <TextView
+            android:id="@+id/lot_jd_add_to_shopping_bar_tv"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/bt_common_orange_round_shape"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/lot_jd_shopping_bar"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
 
-                <TextView
-                    android:id="@+id/lot_jd_today_profit_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentBottom="true"
-                    android:textColor="@color/color_666666"
-                    tools:text="@string/lot_jd_today_loss_profit_text" />
-
-                <TextView
-                    android:id="@+id/lot_jd_total_amount_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    tools:text="@string/lot_jd_total_money_text" />
-
-                <TextView
-                    android:id="@+id/lot_jd_selected_notes_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="16dp"
-                    android:layout_toLeftOf="@id/lot_jd_total_amount_tv"
-                    android:textColor="@color/color_666666"
-                    tools:text="@string/lot_jd_selected_notes_text" />
-
-                <TextView
-                    android:id="@+id/lot_jd_max_bonus_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
-                    android:textColor="@color/color_666666"
-                    tools:text="@string/lot_jd_max_bonus_text" />
-            </RelativeLayout>
-        </net.cachapa.expandablelayout.ExpandableLayout>
-
-        <LinearLayout
-            android:id="@+id/lot_jd_bottom_bar_ll"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:background="#2B2C34"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lot_jd_bet_info_expl">
-
-            <ImageView
-                android:id="@+id/lot_jd_input_clear_iv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/lot_jd_input_clear" />
-
-            <TextView
-                android:id="@+id/log_jd_money_unit_tv"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/lot_jd_money_unit_bg"
-                android:drawableRight="@drawable/lot_jd_money_unit_arrow"
-                android:gravity="center"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="4dp"
-                android:text="@string/lot_jd_money_unit_yuan"
-                android:textColor="@color/white"
-                android:textSize="14dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:text="@string/lot_jd_multiple_text"
-                android:textColor="@color/white" />
-
-            <EditText
-                android:id="@+id/lot_jd_multiple_et"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:background="@drawable/lot_jd_money_unit_bg"
-                android:gravity="center"
-                android:inputType="number"
-                android:lines="1"
-                android:maxLength="6"
-                android:text="1"
-                android:textColor="@color/white"
-                android:textSize="14dp" />
-
-            <View style="@style/weight" />
-
-            <TextView
-                android:id="@+id/lot_jd_add_to_shopping_bar_tv"
-                android:layout_width="70dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/bt_common_orange_round_shape"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:text="@string/lot_jd_shopping_bar"
-                android:textColor="@color/white"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/lot_jd_direct_betting_tv"
-                android:layout_width="70dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/bt_common_red_round_selector"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:text="@string/lot_jd_direct_betting"
-                android:textColor="@color/white"
-                android:textSize="15dp" />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+        <TextView
+            android:id="@+id/lot_jd_direct_betting_tv"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/bt_common_red_round_selector"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/lot_jd_direct_betting"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.bdb.lottery.biz.lot.jd.duplex.adapter
 
+import android.graphics.Rect
 import android.util.SparseArray
 import android.view.View
 import androidx.core.util.isNotEmpty
@@ -12,17 +13,19 @@ import com.bdb.lottery.const.GAME
 import com.bdb.lottery.extension.setColorStateList
 import com.bdb.lottery.extension.setItemChildSelected
 import com.bdb.lottery.extension.validIndex
+import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
+
 
 class LotDuplexAdapter constructor(
     private val gameType: Int,
     private var betTypeId: Int,
-    private val balTextList: List<String>?,//龙虎和
-    duplexDatas: List<LotDuplexData>?,
+    private var balTextList: List<String>?,//龙虎和
+    duplexDatas: MutableList<LotDuplexData>?,
 ) : BaseQuickAdapter<LotDuplexData, BaseViewHolder>(
     R.layout.lot_duplex_item,
-    duplexDatas?.toMutableList()
+    duplexDatas
 ) {
     private val PAY_LOAD_LABEL = "PAY_LOAD_LABEL"
     private val PAY_LOAD_BIG = "PAY_LOAD_BIG"
@@ -30,7 +33,7 @@ class LotDuplexAdapter constructor(
     private val PAY_LOAD_SINGLE = "PAY_LOAD_SINGLE"
     private val PAY_LOAD_DOUBLE = "PAY_LOAD_DOUBLE"
     private val mSpanCount: Int = if (!balTextList.isNullOrEmpty()) {
-        if (balTextList.size > 3) 3 else 2
+        if (balTextList!!.size > 3) 3 else 2
     } else {
         when (gameType) {
             GAME.TYPE_GAME_11X5 -> 6
@@ -43,23 +46,23 @@ class LotDuplexAdapter constructor(
         val position = holder.adapterPosition
         //label
         holder.setGone(//龙虎、快三不显示label
-            R.id.lot_duplex_item_label,
-            gameType == GAME.TYPE_GAME_K3 || balTextList.isNullOrEmpty()
+            R.id.lot_duplex_item_label_tv,
+            gameType == GAME.TYPE_GAME_K3 || !balTextList.isNullOrEmpty()
         )
         holder.setColorStateList(
             context,
-            R.id.lot_duplex_item_label,
+            R.id.lot_duplex_item_label_tv,
             R.color.lot_duplex_item_label_text_color_selector
         )
         holder.setBackgroundResource(
-            R.id.lot_duplex_item_label,
+            R.id.lot_duplex_item_label_tv,
             when (gameType) {
                 GAME.TYPE_GAME_11X5 -> R.drawable.lot_duplex_item_label_bg_11x5_selector
                 GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> R.drawable.lot_duplex_item_label_bg_pk_selector
                 else -> R.drawable.lot_duplex_item_label_bg_selector
             }
         )
-        holder.setText(R.id.lot_duplex_item_label, item.label)
+        holder.setText(R.id.lot_duplex_item_label_tv, item.label)
 
         //大小单双
         val dxdsVisible = item.dxdsVisible
@@ -72,27 +75,68 @@ class LotDuplexAdapter constructor(
         //球
         val rv: RecyclerView = holder.getView(R.id.lot_duplex_item_rv)
         rv.layoutManager = GridLayoutManager(context, mSpanCount)
-        val adapter = rv.adapter?.notifyDataSetChanged() ?: let {
-            rv.adapter = LotDuplexSubAdapter(gameType, betTypeId, mSpanCount, false, item, {})
+        rv.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                var top = 0
+                parent.layoutManager?.let {
+                    if (it is GridLayoutManager) {
+                        val spanCount = it.spanCount
+                        val position = parent.getChildAdapterPosition(view)
+                        if (spanCount > 0 && position / spanCount > 0) {
+                            top = Sizes.dp2px(6f)
+                        }
+                    }
+                }
+                outRect.set(0, top, 0, 0)
+            }
+        })
+        rv.adapter?.let {
+            if (it is LotDuplexSubAdapter) it.notifyChange(
+                betTypeId,
+                mSpanCount,
+                false,
+                item
+            )
+        } ?: let {
+            rv.adapter = LotDuplexSubAdapter(gameType, betTypeId, mSpanCount, false, item) {
+                holder.setItemChildSelected(R.id.lot_duplex_item_label_tv, it)
+            }
         }
     }
 
-    override fun convert(holder: BaseViewHolder, item: LotDuplexData, payloads: List<String>) {
+    override fun convert(holder: BaseViewHolder, item: LotDuplexData, payloads: List<Any>) {
         val position = holder.adapterPosition
         when (payloads[0]) {
-            PAY_LOAD_BIG -> holder.setItemChildSelected(R.id.lot_duplex_item_big,
-                position == mBigSelectedPos)
-            PAY_LOAD_SMALL -> holder.setItemChildSelected(R.id.lot_duplex_item_small,
-                position == mSmallSelectedPos)
-            PAY_LOAD_SINGLE -> holder.setItemChildSelected(R.id.lot_duplex_item_single,
-                position == mSingleSelectedPos)
-            PAY_LOAD_DOUBLE -> holder.setItemChildSelected(R.id.lot_duplex_item_double,
-                position == mDoubleSelectedPos)
-            PAY_LOAD_LABEL -> holder.setItemChildSelected(R.id.lot_duplex_item_big,
-                position == mBigSelectedPos)
+            PAY_LOAD_BIG -> holder.setItemChildSelected(
+                R.id.lot_duplex_item_big,
+                position == mBigSelectedPos
+            )
+            PAY_LOAD_SMALL -> holder.setItemChildSelected(
+                R.id.lot_duplex_item_small,
+                position == mSmallSelectedPos
+            )
+            PAY_LOAD_SINGLE -> holder.setItemChildSelected(
+                R.id.lot_duplex_item_single,
+                position == mSingleSelectedPos
+            )
+            PAY_LOAD_DOUBLE -> holder.setItemChildSelected(
+                R.id.lot_duplex_item_double,
+                position == mDoubleSelectedPos
+            )
+            PAY_LOAD_LABEL -> holder.setItemChildSelected(
+                R.id.lot_duplex_item_big,
+                position == mBigSelectedPos
+            )
             else -> {
-                holder.setItemChildSelected(R.id.lot_duplex_item_big,
-                    position == mBigSelectedPos)
+                holder.setItemChildSelected(
+                    R.id.lot_duplex_item_big,
+                    position == mBigSelectedPos
+                )
             }
         }
     }
@@ -169,8 +213,10 @@ class LotDuplexAdapter constructor(
 
     fun notifyChange(
         betTypeId: Int, balTextList: List<String>?,//龙虎和
-        duplexDatas: List<LotDuplexData>?,
+        duplexDatas: MutableList<LotDuplexData>?,
     ) {
         this.betTypeId = betTypeId
+        this.balTextList = balTextList
+        setNewInstance(duplexDatas)
     }
 }

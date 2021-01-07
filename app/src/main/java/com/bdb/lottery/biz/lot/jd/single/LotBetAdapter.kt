@@ -21,11 +21,13 @@ open class LotBetAdapter constructor(list: List<BetItem>?) :
         holder: BaseViewHolder,
         item: BetItem,
     ) {
+        val betName = item.betName
+        val marginHorizontal = if (betName.length > 5) 0 else 2 * dp4
         holder.getView<TextView>(R.id.text_common_tv).run {
-            margin(0, dp4, 0, dp4)
+            margin(marginHorizontal, dp4, marginHorizontal, dp4)
             gravity = Gravity.CENTER
             setPadding(dp4 * 2, dp4, dp4 * 2, dp4)
-            text = item.betName
+            text = betName
             setTextColor(
                 ContextCompat.getColorStateList(
                     context,
