@@ -14,6 +14,17 @@ fun CharSequence?.isSpace(): Boolean {
     } ?: true
 }
 
+fun CharSequence?.isDigit(): Boolean {
+    return this?.let {
+        val len = this.length
+        if (0 == len) return@let true
+        for (i in 0 until len) {
+            if (!Character.isDigit(this[i])) return@let false
+        }
+        true
+    } ?: false
+}
+
 fun CharSequence?.isDomainUrl(): Boolean {
     val regex =
         "((http://)|(https://))?([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(:[0-9]{2,5})?(/)?"

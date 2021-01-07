@@ -478,12 +478,17 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             lot_jd_duplex_rv.adapter?.let {
                 if (it is LotDuplexAdapter) it.notifyChange(
                     mBetTypeId,
-                    ballTextList,
+                    !ballTextList.isNullOrEmpty(),
                     lotDuplexDatas
                 )
             } ?: let {
                 lot_jd_duplex_rv.adapter =
-                    LotDuplexAdapter(mGameType, mBetTypeId, ballTextList, lotDuplexDatas)
+                    LotDuplexAdapter(
+                        mGameType,
+                        mBetTypeId,
+                        !ballTextList.isNullOrEmpty(),
+                        lotDuplexDatas
+                    )
             }
         }
     }

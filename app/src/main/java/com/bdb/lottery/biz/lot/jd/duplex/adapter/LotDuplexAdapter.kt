@@ -3,6 +3,7 @@ package com.bdb.lottery.biz.lot.jd.duplex.adapter
 import android.graphics.Rect
 import android.util.SparseArray
 import android.view.View
+import android.widget.TextView
 import androidx.core.util.isNotEmpty
 import androidx.core.util.valueIterator
 import androidx.recyclerview.widget.GridLayoutManager
@@ -10,9 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
 import com.bdb.lottery.const.GAME
-import com.bdb.lottery.extension.setColorStateList
-import com.bdb.lottery.extension.setItemChildSelected
-import com.bdb.lottery.extension.validIndex
+import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
@@ -21,7 +20,7 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 class LotDuplexAdapter constructor(
     private val gameType: Int,
     private var betTypeId: Int,
-    private var balTextList: List<String>?,//龙虎和
+    private var isLHH: Boolean = false,
     duplexDatas: MutableList<LotDuplexData>?,
 ) : BaseQuickAdapter<LotDuplexData, BaseViewHolder>(
     R.layout.lot_duplex_item,
@@ -32,8 +31,10 @@ class LotDuplexAdapter constructor(
     private val PAY_LOAD_SMALL = "PAY_LOAD_SMALL"
     private val PAY_LOAD_SINGLE = "PAY_LOAD_SINGLE"
     private val PAY_LOAD_DOUBLE = "PAY_LOAD_DOUBLE"
-    private val mSpanCount: Int = if (!balTextList.isNullOrEmpty()) {
-        if (balTextList!!.size > 3) 3 else 2
+    private val m11x5TuoDan =//11选5组选胆拖的胆码
+        betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176
+    private val mSpanCount: Int = if (isLHH) {
+        if (itemCount > 3) 3 else 2
     } else {
         when (gameType) {
             GAME.TYPE_GAME_11X5 -> 6
@@ -43,12 +44,8 @@ class LotDuplexAdapter constructor(
     }
     private val mSubAdapters: SparseArray<LotDuplexSubAdapter> = SparseArray()
     override fun convert(holder: BaseViewHolder, item: LotDuplexData) {
-        val position = holder.adapterPosition
+        val adapterPosition = holder.adapterPosition
         //label
-        holder.setGone(//龙虎、快三不显示label
-            R.id.lot_duplex_item_label_tv,
-            gameType == GAME.TYPE_GAME_K3 || !balTextList.isNullOrEmpty()
-        )
         holder.setColorStateList(
             context,
             R.id.lot_duplex_item_label_tv,
@@ -62,15 +59,55 @@ class LotDuplexAdapter constructor(
                 else -> R.drawable.lot_duplex_item_label_bg_selector
             }
         )
-        holder.setText(R.id.lot_duplex_item_label_tv, item.label)
+        val label = item.label
+        val gone = gameType == GAME.TYPE_GAME_K3 || isLHH
+        holder.setGone(//龙虎、快三不显示label
+            R.id.lot_duplex_item_label_tv,
+            gone
+        )
+        if (!gone) {
+            if (GAME.TYPE_GAME_11X5 == gameType) {
+                if (GAME.TYPE_GAME_11X5 == gameType) holder.getView<TextView>(R.id.lot_duplex_item_label_tv)
+                    .setEms(1)
+                holder.setWH(
+                    R.id.lot_duplex_item_label_tv, 24f,
+                    label?.let { if (it.length > 3) 58f else if (it.length > 2) 48f else 38f }
+                        ?: 38f)
+            } else {
+                holder.setW(
+                    R.id.lot_duplex_item_label_tv,
+                    label?.let { if (it.length > 3) 68f else if (it.length > 2) 48f else 38f }
+                        ?: 38f)
+            }
+        }
+
+        holder.setText(R.id.lot_duplex_item_label_tv, label)
 
         //大小单双
         val dxdsVisible = item.dxdsVisible
-        //11选5组选胆拖的胆码不需要显示大小单双
-        if (dxdsVisible && 0 == position && betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176) {
+        if (dxdsVisible && 0 == adapterPosition && m11x5TuoDan) {
+            //11选5组选胆拖的胆码不需要显示大小单双
             holder.setVisible(R.id.lot_duplex_item_dxds_rl, false)
         } else {
             holder.setGone(R.id.lot_duplex_item_dxds_rl, !dxdsVisible)
+        }
+        if (GAME.TYPE_GAME_PK8 == gameType || GAME.TYPE_GAME_PK10 == gameType) {
+            holder.setBackgroundResource(
+                R.id.lot_duplex_item_big,
+                R.drawable.lot_duplex_sub_item_pk_dxds_selector
+            )
+            holder.setBackgroundResource(
+                R.id.lot_duplex_item_small,
+                R.drawable.lot_duplex_sub_item_pk_dxds_selector
+            )
+            holder.setBackgroundResource(
+                R.id.lot_duplex_item_single,
+                R.drawable.lot_duplex_sub_item_pk_dxds_selector
+            )
+            holder.setBackgroundResource(
+                R.id.lot_duplex_item_double,
+                R.drawable.lot_duplex_sub_item_pk_dxds_selector
+            )
         }
         //球
         val rv: RecyclerView = holder.getView(R.id.lot_duplex_item_rv)
@@ -103,9 +140,37 @@ class LotDuplexAdapter constructor(
                 item
             )
         } ?: let {
-            rv.adapter = LotDuplexSubAdapter(gameType, betTypeId, mSpanCount, false, item) {
-                holder.setItemChildSelected(R.id.lot_duplex_item_label_tv, it)
-            }
+            rv.adapter = LotDuplexSubAdapter(
+                m11x5TuoDan && adapterPosition == 0,//11选5胆码：单选
+                gameType,
+                betTypeId,
+                mSpanCount,
+                false,
+                item
+            ) {
+                //号码球选中切换回调
+                holder.setItemChildSelected(R.id.lot_duplex_item_label_tv, !it.isNullOrEmpty())
+                if (m11x5TuoDan) {
+                    val selectedPositions = mSubAdapters[0].getSelectedPositions()//胆码选中下标
+                    if (!selectedPositions.isNullOrEmpty()) {
+                        if (adapterPosition == 0) {
+                            //胆码
+                            if (!it.isNullOrEmpty() && it.contains(selectedPositions[0])) {
+                                mSubAdapters[1]?.notifySingleUnSelectedPositionWithPayLoads(
+                                    selectedPositions[0]
+                                )
+                            }
+                        } else if (adapterPosition == 1) {
+                            //拖码
+                            if (!selectedPositions.isNullOrEmpty() && it.contains(selectedPositions[0])) {
+                                mSubAdapters[0]?.notifySingleUnSelectedPositionWithPayLoads(
+                                    selectedPositions[0]
+                                )
+                            }
+                        }
+                    }
+                }
+            }.apply { mSubAdapters.put(adapterPosition, this) }
         }
     }
 
@@ -212,11 +277,11 @@ class LotDuplexAdapter constructor(
     }
 
     fun notifyChange(
-        betTypeId: Int, balTextList: List<String>?,//龙虎和
+        betTypeId: Int, isLHH: Boolean,//龙虎和
         duplexDatas: MutableList<LotDuplexData>?,
     ) {
         this.betTypeId = betTypeId
-        this.balTextList = balTextList
+        this.isLHH = isLHH
         setNewInstance(duplexDatas)
     }
 }

@@ -44,3 +44,23 @@ fun BaseViewHolder.setWH(
         this.height = Sizes.applyDimension(height, unit).toInt()
     }
 }
+
+fun BaseViewHolder.setW(
+    @IdRes id: Int,
+    width: Float,
+    unit: Int = TypedValue.COMPLEX_UNIT_DIP,
+) {
+    getView<View>(id).layoutParams.run {
+        this.width = Sizes.applyDimension(width, unit).toInt()
+    }
+}
+
+fun BaseViewHolder.setH(
+    @IdRes id: Int,
+    height: Float,
+    unit: Int = TypedValue.COMPLEX_UNIT_DIP,
+) {
+    getView<View>(id).layoutParams.run {
+        this.height = Sizes.applyDimension(height, unit).toInt()
+    }
+}

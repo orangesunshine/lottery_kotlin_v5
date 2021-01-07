@@ -12,16 +12,17 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import org.apache.commons.lang3.StringUtils
 
-class LotDuplexSubAdapter constructor(
+class LotDuplexSubAdapter(
+    private val singleClick: Boolean = false,
     private val gameType: Int,
     private var betTypeId: Int,
     private var spanCount: Int,
     private var isLongHuHe: Boolean,//是否龙虎和
     private var lotLotDuplexData: LotDuplexData,
-    private val labelBlock: (isSelected: Boolean) -> Unit,
+    private val updateBlock: (list: ArrayList<Int>) -> Unit
 ) : BaseSelectedQuickAdapter<String, BaseViewHolder>(
     if (isLongHuHe) R.layout.lot_duplex_sub_item_long_hu else R.layout.lot_duplex_sub_item,
-    lotLotDuplexData.genBallDatas()
+    lotLotDuplexData.genBallDatas(gameType), updateBlock
 ) {
     fun notifyChange(
         betTypeId: Int,
@@ -99,31 +100,39 @@ class LotDuplexSubAdapter constructor(
     }
 
     init {
-        setOnItemClickListener { _: BaseQuickAdapter<*, *>, view: View, position: Int ->
-            notifySelectedPositionWithPayLoads(position, singleSelected = false)
-            labelBlock.invoke(isSelected())
+        setOnItemClickListener { _: BaseQuickAdapter<*, *>, _: View, position: Int ->
+            notifySelectedPositionWithPayLoads(position, singleSelected = singleClick)
         }
     }
 
     //region 大小单双
-    //选中大
+    val DXDS_BIG = 0
+    val DXDS_SMALL = 1
+    val DXDS_SINGLE = 2
+    val DXDS_DOUBLE = 3
+    private var mDxdsSelected = -1//0大1小2单3双
     fun selectedBig() {
-        labelBlock.invoke(isSelected())
+        mDxdsSelected = DXDS_BIG
+        val list = mutableListOf<Int>()
+        for (i in (itemCount + 1) / 2 until itemCount) {
+            list.add(i)
+        }
+        notifyMultiSelectedPositionWithPayLoads(list)
     }
 
     //选中小
     fun selectedSmall() {
-        labelBlock.invoke(isSelected())
+        mDxdsSelected = DXDS_SMALL
     }
 
     //选中单
     fun selectedSingle() {
-        labelBlock.invoke(isSelected())
+        mDxdsSelected = DXDS_SINGLE
     }
 
     //选中双
     fun selectedDouble() {
-        labelBlock.invoke(isSelected())
+        mDxdsSelected = DXDS_DOUBLE
     }
     //endregion
 
