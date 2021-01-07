@@ -4,7 +4,6 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.setPadding
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
@@ -34,7 +33,7 @@ class LotPlayAdapter constructor(betTypeDatas: GameBetTypeData?) :
             )
             setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
             setBackgroundResource(R.drawable.lot_jd_play_menu_layer1_selector)
-            isSelected = isSelected(holder)
+            isSelected = isItemSelected(holder)
         }
     }
 
@@ -43,6 +42,6 @@ class LotPlayAdapter constructor(betTypeDatas: GameBetTypeData?) :
         item: PlayItem,
         payloads: List<Any>,
     ) {
-        holder.getView<TextView>(R.id.text_common_tv).isSelected = isSelected(holder)
+        holder.getView<TextView>(R.id.text_common_tv).isSelected = isItemSelected(holder)
     }
 }

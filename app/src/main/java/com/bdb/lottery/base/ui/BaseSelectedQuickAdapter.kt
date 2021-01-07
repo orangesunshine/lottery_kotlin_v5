@@ -103,7 +103,11 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
     }
 
     //判断当前holder是否选中
-    fun isSelected(holder: VH): Boolean {
+    fun isItemSelected(holder: VH): Boolean {
         return mSelectedPosition.contains(holder.adapterPosition)
+    }
+
+    fun isSelected(): Boolean {
+        return !mSelectedPosition.isNullOrEmpty()
     }
 }

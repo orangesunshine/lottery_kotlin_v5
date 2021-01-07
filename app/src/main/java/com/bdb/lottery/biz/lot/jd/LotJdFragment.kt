@@ -13,16 +13,15 @@ import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.biz.lot.UnitPopWindow
 import com.bdb.lottery.biz.lot.activity.LotActivity
 import com.bdb.lottery.biz.lot.dialog.playdesc.LotPlayDescDialog
+import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
+import com.bdb.lottery.biz.lot.jd.duplex.adapter.LotDuplexAdapter
 import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.dialog.ConfirmDialog
-import com.bdb.lottery.extension.h5Color
-import com.bdb.lottery.extension.money
-import com.bdb.lottery.extension.ob
-import com.bdb.lottery.extension.visible
+import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
 import com.bdb.lottery.utils.convert.Converts
 import com.bdb.lottery.utils.thread.Threads
@@ -38,14 +37,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mGameId: Int = -1
     private var mGameType: Int = -1
     private var mGameName: String? = null
-    private var mPlayId: Int = -1
+    private var mBetTypeId: Int = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             mGameId = it.getInt(EXTRA.ID_GAME_EXTRA)
             mGameType = it.getInt(EXTRA.TYPE_GAME_EXTRA)
             mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
-            mPlayId = it.getInt(EXTRA.ID_PLAY_EXTRA)
+            mBetTypeId = it.getInt(EXTRA.ID_PLAY_EXTRA)
         }
     }
 
@@ -61,7 +60,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        vm.cacheMoneyUnit(mGameId, mPlayId, mMoneyUnit)
+        vm.cacheMoneyUnit(mGameId, mBetTypeId, mMoneyUnit)
     }
     //endregion
 
@@ -106,7 +105,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 lot_jd_single_input_et.text.toString().trim(), false
             ) {
                 vm.verifyNdGenLotParams(
-                    mGameId, mPlayId, mGameName,
+                    mGameId, mBetTypeId, mGameName,
                     it,
                     mMultiple,
                     mMoneyUnit,
@@ -153,14 +152,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     lateinit var lotPlayDescDialog: LotPlayDescDialog
     private fun requestDatas() {
         //初始化金额单位：根据gameId读取金额单位缓存，没有缓存默认1（元）
-        vm.initAmountUnit(mGameId, mPlayId) {
+        vm.initAmountUnit(mGameId, mBetTypeId) {
             mMoneyUnit = it ?: 1
             log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
         }
         vm.initGame(mGameId)//初始化彩票
         vm.getBetType(mGameId)//玩法配置接口
         lot_jd_play_desc_tv.setOnClickListener {
-            vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
+            vm.cachePreHowToPlay(mGameType, mBetTypeId) { playDesc: String? ->
                 playDesc?.let {
                     //玩法说明弹窗
                     lotPlayDescDialog.setGameType(mGameType)
@@ -212,7 +211,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
             //单复式
             mMode = if (it?.subPlayMethodDesc?.isdanshi != false) MODE_SINGLE else MODE_DUPLEX
-            switchDanFuStyle(mMode == MODE_SINGLE,it)
+            switchDanFuStyle(mMode == MODE_SINGLE, it)
 
             mNeedDigit = it?.subPlayMethodDesc?.is_need_show_weizhi == true
             lot_jd_bet_digit_ll.visible(mNeedDigit == true)
@@ -225,7 +224,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             if (null == mTextWatcher) {
                 mTextWatcher = vm.createSingleTextWatcher(
                     mGameType,
-                    mPlayId,
+                    mBetTypeId,
                     lot_jd_single_input_et,
                     mSingleNumCount,
                     vm.getDigit(mNeedDigit, getSelectedDigit()),
@@ -346,13 +345,13 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mSelectedBetItem = item//更新数据
         val playId = item?.betType ?: 0//玩法id
         mTextWatcher?.setPlayId(playId)
-        mPlayId = playId
+        mBetTypeId = playId
         item?.let {
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())//更新玩法名称，title刷新
             vm.getLocalBetType(playId)//获取玩法配置
             setUnitPattern(it.pattern)//更新投注单位
             //玩法说明
-            vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
+            vm.cachePreHowToPlay(mGameType, mBetTypeId) { playDesc: String? ->
                 lot_jd_play_desc_tv.text = playDesc ?: "该玩法暂无玩法说明"
             }
         }
@@ -446,13 +445,32 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private val MODE_SINGLE = 0//单式
     private val MODE_DUPLEX = 1//复式
     private var mMode = MODE_DUPLEX//模式
-    private fun switchDanFuStyle(isSingleStyle: Boolean,subPlayMethod: SubPlayMethod?) {
+    private fun switchDanFuStyle(isSingleStyle: Boolean, subPlayMethod: SubPlayMethod?) {
         mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
         clearNums()//清空号码
         //单式
         lot_jd_bet_input_cv.visible(isSingleStyle)
         //复式
-        subPlayMethod?.subPlayMethodDesc?.ball_groups_counts?:0
+        lot_jd_duplex_rv.visible(!isSingleStyle)
+        if (!isSingleStyle) {
+            val ballGroupCount: Int = subPlayMethod?.subPlayMethodDesc?.ball_groups_counts ?: 0
+            val lotDuplexDatas = mutableListOf<LotDuplexData>()
+            val ballTextList = subPlayMethod?.subPlayMethodDesc?.ball_text_list?.split(",")
+            if (ballGroupCount > 0) {
+                val titles = subPlayMethod?.subPlayMethodDesc?.ball_groups_item_title?.split(",")
+                for (i in 0..ballGroupCount) {
+                    lotDuplexDatas.add(LotDuplexData(titles?.get(i),
+                        ballTextList,
+                        true,
+                        false,
+                        false,
+                        false))
+                }
+            }
+            lot_jd_duplex_rv.adapter?.notifyDataSetChanged() ?: let {
+                lot_jd_duplex_rv.adapter = LotDuplexAdapter(mGameType, mBetTypeId, ballTextList,lotDuplexDatas)
+            }
+        }
     }
     //endregion
 }

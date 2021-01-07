@@ -560,6 +560,15 @@ object Lots {
         }
         return 0
     }
+
+    /**
+     * 根据投注类型判断是否是快三和值
+     * @param betTypeId
+     * @return
+     */
+    fun isK3HeZhi(betTypeId: Int): Boolean {
+        return if (betTypeId == 2745) true else false
+    }
     //endregion
 
     //region 六合彩

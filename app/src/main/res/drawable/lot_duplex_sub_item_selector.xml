@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/lot_duplex_sub_item_default" android:state_selected="true" />
+    <item>
+        <shape android:shape="oval" android:useLevel="false">
+            <solid android:color="@color/white" />  
+            <stroke android:width="0.5dp" android:color="#d7d9db" /> 
+            <size android:width="35dp" android:height="35dp" />
+        </shape>
+    </item>
+</selector>

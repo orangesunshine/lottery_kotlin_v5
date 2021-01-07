@@ -163,6 +163,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="8dp"
+                android:visibility="gone"
                 app:cardCornerRadius="8dp">
 
                 <com.bdb.lottery.widget.DanStyleInputEditView
@@ -176,6 +177,12 @@
                     android:textColor="@color/black"
                     android:textSize="13dp" />
             </androidx.cardview.widget.CardView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lot_jd_duplex_rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
         </FrameLayout>
 
         <TextView

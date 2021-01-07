@@ -763,7 +763,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                 ) {
                                     super.convert(holder, item)
                                     holder.getView<TextView>(R.id.text_common_tv).isSelected =
-                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
+                                        isItemSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
                                 }
 
                                 override fun convert(
@@ -772,7 +772,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                     payloads: List<Any>,
                                 ) {
                                     holder.getView<TextView>(R.id.text_common_tv).isSelected =
-                                        isSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
+                                        isItemSelected(holder) && mPlaySelectedPos == mPlaySelectedTmpRef && mGroupSelectedPos == groupPosition
                                 }
                             }.apply {
                                 setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View, position: Int ->
