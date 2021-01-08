@@ -18,7 +18,6 @@ import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import dagger.hilt.android.EntryPointAccessors
 import org.apache.commons.lang3.StringUtils
-import timber.log.Timber
 
 class LotDuplexSubAdapter(
     private var singleClick: Boolean = false,
@@ -82,13 +81,19 @@ class LotDuplexSubAdapter(
                     else -> -1
                 }
             )
+            holder.setTextColorStateList(
+                context,
+                R.id.lot_duplex_sub_item_tv,
+                R.color.lot_duplex_sub_item_long_ball_text_color_selector
+            )
             holder.setItemChildSelected(R.id.lot_duplex_sub_item_iv, isItemSelected(holder))
         } else {
             val adapterPosition = holder.adapterPosition
             val ballTextList = lotLotDuplexData.ballTextList
             holder.setText(
                 R.id.lot_duplex_sub_item_tv,
-                if (null != ballTextList && adapterPosition < ballTextList.size) ballTextList[adapterPosition] else if (lotLotDuplexData.zeroVisible && adapterPosition < 10) "0$adapterPosition" else adapterPosition.toString()
+                if (null != ballTextList && adapterPosition < ballTextList.size) ballTextList[adapterPosition]
+                else getItem(holder.adapterPosition)
             )
             val isK3 = GAME.TYPE_GAME_K3 == gameType
             val containsDxds = StringUtils.containsAny(item, "大", "小", "单", "双")
@@ -174,7 +179,6 @@ class LotDuplexSubAdapter(
         for (i in itemCount / 2 until itemCount) {
             list.add(i)
         }
-        Timber.d("getBigBallSelectedPositions: $list")
         return list
     }
 
@@ -193,7 +197,6 @@ class LotDuplexSubAdapter(
         for (i in 0 until itemCount / 2) {
             list.add(i)
         }
-        Timber.d("getSmallBallSelectedPositions: $list")
         return list
     }
 
@@ -210,10 +213,14 @@ class LotDuplexSubAdapter(
     private fun getSingleBallSelectedPositions(): MutableList<Int> {
         val list = mutableListOf<Int>()
         for (i in 0 until itemCount) {
-            if (i % 2 != 0)
-                list.add(i)
+            if (lotLotDuplexData.isStartZero) {
+                if (i % 2 != 0)
+                    list.add(i)
+            } else {
+                if (i % 2 == 0)
+                    list.add(i)
+            }
         }
-        Timber.d("getSingleBallSelectedPositions: $list")
         return list
     }
 
@@ -230,10 +237,14 @@ class LotDuplexSubAdapter(
     private fun getDoubleBallSelectedPositions(): MutableList<Int> {
         val list = mutableListOf<Int>()
         for (i in 0 until itemCount) {
-            if (i % 2 == 0)
-                list.add(i)
+            if (lotLotDuplexData.isStartZero) {
+                if (i % 2 == 0)
+                    list.add(i)
+            } else {
+                if (i % 2 != 0)
+                    list.add(i)
+            }
         }
-        Timber.d("getDoubleBallSelectedPositions: $list")
         return list
     }
 

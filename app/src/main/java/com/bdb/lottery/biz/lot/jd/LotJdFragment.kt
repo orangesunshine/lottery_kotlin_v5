@@ -470,7 +470,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                             dxdsVisible = subPlayMethod?.subPlayMethodDesc?.is_show_type_select == true,
                             hotVisible = false,
                             leaveVisible = false,
-                            zeroVisible = false
+                            isStartZero = subPlayMethod?.subPlayMethodDesc?.is_start_zero == true,
+                            zeroVisible = subPlayMethod?.subPlayMethodDesc?.isShowZero == true,
                         )
                     )
                 }

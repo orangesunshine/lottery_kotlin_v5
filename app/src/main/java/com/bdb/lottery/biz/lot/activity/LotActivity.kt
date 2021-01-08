@@ -712,14 +712,14 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                 setOnItemClickListener { _: BaseQuickAdapter<*, *>, _: View, position: Int ->
                     //一级玩法选中
                     notifySelectedPositionWithPayLoads(position)
-                    updatePlayLayer2List(betTypeDatas?.get(position), position)
+                    updateBetList(betTypeDatas?.get(position), position)
                 }
             }
         }
         lotMenuPlayLayer1Rv?.adapter?.let {
             if (it is BaseSelectedQuickAdapter<*, *>) it.notifySelectedPosition(mPlaySelectedPos)
         }
-        updatePlayLayer2List(
+        updateBetList(
             if (betTypeDatas.validIndex(mPlaySelectedPos)) betTypeDatas?.get(mPlaySelectedPos) else null,
             mPlaySelectedPos
         )
@@ -740,7 +740,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         }
     }
 
-    private fun updatePlayLayer2List(
+    private fun updateBetList(
         playItem: PlayItem?, playSelectedPos: Int,
     ) {
         mPlaySelectedTmpRef = playSelectedPos
@@ -751,10 +751,16 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             ) {
                 override fun convert(groupHolder: BaseViewHolder, item: PlayGroupItem) {
                     val groupPosition = groupHolder.adapterPosition
-                    groupHolder.setText(R.id.lot_jd_play_group_name_tv, item.name + "：")
+                    val name = item.name
+                    groupHolder.setText(R.id.lot_jd_play_group_name_tv, "$name：")
                     groupHolder.getView<RecyclerView>(R.id.lot_jd_play_group_rv).run {
                         layoutManager =
-                            GridLayoutManager(context, 3, RecyclerView.VERTICAL, false)
+                            GridLayoutManager(
+                                context,
+                                if (name.length > 3) 2 else 3,
+                                RecyclerView.VERTICAL,
+                                false
+                            )
                         setListOrUpdate(item.list) {
                             object : LotBetAdapter(it) {
                                 override fun convert(

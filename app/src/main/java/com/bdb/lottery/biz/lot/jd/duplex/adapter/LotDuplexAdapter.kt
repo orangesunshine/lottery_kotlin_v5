@@ -39,7 +39,7 @@ class LotDuplexAdapter constructor(
     private var m11x5TuoDan =//11选5组选胆拖的胆码
         betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176
     private var mSpanCount: Int = if (!ballTextList.isNullOrEmpty()) {
-        if (itemCount > 3) 3 else 2
+        if (ballTextList!!.size > 2) 3 else 2
     } else {
         when (gameType) {
             GAME.TYPE_GAME_11X5 -> 6
@@ -319,7 +319,7 @@ class LotDuplexAdapter constructor(
         m11x5TuoDan =//11选5组选胆拖的胆码
             betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176
         mSpanCount = if (!ballTextList.isNullOrEmpty()) {
-            if (itemCount > 3) 3 else 2
+            if (ballTextList.size > 2) 3 else 2
         } else {
             when (gameType) {
                 GAME.TYPE_GAME_11X5 -> 6

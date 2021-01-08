@@ -132,7 +132,7 @@ class AccountRemoteDs @Inject constructor(
 
     //是否需要显示验证码
     fun needValidate(success: (Boolean?) -> Unit) {
-        retrofitWrapper.observe(accountApi.needvalidate(), success)
+        retrofitWrapper.observe(accountApi.needValidate(), success)
     }
 
     //试玩
@@ -152,7 +152,7 @@ class AccountRemoteDs @Inject constructor(
 
     //用户信息
     fun userInfo() {
-        retrofitWrapper.observe(accountApi.userinfo(), {
+        retrofitWrapper.observe(accountApi.userInfo(), {
             //缓存用户登录信息
             tCache.cacheUserInfo(it)
         })

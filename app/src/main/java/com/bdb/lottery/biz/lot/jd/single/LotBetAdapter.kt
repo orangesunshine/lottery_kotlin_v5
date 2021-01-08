@@ -4,6 +4,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
@@ -21,13 +22,11 @@ open class LotBetAdapter constructor(list: List<BetItem>?) :
         holder: BaseViewHolder,
         item: BetItem,
     ) {
-        val betName = item.betName
-        val marginHorizontal = if (betName.length > 5) 0 else 2 * dp4
         holder.getView<TextView>(R.id.text_common_tv).run {
-            margin(marginHorizontal, dp4, marginHorizontal, dp4)
+            margin(2 * dp4, dp4, 2 * dp4, dp4)
             gravity = Gravity.CENTER
-            setPadding(dp4 * 2, dp4, dp4 * 2, dp4)
-            text = betName
+            setPadding(dp4)
+            text = item.betName
             setTextColor(
                 ContextCompat.getColorStateList(
                     context,

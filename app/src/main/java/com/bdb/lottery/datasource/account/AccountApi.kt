@@ -28,7 +28,7 @@ interface AccountApi {
 
     //是否需要验证码
     @GET(URL.URL_NEED_VALIDATE_CODE)
-    fun needvalidate(
+    fun needValidate(
     ): Observable<BaseResponse<Boolean?>>
 
     //余额
@@ -38,6 +38,6 @@ interface AccountApi {
 
     //用户信息
     @POST(URL.URL_USERINFO)
-    fun userinfo(
+    fun userInfo(
     ): Observable<BaseResponse<UserInfoData?>>
 }

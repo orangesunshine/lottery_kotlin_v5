@@ -110,6 +110,10 @@ class TCache @Inject constructor() {
     fun tokenCache(): String? {
         return Caches.getString(CACHE.TOKEN_CACHE)
     }
+
+    fun clearTokenCache(){
+        Caches.putString(CACHE.TOKEN_CACHE)
+    }
     //endregion
 
     //region domain

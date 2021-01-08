@@ -10,12 +10,15 @@ data class LotDuplexData(
     val dxdsVisible: Boolean,//是否显示大小单双
     val hotVisible: Boolean,//冷热显示
     val leaveVisible: Boolean,//遗漏显示
-    val zeroVisible: Boolean,//一位数是否添加0开头(11选5、pk10)
+    val isStartZero: Boolean,//是否从0开始(11选5、pk10)
+    val zeroVisible: Boolean,//是否显示0(11选5、pk10)
 ) {
     fun genBallDatas(gameType: Int): MutableList<String> {
         return ballTextList?.toMutableList() ?: let {
             val list = mutableListOf<String>()
-            for (i in 0 until itemBallNumCounts) {
+            val start = if (isStartZero) 0 else 1
+            val end = if (isStartZero) itemBallNumCounts else (1 + itemBallNumCounts)
+            for (i in start until end) {
                 list.add(if (i < 10 && zeroVisible) "0$i" else i.toString())
             }
             if (GAME.TYPE_GAME_K3 == gameType) {
