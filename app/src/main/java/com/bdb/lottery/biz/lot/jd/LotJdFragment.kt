@@ -467,7 +467,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                             titles?.get(i),
                             subPlayMethod?.subPlayMethodDesc?.item_ball_num_counts ?: 0,
                             ballTextList,
-                            dxdsVisible = true,
+                            dxdsVisible = subPlayMethod?.subPlayMethodDesc?.is_show_type_select == true,
                             hotVisible = false,
                             leaveVisible = false,
                             zeroVisible = false
@@ -478,7 +478,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             lot_jd_duplex_rv.adapter?.let {
                 if (it is LotDuplexAdapter) it.notifyChange(
                     mBetTypeId,
-                    !ballTextList.isNullOrEmpty(),
+                    ballTextList,
                     lotDuplexDatas
                 )
             } ?: let {
@@ -486,7 +486,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     LotDuplexAdapter(
                         mGameType,
                         mBetTypeId,
-                        !ballTextList.isNullOrEmpty(),
+                        ballTextList,
                         lotDuplexDatas
                     )
             }

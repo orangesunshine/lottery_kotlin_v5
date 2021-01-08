@@ -9,12 +9,12 @@ import androidx.annotation.IdRes
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 
-fun BaseViewHolder.setColorStateList(context: Context, @IdRes id: Int, @ColorRes colorId: Int) {
+fun BaseViewHolder.setTextColorStateList(context: Context, @IdRes id: Int, @ColorRes colorId: Int) {
     getView<TextView>(id).setTextColor(context.resources.getColorStateList(colorId))
 }
 
 fun BaseViewHolder.setItemChildSelected(@IdRes id: Int, isSelected: Boolean) {
-    getView<TextView>(id).isSelected = isSelected
+    getView<View>(id).isSelected = isSelected
 }
 
 fun BaseViewHolder.setTextSize(

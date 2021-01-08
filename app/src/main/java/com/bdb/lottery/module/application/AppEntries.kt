@@ -1,5 +1,6 @@
 package com.bdb.lottery.module.application
 
+import com.bdb.lottery.biz.lot.TSound
 import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.ui.size.TSize
 import com.bdb.lottery.utils.cache.TCache
@@ -17,4 +18,5 @@ interface AppEntries {
     fun provideTGame(): TGame
     fun provideTScreen(): TScreen
     fun provideTView(): TView
+    fun provideTSound(): TSound
 }

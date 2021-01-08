@@ -39,10 +39,11 @@
                 android:id="@+id/lot_duplex_item_big"
                 android:layout_width="26dp"
                 android:layout_height="26dp"
-                android:background="@drawable/lot_duplex_sub_item_dxds_selector"
+                android:background="@drawable/lot_duplex_sub_item_dxds_bg_selector"
                 android:gravity="center"
                 android:padding="4dp"
                 android:text="大"
+                android:textColor="@color/lot_duplex_sub_item_dxds_text_color_selector"
                 android:textSize="13dp" />
 
             <TextView
@@ -51,10 +52,11 @@
                 android:layout_height="26dp"
                 android:layout_marginLeft="8dp"
                 android:layout_toRightOf="@id/lot_duplex_item_big"
-                android:background="@drawable/lot_duplex_sub_item_dxds_selector"
+                android:background="@drawable/lot_duplex_sub_item_dxds_bg_selector"
                 android:gravity="center"
                 android:padding="4dp"
                 android:text="小"
+                android:textColor="@color/lot_duplex_sub_item_dxds_text_color_selector"
                 android:textSize="13dp" />
 
             <TextView
@@ -63,10 +65,11 @@
                 android:layout_height="26dp"
                 android:layout_below="@id/lot_duplex_item_big"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/lot_duplex_sub_item_dxds_selector"
+                android:background="@drawable/lot_duplex_sub_item_dxds_bg_selector"
                 android:gravity="center"
                 android:padding="4dp"
                 android:text="单"
+                android:textColor="@color/lot_duplex_sub_item_dxds_text_color_selector"
                 android:textSize="13dp" />
 
             <TextView
@@ -77,10 +80,11 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_toRightOf="@id/lot_duplex_item_single"
-                android:background="@drawable/lot_duplex_sub_item_dxds_selector"
+                android:background="@drawable/lot_duplex_sub_item_dxds_bg_selector"
                 android:gravity="center"
                 android:padding="4dp"
                 android:text="双"
+                android:textColor="@color/lot_duplex_sub_item_dxds_text_color_selector"
                 android:textSize="13dp" />
 
         </RelativeLayout>

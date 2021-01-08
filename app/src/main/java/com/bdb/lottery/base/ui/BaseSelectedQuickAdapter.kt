@@ -20,10 +20,14 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
     private var mSelectedPosition: MutableList<Int> =
         if (null == updateBlock) mutableListOf() else UpdateArrayList(updateBlock)
 
+    private fun clearNotNotify() {
+        if (mSelectedPosition is UpdateArrayList) (mSelectedPosition as UpdateArrayList<Int>).clearNotNotify() else mSelectedPosition.clear()
+    }
+
     //region single单选
 
     fun setSingleSelectedPos(selectedPosition: Int) {
-        mSelectedPosition.clear()
+        clearNotNotify()
         mSelectedPosition.add(selectedPosition)
     }
 
@@ -50,7 +54,7 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
         if (singleSelected) {
             //单选清空之前选中位置
             val preSelectedPosition = getSingleSelectedPos()
-            mSelectedPosition.clear()
+            clearNotNotify()
             if (data.validIndex(preSelectedPosition))
                 notifyItemChanged(preSelectedPosition)
         }
@@ -79,7 +83,7 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
         if (singleSelected) {
             //单选清空之前选中位置
             val preSelectedPosition = getSingleSelectedPos()
-            mSelectedPosition.clear()
+            clearNotNotify()
             if (data.validIndex(preSelectedPosition))
                 notifyItemChanged(preSelectedPosition, payload)
         }
@@ -125,7 +129,7 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
         payload: String = PAY_LOADS_SELECTED
     ) {
         if (selectedPositions.isNullOrEmpty()) return
-        mSelectedPosition.clear()
+        clearNotNotify()
         mSelectedPosition.addAll(selectedPositions)
         notifyItemRangeChanged(0, itemCount, payload)
     }
@@ -134,22 +138,24 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
     //region 全部取消选中
     fun notifyUnSelectedAll() {
         if (!mSelectedPosition.isNullOrEmpty()) {
-            for (pos in mSelectedPosition) {
+            val tmpList = ArrayList<Int>(mSelectedPosition)
+            mSelectedPosition.clear()
+            for (pos in tmpList) {
                 if (data.validIndex(pos))
                     notifyItemChanged(pos)
             }
         }
-        mSelectedPosition.clear()
     }
 
     fun notifyUnSelectedAllWithPayLoads(payload: String = PAY_LOADS_SELECTED) {
         if (!mSelectedPosition.isNullOrEmpty()) {
-            for (pos in mSelectedPosition) {
+            val tmpList = ArrayList<Int>(mSelectedPosition)
+            mSelectedPosition.clear()
+            for (pos in tmpList) {
                 if (data.validIndex(pos))
                     notifyItemChanged(pos, payload)
             }
         }
-        mSelectedPosition.clear()
     }
     //endregion
     //endregion
@@ -157,63 +163,53 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
 
 class UpdateArrayList<E> constructor(private val updateBlock: ((list: ArrayList<E>) -> Unit)? = null) :
     ArrayList<E>() {
+    private fun <T> onMultiUpdate(
+        updateOperate: () -> T
+    ): T {
+        val pre = ArrayList<E>(this)
+        val ret: T = updateOperate()
+        if (!pre.equals(this)) updateBlock?.invoke(this)
+        return ret
+    }
+
+
     override fun add(element: E): Boolean {
-        val pre = isNotEmpty()
-        return super.add(element).also {
-            if (pre != isNotEmpty()) updateBlock?.invoke(this)
-        }
+        return onMultiUpdate { super.add(element) }
     }
 
     override fun addAll(elements: Collection<E>): Boolean {
-        val pre = isNotEmpty()
-        return super.addAll(elements).also {
-            if (pre != isNotEmpty()) updateBlock?.invoke(this)
-        }
+        return onMultiUpdate { super.addAll(elements) }
     }
 
     override fun addAll(index: Int, elements: Collection<E>): Boolean {
-        val pre = isNotEmpty()
-        return super.addAll(index, elements).also {
-            if (pre != isNotEmpty()) updateBlock?.invoke(this)
-        }
+        return onMultiUpdate { super.addAll(index, elements) }
     }
 
     override fun add(index: Int, element: E) {
-        val pre = isNotEmpty()
-        super.add(index, element)
-        if (pre != isNotEmpty()) updateBlock?.invoke(this)
+        onMultiUpdate { super.add(index, element) }
+    }
+
+    fun clearNotNotify() {
+        super.clear()
     }
 
     override fun clear() {
-        val pre = isNotEmpty()
-        super.clear()
-        if (pre != isNotEmpty()) updateBlock?.invoke(this)
+        onMultiUpdate { super.clear() }
     }
 
     override fun remove(element: E): Boolean {
-        val pre = isNotEmpty()
-        return super.remove(element).also {
-            if (pre != isNotEmpty()) updateBlock?.invoke(this)
-        }
+        return onMultiUpdate { super.remove(element) }
     }
 
     override fun removeAll(elements: Collection<E>): Boolean {
-        val pre = isNotEmpty()
-        return super.removeAll(elements).also {
-            if (pre != isNotEmpty()) updateBlock?.invoke(this)
-        }
+        return onMultiUpdate { super.removeAll(elements) }
     }
 
     override fun removeAt(index: Int): E {
-        val pre = isNotEmpty()
-        return super.removeAt(index).also {
-            if (pre != isNotEmpty()) updateBlock?.invoke(this)
-        }
+        return onMultiUpdate { super.removeAt(index) }
     }
 
     override fun removeRange(fromIndex: Int, toIndex: Int) {
-        val pre = isNotEmpty()
-        super.removeRange(fromIndex, toIndex)
-        if (pre != isNotEmpty()) updateBlock?.invoke(this)
+        onMultiUpdate { super.removeRange(fromIndex, toIndex) }
     }
 }

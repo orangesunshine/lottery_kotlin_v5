@@ -1,8 +1,12 @@
 package com.bdb.lottery.biz.globallivedata
 
+import com.bdb.lottery.const.CACHE
 import com.bdb.lottery.datasource.account.data.UserBalanceData
+import com.bdb.lottery.datasource.account.data.UserInfoData
 import com.bdb.lottery.datasource.common.LiveDataWrapper
+import com.bdb.lottery.utils.cache.Caches
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.gson.Gsons
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -25,6 +29,31 @@ class AccountManager @Inject constructor() {
     fun isLogin(): Boolean {
         if (!isLogin) isLogin = tCache.loginStatusCache() == true
         return isLogin
+    }
+    //endregion
+
+    //region 是否试玩
+    fun isShiWan(): Boolean {
+        return isLogin && getUserInfo()?.isShiWan ?: false
+    }
+    //endregion
+
+    //region 用户登录信息
+    private var mUserInfo: UserInfoData? = null
+    fun saveUserInfo(userInfo: UserInfoData?) {
+        this.mUserInfo = userInfo
+        tCache.cacheUserInfo(userInfo)
+    }
+
+    fun getUserInfo(): UserInfoData? {
+        val login = isLogin()
+        if (login) {
+            if (null == mUserInfo) mUserInfo = tCache.userInfoCache()
+        } else {
+            Caches.putString(CACHE.USERINFO_CACHE)
+            mUserInfo = null
+        }
+        return mUserInfo
     }
     //endregion
 
