@@ -16,20 +16,19 @@ import javax.inject.Inject
 
 @ActivityScoped
 open class UnitPopWindow @Inject constructor(@ActivityContext private val context: Context) :
-    TPopupWindow(context) {
+    TPopupWindow() {
 
     fun show(unitView: View) {
         showAtScreenLocation(
             unitView,
             Gravity.TOP or Gravity.START,
-            -Sizes.dp2px(16f),
-            -Sizes.dp2px(8f),
-            ALIGN_ANCHOR
+            y = Sizes.dp2px(-8f),
+            align = ALIGN_ANCHOR
         )
     }
 
     fun init(listener: (View) -> Unit) {
-        setPopWinWidth(100, true).content {
+        content(Sizes.dp2px(100f)) {
             val content = LayoutInflater.from(context).inflate(R.layout.lot_jd_money_unit, null)
             content.findViewById<View>(R.id.lot_jd_money_unit_yuan_tv).setOnClickListener(listener)
             content.findViewById<View>(R.id.lot_jd_money_unit_jiao_tv).setOnClickListener(listener)
@@ -42,21 +41,24 @@ open class UnitPopWindow @Inject constructor(@ActivityContext private val contex
     fun setPattern(pattern: String?) {
         val contentView = getContentView()
         val space = pattern.isSpace()
+        if (!space) {
+            mPopWin.height = Sizes.dp2px(pattern!!.split(",").size * 51f)
+        }
         //元
         contentView.findViewById<View>(R.id.lot_jd_money_unit_yuan_tv)
             .visible(space or pattern!!.contains("1"))
         contentView.findViewById<View>(R.id.yuan_line_tv)
-            .visible(!space and !pattern.contains("1") and !pattern.contains("2"))
+            .visible(!space && pattern.contains("1") && pattern.contains("2"))
         //角
         contentView.findViewById<View>(R.id.lot_jd_money_unit_jiao_tv)
             .visible(space or pattern.contains("2"))
         contentView.findViewById<View>(R.id.jiao_line_tv)
-            .visible(!space and !pattern.contains("2") and !pattern.contains("3"))
+            .visible(!space && pattern.contains("2") && pattern.contains("3"))
         //分
         contentView.findViewById<View>(R.id.lot_jd_money_unit_fen_tv)
-            .visible(space or pattern.contains("3"))
+            .visible(space || pattern.contains("3"))
         contentView.findViewById<View>(R.id.li_line_tv)
-            .visible(!space and !pattern.contains("3") and !pattern.contains("4"))
+            .visible(!space && pattern.contains("3") && pattern.contains("4"))
         //厘
         contentView.findViewById<View>(R.id.lot_jd_money_unit_li_tv)
             .visible(!space && pattern.contains("4"))

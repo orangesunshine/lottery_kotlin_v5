@@ -28,7 +28,6 @@ class LotDuplexAdapter constructor(
     R.layout.lot_duplex_item,
     duplexDatas
 ) {
-    private val PAY_LOAD_LABEL = "PAY_LOAD_LABEL"
     private val PAY_LOAD_BIG = "PAY_LOAD_BIG"
     private val PAY_LOAD_SMALL = "PAY_LOAD_SMALL"
     private val PAY_LOAD_SINGLE = "PAY_LOAD_SINGLE"
@@ -58,6 +57,8 @@ class LotDuplexAdapter constructor(
         renderBall(holder, item, adapterPosition)
         //大小单双
         renderDxds(item, adapterPosition, holder)
+        //divide
+        holder.setGone(R.id.lot_duplex_item_divide, adapterPosition == itemCount - 1)
     }
 
     private fun renderBall(
@@ -100,7 +101,8 @@ class LotDuplexAdapter constructor(
                             val position = parent.getChildAdapterPosition(view)
                             //行间距6dp：第二行开始topMargin；快三和值暂无法求出position对应行数，第一行非数字球4列，第5球开始topMargin
                             if (spanCount > 0 && (position / spanCount > 0 || (Lots.isK3HeZhi(
-                                    betTypeId) && position > 3))
+                                    betTypeId
+                                ) && position > 3))
                             ) {
                                 top = Sizes.dp2px(6f)
                             }

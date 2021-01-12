@@ -6,6 +6,7 @@ import android.text.Html
 import android.util.TypedValue
 import android.view.View
 import android.widget.CompoundButton
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bdb.lottery.R
@@ -68,6 +69,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //region 删除重复错误号码、下注点击事件监听，单位弹窗、倍数窗口初始化
     private fun initView() {
+        skin4GameType(mGameType)
         lot_jd_duplex_rv.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         //删除重复、错误号码
@@ -148,6 +150,49 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_bet_digit_bai_cb.setOnCheckedChangeListener(listener)
         lot_jd_bet_digit_qian_cb.setOnCheckedChangeListener(listener)
         lot_jd_bet_digit_wan_cb.setOnCheckedChangeListener(listener)
+    }
+    //endregion
+
+    //region 彩种大类换肤
+    private fun skin4GameType(gameType: Int) {
+        //玩法说明、投注区域、投注总额
+        when (gameType) {
+            GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> {
+                val bgRes = ContextCompat.getColor(requireContext(), R.color.color_skin_pk_bg_jd)
+                lot_jd_root_ctl.setBackgroundColor(bgRes)
+                lot_jd_desc_divide_view.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.color_play_desc_skin_pk_divide
+                    )
+                )
+                lot_jd_bet_info_expl.setBackgroundColor(bgRes)
+            }
+            GAME.TYPE_GAME_K3 -> {
+                val bgRes = R.drawable.lot_jd_k3_skin_bg
+                val bgColor = ContextCompat.getColor(requireContext(), R.color.color_skin_k3_bg_jd)
+                lot_jd_root_ctl.setBackgroundResource(bgRes)
+                lot_jd_desc_divide_view.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.color_play_desc_skin_k3_divide
+                    )
+                )
+                lot_jd_bet_info_expl.setBackgroundColor(bgColor)
+            }
+            else -> {
+                val bgRes = ContextCompat.getColor(requireContext(), R.color.color_bg)
+                lot_jd_root_ctl.setBackgroundColor(bgRes)
+                lot_jd_desc_divide_view.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.color_play_desc_skin_divide
+                    )
+                )
+                lot_jd_bet_info_expl.setBackgroundColor(bgRes)
+            }
+        }
+
     }
     //endregion
 

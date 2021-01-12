@@ -23,7 +23,7 @@
                 android:id="@+id/lotTopDivide"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@drawable/bet_top_ret_top_divide" />
+                android:background="@drawable/lot_top_area_top_divide" />
 
             <!-- 顶部背景区 -->
             <LinearLayout
@@ -367,11 +367,6 @@
                     android:layout_height="260dp"
                     android:visibility="invisible" />
             </net.cachapa.expandablelayout.ExpandableLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@drawable/bet_top_ret_top_divide" />
 
             <FrameLayout
                 android:layout_width="match_parent"

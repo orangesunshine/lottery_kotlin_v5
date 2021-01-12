@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="80dp"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_popwin_down"
+    android:background="@drawable/popwin_bg_down"
     android:orientation="vertical"
     android:padding="8dp">
 
     <TextView
         android:id="@+id/lot_jd_money_unit_yuan_tv"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
@@ -26,7 +26,7 @@
     <TextView
         android:id="@+id/lot_jd_money_unit_jiao_tv"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
@@ -43,7 +43,7 @@
     <TextView
         android:id="@+id/lot_jd_money_unit_fen_tv"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
@@ -61,13 +61,11 @@
     <TextView
         android:id="@+id/lot_jd_money_unit_li_tv"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/lot_jd_money_unit_li"
         android:textColor="#EBEBEB"
-        android:textSize="15dp"
-        android:visibility="gone" />
-
+        android:textSize="15dp" />
 </LinearLayout>

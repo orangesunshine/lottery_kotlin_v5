@@ -1,6 +1,5 @@
 package com.bdb.lottery.utils.ui.popup
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -12,24 +11,28 @@ import androidx.annotation.RequiresApi
 import com.bdb.lottery.R
 import com.bdb.lottery.utils.ui.screen.Screens
 import com.bdb.lottery.utils.ui.size.Sizes
-import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import javax.inject.Inject
 
 @ActivityScoped
-open class TPopupWindow @Inject constructor(@ActivityContext private val context: Context) {
-    private lateinit var mContent: View
-    private lateinit var mPopWin: PopupWindow
-    private var mPopWidth: Int = WindowManager.LayoutParams.WRAP_CONTENT
+open class TPopupWindow @Inject constructor() {
+    protected lateinit var mContent: View
+    protected lateinit var mPopWin: PopupWindow
 
-    fun content(convert: () -> View): TPopupWindow {
+    fun content(
+        width: Int = WindowManager.LayoutParams.WRAP_CONTENT,
+        height: Int = WindowManager.LayoutParams.WRAP_CONTENT,
+        convert: () -> View
+    ): TPopupWindow {
         mContent = convert()
+        mContent.isFocusable = true
+        mContent.isFocusableInTouchMode = true
         mPopWin = PopupWindow(
             mContent,
-            mPopWidth,
-            WindowManager.LayoutParams.WRAP_CONTENT,
+            width,
+            height,
             true
         )
         mPopWin.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -51,11 +54,6 @@ open class TPopupWindow @Inject constructor(@ActivityContext private val context
         return mContent
     }
 
-    fun setPopWinWidth(width: Int, isDp: Boolean): TPopupWindow {
-        mPopWidth = if (isDp) Sizes.dp2px(width.toFloat()) else width
-        return this
-    }
-
     open fun showAtLocation(parent: View?, gravity: Int, x: Int, y: Int) {
         mPopWin.showAtLocation(parent, gravity, x, y)
     }
@@ -68,8 +66,8 @@ open class TPopupWindow @Inject constructor(@ActivityContext private val context
     open fun showAtScreenLocation(
         parent: View,
         gravity: Int,
-        x: Int,
-        y: Int,
+        x: Int = 0,
+        y: Int = 0,
         @ALIGN align: Int = ALIGN_RIGHT,
         callback: ShowUpCallback? = null,
     ) {
@@ -104,15 +102,14 @@ open class TPopupWindow @Inject constructor(@ActivityContext private val context
         val screenWidth: Int = Screens.screenSize()[0]
         contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         // 计算contentView的高宽
-        val windowHeight = contentView.measuredHeight
-        val windowWidth = contentView.measuredWidth
+        val windowHeight = mPopWin.height
+        val windowWidth = mPopWin.width
         // 判断需要向上弹出还是向下弹出显示
         val isNeedShowUp = screenHeight - anchorLoc[1] - anchorHeight < windowHeight
         val width = anchorView.width
-        val width1 = mPopWin.width
         windowPos[0] =
             if (align == ALIGN_RIGHT) screenWidth - windowWidth else if (align == ALIGN_LEFT) 0 else
-                anchorLoc[0] + (width - width1) / 2
+                anchorLoc[0] + (width - windowWidth) / 2
         if (isNeedShowUp) {
             windowPos[1] = anchorLoc[1] - windowHeight
         } else {

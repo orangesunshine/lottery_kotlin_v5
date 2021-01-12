@@ -91,6 +91,7 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/lot_duplex_item_divide"
         style="@style/line_horizontal"
         android:layout_gravity="bottom"
         android:layout_marginLeft="8dp"

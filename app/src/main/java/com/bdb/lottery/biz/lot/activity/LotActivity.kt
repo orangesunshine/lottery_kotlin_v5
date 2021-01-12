@@ -276,12 +276,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         val arrow: Int =
             if (GAME.TYPE_GAME_PK10 == gameType || GAME.TYPE_GAME_PK8 == gameType) R.drawable.lot_top_rect_history_pk_arrow else R.drawable.lot_top_rect_history_arrow
 
-        lotTopRectIssueTv.setTextColor(textColor)
-        lotTopRectHistoryOpenTv.setTextColor(textColor)
-        lotIssueStatusTv.setTextColor(textColor)
-        lotTopRectHistoryOpenLl.setBackgroundResource(historyOpenBg)
-        lotTopRectHistoryOpenIv.setImageResource(arrow)
-        lotTopDivide.visible(
+        lotTopRectIssueTv.setTextColor(textColor)//历史期号
+        lotTopRectHistoryOpenTv.setTextColor(textColor)//往期开奖
+        lotIssueStatusTv.setTextColor(textColor)//当前期号、受注状态
+        lotTopRectHistoryOpenLl.setBackgroundResource(historyOpenBg)//往期开奖背景
+        lotTopRectHistoryOpenIv.setImageResource(arrow)//往期开奖右侧箭头
+        lotTopDivide.visible(//title和top区域之间分割线
             gameType !in arrayOf(
                 GAME.TYPE_GAME_K3,
                 GAME.TYPE_GAME_PK10,
@@ -290,13 +290,15 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         )
         lotTopHorizontalDivide.layoutParams.width =
             Sizes.dp2px(if (gameType == GAME.TYPE_GAME_PK8 || gameType == GAME.TYPE_GAME_PK10) 3f else 1f)
+        //top区域左右分割线
         lotTopHorizontalDivide.setBackgroundResource(
             when (gameType) {
                 GAME.TYPE_GAME_K3 -> R.drawable.lot_top_rect_horizontal_divide_k3
-                GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.drawable.lot_top_rect_horizontal_divide_k3
+                GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.drawable.lot_top_rect_horizontal_divide_pk
                 else -> R.drawable.lot_top_rect_horizontal_divide_default
             }
         )
+        //top区域背景
         lotTopAreaLl.setBackgroundResource(
             when (gameType) {
                 GAME.TYPE_GAME_K3 -> R.drawable.lot_top_rect_bg_k3
@@ -322,7 +324,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         lotJdHistoryLabelTv.visible(!k3)
 
         //倒计时
-        val skinTextColor = ContextCompat.getColor(
+        val countDownSkinTextColor = ContextCompat.getColor(
             this, when (gameType) {
                 GAME.TYPE_GAME_K3 -> R.color.color_skin_k3_text_color
                 GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.color_skin_pk_text_color
@@ -330,22 +332,22 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             }
         )
 
-        val skinBg = when (gameType) {
+        val countDownSkinBg = when (gameType) {
             GAME.TYPE_GAME_K3 -> R.drawable.lot_countdown_shape_k3
             GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> if (WT_FRAGMENT_TYPE == mCurFragmentType) R.drawable.lot_countdown_shape_wt_pk else R.drawable.lot_countdown_shape_pk
             else -> R.drawable.lot_countdown_shape_default
         }
-        lotCountdownFirstTv.setTextColor(skinTextColor)
-        lotCountdownDotFirstTv.setTextColor(skinTextColor)
-        lotCountdownSecondTv.setTextColor(skinTextColor)
-        lotCountdownDotSecondTv.setTextColor(skinTextColor)
-        lotCountdownThirdTv.setTextColor(skinTextColor)
-        lotCountdownFourthTv.setTextColor(skinTextColor)
+        lotCountdownFirstTv.setTextColor(countDownSkinTextColor)
+        lotCountdownDotFirstTv.setTextColor(countDownSkinTextColor)
+        lotCountdownSecondTv.setTextColor(countDownSkinTextColor)
+        lotCountdownDotSecondTv.setTextColor(countDownSkinTextColor)
+        lotCountdownThirdTv.setTextColor(countDownSkinTextColor)
+        lotCountdownFourthTv.setTextColor(countDownSkinTextColor)
 
-        lotCountdownFirstTv.setBackgroundResource(skinBg)
-        lotCountdownSecondTv.setBackgroundResource(skinBg)
-        lotCountdownThirdTv.setBackgroundResource(skinBg)
-        lotCountdownFourthTv.setBackgroundResource(skinBg)
+        lotCountdownFirstTv.setBackgroundResource(countDownSkinBg)
+        lotCountdownSecondTv.setBackgroundResource(countDownSkinBg)
+        lotCountdownThirdTv.setBackgroundResource(countDownSkinBg)
+        lotCountdownFourthTv.setBackgroundResource(countDownSkinBg)
     }
     //endregion
 

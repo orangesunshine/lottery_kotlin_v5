@@ -54,4 +54,13 @@
     <color name="color_skin_k3_bg">#10523B</color>
     <color name="color_skin_k3_text_color">#a7dbc8</color>
     <color name="color_skin_k3_line">#256c53</color>
+
+
+    <color name="color_skin_k3_bg_jd">#0E4B35</color>
+    <color name="color_skin_pk_bg_jd">#EFEDEA</color>
+
+    <!--    玩法说明分割线背景颜色-->
+    <color name="color_play_desc_skin_pk_divide">#DBD8D0</color>
+    <color name="color_play_desc_skin_k3_divide">#709550</color>
+    <color name="color_play_desc_skin_divide">#DCE0E4</color>
 </resources>

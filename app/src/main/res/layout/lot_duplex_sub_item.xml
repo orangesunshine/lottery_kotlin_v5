@@ -11,6 +11,7 @@
         android:id="@+id/lot_duplex_sub_item_tv"
         android:layout_width="35dp"
         android:layout_height="35dp"
+        android:layout_margin="2dp"
         android:gravity="center"
         android:textSize="18dp"
         tools:text="9" />
