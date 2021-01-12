@@ -1,8 +1,5 @@
 package com.bdb.lottery.biz.lot.jd.duplex
 
-import com.bdb.lottery.const.GAME
-import org.apache.commons.lang3.StringUtils
-
 data class LotDuplexData(
     val label: String?,//万千百十个
     val itemBallNumCounts: Int,//每组号码球个数
@@ -13,18 +10,13 @@ data class LotDuplexData(
     val isStartZero: Boolean,//是否从0开始(11选5、pk10)
     val zeroVisible: Boolean,//是否显示0(11选5、pk10)
 ) {
-    fun genBallDatas(gameType: Int): MutableList<String> {
+    fun genBallDatas(): MutableList<String> {
         return ballTextList?.toMutableList() ?: let {
             val list = mutableListOf<String>()
             val start = if (isStartZero) 0 else 1
             val end = if (isStartZero) itemBallNumCounts else (1 + itemBallNumCounts)
             for (i in start until end) {
                 list.add(if (i < 10 && zeroVisible) "0$i" else i.toString())
-            }
-            if (GAME.TYPE_GAME_K3 == gameType) {
-                list.sortWith { s: String, s1: String ->
-                    StringUtils.compare(s, s1)
-                }
             }
             list
         }

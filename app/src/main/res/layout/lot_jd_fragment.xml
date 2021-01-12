@@ -197,6 +197,7 @@
             android:id="@+id/lot_jd_duplex_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
             android:paddingBottom="16dp"
             android:visibility="gone" />
     </FrameLayout>

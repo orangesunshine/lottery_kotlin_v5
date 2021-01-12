@@ -25,27 +25,46 @@ fun BaseViewHolder.setTextSize(
     getView<TextView>(id).setTextSize(unit, size)
 }
 
-fun BaseViewHolder.setSize(
-    @IdRes id: Int,
-    size: Float,
-    unit: Int = TypedValue.COMPLEX_UNIT_DIP,
-) {
-    setWH(id, size, size, unit)
-}
-
-fun BaseViewHolder.setWH(
+fun BaseViewHolder.setUnitedWH(
     @IdRes id: Int,
     width: Float,
     height: Float,
     unit: Int = TypedValue.COMPLEX_UNIT_DIP,
 ) {
+    setWH(id, Sizes.applyDimension(width, unit).toInt(), Sizes.applyDimension(height, unit).toInt())
+}
+
+fun BaseViewHolder.setUnitedSize(
+    @IdRes id: Int,
+    size: Float,
+    unit: Int = TypedValue.COMPLEX_UNIT_DIP,
+) {
+    val sizeInt = Sizes.applyDimension(size, unit).toInt()
+    setWH(id, sizeInt, sizeInt)
+}
+
+fun BaseViewHolder.setWH(
+    @IdRes id: Int,
+    size: Int,
+) {
     getView<View>(id).layoutParams.run {
-        this.width = Sizes.applyDimension(width, unit).toInt()
-        this.height = Sizes.applyDimension(height, unit).toInt()
+        this.width = size
+        this.height = size
     }
 }
 
-fun BaseViewHolder.setW(
+fun BaseViewHolder.setWH(
+    @IdRes id: Int,
+    width: Int,
+    height: Int,
+) {
+    getView<View>(id).layoutParams.run {
+        this.width = width
+        this.height = height
+    }
+}
+
+fun BaseViewHolder.setWidthWithUnit(
     @IdRes id: Int,
     width: Float,
     unit: Int = TypedValue.COMPLEX_UNIT_DIP,
@@ -55,7 +74,7 @@ fun BaseViewHolder.setW(
     }
 }
 
-fun BaseViewHolder.setH(
+fun BaseViewHolder.setHeightWithUnit(
     @IdRes id: Int,
     height: Float,
     unit: Int = TypedValue.COMPLEX_UNIT_DIP,

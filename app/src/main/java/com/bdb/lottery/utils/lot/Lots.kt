@@ -6,6 +6,7 @@ import com.bdb.lottery.const.GAME
 import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.validIndex
+import org.apache.commons.lang3.StringUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -609,9 +610,18 @@ object Lots {
     }
     //endregion
 
+    //region Description
+    //74 == gameId
     fun deleteInitZero(ball: String?): String? {
-        return if (!ball.isSpace() && ball!!.substring(0, 1)
+        return if (!ball.isSpace() && ball!!.length > 1 && ball.substring(0, 1)
                 .equalsNSpace("0")
         ) ball.substring(1) else ball
     }
+    //endregion
+
+    //region 根据球，判断是不是龙虎和
+    fun isLHH(item: String): Boolean {
+        return StringUtils.containsAny(item, "龙", "虎", "和")
+    }
+    //endregion
 }

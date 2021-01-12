@@ -18,6 +18,7 @@ import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
 import com.bdb.lottery.biz.lot.jd.duplex.adapter.LotDuplexAdapter
 import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
 import com.bdb.lottery.const.EXTRA
+import com.bdb.lottery.const.GAME
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
@@ -458,7 +459,13 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         if (!isSingleStyle) {
             val ballGroupCount: Int = subPlayMethod?.subPlayMethodDesc?.ball_groups_counts ?: 0
             val lotDuplexDatas = mutableListOf<LotDuplexData>()
-            val ballTextList = subPlayMethod?.subPlayMethodDesc?.ball_text_list?.split(",")
+            val ballTextList = subPlayMethod?.subPlayMethodDesc?.ball_text_list?.split(",")?.let {
+                if (GAME.TYPE_GAME_K3 == mGameType) it.sortedWith { s: String, s1: String ->
+                    val c1 = if (s.isDigit()) 1 else -1
+                    val c2 = if (s1.isDigit()) 1 else -1
+                    c1 - c2
+                } else it
+            }
             if (ballGroupCount > 0) {
                 val titles = subPlayMethod?.subPlayMethodDesc?.ball_groups_item_title?.split(",")
                 for (i in 0 until ballGroupCount) {
@@ -477,12 +484,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 }
             }
             lot_jd_duplex_rv.adapter?.let {
+                //刷新复式列表
                 if (it is LotDuplexAdapter) it.notifyChange(
                     mBetTypeId,
                     ballTextList,
                     lotDuplexDatas
                 )
             } ?: let {
+                //初始化复式列表
                 lot_jd_duplex_rv.adapter =
                     LotDuplexAdapter(
                         mGameType,

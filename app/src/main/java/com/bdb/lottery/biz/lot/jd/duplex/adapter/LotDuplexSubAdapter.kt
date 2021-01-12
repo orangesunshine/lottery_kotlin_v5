@@ -2,15 +2,18 @@ package com.bdb.lottery.biz.lot.jd.duplex.adapter
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.extension.setItemChildSelected
-import com.bdb.lottery.extension.setSize
 import com.bdb.lottery.extension.setTextColorStateList
 import com.bdb.lottery.extension.setTextSize
+import com.bdb.lottery.extension.setWH
 import com.bdb.lottery.module.application.AppEntries
+import com.bdb.lottery.utils.lot.Lots
+import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.util.getItemView
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
@@ -25,15 +28,18 @@ class LotDuplexSubAdapter(
     private var betTypeId: Int,
     private var spanCount: Int,
     private var lotLotDuplexData: LotDuplexData,
-    updateBlock: (list: ArrayList<Int>) -> Unit
+    updateBlock: (list: ArrayList<Int>) -> Unit,
 ) : BaseSelectedQuickAdapter<String, BaseViewHolder>(
     R.layout.lot_duplex_sub_item,
-    lotLotDuplexData.genBallDatas(gameType), updateBlock
+    lotLotDuplexData.genBallDatas(), updateBlock
 ) {
+    private var isk3HeZhi = Lots.isK3HeZhi(betTypeId)//快三和值特殊处理（同时数字球，非数字球）：大小单上一行4列，数字号码一行6列
+
     private val tSound by lazy {
         EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTSound()
     }
 
+    //玩法改变刷新
     fun notifyChange(
         singleClick: Boolean = false,
         betTypeId: Int,
@@ -44,16 +50,13 @@ class LotDuplexSubAdapter(
         this.betTypeId = betTypeId
         this.spanCount = spanCount
         this.lotLotDuplexData = lotLotDuplexData
-        setNewInstance(lotLotDuplexData.genBallDatas(gameType))
+        isk3HeZhi = Lots.isK3HeZhi(betTypeId)
+        setNewInstance(lotLotDuplexData.genBallDatas())
     }
 
-    private fun isLHH(item: String): Boolean {
-        return StringUtils.containsAny(item, "龙", "虎", "和")
-    }
-
-    private val LONG_HU_HE_VIEW = 0x10000666
+    private val LONG_HU_HE_VIEW = 0x10000666//龙虎和单独布局文件
     override fun getItemViewType(position: Int): Int {
-        return if (isLHH(getItem(position))) {
+        return if (Lots.isLHH(getItem(position))) {
             //龙虎和
             LONG_HU_HE_VIEW
         } else {
@@ -72,7 +75,7 @@ class LotDuplexSubAdapter(
     private val isPk10 = GAME.TYPE_GAME_PK10 == gameType || GAME.TYPE_GAME_PK8 == gameType
     override fun convert(holder: BaseViewHolder, item: String) {
         val itemViewType = holder.itemViewType
-        if (itemViewType == LONG_HU_HE_VIEW) {
+        if (itemViewType == LONG_HU_HE_VIEW) {//龙虎和
             holder.setImageResource(
                 R.id.lot_duplex_sub_item_iv, when (item) {
                     "龙" -> if (isPk10) R.drawable.lot_duplex_sub_item_pk_long_selected else R.drawable.lot_duplex_sub_item_long_selector
@@ -87,16 +90,14 @@ class LotDuplexSubAdapter(
                 R.color.lot_duplex_sub_item_long_ball_text_color_selector
             )
             holder.setItemChildSelected(R.id.lot_duplex_sub_item_iv, isItemSelected(holder))
-        } else {
-            val adapterPosition = holder.adapterPosition
-            val ballTextList = lotLotDuplexData.ballTextList
+        } else {//非龙虎和
+            //设置球文字
             holder.setText(
-                R.id.lot_duplex_sub_item_tv,
-                if (null != ballTextList && adapterPosition < ballTextList.size) ballTextList[adapterPosition]
-                else getItem(holder.adapterPosition)
+                R.id.lot_duplex_sub_item_tv, getItem(holder.adapterPosition)//数据源已处理过非数字球，这里直接取
             )
             val isK3 = GAME.TYPE_GAME_K3 == gameType
             val containsDxds = StringUtils.containsAny(item, "大", "小", "单", "双")
+            //根据gameType设置球选中文字颜色
             holder.setTextColorStateList(
                 context, R.id.lot_duplex_sub_item_tv, when (gameType) {
                     GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.lot_duplex_sub_item_pk_ball_text_color_selector
@@ -109,27 +110,29 @@ class LotDuplexSubAdapter(
                     6 -> {
                         if (isK3) 20f else 14f
                     }
-                    120 -> {
-                        if (isK3) 16f else 18f
+                    12 -> {
+                        if (isK3 && isk3HeZhi) 16f else 18f
                     }
                     else -> {
                         if (item.length > 1) 15f else 18f
                     }
                 }
             )
-            holder.setSize(
-                R.id.lot_duplex_sub_item_tv, when (spanCount) {
-                    6 -> {
-                        if (isK3) 40f else 30f
-                    }
-                    120 -> {
-                        if (isK3) 45f else 35f
-                    }
-                    else -> {
-                        if (!isK3 && containsDxds) 44f else 35f
-                    }
-                }
-            )
+            when (spanCount) {
+                6 ->
+                    holder.setWH(
+                        R.id.lot_duplex_sub_item_tv, Sizes.dp2px(if (isK3) 40f else 30f))
+                12 ->
+                    holder.setWH(//快三宽度铺满，高度45
+                        R.id.lot_duplex_sub_item_tv,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        Sizes.dp2px(45f))
+                else ->//5列
+                    holder.setWH(
+                        R.id.lot_duplex_sub_item_tv,
+                        Sizes.dp2px(35f))
+            }
+            //根据gameType设置球选中背景
             holder.setBackgroundResource(
                 R.id.lot_duplex_sub_item_tv, when (gameType) {
                     GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> if (containsDxds) R.drawable.lot_duplex_sub_item_pk_circle_selector else R.drawable.lot_duplex_sub_item_pk_round_selector
@@ -142,17 +145,18 @@ class LotDuplexSubAdapter(
     }
 
     override fun convert(holder: BaseViewHolder, item: String, payloads: List<Any>) {
-        holder.setItemChildSelected(
-            if (isLHH(item)) R.id.lot_duplex_sub_item_iv else R.id.lot_duplex_sub_item_tv,
+        holder.setItemChildSelected(//选中状态更新
+            if (Lots.isLHH(item)) R.id.lot_duplex_sub_item_iv else R.id.lot_duplex_sub_item_tv,
             isItemSelected(holder)
         )
     }
 
     init {
+        //号码球：点击
         setOnItemClickListener { _: BaseQuickAdapter<*, *>, view: View, position: Int ->
-            tSound.playBetBallClickSound()
-            YoYo.with(Techniques.ZoomIn).duration(100).playOn(view)
-            notifySelectedPositionWithPayLoads(position, singleSelected = singleClick)
+            tSound.playBetBallClickSound()//声音
+            YoYo.with(Techniques.ZoomIn).duration(100).playOn(view)//小到大动画效果
+            notifySelectedPositionWithPayLoads(position, singleSelected = singleClick)//通知选中状态更新
         }
     }
 
