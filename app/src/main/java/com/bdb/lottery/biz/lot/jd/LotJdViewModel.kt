@@ -141,7 +141,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         noteCount: Int,//注数
         betItem: BetItem?,
         toast: AbsToast,
-        lot: (lotParam: LotParam, error: (String) -> Unit) -> Unit,
+        lot: (lotParam: LotParam, refreshToken: (String) -> Unit) -> Unit,
     ) {
         if (!mAlreadyGetBetType) {
             getBetType(gameId)
@@ -189,7 +189,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
                 tingZhiZhuiHao = true,
                 token = mToken!!,
                 touZhuHaoMa = listOf(touZhuHaoMa),
-                zhuiHaoQiHao = null
+                zhuiHaoQiHao = ArrayList()
             )
         ) { mToken = it }
     }

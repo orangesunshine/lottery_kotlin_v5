@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.globallivedata.AccountManager
+import com.bdb.lottery.biz.lot.BetCenter
 import com.bdb.lottery.biz.lot.UnitPopWindow
 import com.bdb.lottery.biz.lot.activity.LotActivity
 import com.bdb.lottery.biz.lot.dialog.playdesc.LotPlayDescDialog
@@ -107,9 +108,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //下注
         lot_jd_direct_betting_tv.setOnClickListener {
-            mTextWatcher?.filterRepeatNdErrorNums(
-                lot_jd_single_input_et.text.toString().trim(), false
-            ) {
+            val lotBlock: (String) -> Unit = {
                 vm.verifyNdGenLotParams(
                     mGameId, mBetTypeId, mGameName,
                     it,
@@ -121,15 +120,39 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     mNoteCount,
                     mSelectedBetItem,
                     toast,
-                ) { lotParam: LotParam, error: (String) -> Unit ->
+                ) { lotParam: LotParam, refreshToken: (String) -> Unit ->
                     aliveActivity<LotActivity>()?.lotByDialog(
                         lotParam,
                         vm.danTiaoTips(mSelectedBetItem),
-                        ::clearNums,
-                        error
+                        {
+                            refreshToken.invoke(it)
+                            clearNums()
+                        },
+                        refreshToken
                     )
                 }
             }
+            if (MODE_SINGLE == mMode) {
+                //单式
+                mTextWatcher?.filterRepeatNdErrorNums(
+                    lot_jd_single_input_et.text.toString().trim(), false, lotBlock
+                )
+            } else {
+                //复式
+                val makeBetNumStr = BetCenter.makeBetNumStr(
+                    lot_jd_duplex_rv.adapter?.let { if (it is LotDuplexAdapter) it.getAllSelectedNums() else null },
+                    mIsBuildAll,
+                    mDigitsTitle
+                )
+                mNoteCount = BetCenter.computeStakeCount(
+                    makeBetNumStr,
+                    mGameType,
+                    mBetTypeId,
+                    vm.getDigit(mNeedDigit, getSelectedDigit())
+                )
+                lotBlock.invoke(makeBetNumStr)
+            }
+
         }
 
         //玩法菜单数据获取失败，点击重新请求数据
@@ -228,7 +251,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mNoteCount: Int = 0//投注数量
     private var mCanPutBasket: Boolean = false//能否加入购物篮
     private var mAmount: Double = 0.0//总额
-    var mSingleNumCount: Int = 0//单注号码数
+    private var mSingleNumCount: Int = 0//单注号码数
+    private var mIsBuildAll: Boolean? = null
+    private var mDigitsTitle: String? = null
     override fun observe() {
         //账户余额、今日彩票盈亏
         ob(accountManager.mUserBalance.getLiveData()) {
@@ -246,30 +271,30 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             )
         }
         //获取玩法配置，更新玩法列表，根据缓存选中玩法，没有缓存默认第一个玩法
-        vm.gameBetTypeDataLd.getLiveData().observe(this) {
+        ob(vm.gameBetTypeDataLd.getLiveData()) {
             aliveActivity<LotActivity>()?.updatePlayList(it)
         }
-        //数据库查找玩法成功
-        vm.subPlayMethodLd.getLiveData().observe(this) {
-            aliveActivity<LotActivity>()?.updateHistoryLabel(it?.parent_play_method ?: 0)
-            mSingleNumCount = it?.subPlayMethodDesc?.single_num_counts ?: 0
-            mTextWatcher?.onBetChange(
-                mSingleNumCount,
-                vm.getDigit(mNeedDigit, getSelectedDigit())
-            )
 
+        //数据库查找玩法成功
+        ob(vm.subPlayMethodLd.getLiveData()) {
+            aliveActivity<LotActivity>()?.updateHistoryLabel(it?.parent_play_method ?: 0)
             //单复式
             mMode = if (it?.subPlayMethodDesc?.isdanshi != false) MODE_SINGLE else MODE_DUPLEX
-            switchDanFuStyle(mMode == MODE_SINGLE, it)
-
+            mSingleNumCount = it?.subPlayMethodDesc?.single_num_counts ?: 0//单式
+            mIsBuildAll = it?.subPlayMethodDesc?.isBuildAll
+            mDigitsTitle = it?.subPlayMethodDesc?.digit_titles
             mNeedDigit = it?.subPlayMethodDesc?.is_need_show_weizhi == true
-            lot_jd_bet_digit_ll.visible(mNeedDigit == true)
-
             if (mNeedDigit == true) {
                 mAtLeastDigit = it?.subPlayMethodDesc?.atleast_wei_shu?.toInt()
                 setAtLeastDigit(mAtLeastDigit)
             }
 
+            lot_jd_bet_digit_ll.visible(mNeedDigit == true)
+
+            mTextWatcher?.onBetChange(
+                mSingleNumCount,
+                vm.getDigit(mNeedDigit, getSelectedDigit())
+            )
             if (null == mTextWatcher) {
                 mTextWatcher = vm.createSingleTextWatcher(
                     mGameType,
@@ -308,6 +333,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 )
                 lot_jd_single_input_et.addTextChangedListener(mTextWatcher)
             }
+            //切换单复式UI
+            switchDanFuStyle(mMode == MODE_SINGLE, it)
         }
     }
 
@@ -372,6 +399,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             lot_jd_single_input_et.setText("")
         } else {
             //复式
+            lot_jd_duplex_rv.adapter?.let {
+                if (it is LotDuplexAdapter) it.clearSelectedNums()
+            }
         }
     }
 
@@ -530,7 +560,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             }
             lot_jd_duplex_rv.adapter?.let {
                 //刷新复式列表
-                if (it is LotDuplexAdapter) it.notifyChange(
+                if (it is LotDuplexAdapter) it.notifyChangeWhenPlayChange(
                     mBetTypeId,
                     ballTextList,
                     lotDuplexDatas

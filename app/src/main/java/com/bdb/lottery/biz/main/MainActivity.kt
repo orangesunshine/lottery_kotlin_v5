@@ -15,6 +15,7 @@ import com.bdb.lottery.biz.main.promotion.PromotionFragment
 import com.bdb.lottery.biz.main.user.UserFragment
 import com.bdb.lottery.const.CONST
 import com.bdb.lottery.extension.statusbar
+import com.bdb.lottery.extension.validIndex
 import com.bdb.lottery.utils.ui.app.Apps
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,7 +69,7 @@ class MainActivity : FragmentActivity() {
 
     //底部导航（彩票大厅、优惠、发现、我的）
     private fun selectNavTab(index: Int) {
-        if (mIndex == index || index < 0 || index >= fragments.size) return
+        if (mIndex == index || !fragments.validIndex(index)) return
         //处理fragment
         supportFragmentManager.beginTransaction().apply {
             if (mIndex >= 0) {

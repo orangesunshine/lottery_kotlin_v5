@@ -37,6 +37,7 @@ class LotDuplexAdapter constructor(
         betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176
     private var mSpanCount: Int = spanCountByGameTypeNdLHH(gameType)
 
+    //region 根据彩种id，生成每行数量、或权重（12：快三特殊处理：数字球一行6列，非数字球：一行4列）
     private fun spanCountByGameTypeNdLHH(gameType: Int): Int {
         return if (!ballTextList.isNullOrEmpty() && Lots.isLHH(ballTextList!![0])) {
             if (ballTextList!!.size > 2) 3 else 2
@@ -46,12 +47,13 @@ class LotDuplexAdapter constructor(
             else -> 5
         }
     }
+    //endregion
 
     private val mSubAdapters: SparseArray<LotDuplexSubAdapter> = SparseArray()
     override fun convert(holder: BaseViewHolder, item: LotDuplexData) {
         val adapterPosition = holder.adapterPosition
         mDxdsSparseArray.put(adapterPosition, -1)
-        //label
+        //label(万千百十个)
         renderLabel(item.label, holder)
         //球
         renderBall(holder, item, adapterPosition)
@@ -61,6 +63,7 @@ class LotDuplexAdapter constructor(
         holder.setGone(R.id.lot_duplex_item_divide, adapterPosition == itemCount - 1)
     }
 
+    //region 每项对应的：号码球、大小单双、万千百十个
     private fun renderBall(
         holder: BaseViewHolder,
         item: LotDuplexData,
@@ -80,7 +83,7 @@ class LotDuplexAdapter constructor(
         }
         rv.adapter?.let {
             //刷新item同时刷新号码球
-            if (it is LotDuplexSubAdapter) it.notifyChange(
+            if (it is LotDuplexSubAdapter) it.notifyChangeWhenPlayChange(
                 m11x5DanTuo && adapterPosition == 0,//11选5胆码：单选
                 betTypeId,
                 mSpanCount,
@@ -256,6 +259,7 @@ class LotDuplexAdapter constructor(
 
         holder.setText(R.id.lot_duplex_item_label_tv, label)
     }
+    //endregion
 
     override fun convert(holder: BaseViewHolder, item: LotDuplexData, payloads: List<Any>) {
         val adapterPosition = holder.adapterPosition
@@ -289,7 +293,7 @@ class LotDuplexAdapter constructor(
         }
     }
 
-    //tag对应大小大双按钮，切换select
+    //region tag对应大小大双按钮，切换select
     private fun dxdsSelectedChange(holder: BaseViewHolder, tag: Int, selected: Boolean) {
         when (tag) {
             0 -> holder.setItemChildSelected(
@@ -310,6 +314,7 @@ class LotDuplexAdapter constructor(
             )
         }
     }
+    //endregion
 
     //region 大小单双单击事件
     private val mDxdsSparseArray: SparseArray<Int> = SparseArray()//0大，1小，2单，3双
@@ -336,26 +341,28 @@ class LotDuplexAdapter constructor(
     }
     //endregion
 
-    //冷热
+    //region 冷热
     fun hotVisible(visible: Boolean) {
-        if (!mSubAdapters.isNotEmpty()) {
+        if (mSubAdapters.isNotEmpty()) {
             for (adapter in mSubAdapters.valueIterator()) {
                 adapter.hotVisible(visible)
             }
         }
     }
+    //endregion
 
-    //遗漏
+    //region 遗漏
     fun leaveVisible(visible: Boolean) {
-        if (!mSubAdapters.isNotEmpty()) {
+        if (mSubAdapters.isNotEmpty()) {
             for (adapter in mSubAdapters.valueIterator()) {
                 adapter.hotVisible(visible)
             }
         }
     }
+    //endregion
 
-    //玩法改变刷新
-    fun notifyChange(
+    //region 玩法改变刷新
+    fun notifyChangeWhenPlayChange(
         betTypeId: Int,
         ballTextList: List<String>?,
         duplexDatas: MutableList<LotDuplexData>?,
@@ -366,5 +373,27 @@ class LotDuplexAdapter constructor(
             betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176
         mSpanCount = spanCountByGameTypeNdLHH(gameType)
         setNewInstance(duplexDatas)
+    }
+    //endregion
+
+
+    //region 清空选中号码球
+    fun clearSelectedNums() {
+        if (mSubAdapters.isNotEmpty()) {
+            for (adapter in mSubAdapters.valueIterator()) {
+                adapter.notifyUnSelectedAllWithPayLoads()
+            }
+        }
+    }
+    //endregion
+
+    fun getAllSelectedNums(): List<List<String?>?> {
+        val allSelectedNums = ArrayList<List<String>>()
+        if (mSubAdapters.isNotEmpty()) {
+            for (adapter in mSubAdapters.valueIterator()) {
+                allSelectedNums.add(adapter.getSelectedNums())
+            }
+        }
+        return allSelectedNums
     }
 }

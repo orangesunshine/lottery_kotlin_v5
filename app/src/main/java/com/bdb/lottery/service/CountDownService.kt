@@ -75,7 +75,7 @@ class CountDownService : BaseService() {
             //过滤正在请求倒计时接口的gameid
             isGettingList.addAll(gameIds!!.filter { !mIsGettingList.contains(it) })
             if (isGettingList.isNotEmpty()) {
-                val isForce = intent?.getBooleanExtra(KEY_FORCE_REFRESH, false)
+                val isForce = intent.getBooleanExtra(KEY_FORCE_REFRESH, false)
                 val buff = StringBuilder()
                 if (!isForce) {
                     isGettingList = isGettingList.filter { !isRunning(it) }.toMutableList()
@@ -90,7 +90,7 @@ class CountDownService : BaseService() {
                         it?.mapper(mCache)
                         countDown()
                     }, {
-                        mIsGettingList.removeAll(isGettingList)
+                        mIsGettingList.remove(isGettingList)
                     })
                 }
             }
@@ -136,7 +136,7 @@ class CountDownService : BaseService() {
                                         it.openSurplusTime = it.closeTotalTime
                                     }
                                 }
-                                mCountDownCallbacks.get(gameId)
+                                mCountDownCallbacks[gameId]
                                     ?.forEach { callback: CountDownCallback ->
                                         callback.countDown(it)
                                     }

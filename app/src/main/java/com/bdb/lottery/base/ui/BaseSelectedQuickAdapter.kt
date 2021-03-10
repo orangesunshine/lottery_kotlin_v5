@@ -25,7 +25,6 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
     }
 
     //region single单选
-
     fun setSingleSelectedPos(selectedPosition: Int) {
         clearNotNotify()
         mSelectedPosition.add(selectedPosition)

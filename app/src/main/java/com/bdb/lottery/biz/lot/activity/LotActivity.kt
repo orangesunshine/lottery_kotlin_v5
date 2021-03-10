@@ -679,7 +679,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     fun lotByDialog(
         lotParam: LotParam,
         danTiaoTips: String? = null,
-        success: (() -> Unit)? = null,
+        success: ((String) -> Unit)? = null,
         error: ((String) -> Unit)? = null,
     ) {
         //验证倒计时相关：是否获取倒计时、彩种是否休市、彩种是否封盘

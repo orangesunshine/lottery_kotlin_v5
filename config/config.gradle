@@ -211,7 +211,7 @@ if (!ext.has("allDeps")) {
 }
 
 if (!ext.has("mavens")) {
-    def mavens = mavenRepositorys()
+    def mavens = mavenRepos()
     ext.mavens = mavens
 }
 

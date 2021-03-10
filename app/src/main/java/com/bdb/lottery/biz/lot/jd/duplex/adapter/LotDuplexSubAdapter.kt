@@ -3,14 +3,13 @@ package com.bdb.lottery.biz.lot.jd.duplex.adapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.util.isNotEmpty
+import androidx.core.util.valueIterator
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
 import com.bdb.lottery.const.GAME
-import com.bdb.lottery.extension.setItemChildSelected
-import com.bdb.lottery.extension.setTextColorStateList
-import com.bdb.lottery.extension.setTextSize
-import com.bdb.lottery.extension.setWH
+import com.bdb.lottery.extension.*
 import com.bdb.lottery.module.application.AppEntries
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
@@ -39,8 +38,8 @@ class LotDuplexSubAdapter(
         EntryPointAccessors.fromApplication(context, AppEntries::class.java).provideTSound()
     }
 
-    //玩法改变刷新
-    fun notifyChange(
+    //region 玩法改变刷新
+    fun notifyChangeWhenPlayChange(
         singleClick: Boolean = false,
         betTypeId: Int,
         spanCount: Int,
@@ -53,6 +52,7 @@ class LotDuplexSubAdapter(
         isk3HeZhi = Lots.isK3HeZhi(betTypeId)
         setNewInstance(lotLotDuplexData.genBallDatas())
     }
+    //endregion
 
     private val LONG_HU_HE_VIEW = 0x10000666//龙虎和单独布局文件
     override fun getItemViewType(position: Int): Int {
@@ -121,16 +121,19 @@ class LotDuplexSubAdapter(
             when (spanCount) {
                 6 ->
                     holder.setWH(
-                        R.id.lot_duplex_sub_item_tv, Sizes.dp2px(if (isK3) 40f else 30f))
+                        R.id.lot_duplex_sub_item_tv, Sizes.dp2px(if (isK3) 40f else 30f)
+                    )
                 12 ->
                     holder.setWH(//快三宽度铺满，高度45
                         R.id.lot_duplex_sub_item_tv,
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        Sizes.dp2px(45f))
+                        Sizes.dp2px(45f)
+                    )
                 else ->//5列
                     holder.setWH(
                         R.id.lot_duplex_sub_item_tv,
-                        Sizes.dp2px(35f))
+                        Sizes.dp2px(35f)
+                    )
             }
             //根据gameType设置球选中背景
             holder.setBackgroundResource(
@@ -161,7 +164,6 @@ class LotDuplexSubAdapter(
     }
 
     //region 大小单双
-
     fun selectedList2DxdsTag(list: ArrayList<Int>): Int {
         list.sort()
         return if (list.equals(getBigBallSelectedPositions())) {
@@ -262,11 +264,29 @@ class LotDuplexSubAdapter(
     //endregion
     //endregion
 
-    //冷热
+    //region 冷热
     fun hotVisible(visible: Boolean) {
     }
+    //endregion
 
-    //遗漏
+    //region 遗漏
     fun leaveVisible(visible: Boolean) {
     }
+    //endregion
+
+    //region 当前组选中号码
+    fun getSelectedNums(): List<String> {
+        var selectedNums = ArrayList<String>()
+        val selectedPositions = getSelectedPositions()
+        if (!selectedPositions.isNullOrEmpty()) {
+            for (selectedPosition in selectedPositions) {
+                val item = getItem(selectedPosition)
+                if (!item.isSpace()) {
+                    selectedNums.add(item)
+                }
+            }
+        }
+        return selectedNums
+    }
+    //endregion
 }

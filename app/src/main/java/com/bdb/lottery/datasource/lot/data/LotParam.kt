@@ -9,6 +9,7 @@ data class LotParam(
     var token: String,
     var touZhuHaoMa: List<TouZhuHaoMa>?,
     var zhuiHaoQiHao: List<ZhuiHaoQiHao>?,
+
 ) {
     fun isDanTiao(): Boolean {
         return if (!touZhuHaoMa.isNullOrEmpty()) touZhuHaoMa!![0].isDanTiao else false

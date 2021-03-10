@@ -4,6 +4,7 @@ import com.bdb.lottery.algorithm.*
 import com.bdb.lottery.const.GAME
 
 object BetCenter {
+    //region 单式
     var newNums: String? = null
 
     fun computeSingleAvailableBetCount(
@@ -41,7 +42,7 @@ object BetCenter {
      * @return
      * @throws
      */
-    private fun computeStakeCount(
+    fun computeStakeCount(
         betNumStr: String?,
         lotteryType: Int,
         subPlayId: Int,
@@ -62,6 +63,53 @@ object BetCenter {
         }
         return count
     }
+    //endregion
 
+    //region 复式
+    /**
+     * 构建号码字符串(如：1,2|4,3,5|4)
+     *
+     * @param betNums
+     * @param isBuildAll 是否需要构建所有“|”
+     * @return
+     */
+    fun makeBetNumStr(
+        betNums: List<List<String?>?>?,
+        isBuildAll: Boolean?,
+        digitTitles: String?
+    ): String {
+        var digitTitlesArray: Array<String?>? = null
+        if (digitTitles != null && digitTitles != "") {
+            digitTitlesArray = digitTitles.split(",".toRegex()).toTypedArray()
+        }
+        val sb = StringBuilder()
+        if (betNums != null) {
+            for (i in betNums.indices) {
+                val nums = betNums[i]
+                if (nums == null) {
+                    if (isBuildAll == true) sb.append("|")
+                    continue
+                }
+                if (digitTitlesArray != null && digitTitlesArray.size == betNums.size) sb.append(
+                    digitTitlesArray[i]
+                )
+                for (j in nums.indices) {
+                    val num = nums[j]
+                    sb.append(num)
+                    //如果是该组最后一个并且没有达到末尾
+                    if (j < nums.size - 1) {
+                        sb.append(",")
+                    }
+                }
+                sb.append("|")
+            }
+        }
+        //删除最后一个"|"
+        if (sb.length >= 1) {
+            sb.deleteCharAt(sb.length - 1)
+        }
+        return sb.toString()
+    }
+    //endregion
 
 }

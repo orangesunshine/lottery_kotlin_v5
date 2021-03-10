@@ -99,9 +99,9 @@ ext.getClassPaths = this.&getClassPaths
 /**
  * 获取模块plugin
  */
-def modulePlugins(String modulename) {
+def modulePlugins(String moduleName) {
     Set<String> deps = new HashSet<>()
-    def moduleDeps = allDeps[modulename]
+    def moduleDeps = allDeps[moduleName]
     if (null != moduleDeps && !moduleDeps.isEmpty()) {
         deps.addAll(moduleDeps)
     }
@@ -120,7 +120,7 @@ def modulePlugins(String modulename) {
         }
     }
     plugins.add("kotlin-kapt")
-    println "younger__modulePlugins__modulename: ${modulename}, plugins: ${plugins}"
+    println "younger__modulePlugins__modulename: ${moduleName}, plugins: ${plugins}"
     return plugins
 }
 
@@ -190,7 +190,7 @@ def handleModuleDeps(DependencyHandler handler, String modulename) {
 ext.handleModuleDeps = this.&handleModuleDeps
 
 //获取maven仓库
-def mavenRepositorys() {
+def mavenRepos() {
     List<String> mavens = new ArrayList<>()
     if (null != allDeps && !allDeps.isEmpty()) {
         allDeps.each {
@@ -208,7 +208,7 @@ def mavenRepositorys() {
     return mavens
 }
 
-ext.mavenRepositorys = this.&mavenRepositorys
+ext.mavenRepos = this.&mavenRepos
 
 //repository
 def addRepos(RepositoryHandler handler) {

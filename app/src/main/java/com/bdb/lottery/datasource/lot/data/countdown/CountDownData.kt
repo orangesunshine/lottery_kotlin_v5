@@ -60,7 +60,7 @@ data class CountDownData(
         if (currents.isNullOrEmpty()) return
         currents.forEach {
             val gameId = it.key
-            cache[gameId] = CountDownMapper(it.value, futureIssue.get(gameId))
+            cache[gameId] = CountDownMapper(it.value, futureIssue[gameId])
         }
     }
 
