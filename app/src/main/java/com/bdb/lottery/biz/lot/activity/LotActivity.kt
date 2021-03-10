@@ -856,4 +856,10 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         )
     }
     //endregion
+
+    //region 弹出右侧菜单：快捷充值、投注记录、追号记录、走势图、盈亏报表、官方验证
+    fun popActRightMenu() {
+        
+    }
+    //endregion
 }
