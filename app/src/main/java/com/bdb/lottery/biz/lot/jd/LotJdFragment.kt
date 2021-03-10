@@ -144,12 +144,18 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     mIsBuildAll,
                     mDigitsTitle
                 )
-                mNoteCount = BetCenter.computeStakeCount(
-                    makeBetNumStr,
-                    mGameType,
-                    mBetTypeId,
-                    vm.getDigit(mNeedDigit, getSelectedDigit())
-                )
+                try {
+                    mNoteCount = BetCenter.computeStakeCount(
+                        makeBetNumStr,
+                        mGameType,
+                        mBetTypeId,
+                        vm.getDigit(mNeedDigit, getSelectedDigit())
+                    )
+                } catch (e: Exception) {
+                    val message = e.message
+                    if (!message.isSpace()) toast.showWarning(message)
+                    return@setOnClickListener
+                }
                 lotBlock.invoke(makeBetNumStr)
             }
 

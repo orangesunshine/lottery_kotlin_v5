@@ -3,6 +3,7 @@ package com.bdb.lottery.utils.ui.popup
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
+import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
@@ -10,7 +11,6 @@ import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
 import com.bdb.lottery.R
 import com.bdb.lottery.utils.ui.screen.Screens
-import com.bdb.lottery.utils.ui.size.Sizes
 import dagger.hilt.android.scopes.ActivityScoped
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
@@ -24,11 +24,11 @@ open class TPopupWindow @Inject constructor() {
     fun content(
         width: Int = WindowManager.LayoutParams.WRAP_CONTENT,
         height: Int = WindowManager.LayoutParams.WRAP_CONTENT,
-        convert: () -> View
+        convert: () -> View,
     ): TPopupWindow {
         mContent = convert()
-        mContent.isFocusable = true
-        mContent.isFocusableInTouchMode = true
+        mContent.isFocusable = false
+        mContent.isFocusableInTouchMode = false
         mPopWin = PopupWindow(
             mContent,
             width,
@@ -65,16 +65,16 @@ open class TPopupWindow @Inject constructor() {
 
     open fun showAtScreenLocation(
         parent: View,
-        gravity: Int,
-        x: Int = 0,
-        y: Int = 0,
+        gravity: Int = Gravity.TOP or Gravity.START,
+        xOffset: Int = 0,
+        yOffset: Int = 0,
         @ALIGN align: Int = ALIGN_RIGHT,
         callback: ShowUpCallback? = null,
     ) {
         val windowPos = IntArray(2)
-        val up = needShowUp(parent, mContent, windowPos, align)
+        val up = needShowUp(parent, mContent, windowPos, xOffset, yOffset, align)
         callback?.showUp(up)
-        mPopWin.showAtLocation(parent, gravity, windowPos[0] + x, windowPos[1] + y)
+        mPopWin.showAtLocation(parent, gravity, windowPos[0], windowPos[1])
     }
 
     /**
@@ -85,10 +85,12 @@ open class TPopupWindow @Inject constructor() {
      * @param contentView window的内容布局
      * @return 底部位置是否足够，不够pop显示再上面
      */
-    private fun needShowUp(
+    fun needShowUp(
         anchorView: View,
         contentView: View,
         windowPos: IntArray,
+        xOffset: Int = 0,
+        yOffset: Int = 0,
         @ALIGN align: Int = ALIGN_RIGHT,
     ): Boolean {
         var windowPos: IntArray? = windowPos
@@ -100,20 +102,25 @@ open class TPopupWindow @Inject constructor() {
         // 获取屏幕的高宽
         val screenHeight: Int = Screens.screenSize()[1]
         val screenWidth: Int = Screens.screenSize()[0]
-        contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        // 计算contentView的高宽
-        val windowHeight = mPopWin.height
-        val windowWidth = mPopWin.width
+
+        var height = mPopWin.height
+        var width = mPopWin.width
+        if (width <= 0 || height <= 0) {
+            contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            // 计算contentView的高宽
+            height = contentView.measuredHeight
+            width = contentView.measuredWidth
+        }
         // 判断需要向上弹出还是向下弹出显示
-        val isNeedShowUp = screenHeight - anchorLoc[1] - anchorHeight < windowHeight
-        val width = anchorView.width
+        val isNeedShowUp = screenHeight - anchorLoc[1] - anchorHeight < height
+        val anchorViewWidth = anchorView.width
         windowPos[0] =
-            if (align == ALIGN_RIGHT) screenWidth - windowWidth else if (align == ALIGN_LEFT) 0 else
-                anchorLoc[0] + (width - windowWidth) / 2
+            if (align == ALIGN_RIGHT) screenWidth - width - xOffset else if (align == ALIGN_LEFT) xOffset else
+                anchorLoc[0] + (anchorViewWidth - width) / 2 + xOffset
         if (isNeedShowUp) {
-            windowPos[1] = anchorLoc[1] - windowHeight
+            windowPos[1] = anchorLoc[1] - height - yOffset
         } else {
-            windowPos[1] = anchorLoc[1] + anchorHeight
+            windowPos[1] = anchorLoc[1] + anchorHeight + yOffset
         }
         return isNeedShowUp
     }

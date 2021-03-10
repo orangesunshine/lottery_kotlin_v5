@@ -46,6 +46,8 @@ import com.bdb.lottery.utils.time.TTime
 import com.bdb.lottery.utils.time.Times
 import com.bdb.lottery.utils.ui.activity.Activitys
 import com.bdb.lottery.utils.ui.keyboard.KeyBoards
+import com.bdb.lottery.utils.ui.popup.CommonPopData
+import com.bdb.lottery.utils.ui.popup.CommonPopWindow
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.bdb.lottery.utils.webview.TWebView
 import com.bdb.lottery.widget.LoadingLayout
@@ -110,6 +112,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
         lotTopLeftAreaLl.setOnClickListener {
             switchExplContent(0)
+        }
+        actionbar_right_id.setOnClickListener {
+            popActRightMenu()
         }
 
         //data
@@ -849,7 +854,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 退出页面缓存玩法下标（一级玩法、玩法组、二级玩法）
-    fun cachePlay4GameId(
+    private fun cachePlay4GameId(
     ) {
         tCache.cachePlay4GameId(
             mGameId, mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos, mParentPlayId, mPlayId
@@ -858,8 +863,18 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 弹出右侧菜单：快捷充值、投注记录、追号记录、走势图、盈亏报表、官方验证
+    @Inject
+    lateinit var mMenuPopWin: CommonPopWindow
     fun popActRightMenu() {
-        
+        val popDatas = ArrayList<CommonPopData>()
+        popDatas.add(CommonPopData("快捷充值", {}))
+        popDatas.add(CommonPopData("投注记录", {}))
+        popDatas.add(CommonPopData("追号记录", {}))
+        popDatas.add(CommonPopData("走势图", {}))
+        popDatas.add(CommonPopData("盈亏报表", {}))
+        popDatas.add(CommonPopData("官方验证", {}))
+        mMenuPopWin.init(popDatas, Sizes.dp2px(100f))
+        mMenuPopWin.showAtScreenLocation(actionbar_right_id, xOffset = Sizes.dp2px(16f))
     }
     //endregion
 }

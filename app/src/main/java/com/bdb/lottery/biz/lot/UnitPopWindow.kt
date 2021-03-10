@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.bdb.lottery.R
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.visible
@@ -22,7 +23,7 @@ open class UnitPopWindow @Inject constructor(@ActivityContext private val contex
         showAtScreenLocation(
             unitView,
             Gravity.TOP or Gravity.START,
-            y = Sizes.dp2px(-8f),
+            yOffset = Sizes.dp2px(8f),
             align = ALIGN_ANCHOR
         )
     }
