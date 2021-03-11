@@ -95,10 +95,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         initPlayMenuListener()//点击title，弹出玩法菜单窗口
         playMenu()//玩法菜单
         //默认选中经典
-        switchFragment(0, tags, fragments) {
-            //kg显示label
-            lotNumsLabelFl.visible(1 == it)
-        }
+        switchFragment(0)
 
         //经典玩法、单式输入法适配
         tLot.adjustSoftInput(object : KeyBoards.OnSoftInputChangedListener {
@@ -125,6 +122,13 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     //region 切换fragment
     private var mTabIndex = -1//tab下标
+    private fun switchFragment(index: Int) {
+        switchFragment(index, tags, fragments) {
+            //kg显示label
+            lotNumsLabelFl.visible(1 == it)
+        }
+    }
+
     private fun switchFragment(
         index: Int,
         tags: List<String>,
@@ -619,6 +623,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         lotMenuSelectFragmentTl.addOnTabSelectedListener(object : OnTabSelectedListenerAdapter() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab.updateTab(true)
+                val position = tab?.position
+                position?.let {
+                    switchFragment(it)
+                }
+                mPlayMenuVisible = false
+                lotMenuLl.visible(mPlayMenuVisible)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {

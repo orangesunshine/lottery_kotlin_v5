@@ -8,8 +8,8 @@ import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.GameInitData
-import com.bdb.lottery.datasource.lot.data.kg.KgBetTypeData
-import com.bdb.lottery.datasource.lot.data.kg.KgInitData
+import com.bdb.lottery.datasource.lot.data.kg.TrBetTypeData
+import com.bdb.lottery.datasource.lot.data.kg.TrInitGameData
 import com.bdb.lottery.datasource.lot.data.wt.WtBetTypeData
 import com.bdb.lottery.datasource.lot.data.wt.WtInitData
 import com.bdb.lottery.extension.isSpace
@@ -74,11 +74,11 @@ class LotRemoteDs @Inject constructor(
     //endregion
 
     //region 传统
-    fun initKgGame(gameId: String, success: (KgInitData?) -> Unit) {
+    fun initKgGame(gameId: String, success: (TrInitGameData?) -> Unit) {
         retrofitWrapper.observe(lotApi.initKgGame(gameId), success)
     }
 
-    fun getKgBetType(gameId: String, success: (KgBetTypeData?) -> Unit) {
+    fun getKgBetType(gameId: String, success: (TrBetTypeData?) -> Unit) {
         retrofitWrapper.observe(lotApi.getKgBetType(gameId), success)
     }
     //endregion
@@ -101,8 +101,10 @@ class LotRemoteDs @Inject constructor(
                 Timber.d("howToPlayUrl:$howToPlayUrl")
                 lotApi.getJs(howToPlayUrl).subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe {
-                        Caches.putString(howToPlayUrl,
-                            it.replace("var _wfsm=", "").replace("\r\n\t", "").replace("\r\n", ""))
+                        Caches.putString(
+                            howToPlayUrl,
+                            it.replace("var _wfsm=", "").replace("\r\n\t", "").replace("\r\n", "")
+                        )
                     }
             }
         }
@@ -137,9 +139,11 @@ class LotRemoteDs @Inject constructor(
                 val gameOfficialDescUrl = it.getGameOfficialDescUrl()
                 lotApi.getJs(gameOfficialDescUrl).subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe {
-                        Caches.putString(gameOfficialDescUrl,
+                        Caches.putString(
+                            gameOfficialDescUrl,
                             it.replace("var _Gameshows =", "").replace("\r\n\t", "")
-                                .replace("\r\n", ""))
+                                .replace("\r\n", "")
+                        )
                     }
             }
         }
@@ -156,9 +160,11 @@ class LotRemoteDs @Inject constructor(
                 } else {
                     lotApi.getJs(gameOfficialDescUrl).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).subscribe {
-                            Caches.putString(gameOfficialDescUrl,
+                            Caches.putString(
+                                gameOfficialDescUrl,
                                 it.replace("var _Gameshows =", "").replace("\r\n\t", "")
-                                    .replace("\r\n", ""))
+                                    .replace("\r\n", "")
+                            )
                             success.invoke(it)
                         }
                 }

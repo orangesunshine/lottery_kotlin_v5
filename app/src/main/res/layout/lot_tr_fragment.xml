@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lot_tr_root_fr"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lot_tr_left_rv"
+            android:layout_width="85dp"
+            android:layout_height="match_parent" />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#e1e5e8" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/lot_tr_right_vp"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lot_tr_bottom_bar_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:background="#25262e"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
+
+            <TextView
+                android:id="@+id/lot_tr_account_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/lot_tr_account_balance"
+                android:textColor="#929293" />
+
+            <TextView
+                android:id="@+id/lot_tr_today_profit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:text="@string/lot_tr_today_profit"
+                android:textColor="#929293" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="#2b2c34"
+            android:gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingTop="2dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="2dp">
+
+            <TextView
+                android:id="@+id/lot_tr_chip_first"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/lot_tr_chip_green"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="10" />
+
+            <TextView
+                android:id="@+id/lot_tr_chip_second"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/lot_tr_chip_yellow"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="10" />
+
+            <TextView
+                android:id="@+id/lot_tr_chip_third"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/lot_tr_chip_blue"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="10" />
+
+            <TextView
+                android:id="@+id/lot_tr_chip_fourth"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/lot_tr_chip_purple"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="10" />
+
+            <TextView
+                android:id="@+id/lot_tr_chip_fifth"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/lot_tr_chip_pink"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="10" />
+
+            <TextView
+                android:id="@+id/lot_tr_chip_sixth"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/lot_tr_chip_red"
+                android:gravity="center"
+                android:textColor="@color/white"
+                tools:text="10" />
+
+            <View style="@style/weight" />
+
+            <ImageView
+                android:id="@+id/lot_tr_setting_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:src="@drawable/lot_tr_setting_ic" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="#2b2c34"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"
+            android:paddingRight="8dp">
+
+            <ImageView
+                android:id="@+id/lot_tr_clear_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:src="@drawable/lot_tr_delete_ic" />
+
+            <LinearLayout
+                android:layout_width="110dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/lot_tr_selected_note_count_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lot_tr_selected_note_count"
+                    android:textColor="#929293" />
+
+                <TextView
+                    android:id="@+id/lot_tr_total_amount_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lot_tr_total_amount"
+                    android:textColor="#929293" />
+            </LinearLayout>
+
+            <View style="@style/weight" />
+
+            <com.bdb.lottery.widget.ClearEditText
+                android:id="@+id/lot_tr_input_amount_et"
+                android:layout_width="80dp"
+                android:layout_height="32dp"
+                android:background="@drawable/lot_tr_input_amount_bg"
+                android:drawableRight="@drawable/lot_tr_input_amount_clear_ic"
+                android:gravity="center"
+                android:hint="投注金额"
+                android:maxLength="6"
+                android:paddingRight="8dp"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="12dp"
+                tools:text="139327" />
+
+            <TextView
+                android:id="@+id/lot_tr_submit_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/bt_common_red_round_selector"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingTop="4dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="4dp"
+                android:text="下注"
+                android:textColor="@color/white"
+                android:textSize="16dp" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

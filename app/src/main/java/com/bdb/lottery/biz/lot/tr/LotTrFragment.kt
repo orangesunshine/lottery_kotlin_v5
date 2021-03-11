@@ -1,14 +1,17 @@
 package com.bdb.lottery.biz.lot.tr
 
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.const.EXTRA
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.lot_tr_fragment.*
 
 @AndroidEntryPoint
-class LotTrFragment : BaseFragment(R.layout.recyclerview_single_layout) {
+class LotTrFragment : BaseFragment(R.layout.lot_tr_fragment) {
     private val vm by viewModels<LotTrViewModel>()
 
     //region 传递参数gameType、gameId、gameName
@@ -36,4 +39,24 @@ class LotTrFragment : BaseFragment(R.layout.recyclerview_single_layout) {
         }
     }
     //endregion
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+    }
+
+    private fun initView() {
+        lot_tr_right_vp.isUserInputEnabled = false
+        lot_tr_left_rv.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        requestDatas()
+    }
+
+    private fun requestDatas() {
+
+    }
 }

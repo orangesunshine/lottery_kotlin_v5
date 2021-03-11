@@ -5,14 +5,14 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp">
 
-    <com.bdb.lottery.widget.AspectRatioImageView
+    <com.bdb.lottery.widget.ScaleImageView
         android:id="@+id/home_common_img_ariv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scaleType="fitXY"
         app:aspectRatio="2.33" />
 
-    <com.bdb.lottery.widget.AspectRatioImageView
+    <com.bdb.lottery.widget.ScaleImageView
         android:id="@+id/home_common_img_cover_ariv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

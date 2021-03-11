@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.bdb.lottery.widget.AspectRatioImageView
+        <com.bdb.lottery.widget.ScaleImageView
             android:id="@+id/home_allgame_left_ariv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             android:src="@drawable/placeholder_square_picture_bg"
             app:aspectRatio="2.33" />
 
-        <com.bdb.lottery.widget.AspectRatioImageView
+        <com.bdb.lottery.widget.ScaleImageView
             android:id="@+id/home_allgame_right_ariv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
