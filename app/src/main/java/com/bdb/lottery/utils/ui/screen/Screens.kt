@@ -11,7 +11,7 @@ object Screens {
         return screenSize(BdbApp.context)
     }
 
-    fun screenSize(context: Context): Array<Int> {
+    private fun screenSize(context: Context): Array<Int> {
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val point = Point()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

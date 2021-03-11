@@ -18,7 +18,6 @@ import com.bdb.lottery.utils.time.TTime
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.android.synthetic.main.lot_dialog.*
-import timber.log.Timber
 import javax.inject.Inject
 
 @ActivityScoped
@@ -56,7 +55,7 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
                 it?.let {
                     mSuccess?.invoke(it.token)
                 }
-                lot_dialog_succuess_tv.visible(true)
+                lot_dialog_success_tv.visible(true)
                 Threads.retrofitUIThreadDelayed({ dismiss() }, 1000)
                 mSubmitCallback?.invoke()//清空号码
             }, {
@@ -76,8 +75,8 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     }
 
     private fun loading() {
-        lot_dialog_loading_success_ll.visible(true)
-        lot_dialog_loading_success_iv.setImageResource(R.drawable.lot_dialog_bet_loading)
+        lot_dialog_loading_success_iv.visible(true)
+        lot_dialog_loading_success_iv.clearAnimation()
         lot_dialog_loading_success_iv.startAnimation(AnimationUtils.loadAnimation(
             context,
             R.anim.rotate_anim
@@ -85,8 +84,9 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
     }
 
     private fun dismissLoading() {
-        lot_dialog_loading_success_ll.visible(false)
         lot_dialog_loading_success_iv.clearAnimation()
+        lot_dialog_loading_success_iv.visible(false)
+        lot_dialog_submit_bt.visible(false)
     }
 
     private lateinit var mLotParam: LotParam

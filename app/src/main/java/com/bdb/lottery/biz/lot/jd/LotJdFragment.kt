@@ -310,29 +310,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     vm.getDigit(mNeedDigit, getSelectedDigit()),
                     {
                         Threads.retrofitUIThread {
-                            val canPutBasket = it > 0
-                            if (mCanPutBasket != canPutBasket) {
-                                //加入购物篮切换
-                                if (canPutBasket) lot_jd_bet_info_expl.expand() else lot_jd_bet_info_expl.collapse(
-                                    false
-                                )
-                                lot_jd_add_to_shopping_bar_tv.setTextSize(
-                                    TypedValue.COMPLEX_UNIT_DIP,
-                                    if (canPutBasket) 12f else 15f
-                                )
-                                lot_jd_add_to_shopping_bar_tv.text =
-                                    getString(if (canPutBasket) R.string.lot_jd_put_shopping_bar else R.string.lot_jd_shopping_bar)
-                                mCanPutBasket = canPutBasket
-                            }
-                            if (mNoteCount != it) {
-                                lot_jd_selected_notes_tv.text =
-                                    String.format(
-                                        getString(R.string.lot_jd_selected_notes_text),
-                                        it
-                                    )//注数
-                                mNoteCount = it
-                                reCalculateAmountNdSingleMoney()
-                            }
+                            switchAmountBanner(it)
                         }
                     },
                     toast::showError
@@ -343,6 +321,34 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             switchDanFuStyle(mMode == MODE_SINGLE, it)
         }
     }
+
+    //region 显示隐藏底部金额、理论最高奖金、今日盈亏,购彩栏
+    private fun switchAmountBanner(it: Int) {
+        val canPutBasket = it > 0
+        if (mCanPutBasket != canPutBasket) {
+            //加入购物篮切换
+            if (canPutBasket) lot_jd_bet_info_expl.expand() else lot_jd_bet_info_expl.collapse(
+                true
+            )
+            lot_jd_add_to_shopping_bar_tv.setTextSize(
+                TypedValue.COMPLEX_UNIT_DIP,
+                if (canPutBasket) 12f else 15f
+            )
+            lot_jd_add_to_shopping_bar_tv.text =
+                getString(if (canPutBasket) R.string.lot_jd_put_shopping_bar else R.string.lot_jd_shopping_bar)
+            mCanPutBasket = canPutBasket
+        }
+        if (mNoteCount != it) {
+            lot_jd_selected_notes_tv.text =
+                String.format(
+                    getString(R.string.lot_jd_selected_notes_text),
+                    it
+                )//注数
+            mNoteCount = it
+            reCalculateAmountNdSingleMoney()
+        }
+    }
+    //endregion
 
 
     //region 构造方法：传递参数gameType、gameId、gameName
@@ -445,6 +451,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //region 注数、金额单位切换、倍率改变时调用（重新计算：投注总额、理论最高奖金）
     private fun reCalculateAmountNdSingleMoney() {
+        //总额
         mAmount =
             vm.getAmount(mNoteCount, mMoneyUnit, mMultiple)
         lot_jd_total_amount_tv.text =
@@ -453,7 +460,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     getString(R.string.lot_jd_total_money_text),
                     mAmount.money().h5Color("#fa4529")
                 )
-            ) //总额
+            )
+        //最高理论奖金
         lot_jd_max_bonus_tv.text = Html.fromHtml(
             String.format(
                 getString(R.string.lot_jd_max_bonus_text),
@@ -461,7 +469,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     .h5Color("#F7831C")
             )
         )
-        //最高理论奖金
     }
     //endregion
 
@@ -579,7 +586,24 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                         mBetTypeId,
                         ballTextList,
                         lotDuplexDatas
-                    )
+                    ) {
+                        val makeBetNumStr = BetCenter.makeBetNumStr(
+                            it,
+                            mIsBuildAll,
+                            mDigitsTitle
+                        )
+                        var count = 0
+                        try {
+                            count = BetCenter.computeStakeCount(
+                                makeBetNumStr,
+                                mGameType,
+                                mBetTypeId,
+                                vm.getDigit(mNeedDigit, getSelectedDigit())
+                            )
+                        } catch (e: Exception) {
+                        }
+                        switchAmountBanner(count)
+                    }
             }
         }
     }

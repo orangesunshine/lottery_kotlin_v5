@@ -108,8 +108,10 @@ open class TPopupWindow @Inject constructor() {
         if (width <= 0 || height <= 0) {
             contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             // 计算contentView的高宽
-            height = contentView.measuredHeight
-            width = contentView.measuredWidth
+            if (height <= 0)
+                height = contentView.measuredHeight
+            if (width <= 0)
+                width = contentView.measuredWidth
         }
         // 判断需要向上弹出还是向下弹出显示
         val isNeedShowUp = screenHeight - anchorLoc[1] - anchorHeight < height

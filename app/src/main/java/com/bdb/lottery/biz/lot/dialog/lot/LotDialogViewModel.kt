@@ -14,9 +14,7 @@ import javax.inject.Inject
 
 class LotDialogViewModel @ViewModelInject @Inject constructor(
     @ActivityContext val context: Context,
-    private val tThread: TThread,
     private val lotRemoteDs: LotRemoteDs,
-    private val cocosRemoteDs: CocosRemoteDs,
 ) : BaseViewModel() {
 
     fun lot(

@@ -874,7 +874,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         popDatas.add(CommonPopData("盈亏报表", {}))
         popDatas.add(CommonPopData("官方验证", {}))
         mMenuPopWin.init(popDatas, Sizes.dp2px(100f))
-        mMenuPopWin.showAtScreenLocation(actionbar_right_id, xOffset = Sizes.dp2px(16f))
+        mMenuPopWin.showAtScreenLocation(actionbar_right_id, Sizes.dp2px(8f), -Sizes.dp2px(8f))
     }
     //endregion
 }

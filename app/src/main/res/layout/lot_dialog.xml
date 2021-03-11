@@ -340,32 +340,23 @@
             android:text="@string/confirm_bt_text"
             android:textColor="@color/white" />
 
-        <LinearLayout
-            android:id="@+id/lot_dialog_loading_success_ll"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone">
+        <ImageView
+            android:id="@+id/lot_dialog_loading_success_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:src="@drawable/lot_dialog_bet_loading"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/lot_dialog_loading_success_iv"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_margin="8dp"
-                tools:src="@drawable/lot_dialog_bet_loading" />
-
-            <TextView
-                android:id="@+id/lot_dialog_succuess_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="投注成功"
-                android:textColor="@color/color_333333"
-                android:textSize="15dp"
-                android:visibility="gone" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/lot_dialog_success_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="投注成功"
+            android:textColor="@color/color_333333"
+            android:textSize="15dp"
+            android:visibility="gone" />
     </FrameLayout>
 </LinearLayout>

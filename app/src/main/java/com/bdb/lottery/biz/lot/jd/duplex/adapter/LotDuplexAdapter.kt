@@ -24,6 +24,7 @@ class LotDuplexAdapter constructor(
     private var betTypeId: Int,
     private var ballTextList: List<String>?,//不为空：非数字球，否则数字球
     duplexDatas: MutableList<LotDuplexData>?,
+    private val noteCountBlock: ((List<List<String?>?>) -> Unit)?
 ) : BaseQuickAdapter<LotDuplexData, BaseViewHolder>(
     R.layout.lot_duplex_item,
     duplexDatas
@@ -122,6 +123,7 @@ class LotDuplexAdapter constructor(
                 item
             ) {
                 //号码球选中切换回调
+                noteCountBlock?.invoke(getAllSelectedNums())
                 holder.setItemChildSelected(R.id.lot_duplex_item_label_tv, !it.isNullOrEmpty())
                 val pre = mDxdsSparseArray[adapterPosition]
                 val tag =

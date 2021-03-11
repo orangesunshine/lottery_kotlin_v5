@@ -28,8 +28,8 @@ open class CommonPopWindow @Inject constructor(
     ) {
         content(width) {
             val root = LinearLayout(context)
-            root.setPadding(Sizes.dp2px(8f))
             root.orientation = LinearLayout.VERTICAL
+            root.gravity = Gravity.CENTER_HORIZONTAL
             if (!popDatas.isNullOrEmpty()) {
                 for (popData in popDatas) {
                     attachItem(root, popData)
@@ -45,13 +45,16 @@ open class CommonPopWindow @Inject constructor(
     private val dp40 = Sizes.dp2px(40f)
     private val tvColor = Color.parseColor("#EBEBEB")
     private val bgColor = Color.parseColor("#454852")
-    private fun attachItem(root: ViewGroup, popData: CommonPopData) {
+    private fun attachItem(
+        root: ViewGroup,
+        popData: CommonPopData,
+        width: Int = LinearLayout.LayoutParams.MATCH_PARENT
+    ) {
         val imgRes = popData.imgRes
         val text = popData.text
         val click = popData.click
         val tv = TextView(context)
-        tv.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp40)
-            .apply { gravity = Gravity.CENTER }
+        tv.layoutParams = LinearLayout.LayoutParams(width, dp40)
         tv.text = text
         tv.setTextColor(tvColor)
         tv.gravity = Gravity.CENTER
@@ -67,16 +70,16 @@ open class CommonPopWindow @Inject constructor(
         root.addView(tv)
         val line = View(context)
         line.layoutParams =
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Sizes.dp2px(0.5f))
+            LinearLayout.LayoutParams(width, Sizes.dp2px(0.5f))
         line.setBackgroundColor(bgColor)
         root.addView(line)
     }
 
     fun showAtScreenLocation(
         parent: View,
-        gravity: Int = Gravity.TOP or Gravity.START,
         xOffset: Int = 0,
         yOffset: Int = 0,
+        gravity: Int = Gravity.TOP or Gravity.START,
         @ALIGN align: Int = ALIGN_RIGHT,
     ) {
         val windowPos = IntArray(2)
