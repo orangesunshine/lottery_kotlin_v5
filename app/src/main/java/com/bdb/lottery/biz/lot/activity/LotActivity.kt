@@ -65,20 +65,15 @@ import javax.inject.Inject
 @AndroidEntryPoint
 @RuntimePermissions
 class LotActivity : BaseActivity(R.layout.lot_activity) {
-    private val JD_FRAGMENT_TAG: String = "JD_FRAGMENT_TAG"
-    private val TR_FRAGMENT_TAG: String = "TR_FRAGMENT_TAG"
-    private val WT_FRAGMENT_TAG: String = "WT_FRAGMENT_TAG"
-
-    override var statusbarLight = false;//状态栏是否半透明
-
     @Inject
     lateinit var tGame: TGame
 
     @Inject
     lateinit var tLot: TLot
+
+    override var statusbarLight = false;//状态栏是否半透明
+
     private val vm by viewModels<LotViewModel>()
-    private var mExplContent = 0//0开奖记录、1coco动画、2直播
-    private var mPlayMenuVisible = false
     lateinit var mPlayLoadingLayout: LoadingLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,6 +113,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         vm.setGameId(mGameId)
         vm.bindService(mGameId)
         vm.getHistoryByGameId(mGameId.toString())
+        vm.refreshBalanceByPostGlobalEvent()
     }
 
     //region 切换fragment
@@ -185,16 +181,15 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     override fun onDestroy() {
         super.onDestroy()
-        cachePlay4GameId()
         vm.unBindService(mGameId)
         KeyBoards.unregisterSoftInputChangedListener(window)
     }
 
     //region 初始化gameId、gameType、gameName、fragment
-    private var mGameId: Int = -1
-    private var mGameType: Int = -1
-    private var mGameName: String? = null
-    private var mPlayName: String? = null
+    private var mGameId: Int = -1//欢乐球207
+    private var mGameType: Int = -1//时时彩、快三、pk10
+    private var mGameName: String? = null//彩种名称：欢乐球
+    private var mPlayName: String? = null//五星·直选复式
     private var mJdEnable: Boolean = false
     private var mTrEnable: Boolean = false
     private var mWtEnable: Boolean = false
@@ -220,6 +215,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         initFragment(bundle)
     }
 
+    private val JD_FRAGMENT_TAG: String = "JD_FRAGMENT_TAG"
+    private val TR_FRAGMENT_TAG: String = "TR_FRAGMENT_TAG"
+    private val WT_FRAGMENT_TAG: String = "WT_FRAGMENT_TAG"
     private fun initFragment(bundle: Bundle?) {
         tags.clear()
         fragments.clear()
@@ -392,6 +390,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 开关cocos、直播窗口
+    private var mExplContent = 0//0开奖记录、1coco动画、2直播
     private fun switchExplContent(expl2Show: Int) {
         val expanded = lotOpenHistoryCocosExpl.isExpanded
         if (!expanded) KeyBoards.hideSoftInput(this)
@@ -609,6 +608,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
 
     //region 玩法菜单：fragment切换tab、玩法列表
+    private var mPlayMenuVisible = false
     private fun playMenu() {
         val tabs = arrayOf("经典", "传统", "微投")
         tabs.forEach {
@@ -814,6 +814,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                     mGroupSelectedPos = groupPosition
                                     mBetSelectedPos = position
                                     notifySelectedPositionWithPayLoads(position, false)
+                                    cachePlay4GameId()//缓存玩法
                                     adapter.getItemOrNull(position)?.let {
                                         if (it is BetItem) {
                                             onBetSelected(it)
@@ -850,10 +851,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     }
     //endregion
 
+    //region 根据gameId获取对应的玩法下标缓存
     @Inject
     lateinit var tCache: TCache
-
-    //region 根据gameId获取对应的玩法下标缓存
     private fun playByGameIdCache() {
         mPlaySelectedPos = tCache.playCacheByGameId(mGameId) ?: 0
         mGroupSelectedPos = tCache.playGroupCacheByGameId(mGameId) ?: 0

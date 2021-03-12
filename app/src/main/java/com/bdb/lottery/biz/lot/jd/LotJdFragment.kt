@@ -37,20 +37,22 @@ import javax.inject.Inject
 class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private val vm by viewModels<LotJdViewModel>()
 
+    //region 初始化参数：倍数、彩种id、彩种大类，彩种名称，玩法id
     private var mMultiple: Int = 1
     private var mGameId: Int = -1
     private var mGameType: Int = -1
     private var mGameName: String? = null
-    private var mBetTypeId: Int = -1
+    private var mPlayId: Int = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             mGameId = it.getInt(EXTRA.ID_GAME_EXTRA)
             mGameType = it.getInt(EXTRA.TYPE_GAME_EXTRA)
             mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
-            mBetTypeId = it.getInt(EXTRA.ID_PLAY_EXTRA)
+            mPlayId = it.getInt(EXTRA.ID_PLAY_EXTRA)
         }
     }
+    //endregion
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,7 +66,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        vm.cacheMoneyUnit(mGameId, mBetTypeId, mMoneyUnit)
+        vm.cacheMoneyUnit(mGameId, mPlayId, mMoneyUnit)
     }
     //endregion
 
@@ -110,7 +112,11 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_direct_betting_tv.setOnClickListener {
             val lotBlock: (String) -> Unit = {
                 vm.verifyNdGenLotParams(
-                    mGameId, mBetTypeId, mGameName,
+                    mMode,
+                    mGameType,
+                    mGameId,
+                    mPlayId,
+                    mGameName,
                     it,
                     mMultiple,
                     mMoneyUnit,
@@ -148,7 +154,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     mNoteCount = BetCenter.computeStakeCount(
                         makeBetNumStr,
                         mGameType,
-                        mBetTypeId,
+                        mPlayId,
                         vm.getDigit(mNeedDigit, getSelectedDigit())
                     )
                 } catch (e: Exception) {
@@ -230,14 +236,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     lateinit var lotPlayDescDialog: LotPlayDescDialog
     private fun requestDatas() {
         //初始化金额单位：根据gameId读取金额单位缓存，没有缓存默认1（元）
-        vm.initAmountUnit(mGameId, mBetTypeId) {
+        vm.initAmountUnit(mGameId, mPlayId) {
             mMoneyUnit = it ?: 1
             log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
         }
         vm.initGame(mGameId)//初始化彩票
         vm.getBetType(mGameId)//玩法配置接口
         lot_jd_play_desc_tv.setOnClickListener {
-            vm.cachePreHowToPlay(mGameType, mBetTypeId) { playDesc: String? ->
+            vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
                 playDesc?.let {
                     //玩法说明弹窗
                     lotPlayDescDialog.setGameType(mGameType)
@@ -249,6 +255,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
+    //region 监听数据：全局用户余额、玩法配置、本地数据库查询玩法信息
     @Inject
     lateinit var accountManager: AccountManager
     private var mNeedDigit: Boolean? = null//是否需要验证位置
@@ -286,6 +293,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             aliveActivity<LotActivity>()?.updateHistoryLabel(it?.parent_play_method ?: 0)
             //单复式
             mMode = if (it?.subPlayMethodDesc?.isdanshi != false) MODE_SINGLE else MODE_DUPLEX
+            val isSingleStyle = mMode == MODE_SINGLE
             mSingleNumCount = it?.subPlayMethodDesc?.single_num_counts ?: 0//单式
             mIsBuildAll = it?.subPlayMethodDesc?.isBuildAll
             mDigitsTitle = it?.subPlayMethodDesc?.digit_titles
@@ -294,33 +302,34 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 mAtLeastDigit = it?.subPlayMethodDesc?.atleast_wei_shu?.toInt()
                 setAtLeastDigit(mAtLeastDigit)
             }
-
             lot_jd_bet_digit_ll.visible(mNeedDigit == true)
-
-            mTextWatcher?.onBetChange(
-                mSingleNumCount,
-                vm.getDigit(mNeedDigit, getSelectedDigit())
-            )
-            if (null == mTextWatcher) {
-                mTextWatcher = vm.createSingleTextWatcher(
-                    mGameType,
-                    mBetTypeId,
-                    lot_jd_single_input_et,
+            if (isSingleStyle) {
+                mTextWatcher?.onBetChange(
                     mSingleNumCount,
-                    vm.getDigit(mNeedDigit, getSelectedDigit()),
-                    {
-                        Threads.retrofitUIThread {
-                            switchAmountBanner(it)
-                        }
-                    },
-                    toast::showError
+                    vm.getDigit(mNeedDigit, getSelectedDigit())
                 )
-                lot_jd_single_input_et.addTextChangedListener(mTextWatcher)
+                if (null == mTextWatcher) {
+                    mTextWatcher = vm.createSingleTextWatcher(
+                        mGameType,
+                        mPlayId,
+                        lot_jd_single_input_et,
+                        mSingleNumCount,
+                        vm.getDigit(mNeedDigit, getSelectedDigit()),
+                        {
+                            Threads.retrofitUIThread {
+                                switchAmountBanner(it)
+                            }
+                        },
+                        toast::showError
+                    )
+                    lot_jd_single_input_et.addTextChangedListener(mTextWatcher)
+                }
             }
             //切换单复式UI
-            switchDanFuStyle(mMode == MODE_SINGLE, it)
+            switchDanFuStyle(isSingleStyle, it)
         }
     }
+    //endregion
 
     //region 显示隐藏底部金额、理论最高奖金、今日盈亏,购彩栏
     private fun switchAmountBanner(it: Int) {
@@ -436,13 +445,13 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mSelectedBetItem = item//更新数据
         val playId = item?.betType ?: 0//玩法id
         mTextWatcher?.setPlayId(playId)
-        mBetTypeId = playId
+        mPlayId = playId
         item?.let {
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())//更新玩法名称，title刷新
             vm.getLocalBetType(playId)//获取玩法配置
             setUnitPattern(it.pattern)//更新投注单位
             //玩法说明
-            vm.cachePreHowToPlay(mGameType, mBetTypeId) { playDesc: String? ->
+            vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
                 lot_jd_play_desc_tv.text = playDesc ?: "该玩法暂无玩法说明"
             }
         }
@@ -465,7 +474,12 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lot_jd_max_bonus_tv.text = Html.fromHtml(
             String.format(
                 getString(R.string.lot_jd_max_bonus_text),
-                (vm.getSingleMoney(mSelectedBetItem) * mMultiple / Converts.unit2Params(mMoneyUnit)).money()
+                (vm.getSingleMoney(
+                    mMode,
+                    mGameType,
+                    mDuplexNums,
+                    mSelectedBetItem
+                ) * mMultiple / Converts.unit2Params(mMoneyUnit)).money()
                     .h5Color("#F7831C")
             )
         )
@@ -537,6 +551,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private val MODE_SINGLE = 0//单式
     private val MODE_DUPLEX = 1//复式
     private var mMode = MODE_DUPLEX//模式
+    private var mDuplexNums: String? = null//复式投注号码
     private fun switchDanFuStyle(isSingleStyle: Boolean, subPlayMethod: SubPlayMethod?) {
         mMode = if (isSingleStyle) MODE_SINGLE else MODE_DUPLEX
         clearNums()//清空号码
@@ -574,7 +589,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             lot_jd_duplex_rv.adapter?.let {
                 //刷新复式列表
                 if (it is LotDuplexAdapter) it.notifyChangeWhenPlayChange(
-                    mBetTypeId,
+                    mPlayId,
                     ballTextList,
                     lotDuplexDatas
                 )
@@ -583,11 +598,11 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                 lot_jd_duplex_rv.adapter =
                     LotDuplexAdapter(
                         mGameType,
-                        mBetTypeId,
+                        mPlayId,
                         ballTextList,
                         lotDuplexDatas
                     ) {
-                        val makeBetNumStr = BetCenter.makeBetNumStr(
+                        mDuplexNums = BetCenter.makeBetNumStr(
                             it,
                             mIsBuildAll,
                             mDigitsTitle
@@ -595,9 +610,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                         var count = 0
                         try {
                             count = BetCenter.computeStakeCount(
-                                makeBetNumStr,
+                                mDuplexNums,
                                 mGameType,
-                                mBetTypeId,
+                                mPlayId,
                                 vm.getDigit(mNeedDigit, getSelectedDigit())
                             )
                         } catch (e: Exception) {

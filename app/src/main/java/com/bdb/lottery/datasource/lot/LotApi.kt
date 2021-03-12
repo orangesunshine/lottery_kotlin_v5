@@ -2,15 +2,14 @@ package com.bdb.lottery.datasource.lot
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.URL
-import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.datasource.lot.data.LotData
 import com.bdb.lottery.datasource.lot.data.TodayLotteryNumsData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.GameInitData
-import com.bdb.lottery.datasource.lot.data.kg.KgBetTypeData
-import com.bdb.lottery.datasource.lot.data.kg.KgInitData
+import com.bdb.lottery.datasource.lot.data.tr.TrBetTypeData
+import com.bdb.lottery.datasource.lot.data.tr.TrInitGameData
 import com.bdb.lottery.datasource.lot.data.wt.WtBetTypeData
 import com.bdb.lottery.datasource.lot.data.wt.WtInitData
 import io.reactivex.rxjava3.core.Observable
@@ -58,13 +57,13 @@ interface LotApi {
     //kg彩种初始化
     @POST(URL.URL_INIT_KG_GAME)
     @FormUrlEncoded
-    fun initKgGame(@Field("gameID") gameId: String): Observable<BaseResponse<KgInitData?>>
+    fun initTrGame(@Field("gameID") gameId: String): Observable<BaseResponse<TrInitGameData?>>
 
 
     //kg
     @POST(URL.URL_GET_KG_BET_TYPE)
     @FormUrlEncoded
-    fun getKgBetType(@Field("gameId") gameId: String): Observable<BaseResponse<KgBetTypeData?>>
+    fun getTrBetType(@Field("gameId") gameId: String): Observable<BaseResponse<TrBetTypeData?>>
     //endregion
 
     //region 微投

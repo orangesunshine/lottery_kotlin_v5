@@ -13,13 +13,13 @@ class LotTrViewModel @ViewModelInject @Inject constructor(
 ) : BaseViewModel() {
 
     fun initGame(gameId: Int) {
-        lotRemoteDs.initKgGame(gameId.toString()) {
+        lotRemoteDs.initTrGame(gameId.toString()) {
 
         }
     }
 
     fun getBetType(gameId: Int) {
-        lotRemoteDs.getKgBetType(gameId.toString()) {
+        lotRemoteDs.getTrBetType(gameId.toString()) {
         }
     }
 }

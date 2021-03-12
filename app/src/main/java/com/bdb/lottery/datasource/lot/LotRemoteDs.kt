@@ -8,8 +8,8 @@ import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.GameInitData
-import com.bdb.lottery.datasource.lot.data.kg.TrBetTypeData
-import com.bdb.lottery.datasource.lot.data.kg.TrInitGameData
+import com.bdb.lottery.datasource.lot.data.tr.TrBetTypeData
+import com.bdb.lottery.datasource.lot.data.tr.TrInitGameData
 import com.bdb.lottery.datasource.lot.data.wt.WtBetTypeData
 import com.bdb.lottery.datasource.lot.data.wt.WtInitData
 import com.bdb.lottery.extension.isSpace
@@ -74,12 +74,12 @@ class LotRemoteDs @Inject constructor(
     //endregion
 
     //region 传统
-    fun initKgGame(gameId: String, success: (TrInitGameData?) -> Unit) {
-        retrofitWrapper.observe(lotApi.initKgGame(gameId), success)
+    fun initTrGame(gameId: String, success: (TrInitGameData?) -> Unit) {
+        retrofitWrapper.observe(lotApi.initTrGame(gameId), success)
     }
 
-    fun getKgBetType(gameId: String, success: (TrBetTypeData?) -> Unit) {
-        retrofitWrapper.observe(lotApi.getKgBetType(gameId), success)
+    fun getTrBetType(gameId: String, success: (TrBetTypeData?) -> Unit) {
+        retrofitWrapper.observe(lotApi.getTrBetType(gameId), success)
     }
     //endregion
 

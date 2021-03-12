@@ -84,6 +84,7 @@ class LotDuplexSubAdapter(
                     else -> -1
                 }
             )
+            holder.setText(R.id.lot_duplex_sub_item_tv, getItem(holder.adapterPosition))
             holder.setTextColorStateList(
                 context,
                 R.id.lot_duplex_sub_item_tv,

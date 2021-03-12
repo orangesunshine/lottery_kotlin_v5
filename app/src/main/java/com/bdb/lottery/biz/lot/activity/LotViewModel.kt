@@ -17,11 +17,10 @@ import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
-import com.bdb.lottery.datasource.lot.data.jd.PlayItem
+import com.bdb.lottery.event.TEventManager
 import com.bdb.lottery.service.CountDownCallback
 import com.bdb.lottery.service.CountDownService
 import com.bdb.lottery.service.CountDownService.CountDownSub
-import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.thread.TThread
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
@@ -33,15 +32,16 @@ class LotViewModel @ViewModelInject @Inject constructor(
     private val lotRemoteDs: LotRemoteDs,
     private val cocosRemoteDs: CocosRemoteDs,
 ) : BaseViewModel() {
-    val countDown = LiveDataWrapper<CountDownData.CurrentTime?>()
-    val curIssue = LiveDataWrapper<HistoryData.HistoryItem?>()
-    val historyIssue = LiveDataWrapper<List<HistoryData.HistoryItem>?>()
+    //region View层传入gameId
     private var mGameId = -1
     fun setGameId(gameId: Int) {
         mGameId = gameId
     }
+    //endregion
 
     //region 开奖历史记录
+    val curIssue = LiveDataWrapper<HistoryData.HistoryItem?>()
+    val historyIssue = LiveDataWrapper<List<HistoryData.HistoryItem>?>()
     fun getHistoryByGameId(gameId: String) {
         lotRemoteDs.getHistoryByGameId(gameId) {
             Timber.d(it.toString())
@@ -52,6 +52,7 @@ class LotViewModel @ViewModelInject @Inject constructor(
     //endregion
 
     //region 倒计时
+    val countDown = LiveDataWrapper<CountDownData.CurrentTime?>()
     private val mCountDownCallback = object : CountDownCallback {
         override fun countDown(currentTime: CountDownData.CurrentTime) {
             tThread.runOnUiThread {
@@ -124,6 +125,12 @@ class LotViewModel @ViewModelInject @Inject constructor(
             }
             betItem
         }
+    }
+    //endregion
+
+    //region 发送全局eventbus事件，刷新余额
+    fun refreshBalanceByPostGlobalEvent() {
+        TEventManager.postBalanceEvent()
     }
     //endregion
 }

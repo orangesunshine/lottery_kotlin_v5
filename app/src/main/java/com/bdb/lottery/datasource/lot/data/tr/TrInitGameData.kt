@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource.lot.data.kg
+package com.bdb.lottery.datasource.lot.data.tr
 
 data class TrInitGameData(
     val animalsNum: Map<String,String>,

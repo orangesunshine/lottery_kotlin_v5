@@ -1,4 +1,4 @@
-package com.bdb.lottery.datasource.lot.data.kg
+package com.bdb.lottery.datasource.lot.data.tr
 
 class TrBetTypeData : ArrayList<TrBetTypeData.TrBetTypeGroupData>() {
     data class TrBetTypeGroupData(
