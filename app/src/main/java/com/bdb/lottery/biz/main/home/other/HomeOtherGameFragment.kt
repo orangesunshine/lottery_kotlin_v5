@@ -18,6 +18,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class HomeOtherGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
     private val vm by viewModels<HomeOtherGameViewModel>()
+
     @Inject
     lateinit var tSize: TSize
 
@@ -44,7 +45,7 @@ class HomeOtherGameFragment : BaseFragment(R.layout.recyclerview_single_layout) 
     }
     //endregion
 
-    //region 全部game
+    //region 三方游戏数据请求、结果处理
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.otherGame()

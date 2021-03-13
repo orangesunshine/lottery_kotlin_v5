@@ -23,22 +23,17 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
 
+/*
+ *  页面：主页
+ *  关键字：main
+ *  说明：底部导航-彩票大厅、优惠、发现、我的
+ *  跳转：
+ *      进：登录、启动
+ *      出：
+ *  日期：2021/3/13
+ */
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
-    private val HOME_FRAGMENT_TAG: String = "HOME_FRAGMENT_TAG"
-    private val PROMOTION_FRAGMENT_TAG: String = "PROMOTION_FRAGMENT_TAG"
-    private val FIND_FRAGMENT_TAG: String = "FIND_FRAGMENT_TAG"
-    private val USER_FRAGMENT_TAG: String = "USER_FRAGMENT_TAG"
-
-    private var mIndex = -1
-    private lateinit var fragments: Array<Fragment>
-    private lateinit var rbs: Array<RadioButton>
-    private val tags: Array<String> = arrayOf(
-        HOME_FRAGMENT_TAG,
-        PROMOTION_FRAGMENT_TAG,
-        FIND_FRAGMENT_TAG,
-        USER_FRAGMENT_TAG
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +43,25 @@ class MainActivity : FragmentActivity() {
         (main_content_fl.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
             CONST.HEIGHT_STATUS_BAR
         statusbar(true)
+        initNavNdFragment(savedInstanceState)
+    }
+
+    //region 初始化fragment、main导航
+    private val HOME_FRAGMENT_TAG: String = "HOME_FRAGMENT_TAG"
+    private val PROMOTION_FRAGMENT_TAG: String = "PROMOTION_FRAGMENT_TAG"
+    private val FIND_FRAGMENT_TAG: String = "FIND_FRAGMENT_TAG"
+    private val USER_FRAGMENT_TAG: String = "USER_FRAGMENT_TAG"
+
+    private lateinit var fragments: Array<Fragment>
+    private lateinit var rbs: Array<RadioButton>
+    private val tags: Array<String> = arrayOf(
+        HOME_FRAGMENT_TAG,
+        PROMOTION_FRAGMENT_TAG,
+        FIND_FRAGMENT_TAG,
+        USER_FRAGMENT_TAG
+    )
+
+    private fun initNavNdFragment(savedInstanceState: Bundle?) {
         fragments = if (null == savedInstanceState) {
             arrayOf(HomeFragment(), PromotionFragment(), FindFragment(), UserFragment())
         } else {
@@ -59,15 +73,18 @@ class MainActivity : FragmentActivity() {
             )
         }
         rbs = arrayOf(mainHomeRb, mainPromotionRb, mainFindRb, mainUserRb)
-        selectNavTab(0)
 
         mainHomeRb.setOnClickListener { selectNavTab(0) }
         mainPromotionRb.setOnClickListener { selectNavTab(1) }
         mainFindRb.setOnClickListener { selectNavTab(2) }
         mainUserRb.setOnClickListener { selectNavTab(3) }
+        selectNavTab(0)
     }
+    //endregion
 
-    //底部导航（彩票大厅、优惠、发现、我的）
+
+    //region 底部导航切换（彩票大厅、优惠、发现、我的）
+    private var mIndex = -1
     private fun selectNavTab(index: Int) {
         if (mIndex == index || !fragments.validIndex(index)) return
         //处理fragment
@@ -87,6 +104,7 @@ class MainActivity : FragmentActivity() {
         rbs[index].isChecked = true
         mIndex = index
     }
+    //endregion
 
     //region 2秒内连续2次，退出应用
     @Inject

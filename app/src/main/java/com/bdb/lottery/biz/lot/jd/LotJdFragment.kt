@@ -169,7 +169,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //玩法菜单数据获取失败，点击重新请求数据
         aliveActivity<LotActivity>()?.mPlayLoadingLayout?.setRetryListener {
-            vm.getBetType(mGameId)
+            vm.netBetType(mGameId)
         }
 
         val listener = CompoundButton.OnCheckedChangeListener { _, _ ->
@@ -240,8 +240,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             mMoneyUnit = it ?: 1
             log_jd_money_unit_tv.text = Converts.unit2String(mMoneyUnit)
         }
-        vm.initGame(mGameId)//初始化彩票
-        vm.getBetType(mGameId)//玩法配置接口
+        vm.netInitGame(mGameId)//初始化彩票
+        vm.netBetType(mGameId)//玩法配置接口
         lot_jd_play_desc_tv.setOnClickListener {
             vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->
                 playDesc?.let {
@@ -448,7 +448,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         mPlayId = playId
         item?.let {
             aliveActivity<LotActivity>()?.updateMarqueeView(it.getPlayTitle())//更新玩法名称，title刷新
-            vm.getLocalBetType(playId)//获取玩法配置
+            vm.dbBetType(playId)//获取玩法配置
             setUnitPattern(it.pattern)//更新投注单位
             //玩法说明
             vm.cachePreHowToPlay(mGameType, mPlayId) { playDesc: String? ->

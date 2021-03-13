@@ -20,12 +20,12 @@ class AppRemoteDs @Inject constructor(
         )
     }
 
-    //预加载
-    fun refreshPlatformParamsCache() {
-        retrofitWrapper.refreshCache(URL.URL_PLATFORM_PARAMS, appApi.platformParams())
+    //预缓存：平台参数
+    fun preCachePlatformParams() {
+        retrofitWrapper.preCache(URL.URL_PLATFORM_PARAMS, appApi.platformParams())
     }
 
-    //缓存优先
+    //缓存优先：平台参数
     fun cachePrePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
         retrofitWrapper.cachePre(
             URL.URL_PLATFORM_PARAMS,
@@ -35,15 +35,15 @@ class AppRemoteDs @Inject constructor(
     }
     //endregion
 
-    //region 客服线
-    fun preCustomServiceUrl() {
-        retrofitWrapper.refreshCache(
+    //预缓存：客服线路
+    fun preCacheCustomServiceUrl() {
+        retrofitWrapper.preCache(
             URL.URL_CUSTOM_SERVICE,
             appApi.customservice()
         )
     }
 
-    //优先缓存，网络请求
+    //缓存优先：客服线路
     fun cachePreCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
         retrofitWrapper.cachePre(
             URL.URL_CUSTOM_SERVICE,
@@ -54,14 +54,15 @@ class AppRemoteDs @Inject constructor(
     //endregion
 
     //region apk版本信息
-    //预加载：刷新本地缓存
-    fun refreshApkVersionCache(success: ((ApkVersionData?) -> Unit)? = null) {
-        retrofitWrapper.refreshCache(
+    //预缓存：apk版本信息
+    fun preCacheApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
+        retrofitWrapper.preCache(
             URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success
         )
     }
 
+    //缓存优先：apk版本信息
     fun cachePreApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.cachePre(
             URL.URL_APK_VERSION,
@@ -69,6 +70,7 @@ class AppRemoteDs @Inject constructor(
         )
     }
 
+    //缓存先行：apk版本信息
     fun cachePriApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
         retrofitWrapper.cachePri(
             URL.URL_APK_VERSION,

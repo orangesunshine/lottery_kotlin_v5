@@ -17,8 +17,8 @@ import javax.inject.Inject
 class TCache @Inject constructor() {
     //region uuid
     //缓存uuid
-    private fun cacheUUid(prifex: Int, id: String): String {
-        val uuid = Devices.getUUid(prifex, id)
+    private fun cacheUUid(prefix: Int, id: String): String {
+        val uuid = Devices.getUUid(prefix, id)
         Caches.putString(CACHE.DEVICE_ID_CACHE, uuid)
         return uuid
     }

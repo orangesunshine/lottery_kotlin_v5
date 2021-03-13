@@ -4,8 +4,6 @@ import android.Manifest
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -15,7 +13,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.biz.globallivedata.AccountManager
-import com.bdb.lottery.biz.login.LoginActivity
 import com.bdb.lottery.biz.main.home.all.HomeAllGameFragment
 import com.bdb.lottery.biz.main.home.collection.HomeCollectionFragment
 import com.bdb.lottery.biz.main.home.other.HomeOtherGameFragment
@@ -23,23 +20,24 @@ import com.bdb.lottery.datasource.home.data.BannerMapper
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
 import com.bdb.lottery.utils.ui.activity.Activitys
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.youth.banner.adapter.BannerImageAdapter
-import com.youth.banner.holder.BannerImageHolder
 import com.youth.banner.indicator.RectangleIndicator
-import com.youth.banner.listener.OnBannerListener
 import com.youth.banner.util.BannerUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.main_home_fragment.*
 import permissions.dispatcher.*
 import javax.inject.Inject
 
-
-//主页home
+/*
+ *  页面：彩票大厅
+ *  关键字：home
+ *  说明：投注、游戏入口，轮播活动入口，预缓存，刷新余额，切换域名，公告跑马灯、弹窗，签到，红包
+ *  跳转：
+ *      进：
+ *      出：优惠活动、投注、公告、站内信、钱包
+ *  日期：2021/3/13
+ */
 @RuntimePermissions
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
@@ -48,13 +46,13 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     val fragments =
         arrayOf(HomeCollectionFragment(), HomeAllGameFragment(), HomeOtherGameFragment())
 
-    //region viewpager2 tablayout
+    //region viewpager2 tableLayout联动
     private lateinit var mediator: TabLayoutMediator
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initVp()//game viewpager设置
-        cocosDownloadWithPermissionCheck()
+        cocosDownloadWithPermissionCheck()//获取sd卡权限，成功后下载cocos文件
     }
 
     private fun initVp() {
@@ -104,7 +102,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     }
     //endregion
 
-    //region smartrefreshlayout nofling
+    //region recyclerview滑动不触发下拉刷新：smartRefreshLayout noFling
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (fragments[0] as HomeCollectionFragment).bindNoFling {
@@ -150,8 +148,8 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         super.onActivityCreated(savedInstanceState)
         vm.noticeData()//公告
         vm.bannerData()//轮播图
-        vm.getBalance()//获取余额
-        vm.refreshCache()//预加载 收藏、全部game、娱乐
+        vm.netBalance()//获取余额
+        vm.preCacheCache()//预加载 收藏、全部game、娱乐
     }
 
     @Inject
@@ -176,39 +174,8 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
             setIndicatorSpace(BannerUtils.dp2px(4f).toInt())
             setIndicatorRadius(0)
             addBannerLifecycleObserver(this@HomeFragment)
-            adapter = object : BannerImageAdapter<BannerMapper>(list) {
-                override fun onCreateHolder(parent: ViewGroup?, viewType: Int): BannerImageHolder? {
-                    val imageView = ImageView(context)
-                    val params = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                    imageView.layoutParams = params
-                    imageView.adjustViewBounds = true
-                    return BannerImageHolder(imageView)
-                }
-
-                override fun onBindView(
-                    holder: BannerImageHolder?,
-                    data: BannerMapper?,
-                    position: Int,
-                    size: Int,
-                ) {
-                    Glide.with(holder!!.itemView)
-                        .load(data?.imgurl)
-                        .thumbnail(
-                            Glide.with(holder.itemView)
-                                .load(R.drawable.placeholder_square_picture_bg)
-                        )
-                        .apply(RequestOptions.bitmapTransform(RoundedCorners(8)))
-                        .into(holder.imageView)
-                }
-            }
-            setOnBannerListener(object : OnBannerListener<BannerMapper> {
-                override fun OnBannerClick(data: BannerMapper, position: Int) {
-                    if (data.needJump) start<LoginActivity>()
-                }
-            })
+            adapter = HomeBannerAdapter(context, list)
+            setOnBannerListener(HomeBannerClickListener(this@HomeFragment))
         }
     }
     //endregion

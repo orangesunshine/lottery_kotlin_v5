@@ -106,7 +106,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             switchExplContent(0)
         }
         actionbar_right_id.setOnClickListener {
-            popActRightMenu()
+            popActbarRightMenu()
         }
 
         //data
@@ -875,7 +875,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 弹出右侧菜单：快捷充值、投注记录、追号记录、走势图、盈亏报表、官方验证
     @Inject
     lateinit var mMenuPopWin: CommonPopWindow
-    fun popActRightMenu() {
+    private fun popActbarRightMenu() {
         val popDatas = ArrayList<CommonPopData>()
         popDatas.add(CommonPopData("快捷充值", {}))
         popDatas.add(CommonPopData("投注记录", {}))

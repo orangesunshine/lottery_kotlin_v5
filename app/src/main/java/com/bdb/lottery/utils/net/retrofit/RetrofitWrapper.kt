@@ -24,7 +24,8 @@ class RetrofitWrapper @Inject constructor(
     private val domainLocalDs: DomainLocalDs,
     private val domainRemoteDs: DomainRemoteDs,
 ) {
-    //rxjava 简化
+
+    //region rxjava 封装
     fun <Data> observe(
         observable: Observable<BaseResponse<Data?>>,
         success: ((Data?) -> Unit)? = null,
@@ -59,8 +60,9 @@ class RetrofitWrapper @Inject constructor(
                     })
         }
     }
+    //endregion
 
-    //错误返回有用数据
+    //region rx 封装-需要返回error数据
     fun <Data> observeErrorData(
         observable: Observable<BaseResponse<Data?>>,
         success: ((Data?) -> Unit)? = null,
@@ -84,8 +86,12 @@ class RetrofitWrapper @Inject constructor(
                         val code = it.code
                         val msg = it.msg
                         Timber.d("observeErrorData__onError__throwable: ${it}, \\n msg: ${msg}, code: ${code}")
-                        error?.invoke(if (it is ApiException) it.response else BaseResponse(code,
-                            msg, null)) ?: let { toast.showError(msg) }
+                        error?.invoke(
+                            if (it is ApiException) it.response else BaseResponse(
+                                code,
+                                msg, null
+                            )
+                        ) ?: let { toast.showError(msg) }
                         if (code >= 500) domainLocalDs.clearDomain()
                         viewState?.setData(ViewState(false))
                         complete?.invoke()
@@ -96,8 +102,9 @@ class RetrofitWrapper @Inject constructor(
                     })
         }
     }
+    //endregion
 
-    //缓存优先（有缓存则用缓存，没有请求网络数据）
+    //region 缓存优先（有缓存，则不请求网络）
     inline fun <reified Data> cachePre(
         cacheKey: String,
         observable: Observable<BaseResponse<Data?>>,
@@ -136,9 +143,10 @@ class RetrofitWrapper @Inject constructor(
             })
         }
     }
+    //endregion
 
-    //刷新缓存
-    fun <Data> refreshCache(
+    //region 预缓存：刷新缓存
+    fun <Data> preCache(
         cacheKey: String,
         observable: Observable<BaseResponse<Data?>>,
         success: ((Data?) -> Unit)? = null,
@@ -156,8 +164,9 @@ class RetrofitWrapper @Inject constructor(
                 }
             })
     }
+    //endregion
 
-    //缓存先行（先读取缓存，在网络请求网络请求）
+    //region 缓存先行（缓存并请求网络）
     inline fun <reified Data> cachePri(
         cacheKey: String,
         observable: Observable<BaseResponse<Data?>>,
@@ -197,4 +206,5 @@ class RetrofitWrapper @Inject constructor(
         })
 
     }
+    //endregion
 }

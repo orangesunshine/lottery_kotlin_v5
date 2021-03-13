@@ -26,9 +26,7 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     private val cocosRemoteDs: CocosRemoteDs,
     private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {
-    val bannerLd = LiveDataWrapper<List<BannerMapper>?>()//轮播图
-    val noticeLd = LiveDataWrapper<String>()//公告
-
+    //region eventbus注册、注销--余额事件
     init {
         EventBus.getDefault().register(this)
     }
@@ -40,42 +38,51 @@ class HomeViewModel @ViewModelInject @Inject constructor(
 
     @Subscribe
     fun onBalanceEvent(event: BalanceEvent) {
-        getBalance()
+        netBalance()
     }
+    //endregion
 
-    //预加载
-    fun refreshCache() {
-        gameRemoteDs.refreshLotteryFavoritesCache()//推荐收藏
-        gameRemoteDs.refreshAllGame()//全部彩票
-        gameRemoteDs.refreshOtherGameCache()//三方游戏
+    //region 网络数据请求
+
+    //region 预加载：推荐收藏、全部彩票、三方游戏、玩法说明
+    fun preCacheCache() {
+        gameRemoteDs.preCacheLotteryFavorites()//推荐收藏
+        gameRemoteDs.preCacheAllGame()//全部彩票
+        gameRemoteDs.preCacheOtherGame()//三方游戏
         lotRemoteDs.refreshHowToPlayCache()//玩法说明
     }
+    //endregion
 
-    //余额
-    fun getBalance() {
+    //region 余额
+    fun netBalance() {
         accountRemoteDs.balance {
             it?.let {
                 accountManager.saveUserBalance(it)
             }
         }
     }
+    //endregion
 
-    //根据类型查询彩种
+    //region 根据类型查询彩种
     fun getLotteryByType() {
 
     }
+    //endregion
 
-    //官方验证
-    fun getGameOfficialDes() {
+    //region 官方说明
+    fun refreshGameOfficialDes() {
         lotRemoteDs.refreshOfficialDescCache()
     }
+    //endregion
 
-    //快捷转账
+    //region 快捷转账
     fun fastTransfer() {
 
     }
+    //endregion
 
-    //公告
+    //region 公告
+    val noticeLd = LiveDataWrapper<String>()//公告
     fun noticeData() {
         homeAppRemoteDs.notice {
             it?.let {
@@ -91,8 +98,10 @@ class HomeViewModel @ViewModelInject @Inject constructor(
             }
         }
     }
+    //endregion
 
-    //轮播图
+    //region 轮播图
+    val bannerLd = LiveDataWrapper<List<BannerMapper>?>()//轮播图
     fun bannerData() {
         homeAppRemoteDs.bannerDatas {
             if (null == it || it.list.isNullOrEmpty()) {
@@ -122,19 +131,24 @@ class HomeViewModel @ViewModelInject @Inject constructor(
             }
         }
     }
+    //endregion
 
-    //红包
-    fun dividenedAvailable() {
+    //region 红包
+    //红包开关
+    fun dividendAvailable() {
 
     }
 
-    //红包
+    //领取红包
     fun receiveDividend() {
 
     }
+    //endregion
 
-    //下载全部的cocos文件
+    //region 下载全部的cocos文件
     fun downloadAllCocosFiles() {
         cocosRemoteDs.downloadAllCocos()
     }
+    //endregion
+    //endregion
 }

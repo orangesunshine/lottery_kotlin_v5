@@ -32,6 +32,9 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private val lotLocalDs: LotLocalDs,
     private val lotRemoteDs: LotRemoteDs,
 ) : BaseViewModel() {
+
+    //region 请求数据
+
     //region 初始化彩票
     private var mToken: String? = null
     private var mUserBonus: Double = 0.0
@@ -39,7 +42,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private var mSingledInfo: SingledInfo? = null
     private var mOddInfo: List<OddInfo>? = null
     private var mAlreadyInitGame = AtomicBoolean()
-    fun initGame(gameId: Int) {
+    fun netInitGame(gameId: Int) {
         lotRemoteDs.initGame(gameId.toString()) {
             it?.let {
                 mSingledInfo = it.singledInfo
@@ -56,7 +59,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //region 获取彩票玩法
     private var mAlreadyGetBetType = false
     val gameBetTypeDataLd = LiveDataWrapper<GameBetTypeData?>()//玩法接口
-    fun getBetType(gameId: Int) {
+    fun netBetType(gameId: Int) {
         lotRemoteDs.getBetType(gameId.toString()) {
             gameBetTypeDataLd.setData(it)
             if (!mAlreadyGetBetType) mAlreadyGetBetType = true
@@ -66,7 +69,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     //region 数据库查找玩法说明
     var subPlayMethodLd = LiveDataWrapper<SubPlayMethod?>()
-    fun getLocalBetType(playId: Int) {
+    fun dbBetType(playId: Int) {
         lotLocalDs.queryBetTypeByPlayId(playId)
             ?.let {
                 subPlayMethodLd.setData(if (it.size > 1) {
@@ -115,6 +118,9 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         return ctMap[key] ?: ctMap[playId.toString()]
     }
     //endregion
+    //endregion
+
+    //region 工具方法
 
     //region 金额单位
     fun initAmountUnit(gameId: Int, playId: Int, amountUnit: (Int?) -> Unit) {
@@ -158,13 +164,13 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         lot: (lotParam: LotParam, refreshToken: (String) -> Unit) -> Unit,
     ) {
         if (!mAlreadyGetBetType) {
-            getBetType(gameId)
+            netBetType(gameId)
             toast.showWarning("正在获取玩法配置")
             return
         }
 
         if (mAlreadyInitGame.get()) {
-            initGame(gameId)
+            netInitGame(gameId)
             toast.showWarning("正在初始化彩票")
             return
         }
@@ -206,6 +212,52 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
                 zhuiHaoQiHao = ArrayList()
             )
         ) { mToken = it }
+    }
+
+    /**
+     * 根据参数生成投注参数：touZhuHaoMa
+     */
+    private fun genTouZhuHaoMa(
+        playId: Int,
+        betNums: String,
+        multiple: Int,
+        moneyUnit: Int,
+        digit: String,//用户选中digit
+        verifyDigit: String?,//验证位置
+        needDigit: Boolean?,//最少位置
+        noteCount: Int,
+        amount: Double,
+        singleMoney: Double,
+        betItem: BetItem?,
+        singledInfo: SingledInfo?,
+        toast: AbsToast,
+    ): TouZhuHaoMa? {
+        //验证digit，选中位置个数
+        if (needDigit == true && !verifyDigit.isSpace()) {
+            toast.showError(verifyDigit)
+            return null
+        }
+        val isDanTiao = isDanTiao(noteCount, betItem)
+        return TouZhuHaoMa(
+            baseScale = singleMoney * multiple,
+            singleMoney = singleMoney,
+            bouse = mUserBonus,
+            danZhuJinEDanWei = Converts.unit2Params(moneyUnit),
+            digit = digit,
+            model = Converts.unit2Enum(moneyUnit).toString(),
+            playtypename = betItem?.getPlayTitle(),
+            touZhuBeiShu = multiple,
+            yongHuSuoTiaoFanDian = 0.0,
+            zhuShu = noteCount,
+            wanFaID = playId,
+            amount = amount,
+            touZhuHaoMa = betNums,
+            isDanTiao = isDanTiao,
+            singleBet = SingleBet(
+                isDanTiao,
+                if (isDanTiao) getDanTiaoMaxMoney(betItem, singledInfo) else 0.0
+            )
+        )
     }
     //endregion
 
@@ -257,49 +309,6 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         }
     }
     //endregion
-
-    private fun genTouZhuHaoMa(
-        playId: Int,
-        betNums: String,
-        multiple: Int,
-        moneyUnit: Int,
-        digit: String,//用户选中digit
-        verifyDigit: String?,//验证位置
-        needDigit: Boolean?,//最少位置
-        noteCount: Int,
-        amount: Double,
-        singleMoney: Double,
-        betItem: BetItem?,
-        singledInfo: SingledInfo?,
-        toast: AbsToast,
-    ): TouZhuHaoMa? {
-        //验证digit，选中位置个数
-        if (needDigit == true && !verifyDigit.isSpace()) {
-            toast.showError(verifyDigit)
-            return null
-        }
-        val isDanTiao = isDanTiao(noteCount, betItem)
-        return TouZhuHaoMa(
-            baseScale = singleMoney * multiple,
-            singleMoney = singleMoney,
-            bouse = mUserBonus,
-            danZhuJinEDanWei = Converts.unit2Params(moneyUnit),
-            digit = digit,
-            model = Converts.unit2Enum(moneyUnit).toString(),
-            playtypename = betItem?.getPlayTitle(),
-            touZhuBeiShu = multiple,
-            yongHuSuoTiaoFanDian = 0.0,
-            zhuShu = noteCount,
-            wanFaID = playId,
-            amount = amount,
-            touZhuHaoMa = betNums,
-            isDanTiao = isDanTiao,
-            singleBet = SingleBet(
-                isDanTiao,
-                if (isDanTiao) getDanTiaoMaxMoney(betItem, singledInfo) else 0.0
-            )
-        )
-    }
 
     //region 单挑
     //判断是不是单挑
@@ -382,5 +391,6 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             noteCountBlock, error
         )
     }
+    //endregion
     //endregion
 }

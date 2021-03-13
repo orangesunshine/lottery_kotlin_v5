@@ -12,9 +12,9 @@ class SplashViewModel @ViewModelInject @Inject constructor(
     private val remoteDomainDs: DomainRemoteDs,
     private val appDs: AppRemoteDs
 ) : BaseViewModel() {
-    val ldDomainRet = LiveDataWrapper<Boolean>()
 
-    //初始化域名
+    //region 初始化域名：成功后继续：1.缓存客服线路，2.缓存apk版本信息
+    val ldDomainRet = LiveDataWrapper<Boolean>()
     fun initDomain() {
         remoteDomainDs.getDomain {
             //获取域名成功
@@ -23,19 +23,22 @@ class SplashViewModel @ViewModelInject @Inject constructor(
             preApkVersion()//缓存apk版本信息
         }
     }
+    //endregion
 
-    //获取客服
+    //region 预加载客服线路
     private fun preCustomServiceUrl() {
-        appDs.preCustomServiceUrl()
+        appDs.preCacheCustomServiceUrl()
     }
+    //endregion
 
-    //获取apk版本
+    //region 预加载版本信息
     private fun preApkVersion() {
-        appDs.refreshApkVersionCache {
+        appDs.preCacheApkVersion {
             it?.let {
                 //发送粘性事件，MainActivity打开处理
                 EventBus.getDefault().postSticky(it)
             }
         }
     }
+    //endregion
 }

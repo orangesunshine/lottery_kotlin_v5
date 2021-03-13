@@ -45,7 +45,7 @@ class HomeAllGameFragment : BaseFragment(R.layout.recyclerview_single_layout) {
     }
     //endregion
 
-    //region 全部game
+    //region 全部game数据请求、结果处理
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.allGame()

@@ -12,8 +12,8 @@ class GameRemoteDs @Inject constructor(
     private val gameApi: GameApi,
 ) {
     //region 全部Game
-    fun refreshAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
-        retrofitWrapper.refreshCache(URL.URL_ALL_GAME, gameApi.allGame(), success)
+    fun preCacheAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
+        retrofitWrapper.preCache(URL.URL_ALL_GAME, gameApi.allGame(), success)
     }
 
     fun cachePriAllGame(success: ((MutableList<AllGameItemData>?) -> Unit)? = null) {
@@ -21,13 +21,9 @@ class GameRemoteDs @Inject constructor(
     }
     //endregion
 
-    fun gameByGenres(genres: String) {
-        retrofitWrapper.observe(gameApi.gameByGenres(genres))
-    }
-
-    //region othergame
-    fun refreshOtherGameCache() {
-        retrofitWrapper.refreshCache(URL.URL_OTHER_GAME, gameApi.otherGame())
+    //region 三方游戏
+    fun preCacheOtherGame() {
+        retrofitWrapper.preCache(URL.URL_OTHER_GAME, gameApi.otherGame())
     }
 
     fun cachePriOtherGame(success: (OtherPlatformData?) -> Unit) {
@@ -40,8 +36,8 @@ class GameRemoteDs @Inject constructor(
     }
 
     //region 收藏
-    fun refreshLotteryFavoritesCache() {
-        retrofitWrapper.refreshCache(URL.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
+    fun preCacheLotteryFavorites() {
+        retrofitWrapper.preCache(URL.URL_LOTTERY_FAVORITES, gameApi.lotteryFavorites())
     }
 
     fun cachePriLotteryFavorites(success: (LotteryFavoritesData?) -> Unit) {
@@ -50,6 +46,12 @@ class GameRemoteDs @Inject constructor(
             gameApi.lotteryFavorites(),
             success
         )
+    }
+    //endregion
+
+    //region 根据彩种大类获取游戏列表
+    fun gameByGenres(genres: String) {
+        retrofitWrapper.observe(gameApi.gameByGenres(genres))
     }
     //endregion
 }
