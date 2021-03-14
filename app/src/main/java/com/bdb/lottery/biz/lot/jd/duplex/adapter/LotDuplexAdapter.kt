@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
+import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexLd
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.lot.Lots
@@ -24,7 +25,7 @@ class LotDuplexAdapter constructor(
     private var betTypeId: Int,
     private var ballTextList: List<String>?,//不为空：非数字球，否则数字球
     duplexDatas: MutableList<LotDuplexData>?,
-    private val noteCountBlock: ((List<List<String?>?>) -> Unit)?
+    private val noteCountBlock: ((List<List<String?>?>) -> Unit)?,
 ) : BaseQuickAdapter<LotDuplexData, BaseViewHolder>(
     R.layout.lot_duplex_item,
     duplexDatas
@@ -364,17 +365,13 @@ class LotDuplexAdapter constructor(
     //endregion
 
     //region 玩法改变刷新
-    fun notifyChangeWhenPlayChange(
-        betTypeId: Int,
-        ballTextList: List<String>?,
-        duplexDatas: MutableList<LotDuplexData>?,
-    ) {
-        this.betTypeId = betTypeId
-        this.ballTextList = ballTextList
+    fun notifyChangeWhenPlayChange(lotDuplexLd: LotDuplexLd) {
+        this.betTypeId = lotDuplexLd.betTypeId
+        this.ballTextList = lotDuplexLd.ballTextList
         m11x5DanTuo =//11选5组选胆拖的胆码
             betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176
-        mSpanCount = spanCountByGameTypeNdLHH(gameType)
-        setNewInstance(duplexDatas)
+        mSpanCount = spanCountByGameTypeNdLHH(lotDuplexLd.gameType)
+        setNewInstance(lotDuplexLd.lotDuplexDatas)
     }
     //endregion
 

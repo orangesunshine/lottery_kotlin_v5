@@ -201,7 +201,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private var mPlaySelectedPos: Int = 0
     private var mGroupSelectedPos: Int = 0
     private var mBetSelectedPos: Int = 0
-    private var mPlayId: Int = 0
+    private var mBetTypeId: Int = 0
     override fun initVar(bundle: Bundle?) {
         super.initVar(bundle)
         mGameType = intent.getIntExtra(EXTRA.TYPE_GAME_EXTRA, -1)
@@ -230,7 +230,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             tags.add(JD_FRAGMENT_TAG)
             val jd = fm.findFragmentByTag(JD_FRAGMENT_TAG)
             mLotJdFragment = if (saveStates && null != jd && jd is LotJdFragment) jd
-            else LotJdFragment.newInstance(mGameType, mGameId, mPlayId, mGameName)
+            else LotJdFragment.newInstance(mGameType, mGameId, mBetTypeId, mGameName)
             fragments.add(mLotJdFragment!!)
         }
 
@@ -426,7 +426,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                 mGameType,
                 mGameId,
                 mParentPlayId,
-                mPlayId,
+                mBetTypeId,
                 tGame.getShowLotteryPlace(mPlayName, mGameType.toString()),
                 it?.toMutableList()
             )
@@ -747,7 +747,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private var mPlaySelectedTmpRef = -1
     private fun onBetSelected(item: BetItem?) {
         if (mCurFragmentType == JD_FRAGMENT_TYPE) {
-            mPlayId = item?.betType ?: 0//玩法id
+            mBetTypeId = item?.betType ?: 0//玩法id
             mLotJdFragment?.onBetSelected(item)
         }
         lotOpenNumsFl.adapter?.let {
@@ -859,7 +859,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         mGroupSelectedPos = tCache.playGroupCacheByGameId(mGameId) ?: 0
         mBetSelectedPos = tCache.betCacheByGameId(mGameId) ?: 0
         mParentPlayId = tCache.parentPlayIdCacheByGameId(mGameId) ?: 0
-        mPlayId = tCache.playIdCacheByGameId(mGameId) ?: 0
+        mBetTypeId = tCache.playIdCacheByGameId(mGameId) ?: 0
     }
     //endregion
 
@@ -867,7 +867,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private fun cachePlay4GameId(
     ) {
         tCache.cachePlay4GameId(
-            mGameId, mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos, mParentPlayId, mPlayId
+            mGameId, mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos, mParentPlayId, mBetTypeId
         )
     }
     //endregion

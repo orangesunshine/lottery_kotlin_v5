@@ -1,10 +1,15 @@
 package com.bdb.lottery.biz.lot.jd
 
+import android.os.Bundle
 import android.widget.EditText
 import androidx.hilt.lifecycle.ViewModelInject
+import com.bdb.lottery.R
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.biz.lot.BetCenter
+import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
+import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexLd
 import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
+import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.database.lot.entity.SubPlayMethod
 import com.bdb.lottery.datasource.common.LiveDataWrapper
@@ -18,6 +23,7 @@ import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.OddInfo
 import com.bdb.lottery.datasource.lot.data.jd.SingledInfo
 import com.bdb.lottery.extension.equalsNSpace
+import com.bdb.lottery.extension.isDigit
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
@@ -38,68 +44,116 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //region 初始化彩票
     private var mToken: String? = null
     private var mUserBonus: Double = 0.0
-    private var mUserRebate: Double = 0.0
-    private var mSingledInfo: SingledInfo? = null
-    private var mOddInfo: List<OddInfo>? = null
+    private var mUserRebate: Double = 0.0//三方游戏返点
+    private var mSingledInfo: SingledInfo? = null//最高限红
+    private var mOddInfo: List<OddInfo>? = null//理论最高奖金
     private var mAlreadyInitGame = AtomicBoolean()
-    fun netInitGame(gameId: Int) {
-        lotRemoteDs.initGame(gameId.toString()) {
+    fun netInitGame() {
+        lotRemoteDs.initGame(mGameId.toString()) {
+            mAlreadyInitGame.set(true)
             it?.let {
                 mSingledInfo = it.singledInfo
                 mOddInfo = it.oddInfo
-                mUserBonus = it.userBonus ?: 0.0
-                mUserRebate = it.user ?: 0.0
+                mUserBonus = it.userBonus
+                mUserRebate = it.user
                 mToken = it.token
             }
-            mAlreadyInitGame.set(true)
         }
     }
     //endregion
 
     //region 获取彩票玩法
-    private var mAlreadyGetBetType = false
+    private var mAlreadyGetBetType = AtomicBoolean()
     val gameBetTypeDataLd = LiveDataWrapper<GameBetTypeData?>()//玩法接口
-    fun netBetType(gameId: Int) {
-        lotRemoteDs.getBetType(gameId.toString()) {
+    fun netBetType() {
+        lotRemoteDs.getBetType(mGameId.toString()) {
             gameBetTypeDataLd.setData(it)
-            if (!mAlreadyGetBetType) mAlreadyGetBetType = true
+            mAlreadyGetBetType.set(true)
         }
     }
     //endregion
 
     //region 数据库查找玩法说明
-    var subPlayMethodLd = LiveDataWrapper<SubPlayMethod?>()
-    fun dbBetType(playId: Int) {
-        lotLocalDs.queryBetTypeByPlayId(playId)
+    var singleModeLd = LiveDataWrapper<Boolean>()//默认复式
+    var singleNumCountsLd = LiveDataWrapper<Int>()//单式切换玩法：一注号码球个数
+
+    val atLeastDigitLd = LiveDataWrapper<Int>()//最少digit位数
+    val needDigitLd = LiveDataWrapper<Boolean>()//是否显示digit
+    val parentPlayMethodLd = LiveDataWrapper<Int>()//开奖历史形态
+    val duplexBallDatasLd = LiveDataWrapper<LotDuplexLd>()//复式玩法切换
+    private var mDigits: String? = null
+    private var mIsBuildAll: Boolean? = null
+    private var mDigitTitles: String? = null
+    fun dbBetType(betTypeId: Int) {
+        mBetTypeId = betTypeId
+        lotLocalDs.queryBetTypeByPlayId(betTypeId)
             ?.let {
-                subPlayMethodLd.setData(if (it.size > 1) {
+                val subPlayMethod = if (it.size > 1) {
                     it.last { !it.belongto.contains("PK10") }
                 } else {
                     if (!it.isNullOrEmpty()) it.last() else null
-                })
+                }
+                subPlayMethod?.let { it ->
+                    mDigits = it.subPlayMethodDesc.digit
+
+                    singleModeLd.setData(it.subPlayMethodDesc.isdanshi)
+                    if (isSingleMode()) {
+                        singleNumCountsLd.setData(it.subPlayMethodDesc.single_num_counts)
+                    } else {
+                        mIsBuildAll = it.subPlayMethodDesc.isBuildAll
+                        mDigitTitles = it.subPlayMethodDesc.digit_titles
+                        duplexBallDatasLd.setData(LotDuplexLd(mGameType,
+                            mBetTypeId,
+                            mIsBuildAll,
+                            mDigitTitles,
+                            getBallTextList(it.subPlayMethodDesc.ball_text_list),
+                            genDuplexDatas(it)))
+                    }
+                    it.subPlayMethodDesc.atleast_wei_shu?.let { atLeastDigitLd.setData(it.toInt()) }
+                    needDigitLd.setData(it.subPlayMethodDesc.is_need_show_weizhi)
+                    parentPlayMethodLd.setData(it.parent_play_method)
+                }
             }
+    }
+
+    //获取非数字球
+    private fun getBallTextList(ballTextList: String?): List<String>? {
+        return ballTextList?.split(",")?.let {
+            if (GAME.TYPE_GAME_K3 == mGameType) it.sortedWith { s: String, s1: String ->
+                val c1 = if (s.isDigit()) 1 else -1
+                val c2 = if (s1.isDigit()) 1 else -1
+                c1 - c2
+            } else it
+        }
+    }
+
+    //是否显示digit
+    fun needDigit(): Boolean {
+        return needDigitLd.getData() == true
+    }
+
+    //至少几位digit
+    fun atLeastDigit(): Int? {
+        return atLeastDigitLd.getData()
+    }
+
+    //是否单式
+    fun isSingleMode(): Boolean {
+        return singleModeLd.getData() == true
     }
     //endregion
 
     //region 玩法说明
     private var lotteryHowToPlayMap: Map<String, Map<String, String>>? = null
-    fun cachePreHowToPlay(
-        gameType: Int, playId: Int,
-        dialogBlock: ((desc: String?) -> Unit)? = null
-    ) {
+    fun cachePreHowToPlay(dialogBlock: ((gameType: Int, descText: String?) -> Unit)? = null) {
         if (null != lotteryHowToPlayMap) {
-            dialogBlock?.invoke(lotteryHowToPlayMap2Desc(gameType, playId, lotteryHowToPlayMap))
+            dialogBlock?.invoke(mGameType, lotteryHowToPlayMap2Desc(lotteryHowToPlayMap))
         } else {
             lotRemoteDs.cachePreHowToPlay {
                 it?.let {
                     lotteryHowToPlayMap =
                         Gsons.fromJsonByTokeType<Map<String, Map<String, String>>>(it)
-                    dialogBlock?.invoke(
-                        lotteryHowToPlayMap2Desc(
-                            gameType, playId,
-                            lotteryHowToPlayMap
-                        )
-                    )
+                    dialogBlock?.invoke(mGameType, lotteryHowToPlayMap2Desc(lotteryHowToPlayMap))
                 }
             }
         }
@@ -107,70 +161,146 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     //根据游戏大类、玩法id获取玩法说明
     private fun lotteryHowToPlayMap2Desc(
-        gameType: Int,
-        playId: Int,
-        lotteryHowToPlayMap: Map<String, Map<String, String>>?
+        lotteryHowToPlayMap: Map<String, Map<String, String>>?,
     ): String? {
         if (lotteryHowToPlayMap.isNullOrEmpty()) return null
         val ctMap = lotteryHowToPlayMap["ct"]
         if (ctMap.isNullOrEmpty()) return null
-        val key = "gameKind${gameType}_$playId"
-        return ctMap[key] ?: ctMap[playId.toString()]
+        val key = "gameKind${mGameType}_$mBetTypeId"
+        return ctMap[key] ?: ctMap[mBetTypeId.toString()]
     }
     //endregion
+    //endregion
+
+    //region 初始化参数：倍数、彩种id、彩种大类，彩种名称，玩法id
+    private var mGameId: Int = -1
+    private var mGameType: Int = -1
+    private var mGameName: String? = null
+    private var mBetTypeId: Int = -1
+    fun initExtraArgs(args: Bundle?) {
+        args?.let {
+            mGameId = it.getInt(EXTRA.ID_GAME_EXTRA)
+            mGameType = it.getInt(EXTRA.TYPE_GAME_EXTRA)
+            mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
+            mBetTypeId = it.getInt(EXTRA.ID_BET_TYPE_EXTRA)
+        }
+    }
+    //endregion
+
+    //region 彩种大类快三
+    fun isK3(): Boolean {
+        return GAME.TYPE_GAME_K3 == mGameType
+    }
+    //endregion
+
+    //region 金额单位
+    //缓存金额单位
+    fun cacheMoneyUnit(moneyUnit: Int) {
+        tCache.cacheMoneyUnit(mGameId, mBetTypeId, moneyUnit)
+    }
+
+    //金额单位缓存
+    fun moneyUnitCache(): Int {
+        return tCache.moneyUnitCache(mGameId, mBetTypeId) ?: 1
+    }
+    //endregion
+
+    //region 复式：计算注数
+    fun computeDuplexCount(
+        numsText: String,
+        selectedDigit: String,
+    ): Int {
+        return BetCenter.computeStakeCount(
+            numsText,
+            mGameType,
+            mBetTypeId,
+            getDigit(selectedDigit)
+        )
+    }
+    //endregion
+
+    //region 复式：根据选中号码球生成字符串
+    fun makeBetNumStr(betNums: List<List<String?>?>?): String {
+        return BetCenter.makeBetNumStr(betNums, mIsBuildAll, mDigitTitles)
+    }
     //endregion
 
     //region 工具方法
-
-    //region 金额单位
-    fun initAmountUnit(gameId: Int, playId: Int, amountUnit: (Int?) -> Unit) {
-        amountUnit.invoke(moneyUnitCache(gameId, playId))
+    //切换复式：复式号码球数据
+    private fun genDuplexDatas(subPlayMethod: SubPlayMethod): MutableList<LotDuplexData> {
+        val lotDuplexDatas = mutableListOf<LotDuplexData>()
+        val ballGroupsCounts = subPlayMethod.subPlayMethodDesc.ball_groups_counts
+        val titles = subPlayMethod.subPlayMethodDesc?.ball_groups_item_title?.split(",")
+        if (ballGroupsCounts > 0) {
+            for (i in 0 until ballGroupsCounts) {
+                lotDuplexDatas.add(
+                    LotDuplexData(
+                        titles?.get(i),
+                        subPlayMethod.subPlayMethodDesc.item_ball_num_counts,
+                        subPlayMethod.subPlayMethodDesc.ball_text_list?.split(",").let {
+                            if (isK3()) it?.sortedWith { s: String, s1: String ->
+                                val c1 = if (s.isDigit()) 1 else -1
+                                val c2 = if (s1.isDigit()) 1 else -1
+                                c1 - c2
+                            } else it
+                        },
+                        dxdsVisible = subPlayMethod.subPlayMethodDesc.is_show_type_select,
+                        hotVisible = false,
+                        leaveVisible = false,
+                        isStartZero = subPlayMethod.subPlayMethodDesc.is_start_zero,
+                        zeroVisible = subPlayMethod.subPlayMethodDesc.isShowZero,
+                    )
+                )
+            }
+        }
+        return lotDuplexDatas
     }
 
-    fun cacheMoneyUnit(
-        gameId: Int, playId: Int, moneyUnit: Int
-    ) {
-        tCache.cacheMoneyUnit(gameId, playId, moneyUnit)
+    //彩种大类换肤-投注区域、底部投注信息栏
+    fun betAreaBgResThemeByGameType(): Int {
+        return when (mGameType) {
+            GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> R.color.color_skin_pk_bg_jd
+            GAME.TYPE_GAME_K3 -> R.color.color_skin_k3_bg_jd
+            else -> R.color.color_bg
+        }
     }
 
-    private fun moneyUnitCache(gameId: Int, playId: Int): Int? {
-        return tCache.moneyUnitCache(gameId, playId)
+    //彩种大类换肤-投注区域顶部分割线
+    fun betAreaTopDivideThemeByGameType(): Int {
+        return when (mGameType) {
+            GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> R.color.color_play_desc_skin_pk_divide
+            GAME.TYPE_GAME_K3 -> R.color.color_play_desc_skin_k3_divide
+            else -> R.color.color_play_desc_skin_divide
+        }
     }
-    //endregion
 
-    //region 根据玩法配置获取当前位置
-    fun getDigit(needDigit: Boolean?, digit: String): String {
-        return if (needDigit == true) digit else subPlayMethodLd.getLiveData().value?.subPlayMethodDesc?.digit
-            ?: ""
+    //根据玩法配置获取当前位置
+    fun getDigit(selectedDigit: String): String {
+        return if (needDigit()) selectedDigit else mDigits ?: ""
     }
     //endregion
 
     //region 校验下注参数
     fun verifyNdGenLotParams(
-        mode: Int,
-        gameType: Int,
-        gameId: Int,
-        playId: Int,
-        gameName: String?,
         betNums: String,//投注号码
         multiple: Int,//倍数
         moneyUnit: Int,//金额单位
         digit: String,//用户选中digit
-        needDigit: Boolean?,//最少位置
         verifyDigit: String?,//验证位置
         noteCount: Int,//注数
         betItem: BetItem?,
         toast: AbsToast,
+        needDigit: Boolean? = needDigit(),//最少位置
         lot: (lotParam: LotParam, refreshToken: (String) -> Unit) -> Unit,
     ) {
-        if (!mAlreadyGetBetType) {
-            netBetType(gameId)
+        if (!mAlreadyGetBetType.get()) {
+            netBetType()
             toast.showWarning("正在获取玩法配置")
             return
         }
 
-        if (mAlreadyInitGame.get()) {
-            netInitGame(gameId)
+        if (!mAlreadyInitGame.get()) {
+            netInitGame()
             toast.showWarning("正在初始化彩票")
             return
         }
@@ -188,7 +318,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         }
 
         val touZhuHaoMa = genTouZhuHaoMa(
-            playId,
+            mBetTypeId,
             betNums,
             multiple,
             moneyUnit,
@@ -197,14 +327,14 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             needDigit,
             noteCount,
             getAmount(noteCount, moneyUnit, multiple),
-            getSingleMoney(mode, gameType, betNums, betItem),
+            getSingleMoney(betNums, betItem),
             betItem,
             mSingledInfo,
             toast
         ) ?: return
         lot.invoke(
             LotParam(
-                gameId.toString(), gameName, null,
+                mGameId.toString(), mGameName, null,
                 kg = false,
                 tingZhiZhuiHao = true,
                 token = mToken!!,
@@ -218,7 +348,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
      * 根据参数生成投注参数：touZhuHaoMa
      */
     private fun genTouZhuHaoMa(
-        playId: Int,
+        mPlayId: Int,
         betNums: String,
         multiple: Int,
         moneyUnit: Int,
@@ -245,11 +375,11 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             danZhuJinEDanWei = Converts.unit2Params(moneyUnit),
             digit = digit,
             model = Converts.unit2Enum(moneyUnit).toString(),
-            playtypename = betItem?.getPlayTitle(),
+            playtypename = betItem?.getJdPlayTitle(),
             touZhuBeiShu = multiple,
             yongHuSuoTiaoFanDian = 0.0,
             zhuShu = noteCount,
-            wanFaID = playId,
+            wanFaID = mPlayId,
             amount = amount,
             touZhuHaoMa = betNums,
             isDanTiao = isDanTiao,
@@ -269,13 +399,12 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     //region 理论最高奖金
     fun getSingleMoney(
-        mode: Int, gameType: Int,
         betNums: String?,
         betItem: BetItem?,
         userRebate: Double = mUserRebate,
         amountModelValue: Double = 1.0,
     ): Double {
-        if (isLHH(mode, gameType, betNums)) {
+        if (isLHH(betNums)) {
             mOddInfo?.let {
                 for (oddInfo in it) {
                     if (oddInfo.special_number.equalsNSpace(betNums)) return BetCenter.computeBonusText(
@@ -295,9 +424,9 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     /**
      * 根据彩种大类，投注号码判断是否使用龙虎和奖金(initGame->oddInfo)
      */
-    private fun isLHH(mode: Int, gameType: Int, betNums: String?): Boolean {
-        if (mode == 0) return false//单式
-        return when (gameType) {
+    private fun isLHH(betNums: String?): Boolean {
+        if (isSingleMode()) return false//单式
+        return when (mGameType) {
             GAME.TYPE_GAME_SSC -> return StringUtils.equalsAny(betNums, "龙", "虎", "和")
             GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> return StringUtils.equalsAny(
                 betNums,
@@ -374,8 +503,6 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     //region 单式：监听输入框
     fun createSingleTextWatcher(
-        gameType: Int,
-        playId: Int,
         singleInputEt: EditText,
         singleNumCount: Int,
         digit: String,
@@ -385,8 +512,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         return SingleTextWatcher(
             singleInputEt,
             singleNumCount,
-            gameType,
-            playId,
+            mGameType,
+            mBetTypeId,
             digit,
             noteCountBlock, error
         )

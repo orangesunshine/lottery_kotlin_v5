@@ -14,6 +14,7 @@ object ServiceManager {
     }
 
     fun stopAll() {
+        if (mServiceStack.isEmpty()) return
         var service = mServiceStack.pop()
         while (null != service) {
             service.stopSelf()

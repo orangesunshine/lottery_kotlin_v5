@@ -9,7 +9,6 @@ import com.bdb.lottery.R
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.extension.isSpace
-import com.bdb.lottery.module.application.AppEntries
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -17,13 +16,12 @@ import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.zhy.view.flowlayout.FlowLayout
 import com.zhy.view.flowlayout.TagAdapter
 import com.zhy.view.flowlayout.TagFlowLayout
-import dagger.hilt.android.EntryPointAccessors
 
 class BallAdapter(
     private val gameType: Int,
     private val gameId: Int,
     private var parentPlayId: Int,
-    private val playId: Int,
+    private val betTypeId: Int,
     private var brightLists: String,
     data: MutableList<HistoryData.HistoryItem>? = null,
 ) : BaseQuickAdapter<HistoryData.HistoryItem, BaseViewHolder>(R.layout.lot_history_item, data) {
@@ -36,7 +34,7 @@ class BallAdapter(
 
     //形态
     private fun labelText(item: HistoryData.HistoryItem): String {
-        return Lots.getLabel(gameType, parentPlayId, playId, item.nums)
+        return Lots.getLabel(gameType, parentPlayId, betTypeId, item.nums)
     }
 
     private fun ballSize(gameType: Int): Int {

@@ -12,7 +12,7 @@ class SingleTextWatcher constructor(
     private val mEtText: EditText,
     private var singleNumCount: Int,
     private val lotType: Int,
-    private var playId: Int,
+    private var betTypeId: Int,
     private var digit: String?,
     private val noteCountBlock: (Int) -> Unit,
     private val error: (String?) -> Unit,
@@ -34,8 +34,8 @@ class SingleTextWatcher constructor(
         this.digit = digit
     }
 
-    fun setPlayId(playId: Int) {
-        this.playId = playId
+    fun setBetTypeId(betTypeId: Int) {
+        this.betTypeId = betTypeId
     }
 
     override fun afterTextChanged(s: Editable?) {
@@ -69,7 +69,7 @@ class SingleTextWatcher constructor(
                     BetCenter.computeSingleAvailableBetCount(
                         if (!fromInput && buff.isNotEmpty() && buff.length - buff.lastIndexOf(",") <= singleNumCount) {
                             buff.substring(0, buff.lastIndexOf(","))
-                        } else buff.toString(), lotType, playId, digit, fromInput
+                        } else buff.toString(), lotType, betTypeId, digit, fromInput
                     )
                 } catch (e: Exception) {
                     if (!fromInput) throw e else -1

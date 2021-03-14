@@ -34,7 +34,7 @@ data class BetItem(
     var singleMaxMoney: Double,
 ) {
     //玩法title
-    fun getPlayTitle(): String {
+    fun getJdPlayTitle(): String {
         return "$rootName · $betName";
     }
 }

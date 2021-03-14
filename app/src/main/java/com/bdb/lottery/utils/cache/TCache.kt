@@ -177,23 +177,23 @@ class TCache @Inject constructor() {
         bet: Int, parentPlayId: Int, playId: Int,
     ) {
         val gameIdText = gameId.toString()
-        Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_CACHE, play)
-        Caches.putInt(gameIdText + CACHE.LOT_JD_GROUP_CACHE, group)
-        Caches.putInt(gameIdText + CACHE.LOT_JD_BET_CACHE, bet)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_POS_CACHE, play)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_GROUP_POS_CACHE, group)
+        Caches.putInt(gameIdText + CACHE.LOT_JD_BET_POS_CACHE, bet)
         Caches.putInt(gameIdText + CACHE.LOT_JD_PARENT_PLAY_ID_CACHE, parentPlayId)
         Caches.putInt(gameIdText + CACHE.LOT_JD_PLAY_ID_CACHE, playId)
     }
 
     fun playCacheByGameId(gameId: Int): Int? {
-        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PLAY_CACHE, 0)
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_PLAY_POS_CACHE, 0)
     }
 
     fun playGroupCacheByGameId(gameId: Int): Int? {
-        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_GROUP_CACHE, 0)
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_GROUP_POS_CACHE, 0)
     }
 
     fun betCacheByGameId(gameId: Int): Int? {
-        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_BET_CACHE, 0)
+        return Caches.getInt(gameId.toString() + CACHE.LOT_JD_BET_POS_CACHE, 0)
     }
 
     fun playIdCacheByGameId(gameId: Int): Int? {

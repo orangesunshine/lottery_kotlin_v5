@@ -24,13 +24,15 @@ class LotPlayDescDialog @Inject constructor() : BaseDialog(R.layout.lot_play_des
     private var mGameType: Int = 0
     private var mPlayDescContent: String? = null
 
-    fun setGameType(gameType: Int) {
+    fun setGameType(gameType: Int): LotPlayDescDialog {
         mGameType = gameType
+        return this
     }
 
-    fun setPlayDescContent(playDescContent: String) {
+    fun setPlayDescContent(playDescContent: String): LotPlayDescDialog {
         mPlayDescContent =
             playDescContent.replace("\n", "<br/>").replace("/n", "<br/>").replace("\n", "<br/>")
+        return this
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

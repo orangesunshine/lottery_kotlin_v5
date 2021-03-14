@@ -58,10 +58,10 @@ class AccountManager @Inject constructor() {
     //endregion
 
     //region 余额
-    var mUserBalance = LiveDataWrapper<UserBalanceData?>()
+    var mUserBalance = LiveDataWrapper<UserBalanceData>()
 
     //保存用户余额
-    fun saveUserBalance(userBalanceData: UserBalanceData?) {
+    fun saveUserBalance(userBalanceData: UserBalanceData) {
         mUserBalance.setData(userBalanceData)
     }
     //endregion

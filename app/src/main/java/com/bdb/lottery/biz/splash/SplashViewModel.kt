@@ -1,10 +1,12 @@
 package com.bdb.lottery.biz.splash
 
 import androidx.hilt.lifecycle.ViewModelInject
+import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.domain.DomainRemoteDs
+import com.bdb.lottery.service.ServiceManager
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
@@ -12,6 +14,10 @@ class SplashViewModel @ViewModelInject @Inject constructor(
     private val remoteDomainDs: DomainRemoteDs,
     private val appDs: AppRemoteDs
 ) : BaseViewModel() {
+
+    init {
+        ServiceManager.stopAll()
+    }
 
     //region 初始化域名：成功后继续：1.缓存客服线路，2.缓存apk版本信息
     val ldDomainRet = LiveDataWrapper<Boolean>()

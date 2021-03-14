@@ -39,6 +39,7 @@ open class UnitPopWindow @Inject constructor(@ActivityContext private val contex
         }
     }
 
+    //pattern(1,2,3,4)->元，角，分，厘
     fun setPattern(pattern: String?) {
         val contentView = getContentView()
         val space = pattern.isSpace()
