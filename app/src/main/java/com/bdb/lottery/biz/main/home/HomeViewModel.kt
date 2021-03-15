@@ -85,16 +85,14 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     val noticeLd = LiveDataWrapper<String>()//公告
     fun noticeData() {
         homeAppRemoteDs.notice {
-            it?.let {
-                it.roll.filter {
-                    val type = it.type
-                    !type.isSpace() && ("1".equals(type) || "2".equals(type))
-                }.map {
-                    it.content
-                }.let {
-                    noticeLd.setData(it.joinToString { it })
+            it.roll.filter {
+                val type = it.type
+                !type.isSpace() && ("1".equals(type) || "2".equals(type))
+            }.map {
+                it.content
+            }.let {
+                noticeLd.setData(it.joinToString { it })
 
-                }
             }
         }
     }
@@ -104,9 +102,8 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     val bannerLd = LiveDataWrapper<List<BannerMapper>?>()//轮播图
     fun bannerData() {
         homeAppRemoteDs.bannerDatas {
-            if (null == it || it.list.isNullOrEmpty()) {
+            if (it.list.isNullOrEmpty()) {
                 bannerLd.setData(null)
-                return@bannerDatas
             } else {
                 val mapper = { imghost: String ->
                     bannerLd.setData(it.list.map {
@@ -123,7 +120,7 @@ class HomeViewModel @ViewModelInject @Inject constructor(
                 val serverUrl = it.serverUrl
                 if (serverUrl.isSpace()) {
                     appRemoteDs.cachePrePlatformParams() {
-                        mapper(it?.imgurl ?: "")
+                        mapper(it.imgurl)
                     }
                 } else {
                     mapper(serverUrl)

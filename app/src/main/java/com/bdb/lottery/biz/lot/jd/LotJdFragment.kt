@@ -62,6 +62,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         requestDatas()
     }
 
@@ -81,11 +85,11 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         lotClick()//下注
     }
 
-    //region 彩种大类换肤
+    //region 换肤
     private fun skin4GameType() {
         lot_jd_desc_divide_view.setBackgroundColor(ContextCompat.getColor(requireContext(),
-            vm.betAreaTopDivideThemeByGameType()))//投注区域顶部分割线
-        val bgRes = ContextCompat.getColor(requireContext(), vm.betAreaBgResThemeByGameType())
+            vm.betAreaTopDivideSkinByGameType()))//投注区域顶部分割线
+        val bgRes = ContextCompat.getColor(requireContext(), vm.betAreaBgResSkinByGameType())
         lot_jd_bet_info_expl.setBackgroundColor(bgRes)//底部投注信息栏
         //投注区域背景
         if (vm.isK3()) {
@@ -283,7 +287,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
-    //region 下注倒计时状态更新
+    //region 倒计时：下注状态更新
     private var mClosed = false
     fun updateLotStatus(closed: Boolean) {
         if (mClosed == closed) return
@@ -312,7 +316,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
-    //region 投注信息栏--注数，总额，最高理论奖金（注数、金额单位切换、倍率改变）
+    //region 投注信息栏：注数，总额，最高理论奖金（注数、金额单位切换、倍率改变）
     private fun renderBetInfoBanner() {
         //注数
         lot_jd_selected_notes_tv.text =
@@ -344,7 +348,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
-    //region digit万、千、百、十、个
+    //region digit：万、千、百、十、个
     private fun renderAtLeastDigit(atLeastDigit: Int) {
         lot_jd_bet_digit_ge_cb.isChecked = atLeastDigit >= 1
         lot_jd_bet_digit_shi_cb.isChecked = atLeastDigit >= 2

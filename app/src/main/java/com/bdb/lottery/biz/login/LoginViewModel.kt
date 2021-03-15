@@ -73,7 +73,7 @@ class LoginViewModel @ViewModelInject @Inject constructor(
     //刷新公钥
     fun refreshRsaKey() {
         appRemoteDs.platformParams {
-            tCache.cacheRsaPublicKey(it?.rsaPublicKey)
+            tCache.cacheRsaPublicKey(it.rsaPublicKey)
         }
     }
 }

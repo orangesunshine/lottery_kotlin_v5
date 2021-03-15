@@ -22,7 +22,7 @@ interface LotApi {
     fun getTodayLotteryNums(
         @Field("gameId") gameId: String,
         @Field("count") type: String = "1500",
-    ): Observable<BaseResponse<TodayLotteryNumsData?>>
+    ): Observable<BaseResponse<TodayLotteryNumsData>>
 
 
     //获取未来期
@@ -31,7 +31,7 @@ interface LotApi {
     fun getBetting(
         @Field("gameId") gameIds: String,
         @Field("count") type: String = "120",
-    ): Observable<BaseResponse<CountDownData?>>
+    ): Observable<BaseResponse<CountDownData>>
 
     //根据ID获取该彩种历史开奖
     @POST(URL.URL_GET_HISTORY)
@@ -39,50 +39,50 @@ interface LotApi {
     fun getHistoryByGameId(
         @Field("gameId") gameId: String,
         @Field("count") type: String = "80",
-    ): Observable<BaseResponse<HistoryData?>>
+    ): Observable<BaseResponse<HistoryData>>
 
     //region 经典
     //经典彩种初始化
     @POST(URL.URL_INIT_GAME)
     @FormUrlEncoded
-    fun initGame(@Field("gameID") gameId: String): Observable<BaseResponse<GameInitData?>>
+    fun initGame(@Field("gameID") gameId: String): Observable<BaseResponse<GameInitData>>
 
     //经典玩法列表
     @POST(URL.URL_GET_BET_TYPE)
     @FormUrlEncoded
-    fun getBetType(@Field("gameId") gameId: String): Observable<BaseResponse<GameBetTypeData?>>
+    fun getBetType(@Field("gameId") gameId: String): Observable<BaseResponse<GameBetTypeData>>
     //endregion
 
     //region Kg
     //kg彩种初始化
     @POST(URL.URL_INIT_KG_GAME)
     @FormUrlEncoded
-    fun initTrGame(@Field("gameID") gameId: String): Observable<BaseResponse<TrInitGameData?>>
+    fun initTrGame(@Field("gameID") gameId: String): Observable<BaseResponse<TrInitGameData>>
 
 
     //kg
     @POST(URL.URL_GET_KG_BET_TYPE)
     @FormUrlEncoded
-    fun getTrBetType(@Field("gameId") gameId: String): Observable<BaseResponse<TrBetTypeData?>>
+    fun getTrBetType(@Field("gameId") gameId: String): Observable<BaseResponse<TrBetTypeData>>
     //endregion
 
     //region 微投
     //微投彩种初始化
     @POST(URL.URL_INIT_WT_GAME)
     @FormUrlEncoded
-    fun initWtGame(@Field("gameID") gameId: String): Observable<BaseResponse<WtInitData?>>
+    fun initWtGame(@Field("gameID") gameId: String): Observable<BaseResponse<WtInitData>>
 
 
     //微投
     @POST(URL.URL_GET_WT_BET_TYPE)
     @FormUrlEncoded
-    fun getWtBetType(@Field("gameId") gameId: String): Observable<BaseResponse<WtBetTypeData?>>
+    fun getWtBetType(@Field("gameId") gameId: String): Observable<BaseResponse<WtBetTypeData>>
     //endregion
 
     //下注
     @POST(URL.URL_CATHECTIC)
     @FormUrlEncoded
-    fun lot(@Field("json") lotParams: String): Observable<BaseResponse<LotData?>>
+    fun lot(@Field("json") lotParams: String): Observable<BaseResponse<LotData>>
 
     //玩法说明、官方验证读取js数据
     @GET

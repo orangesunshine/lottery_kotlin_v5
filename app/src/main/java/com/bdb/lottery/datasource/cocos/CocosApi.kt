@@ -9,7 +9,7 @@ interface CocosApi {
 
     @GET
     @Headers("domainIntercept: false", "headerIntercept:false")
-    fun cocosConfig(@Url url: String): Observable<CocosData?>
+    fun cocosConfig(@Url url: String): Observable<CocosData>
 
     @GET
     @Streaming

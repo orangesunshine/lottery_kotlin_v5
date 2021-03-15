@@ -29,18 +29,18 @@ class CocosRemoteDs @Inject constructor(
 ) {
 
     //cocos配置优先缓存
-    private fun cachePriCocosConfig(sucess: (CocosData?, String) -> Unit) {
+    private fun cachePriCocosConfig(success: (CocosData, String) -> Unit) {
         val cocosDownloadPath = tPath.cocosDownloadPath()
         if (Files.createOrExistsDir(cocosDownloadPath)) {
             //存在或创建cocos目录
             val cache = tCache.cocosConfigCache()
             //cocos配置缓存
             if (null != cache) {
-                sucess(cache, cocosDownloadPath!!)
+                success(cache, cocosDownloadPath!!)
             } else {
                 //网络下载cocos配置
                 val alreadyConfig = AtomicBoolean(false)
-                val cocosObservables = mutableListOf<Observable<CocosData?>>()
+                val cocosObservables = mutableListOf<Observable<CocosData>>()
                 URL.ULR_COCOS_CONFIG.forEach { cocosObservables.add(cocosApi.cocosConfig(it)) }
                 var dispose: Disposable? = null
                 Observable.mergeArrayDelayError(*(cocosObservables.toTypedArray()))
@@ -48,13 +48,11 @@ class CocosRemoteDs @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.io())
                     .subscribe {
-                        it?.let {
-                            if (!it.isEmpty()) {
-                                if (alreadyConfig.compareAndSet(false, true)) {
-                                    Timber.d("alreadyConfig")
-                                    dispose?.isDisposed
-                                    sucess(it, cocosDownloadPath!!)
-                                }
+                        if (!it.isEmpty()) {
+                            if (alreadyConfig.compareAndSet(false, true)) {
+                                Timber.d("alreadyConfig")
+                                dispose?.isDisposed
+                                success(it, cocosDownloadPath!!)
                             }
                         }
                     }
@@ -64,36 +62,34 @@ class CocosRemoteDs @Inject constructor(
 
     //下载全部cocos文件
     fun downloadAllCocos() {
-        cachePriCocosConfig { data: CocosData?, path: String ->
-            data?.let {
-                FileDownloader.setup(context)
-                val queueSet =
-                    FileDownloadQueueSet(FileDownloadListenerAdapter())
-                val tasks: MutableList<BaseDownloadTask> = ArrayList()
-                it.forEach {
-                    tCocos.clearSize()
-                    if (tCocos.checkCocosBatchDownload(path, it)) {
-                        tasks.add(
-                            FileDownloader.getImpl().create(it.androidZipUrl)
-                                .setTag(it)
-                                .setPath(tCocos.cocosZipFileFullName(path, it.name))
-                                .setListener(object : FileDownloadListenerAdapter() {
-                                    override fun error(task: BaseDownloadTask?, e: Throwable?) {
-                                        super.error(task, e)
-                                        Timber.d(e.msg)
-                                    }
-                                })
-                        )
-                    }
+        cachePriCocosConfig { data: CocosData, path: String ->
+            FileDownloader.setup(context)
+            val queueSet =
+                FileDownloadQueueSet(FileDownloadListenerAdapter())
+            val tasks: MutableList<BaseDownloadTask> = ArrayList()
+            data.forEach {
+                tCocos.clearSize()
+                if (tCocos.checkCocosBatchDownload(path, it)) {
+                    tasks.add(
+                        FileDownloader.getImpl().create(it.androidZipUrl)
+                            .setTag(it)
+                            .setPath(tCocos.cocosZipFileFullName(path, it.name))
+                            .setListener(object : FileDownloadListenerAdapter() {
+                                override fun error(task: BaseDownloadTask?, e: Throwable?) {
+                                    super.error(task, e)
+                                    Timber.d(e.msg)
+                                }
+                            })
+                    )
                 }
-                if (tasks.isNotEmpty()) {
-                    queueSet.disableCallbackProgressTimes().setAutoRetryTimes(1)
-                        .downloadTogether(tasks)
-                        .addTaskFinishListener {
-                            val cocos = it.tag as CocosData.CocosDataItem
-                            tCocos.decompressZip(path, cocos)
-                        }.start()
-                }
+            }
+            if (tasks.isNotEmpty()) {
+                queueSet.disableCallbackProgressTimes().setAutoRetryTimes(1)
+                    .downloadTogether(tasks)
+                    .addTaskFinishListener {
+                        val cocos = it.tag as CocosData.CocosDataItem
+                        tCocos.decompressZip(path, cocos)
+                    }.start()
             }
         }
     }
@@ -107,42 +103,40 @@ class CocosRemoteDs @Inject constructor(
         progress: ((soFarBytes: Int, totalBytes: Int, speed: Int) -> Unit)? = null,
         success: ((String) -> Unit)? = null,
     ) {
-        cachePriCocosConfig { data: CocosData?, path: String ->
-            data?.let {
-                FileDownloader.setup(context)
-                it.forEach {
-                    if (it.name.equalsNSpace(cocosName)) {
-                        if (tCocos.checkCocosSingleDownload(path, it)) {
-                            FileDownloader.getImpl()
-                                .create(it.androidZipUrl)
-                                .setTag(it)
-                                .setPath(path)
-                                .setCallbackProgressMinInterval(200)
-                                .setListener(object : FileDownloadListenerAdapter() {
-                                    override fun progress(
-                                        task: BaseDownloadTask?,
-                                        soFarBytes: Int,
-                                        totalBytes: Int,
-                                    ) {
-                                        progress?.invoke(soFarBytes, totalBytes, task?.speed ?: -1)
-                                    }
+        cachePriCocosConfig { data: CocosData, path: String ->
+            FileDownloader.setup(context)
+            data.forEach {
+                if (it.name.equalsNSpace(cocosName)) {
+                    if (tCocos.checkCocosSingleDownload(path, it)) {
+                        FileDownloader.getImpl()
+                            .create(it.androidZipUrl)
+                            .setTag(it)
+                            .setPath(path)
+                            .setCallbackProgressMinInterval(200)
+                            .setListener(object : FileDownloadListenerAdapter() {
+                                override fun progress(
+                                    task: BaseDownloadTask?,
+                                    soFarBytes: Int,
+                                    totalBytes: Int,
+                                ) {
+                                    progress?.invoke(soFarBytes, totalBytes, task?.speed ?: -1)
+                                }
 
-                                    override fun error(task: BaseDownloadTask?, e: Throwable?) {
-                                        super.error(task, e)
-                                        Timber.d(e.msg)
-                                    }
-                                })
-                                .addFinishListener {
-                                    val cocos = it.tag as CocosData.CocosDataItem
-                                    if (tCocos.decompressZip(path, cocos)) {
-                                        success?.invoke(path)
-                                    }
-                                }.start()
-                        } else {
-                            success?.invoke(path)
-                        }
-                        return@forEach
+                                override fun error(task: BaseDownloadTask?, e: Throwable?) {
+                                    super.error(task, e)
+                                    Timber.d(e.msg)
+                                }
+                            })
+                            .addFinishListener {
+                                val cocos = it.tag as CocosData.CocosDataItem
+                                if (tCocos.decompressZip(path, cocos)) {
+                                    success?.invoke(path)
+                                }
+                            }.start()
+                    } else {
+                        success?.invoke(path)
                     }
+                    return@forEach
                 }
             }
         }

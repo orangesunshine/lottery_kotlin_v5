@@ -10,12 +10,12 @@ class HomeRemoteDs @Inject constructor(
     private val homeApi: HomeApi
 ) {
     //轮播图
-    fun bannerDatas(success: (BannerData?) -> Unit) {
+    fun bannerDatas(success: (BannerData) -> Unit) {
         retrofitWrapper.observe(homeApi.bannerDatas(), success)
     }
 
     //通知
-    fun notice(success: (NoticeData?) -> Unit) {
+    fun notice(success: (NoticeData) -> Unit) {
         retrofitWrapper.observe(homeApi.notice(), success)
     }
 }

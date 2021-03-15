@@ -38,15 +38,6 @@ class TGame @Inject constructor(private val tCocos: TCocos) {
     }
 
     /**
-     * 期号文字过长，根据彩种处理成适当长度期号，拼接gameName
-     */
-    fun shortIssueTextWithGameName(issue: String, gameName: String?, gameType: Int): String {
-        return StringBuilder().append(gameName ?: "").append(" ")
-            .append(Games.shortIssueText(issue, gameType)).append("期")
-            .toString()
-    }
-
-    /**
      * 彩种对应玩法开奖号码是否显示alpha
      */
     private fun canShowAlpha(gameType: Int): Boolean {
@@ -150,15 +141,7 @@ class TGame @Inject constructor(private val tCocos: TCocos) {
         return list
     }
 
-    fun getShowLotteryPlace(playName: String?, gameType: String): String {
-        return when (gameType) {
-            "1", "2", "3", "9" -> getShowLotteryPlaceSSC(playName, gameType)
-            "5", "11" -> getShowLotteryPlacePK10(playName, gameType)
-            else -> ""
-        }
-    }
-
-    private fun getShowLotteryPlaceSSC(playName: String?, gameType: String): String {
+    fun getShowLotteryPlaceSSC(playName: String?, gameType: String): String {
         if (playName.isSpace()) {
             return ""
         }
@@ -230,7 +213,7 @@ class TGame @Inject constructor(private val tCocos: TCocos) {
         return stringBuffer.toString()
     }
 
-    private fun getShowLotteryPlacePK10(playName: String?, gameType: String?): String {
+    fun getShowLotteryPlacePK10(playName: String?, gameType: String?): String {
         val list: MutableList<String> = java.util.ArrayList()
         list.clear()
         if (playName.isSpace()) {
@@ -275,15 +258,5 @@ class TGame @Inject constructor(private val tCocos: TCocos) {
             }
         }
         return stringBuffer.toString()
-    }
-
-    //投注页面cocos动画、直播入口（奖杯）是否显示
-    fun cupVisible(gameType: Int, gameId: Int): Boolean {
-        return tCocos.hasCocosAnim(gameType, gameId) || hasLive(gameType, gameId)
-    }
-
-    //直播存在
-    private fun hasLive(gameType: Int, gameId: Int): Boolean {
-        return false
     }
 }

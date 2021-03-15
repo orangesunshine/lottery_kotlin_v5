@@ -8,6 +8,7 @@ import android.widget.TextView
 import com.bdb.lottery.R
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.lot.data.HistoryData
+import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
@@ -22,7 +23,7 @@ class BallAdapter(
     private val gameId: Int,
     private var parentPlayId: Int,
     private val betTypeId: Int,
-    private var brightLists: String,
+    private var lotPlace: String,
     data: MutableList<HistoryData.HistoryItem>? = null,
 ) : BaseQuickAdapter<HistoryData.HistoryItem, BaseViewHolder>(R.layout.lot_history_item, data) {
     private val PAYLOAD_LABEL = "PAYLOAD_LABEL"
@@ -104,7 +105,7 @@ class BallAdapter(
         textView.gravity = Gravity.CENTER
         textView.setTextColor(Color.parseColor(textColor))
         val str = if (position + 1 == 10) "*" else (position + 1).toString()
-        textView.alpha = if (brightLists.isSpace() || brightLists.contains(str)) 1f else 0.4f
+        textView.alpha = if (lotPlace.isSpace() || lotPlace.contains(str)) 1f else 0.4f
         return textView
     }
 
@@ -135,24 +136,33 @@ class BallAdapter(
     override fun convert(
         holder: BaseViewHolder,
         item: HistoryData.HistoryItem,
-        payloads: List<Any>,
+        payloads: List<Any>
     ) {
-        holder.setText(R.id.lot_history_item_label_tv, labelText(item))
-        val nums = item.nums
-        nums?.let {
-            val split = nums.split(" ")
-            holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter =
-                object : TagAdapter<String>(split) {
-                    override fun getView(parent: FlowLayout?, position: Int, num: String?): View {
-                        return ball(position, num)
+        if (payloads.isNullOrEmpty()) return
+        val payload: String = payloads[0] as String
+        if (PAYLOAD_LABEL.equalsNSpace(payload)) {
+            holder.setText(R.id.lot_history_item_label_tv, labelText(item))
+        } else {
+            val nums = item.nums
+            nums?.let {
+                val split = it.split(" ")
+                holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter =
+                    object : TagAdapter<String>(split) {
+                        override fun getView(
+                            parent: FlowLayout?,
+                            position: Int,
+                            num: String?
+                        ): View {
+                            return ball(position, num)
+                        }
                     }
-                }
+            }
         }
     }
 
-    fun onBetChange(parentPlayId: Int, brightLists: String) {
+    fun onBetChange(parentPlayId: Int, lotPlace: String) {
         this.parentPlayId = parentPlayId
-        this.brightLists = brightLists
+        this.lotPlace = lotPlace
         notifyItemRangeChanged(0, itemCount, PAYLOAD_LABEL)
     }
 }

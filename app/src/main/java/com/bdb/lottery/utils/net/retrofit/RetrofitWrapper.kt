@@ -9,6 +9,7 @@ import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.cache.Caches
+import com.bdb.lottery.utils.gson.Gsons
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -27,8 +28,8 @@ class RetrofitWrapper @Inject constructor(
 
     //region rxjava 封装
     fun <Data> observe(
-        observable: Observable<BaseResponse<Data?>>,
-        success: ((Data?) -> Unit)? = null,
+        observable: Observable<BaseResponse<Data>>,
+        success: ((Data) -> Unit)? = null,
         error: ((code: Int, msg: String?) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
@@ -64,8 +65,8 @@ class RetrofitWrapper @Inject constructor(
 
     //region rx 封装-需要返回error数据
     fun <Data> observeErrorData(
-        observable: Observable<BaseResponse<Data?>>,
-        success: ((Data?) -> Unit)? = null,
+        observable: Observable<BaseResponse<Data>>,
+        success: ((Data) -> Unit)? = null,
         error: ((BaseResponse<*>) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
@@ -107,8 +108,8 @@ class RetrofitWrapper @Inject constructor(
     //region 缓存优先（有缓存，则不请求网络）
     inline fun <reified Data> cachePre(
         cacheKey: String,
-        observable: Observable<BaseResponse<Data?>>,
-        noinline success: ((Data?) -> Unit)? = null,
+        observable: Observable<BaseResponse<Data>>,
+        noinline success: ((Data) -> Unit)? = null,
     ) {
         //优先缓存
         val cache = Caches.getString(cacheKey)
@@ -122,24 +123,21 @@ class RetrofitWrapper @Inject constructor(
             } catch (e: Exception) {
                 Timber.d("cacheKey: ${cacheKey}==>error:${e.msg}")
                 observe(observable, {
-                    it?.let {
-                        Caches.putString(
-                            cacheKey,
-                            GsonBuilder().create().toJson(it)
-                        )
-                        success?.invoke(it)
-                    }
-                })
-            }
-        } else {
-            observe(observable, {
-                it?.let {
                     Caches.putString(
                         cacheKey,
                         GsonBuilder().create().toJson(it)
                     )
                     success?.invoke(it)
-                }
+                })
+            }
+        } else {
+            observe(observable, {
+                Caches.putString(
+                    cacheKey,
+                    GsonBuilder().create().toJson(it)
+                )
+                success?.invoke(it)
+
             })
         }
     }
@@ -148,20 +146,18 @@ class RetrofitWrapper @Inject constructor(
     //region 预缓存：刷新缓存
     fun <Data> preCache(
         cacheKey: String,
-        observable: Observable<BaseResponse<Data?>>,
-        success: ((Data?) -> Unit)? = null,
+        observable: Observable<BaseResponse<Data>>,
+        success: ((Data) -> Unit)? = null,
     ) {
         Caches.putString(cacheKey)//清空缓存
         observe(
             observable,
             {
-                it?.let {
-                    Caches.putString(
-                        cacheKey,
-                        GsonBuilder().create().toJson(it)
-                    )
-                    success?.invoke(it)
-                }
+                Caches.putString(
+                    cacheKey,
+                    Gsons.toJson(it)
+                )
+                success?.invoke(it)
             })
     }
     //endregion
@@ -169,8 +165,8 @@ class RetrofitWrapper @Inject constructor(
     //region 缓存先行（缓存并请求网络）
     inline fun <reified Data> cachePri(
         cacheKey: String,
-        observable: Observable<BaseResponse<Data?>>,
-        noinline success: ((Data?) -> Unit)? = null,
+        observable: Observable<BaseResponse<Data>>,
+        noinline success: ((Data) -> Unit)? = null,
     ) {
         //先缓存
         val cache = Caches.getString(cacheKey)
@@ -184,25 +180,21 @@ class RetrofitWrapper @Inject constructor(
             } catch (e: Exception) {
                 Timber.d("cacheKey: ${cacheKey}==>error:${e.msg}")
                 observe(observable, {
-                    it?.let {
-                        Caches.putString(
-                            cacheKey,
-                            GsonBuilder().create().toJson(it)
-                        )
-                        success?.invoke(it)
-                    }
+                    Caches.putString(
+                        cacheKey,
+                        GsonBuilder().create().toJson(it)
+                    )
+                    success?.invoke(it)
                 })
             }
         }
         //在网络请求
         observe(observable, {
-            it?.let {
-                Caches.putString(
-                    cacheKey,
-                    GsonBuilder().create().toJson(it)
-                )
-                success?.invoke(it)
-            }
+            Caches.putString(
+                cacheKey,
+                GsonBuilder().create().toJson(it)
+            )
+            success?.invoke(it)
         })
 
     }

@@ -8,7 +8,6 @@ import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.datasource.game.GameRemoteDs
 import com.bdb.lottery.datasource.game.data.HomeFavoritesMapper
-import com.bdb.lottery.datasource.game.data.LotteryFavoritesData
 import javax.inject.Inject
 
 
@@ -32,16 +31,14 @@ class HomeCollectionViewModel @ViewModelInject @Inject constructor(
                 null,
                 null
             )
-            it?.let { data: LotteryFavoritesData ->
-                appRemoteDs.cachePrePlatformParams { platform: PlatformData? ->
-                    favouritesLd.setData(
-                        (data.gameTypeList ?: data.defaultList)?.map { it.homeMapper(platform) }
-                            ?.toMutableList()?.apply { add(collectionEnter) } ?: mutableListOf(
-                            collectionEnter
-                        )
+            appRemoteDs.cachePrePlatformParams { platform: PlatformData ->
+                favouritesLd.setData(
+                    (it.gameTypeList ?: it.defaultList)?.map { it.homeMapper(platform) }
+                        ?.toMutableList()?.apply { add(collectionEnter) } ?: mutableListOf(
+                        collectionEnter
                     )
-                }
-            } ?: favouritesLd.setData(mutableListOf(collectionEnter))
+                )
+            }
         }
     }
 }

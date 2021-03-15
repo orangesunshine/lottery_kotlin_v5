@@ -14,11 +14,11 @@ interface AppApi {
 
     //获取前端配置
     @POST(URL.URL_PLATFORM_PARAMS)
-    fun platformParams(): Observable<BaseResponse<PlatformData?>>
+    fun platformParams(): Observable<BaseResponse<PlatformData>>
 
     //客服
     @POST(URL.URL_CUSTOM_SERVICE)
-    fun customservice(): Observable<BaseResponse<CustomServiceData?>>
+    fun customservice(): Observable<BaseResponse<CustomServiceData>>
 
     //版本信息
     @POST(URL.URL_APK_VERSION)
@@ -26,5 +26,5 @@ interface AppApi {
     fun apkVersion(
         @Field("packageName") packageName: String,
         @Field("version") versionCode: Int
-    ): Observable<BaseResponse<ApkVersionData?>>
+    ): Observable<BaseResponse<ApkVersionData>>
 }

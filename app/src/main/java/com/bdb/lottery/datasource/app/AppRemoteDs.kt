@@ -13,7 +13,7 @@ class AppRemoteDs @Inject constructor(
     private val appApi: AppApi,
 ) {
     //region 获取平台参数
-    fun platformParams(success: ((PlatformData?) -> Unit)? = null) {
+    fun platformParams(success: ((PlatformData) -> Unit)? = null) {
         retrofitWrapper.observe(
             appApi.platformParams(),
             success
@@ -26,7 +26,7 @@ class AppRemoteDs @Inject constructor(
     }
 
     //缓存优先：平台参数
-    fun cachePrePlatformParams(success: ((PlatformData?) -> Unit)? = null) {
+    fun cachePrePlatformParams(success: ((PlatformData) -> Unit)? = null) {
         retrofitWrapper.cachePre(
             URL.URL_PLATFORM_PARAMS,
             appApi.platformParams(),
@@ -44,7 +44,7 @@ class AppRemoteDs @Inject constructor(
     }
 
     //缓存优先：客服线路
-    fun cachePreCustomServiceUrl(success: ((CustomServiceData?) -> Unit)? = null) {
+    fun cachePreCustomServiceUrl(success: ((CustomServiceData) -> Unit)? = null) {
         retrofitWrapper.cachePre(
             URL.URL_CUSTOM_SERVICE,
             appApi.customservice(),
@@ -55,7 +55,7 @@ class AppRemoteDs @Inject constructor(
 
     //region apk版本信息
     //预缓存：apk版本信息
-    fun preCacheApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
+    fun preCacheApkVersion(success: ((ApkVersionData) -> Unit)? = null) {
         retrofitWrapper.preCache(
             URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success
@@ -63,7 +63,7 @@ class AppRemoteDs @Inject constructor(
     }
 
     //缓存优先：apk版本信息
-    fun cachePreApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
+    fun cachePreApkVersion(success: ((ApkVersionData) -> Unit)? = null) {
         retrofitWrapper.cachePre(
             URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success
@@ -71,7 +71,7 @@ class AppRemoteDs @Inject constructor(
     }
 
     //缓存先行：apk版本信息
-    fun cachePriApkVersion(success: ((ApkVersionData?) -> Unit)? = null) {
+    fun cachePriApkVersion(success: ((ApkVersionData) -> Unit)? = null) {
         retrofitWrapper.cachePri(
             URL.URL_APK_VERSION,
             appApi.apkVersion("android", Apps.getAppVersionCode()), success

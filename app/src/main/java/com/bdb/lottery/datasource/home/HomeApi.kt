@@ -13,9 +13,9 @@ interface HomeApi {
     //轮播图
     @POST(URL.URL_HOME_BANNER)
     @FormUrlEncoded
-    fun bannerDatas(@Field("type") type: String = "4"): Observable<BaseResponse<BannerData?>>
+    fun bannerDatas(@Field("type") type: String = "4"): Observable<BaseResponse<BannerData>>
 
     //通知
     @POST(URL.URL_NOTICE)
-    fun notice(): Observable<BaseResponse<NoticeData?>>
+    fun notice(): Observable<BaseResponse<NoticeData>>
 }

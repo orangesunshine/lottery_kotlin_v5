@@ -86,11 +86,11 @@ class CountDownService : BaseService() {
                     lotRemoteDs.getFutureIssue(buff.toString(), {
                         mIsGettingList.addAll(isGettingList)
                     }, {
-                        it?.initCurrentTime()
-                        it?.mapper(mCache)
+                        it.initCurrentTime()
+                        it.mapper(mCache)
                         countDown()
                     }, {
-                        mIsGettingList.remove(isGettingList)
+                        mIsGettingList.removeAll(isGettingList)
                     })
                 }
             }

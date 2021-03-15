@@ -10,8 +10,8 @@ import com.bdb.lottery.datasource.app.AppApi
 import com.bdb.lottery.datasource.common.LiveDataWrapper
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.toast
-import com.bdb.lottery.utils.encrypt.TEncrypt
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.encrypt.TEncrypt
 import com.bdb.lottery.utils.net.retrofit.RetrofitWrapper
 import com.google.gson.GsonBuilder
 import io.reactivex.rxjava3.core.Observable
@@ -25,7 +25,6 @@ class AccountRemoteDs @Inject constructor(
     private val accountManager: AccountManager,
     private val retrofitWrapper: RetrofitWrapper,
 ) {
-
     //登录
     fun login(
         username: String,
@@ -42,8 +41,8 @@ class AccountRemoteDs @Inject constructor(
             retrofitWrapper.observeErrorData(
                 appApi.platformParams()
                     .flatMap {
-                        var observable: Observable<BaseResponse<String?>>? = null
-                        it.data?.rsaPublicKey?.let {
+                        var observable: Observable<BaseResponse<String>>? = null
+                        it.data.rsaPublicKey.let {
                             if (!it.isSpace()) {
                                 val params = HashMap<String, Any>()
                                 params["username"] = username
@@ -86,7 +85,6 @@ class AccountRemoteDs @Inject constructor(
                 viewState
             )
         }
-
     }
 
     private fun loginReal(
@@ -141,10 +139,8 @@ class AccountRemoteDs @Inject constructor(
             success()
             //缓存用户已登录
             accountManager.saveIsLogin(true)
-            it?.let {
-                tCache.cacheToken(it.token)
-            }
-        }, { code, msg ->
+            tCache.cacheToken(it.token)
+        }, { _, _ ->
             //缓存用户未登录
             accountManager.saveIsLogin(false)
         }, viewState = viewState)
@@ -159,7 +155,7 @@ class AccountRemoteDs @Inject constructor(
     }
 
     //余额
-    fun balance(success: (UserBalanceData?) -> Unit) {
+    fun balance(success: (UserBalanceData) -> Unit) {
         retrofitWrapper.observe(accountApi.balance(), success)
     }
 }

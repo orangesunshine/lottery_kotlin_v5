@@ -109,7 +109,7 @@ class DomainRemoteDs @Inject constructor(
      * 获取前端配置
      */
     private fun debugDomain(
-        success: ((PlatformData?) -> Any)? = null,
+        success: ((PlatformData) -> Any)? = null,
         error: ((String?) -> Any)? = null,
     ) {
         observe(domainApi.urlPlatformParams(
@@ -123,7 +123,7 @@ class DomainRemoteDs @Inject constructor(
             cache.invoke(it)
         }, { code, msg ->
             //获取域名失败
-            Timber.d("online__onError：${msg}")
+            Timber.d("online__onError__code：${code}, msg：${msg}")
             error?.run { this(msg) }
         })
     }
@@ -135,7 +135,7 @@ class DomainRemoteDs @Inject constructor(
      * @param error: 失败回调->对应平台配置local_http_url内置域名，调用getLocalDomain获取内置域名
      */
     private fun onlineDomain(
-        success: ((PlatformData?) -> Unit)? = null,
+        success: ((PlatformData) -> Unit)? = null,
         error: ((String?) -> Unit)? = null,
     ) {
         Timber.d("getOnlineDomain")
@@ -173,22 +173,20 @@ class DomainRemoteDs @Inject constructor(
                 }, {
                 //获取配置成功
                 Timber.d("online__onNext__response: ${it}")
-                it?.let {
-                    if (already.compareAndSet(false, true)) {
-                        //取消剩下网络请求
-                        disposable?.let {
-                            try {
-                                if (!it.isDisposed) it.dispose()
-                            } catch (e: Exception) {
-                            }
+                if (already.compareAndSet(false, true)) {
+                    //取消剩下网络请求
+                    disposable?.let {
+                        try {
+                            if (!it.isDisposed) it.dispose()
+                        } catch (e: Exception) {
                         }
-
-                        //处理配置文件
-                        success?.invoke(it)
-
-                        //缓存
-                        cache.invoke(it)
                     }
+
+                    //处理配置文件
+                    success?.invoke(it)
+
+                    //缓存
+                    cache.invoke(it)
                 }
             }, { _, msg ->
                 //获取域名失败
@@ -214,7 +212,7 @@ class DomainRemoteDs @Inject constructor(
      */
     private fun localDomain(
         @StringRes localDomainStringId: Int,
-        success: ((PlatformData?) -> Unit)? = null,
+        success: ((PlatformData) -> Unit)? = null,
         error: (() -> Unit)? = null,
     ) {
         Timber.d("getLocalDomain")
@@ -233,22 +231,20 @@ class DomainRemoteDs @Inject constructor(
                     {
                         //获取配置成功
                         Timber.d("local__onNext__response: ${it}")
-                        it?.let {
-                            if (already.compareAndSet(false, true)) {
-                                //取消剩下网络请求
-                                disposable?.let {
-                                    try {
-                                        if (!it.isDisposed) it.dispose()
-                                    } catch (e: Exception) {
-                                    }
+                        if (already.compareAndSet(false, true)) {
+                            //取消剩下网络请求
+                            disposable?.let {
+                                try {
+                                    if (!it.isDisposed) it.dispose()
+                                } catch (e: Exception) {
                                 }
-
-                                //处理配置文件
-                                success?.invoke(it)
-
-                                //缓存
-                                cache.invoke(it)
                             }
+
+                            //处理配置文件
+                            success?.invoke(it)
+
+                            //缓存
+                            cache.invoke(it)
                         }
 
                     },
@@ -275,7 +271,7 @@ class DomainRemoteDs @Inject constructor(
     //rxjava 简化
     fun <Data> observe(
         observable: Observable<BaseResponse<Data>>,
-        success: ((Data?) -> Unit)? = null,
+        success: ((Data) -> Unit)? = null,
         error: ((code: Int, msg: String?) -> Unit)? = null,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,

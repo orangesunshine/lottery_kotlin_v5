@@ -32,7 +32,7 @@ class LotRemoteDs @Inject constructor(
     fun getFutureIssue(
         gameIds: String,
         onStart: (Disposable) -> Unit,
-        success: (CountDownData?) -> Unit,
+        success: (CountDownData) -> Unit,
         complete: () -> Unit,
     ) {
         retrofitWrapper.observe(
@@ -44,14 +44,14 @@ class LotRemoteDs @Inject constructor(
     }
 
     //根据ID获取该彩种历史开奖
-    fun getHistoryByGameId(gameId: String, success: (HistoryData?) -> Unit) {
+    fun getHistoryByGameId(gameId: String, success: (HistoryData) -> Unit) {
         retrofitWrapper.observe(lotApi.getHistoryByGameId(gameId), success)
     }
 
     //下注
     fun lot(
         lotParam: LotParam,
-        success: (LotData?) -> Unit,
+        success: (LotData) -> Unit,
         error: (token: String) -> Unit,
         onStart: ((Disposable) -> Unit)? = null,
         complete: (() -> Unit)? = null,
@@ -64,31 +64,31 @@ class LotRemoteDs @Inject constructor(
     }
 
     //region 经典
-    fun initGame(gameId: String, success: (GameInitData?) -> Unit) {
+    fun initGame(gameId: String, success: (GameInitData) -> Unit) {
         retrofitWrapper.observe(lotApi.initGame(gameId), success)
     }
 
-    fun getBetType(gameId: String, success: (GameBetTypeData?) -> Unit) {
+    fun getBetType(gameId: String, success: (GameBetTypeData) -> Unit) {
         retrofitWrapper.observe(lotApi.getBetType(gameId), success)
     }
     //endregion
 
     //region 传统
-    fun initTrGame(gameId: String, success: (TrInitGameData?) -> Unit) {
+    fun initTrGame(gameId: String, success: (TrInitGameData) -> Unit) {
         retrofitWrapper.observe(lotApi.initTrGame(gameId), success)
     }
 
-    fun getTrBetType(gameId: String, success: (TrBetTypeData?) -> Unit) {
+    fun getTrBetType(gameId: String, success: (TrBetTypeData) -> Unit) {
         retrofitWrapper.observe(lotApi.getTrBetType(gameId), success)
     }
     //endregion
 
     //region 微投
-    fun initWtGame(gameId: String, success: (WtInitData?) -> Unit) {
+    fun initWtGame(gameId: String, success: (WtInitData) -> Unit) {
         retrofitWrapper.observe(lotApi.initWtGame(gameId), success)
     }
 
-    fun getWtBetType(gameId: String, success: (WtBetTypeData?) -> Unit) {
+    fun getWtBetType(gameId: String, success: (WtBetTypeData) -> Unit) {
         retrofitWrapper.observe(lotApi.getWtBetType(gameId), success)
     }
     //endregion
@@ -96,38 +96,34 @@ class LotRemoteDs @Inject constructor(
     //缓存玩法说明
     fun refreshHowToPlayCache() {
         appRemoteDs.cachePrePlatformParams {
-            it?.let {
-                val howToPlayUrl = it.getHowToPlayUrl()
-                Timber.d("howToPlayUrl:$howToPlayUrl")
-                lotApi.getJs(howToPlayUrl).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread()).subscribe {
-                        Caches.putString(
-                            howToPlayUrl,
-                            it.replace("var _wfsm=", "").replace("\r\n\t", "").replace("\r\n", "")
-                        )
-                    }
-            }
+            val howToPlayUrl = it.getHowToPlayUrl()
+            Timber.d("howToPlayUrl:$howToPlayUrl")
+            lotApi.getJs(howToPlayUrl).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                    Caches.putString(
+                        howToPlayUrl,
+                        it.replace("var _wfsm=", "").replace("\r\n\t", "").replace("\r\n", "")
+                    )
+                }
         }
     }
 
     //缓存优先：获取玩法说明数据
     fun cachePreHowToPlay(
-        success: (String?) -> Unit,
+        success: (String) -> Unit,
     ) {
         appRemoteDs.cachePrePlatformParams {
-            it?.let {
-                val howToPlayUrl = it.getHowToPlayUrl()
-                val cache = Caches.getString(howToPlayUrl)
-                if (!cache.isSpace()) {
-                    success.invoke(cache)
-                } else {
-                    lotApi.getJs(howToPlayUrl).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread()).subscribe {
-                            val ret = it.replace("var _wfsm=", "").replace("\r\n\t", "")
-                            Caches.putString(howToPlayUrl, ret)
-                            success.invoke(ret)
-                        }
-                }
+            val howToPlayUrl = it.getHowToPlayUrl()
+            val cache = Caches.getString(howToPlayUrl)
+            if (!cache.isSpace()) {
+                success.invoke(cache!!)
+            } else {
+                lotApi.getJs(howToPlayUrl).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                        val ret = it.replace("var _wfsm=", "").replace("\r\n\t", "")
+                        Caches.putString(howToPlayUrl, ret)
+                        success.invoke(ret)
+                    }
             }
         }
     }
@@ -135,8 +131,26 @@ class LotRemoteDs @Inject constructor(
     //缓存官方说明
     fun refreshOfficialDescCache() {
         appRemoteDs.cachePrePlatformParams {
-            it?.let {
-                val gameOfficialDescUrl = it.getGameOfficialDescUrl()
+            val gameOfficialDescUrl = it.getGameOfficialDescUrl()
+            lotApi.getJs(gameOfficialDescUrl).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                    Caches.putString(
+                        gameOfficialDescUrl,
+                        it.replace("var _Gameshows =", "").replace("\r\n\t", "")
+                            .replace("\r\n", "")
+                    )
+                }
+        }
+    }
+
+    //缓存优先：获取官方说明数据
+    fun cachePreOfficialDesc(success: (String) -> Unit) {
+        appRemoteDs.cachePrePlatformParams {
+            val gameOfficialDescUrl = it.getGameOfficialDescUrl()
+            val cache = Caches.getString(gameOfficialDescUrl)
+            if (!cache.isSpace()) {
+                success.invoke(cache!!)
+            } else {
                 lotApi.getJs(gameOfficialDescUrl).subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe {
                         Caches.putString(
@@ -144,30 +158,8 @@ class LotRemoteDs @Inject constructor(
                             it.replace("var _Gameshows =", "").replace("\r\n\t", "")
                                 .replace("\r\n", "")
                         )
+                        success.invoke(it)
                     }
-            }
-        }
-    }
-
-    //缓存优先：获取官方说明数据
-    fun cachePreOfficialDesc(success: (String?) -> Unit) {
-        appRemoteDs.cachePrePlatformParams {
-            it?.let {
-                val gameOfficialDescUrl = it.getGameOfficialDescUrl()
-                val cache = Caches.getString(gameOfficialDescUrl)
-                if (!cache.isSpace()) {
-                    success.invoke(cache)
-                } else {
-                    lotApi.getJs(gameOfficialDescUrl).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread()).subscribe {
-                            Caches.putString(
-                                gameOfficialDescUrl,
-                                it.replace("var _Gameshows =", "").replace("\r\n\t", "")
-                                    .replace("\r\n", "")
-                            )
-                            success.invoke(it)
-                        }
-                }
             }
         }
     }

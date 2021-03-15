@@ -52,9 +52,7 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
                 return@setOnClickListener
             }
             vm.lot(mLotParam, {
-                it?.let {
-                    mSuccess?.invoke(it.token)
-                }
+                mSuccess?.invoke(it.token)
                 lot_dialog_success_tv.visible(true)
                 lot_dialog_loading_success_iv.setImageResource(R.drawable.lot_dialog_bet_success)
                 Threads.retrofitUIThreadDelayed({ dismiss() }, 1000)

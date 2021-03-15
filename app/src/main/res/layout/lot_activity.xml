@@ -16,14 +16,14 @@
         android:orientation="vertical">
 
         <View
-            android:id="@+id/lotTopDivide"
+            android:id="@+id/lotAreaTopDivide"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@drawable/lot_top_area_top_divide" />
 
         <!-- 顶部背景区 -->
         <LinearLayout
-            android:id="@+id/lotTopAreaLl"
+            android:id="@+id/countDownBannerLl"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginTop="-1dp"
@@ -101,7 +101,7 @@
 
             <!-- divide -->
             <View
-                android:id="@+id/lotTopHorizontalDivide"
+                android:id="@+id/countDownDivide"
                 android:layout_width="1dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"

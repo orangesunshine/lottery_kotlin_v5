@@ -1,12 +1,13 @@
 package com.bdb.lottery.base.response
 
 import com.bdb.lottery.const.CODE
+import com.bdb.lottery.utils.gson.Gsons
 import com.google.gson.GsonBuilder
 
 open class BaseResponse<T>(
     var code: Int = CODE.DEFAULT_ERROR_CODE,
     var msg: String? = null,
-    var data: T? = null
+    var data: T
 ) {
     //网络请求成功
     fun isSuccess(): Boolean {
@@ -14,8 +15,8 @@ open class BaseResponse<T>(
     }
 
     //T类型Response转String
-    fun mappStringResponse(): BaseResponse<String> {
-        return BaseResponse(code, msg, data?.let { GsonBuilder().create().toJson(data) })
+    fun toGsonString(): String {
+        return Gsons.toJson(this)
     }
 
     override fun toString(): String {

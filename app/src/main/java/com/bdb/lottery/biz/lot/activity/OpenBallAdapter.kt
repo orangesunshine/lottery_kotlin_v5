@@ -20,7 +20,7 @@ class OpenBallAdapter constructor(
     private val gameType: Int,
     private val gameId: Int,
     nums: String,
-    private var brightLists: String,
+    private var lotPlace: String,
 ) : TagAdapter<String>(nums.split(" ")) {
 
     fun ballSize(gameType: Int): Int {
@@ -33,7 +33,7 @@ class OpenBallAdapter constructor(
         )
     }
 
-    fun ballSpace(gameType: Int): Int {
+    private fun ballSpace(gameType: Int): Int {
         return Sizes.dp2px(
             when (gameType) {
                 GAME.TYPE_GAME_K3, GAME.TYPE_GAME_FREQUENCY_LOW -> 10f
@@ -43,8 +43,8 @@ class OpenBallAdapter constructor(
         )
     }
 
-    fun onBetChange(brightLists: String) {
-        this.brightLists = brightLists
+    fun onBetChange(lotPlace: String) {
+        this.lotPlace = lotPlace
         notifyDataChanged()
     }
 
@@ -98,7 +98,7 @@ class OpenBallAdapter constructor(
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize.toFloat())
         textView.setTextColor(Color.parseColor("#333333"))
         val str = if (position + 1 == 10) "*" else (position + 1).toString()
-        textView.alpha = if (brightLists.isSpace() || brightLists.contains(str)) 1f else 0.6f
+        textView.alpha = if (lotPlace.isSpace() || lotPlace.contains(str)) 1f else 0.6f
         return textView
     }
 }
