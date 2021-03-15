@@ -193,9 +193,9 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
         if (Activitys.isActivityAlive(activity)) {
             AlertDialog.Builder(activity!!)
                 .setMessage("拒绝将影响应用的正常使用，请允许")
-                .setPositiveButton("允许") { dialog, which ->
+                .setPositiveButton("允许") { _, _ ->
                     request.proceed() //继续执行请求
-                }.setNegativeButton("拒绝") { dialog, which ->
+                }.setNegativeButton("拒绝") { _, _ ->
                     request.cancel() //取消执行请求
                 }.show()
         }

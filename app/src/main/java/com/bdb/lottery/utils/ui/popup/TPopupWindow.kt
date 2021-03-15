@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.PopupWindow
 import androidx.annotation.IntDef
@@ -12,19 +13,18 @@ import androidx.annotation.RequiresApi
 import com.bdb.lottery.R
 import com.bdb.lottery.utils.ui.screen.Screens
 import dagger.hilt.android.scopes.ActivityScoped
-import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import javax.inject.Inject
 
 @ActivityScoped
 open class TPopupWindow @Inject constructor() {
-    protected lateinit var mContent: View
+    protected lateinit var mContent: ViewGroup
     protected lateinit var mPopWin: PopupWindow
 
     fun content(
         width: Int = WindowManager.LayoutParams.WRAP_CONTENT,
         height: Int = WindowManager.LayoutParams.WRAP_CONTENT,
-        convert: () -> View,
+        convert: () -> ViewGroup,
     ): TPopupWindow {
         mContent = convert()
         mContent.isFocusable = false
@@ -88,13 +88,12 @@ open class TPopupWindow @Inject constructor() {
     fun needShowUp(
         anchorView: View,
         contentView: View,
-        windowPos: IntArray,
+        windowPos: IntArray?,
         xOffset: Int = 0,
         yOffset: Int = 0,
         @ALIGN align: Int = ALIGN_RIGHT,
     ): Boolean {
-        var windowPos: IntArray? = windowPos
-        if (null == windowPos) windowPos = IntArray(2)
+        val windowPosInner: IntArray = windowPos?:IntArray(2)
         val anchorLoc = IntArray(2)
         // 获取锚点View在屏幕上的左上角坐标位置
         anchorView.getLocationOnScreen(anchorLoc)
@@ -116,13 +115,13 @@ open class TPopupWindow @Inject constructor() {
         // 判断需要向上弹出还是向下弹出显示
         val isNeedShowUp = screenHeight - anchorLoc[1] - anchorHeight < height
         val anchorViewWidth = anchorView.width
-        windowPos[0] =
+        windowPosInner[0] =
             if (align == ALIGN_RIGHT) screenWidth - width - xOffset else if (align == ALIGN_LEFT) xOffset else
                 anchorLoc[0] + (anchorViewWidth - width) / 2 + xOffset
         if (isNeedShowUp) {
-            windowPos[1] = anchorLoc[1] - height - yOffset
+            windowPosInner[1] = anchorLoc[1] - height - yOffset
         } else {
-            windowPos[1] = anchorLoc[1] + anchorHeight + yOffset
+            windowPosInner[1] = anchorLoc[1] + anchorHeight + yOffset
         }
         return isNeedShowUp
     }
@@ -137,5 +136,5 @@ const val ALIGN_RIGHT = 1
 const val ALIGN_ANCHOR = 2
 
 @IntDef(ALIGN_LEFT, ALIGN_RIGHT, ALIGN_ANCHOR)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(AnnotationRetention.SOURCE)
 annotation class ALIGN

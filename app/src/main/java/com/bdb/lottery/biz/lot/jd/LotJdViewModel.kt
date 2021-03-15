@@ -18,10 +18,7 @@ import com.bdb.lottery.datasource.lot.LotRemoteDs
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.SingleBet
 import com.bdb.lottery.datasource.lot.data.TouZhuHaoMa
-import com.bdb.lottery.datasource.lot.data.jd.BetItem
-import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
-import com.bdb.lottery.datasource.lot.data.jd.OddInfo
-import com.bdb.lottery.datasource.lot.data.jd.SingledInfo
+import com.bdb.lottery.datasource.lot.data.jd.*
 import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isDigit
 import com.bdb.lottery.extension.isSpace
@@ -48,9 +45,11 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private var mSingledInfo: SingledInfo? = null//最高限红
     private var mOddInfo: List<OddInfo>? = null//理论最高奖金
     private var mAlreadyInitGame = AtomicBoolean()
+    val gameLd = LiveDataWrapper<Game>()
     fun netInitGame() {
         lotRemoteDs.initGame(mGameId.toString()) {
             mAlreadyInitGame.set(true)
+            gameLd.setData(it.game)
             mSingledInfo = it.singledInfo
             mOddInfo = it.oddInfo
             mUserBonus = it.userBonus
@@ -126,11 +125,9 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             dialogBlock?.invoke(mGameType, lotteryHowToPlayMap2Desc(lotteryHowToPlayMap))
         } else {
             lotRemoteDs.cachePreHowToPlay {
-                it?.let {
-                    lotteryHowToPlayMap =
-                        Gsons.fromJsonByTokeType<Map<String, Map<String, String>>>(it)
-                    dialogBlock?.invoke(mGameType, lotteryHowToPlayMap2Desc(lotteryHowToPlayMap))
-                }
+                lotteryHowToPlayMap =
+                    Gsons.fromJsonByTokeType<Map<String, Map<String, String>>>(it)
+                dialogBlock?.invoke(mGameType, lotteryHowToPlayMap2Desc(lotteryHowToPlayMap))
             }
         }
     }

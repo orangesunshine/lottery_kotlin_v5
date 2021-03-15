@@ -261,6 +261,12 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             //复式
             lot_jd_duplex_rv.visible(!it)
         }
+
+        //官方验证：标题栏popup菜单
+        ob(vm.gameLd.getLiveData()) {
+            aliveActivity<LotActivity>()?.visibleMenuVerifyBanner(it.startExplain, it.startSign)
+
+        }
     }
     //endregion
 

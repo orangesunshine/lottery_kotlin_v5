@@ -4,11 +4,14 @@ import android.app.Application
 import android.content.Context
 import android.os.Process
 import androidx.multidex.MultiDex
+import com.bdb.lottery.utils.download.OkHttp3Connection
+import com.bdb.lottery.utils.download.SSLUtils
 import com.bdb.lottery.utils.ui.app.TApp
 import com.bdb.lottery.utils.inject.TConfig
 import com.bdb.lottery.utils.timber.LogTree
 import com.bdb.lottery.utils.ui.activity.TActivityLifecycle
 import com.bdb.lottery.widget.CustomHeader
+import com.liulishuo.filedownloader.FileDownloader
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.tencent.bugly.crashreport.CrashReport
@@ -87,6 +90,8 @@ class BdbApp : Application() {
     }
 
     private fun initBugly() {
+        FileDownloader.setupOnApplicationOnCreate(this).connectionCreator(OkHttp3Connection.Creator(
+            SSLUtils.createOkHttp()))
         // 设置是否为上报进程
         val strategy = CrashReport.UserStrategy(context)
         strategy.setUploadProcess(tApp.isMainProcess())

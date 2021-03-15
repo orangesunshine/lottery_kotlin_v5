@@ -1,7 +1,6 @@
 package com.bdb.lottery.base.ui
 
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -12,11 +11,11 @@ import androidx.annotation.CallSuper
 import androidx.fragment.app.FragmentActivity
 import com.bdb.lottery.R
 import com.bdb.lottery.biz.base.BaseViewModel
-import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.dialog.LoadingDialog
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.statusbar
+import com.bdb.lottery.utils.timber.TPeriod
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.widget.LoadingLayout
 import java.lang.ref.WeakReference
@@ -52,16 +51,25 @@ open class BaseActivity(
     protected var mActivity: WeakReference<FragmentActivity>? = null//当前activity引用
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TPeriod.print("super.onCreate---${localClassName}")
         //初始化变量
         initVar(savedInstanceState)
         //解析布局文件
         val content: FrameLayout = window.decorView.findViewById(android.R.id.content)
+        TPeriod.print("attachView---before")
         attachView(content)
+        TPeriod.print("attachView---after")
         statusbar(statusbarLight)
         actbar()
         loadingLayoutWrap()
         obLoadingLayout()
         observe()
+        TPeriod.print("observe")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        TPeriod.print("super.onStart")
     }
 
     private fun actbar() {
@@ -84,8 +92,8 @@ open class BaseActivity(
             if (!useContentLayoutId) {
                 layoutInflater.inflate(layoutId, root, true)
             }
-            var parent: ViewGroup?
-            var layout: ViewGroup = layoutInflater.inflate(
+            val parent: ViewGroup?
+            val layout: ViewGroup = layoutInflater.inflate(
                 if (useContentLayoutId) layoutId else attachRoot(),
                 root,
                 false

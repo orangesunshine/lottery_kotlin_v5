@@ -126,7 +126,7 @@ class LoginActivity : BaseActivity(R.layout.login_activity) {
         }
     }
 
-    override fun getVm(): BaseViewModel? {
+    override fun getVm(): BaseViewModel {
         return vm
     }
 

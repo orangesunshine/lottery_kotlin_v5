@@ -30,7 +30,8 @@ open class UnitPopWindow @Inject constructor(@ActivityContext private val contex
 
     fun init(listener: (View) -> Unit) {
         content(Sizes.dp2px(100f)) {
-            val content = LayoutInflater.from(context).inflate(R.layout.lot_jd_money_unit, null)
+            val content:ViewGroup =
+                LayoutInflater.from(context).inflate(R.layout.lot_jd_money_unit, null) as ViewGroup
             content.findViewById<View>(R.id.lot_jd_money_unit_yuan_tv).setOnClickListener(listener)
             content.findViewById<View>(R.id.lot_jd_money_unit_jiao_tv).setOnClickListener(listener)
             content.findViewById<View>(R.id.lot_jd_money_unit_fen_tv).setOnClickListener(listener)

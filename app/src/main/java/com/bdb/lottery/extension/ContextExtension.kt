@@ -21,6 +21,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.const.CONST
+import com.bdb.lottery.utils.timber.TPeriod
 import kotlin.reflect.KProperty1
 
 fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_LONG) {
@@ -32,6 +33,7 @@ fun Context.toast(msg: String?, length: Int = Toast.LENGTH_LONG) {
 }
 
 inline fun <reified T : Activity> Context.start() {
+    TPeriod.print("start====>")
     val intent = Intent(this, T::class.java)
     if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     startActivity(intent)
@@ -56,6 +58,7 @@ inline fun <reified T : Activity> Context.startNdFinishWithArgs(block: (Intent) 
 }
 
 inline fun <reified T : Activity> Fragment.start() {
+    TPeriod.print("start====>")
     startActivity(Intent(this.activity, T::class.java))
 }
 
@@ -65,6 +68,7 @@ inline fun <reified T : Activity> Fragment.startNdFinish() {
 }
 
 inline fun <reified T : Activity> Fragment.startWithArgs(block: (Intent) -> Any) {
+    TPeriod.print("start====>")
     val intent = Intent(this.activity, T::class.java)
     block(intent)
     startActivity(intent)

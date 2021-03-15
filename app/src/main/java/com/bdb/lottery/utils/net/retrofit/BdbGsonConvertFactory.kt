@@ -2,7 +2,6 @@ package com.bdb.lottery.utils.net.retrofit
 
 import com.bdb.lottery.base.response.BaseResponse
 import com.bdb.lottery.const.CODE
-import com.bdb.lottery.biz.globallivedata.AccountManager
 import com.bdb.lottery.extension.code
 import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.gson.Gsons
@@ -31,12 +30,11 @@ import javax.inject.Singleton
 @Singleton
 class BdbGsonConverterFactory @Inject constructor(
     private val gson: Gson,
-    private val accountManager: AccountManager,
     private val tActivityLifecycle: TActivityLifecycle,
 ) : Converter.Factory() {
     override fun responseBodyConverter(
         type: Type, annotations: Array<Annotation>, retrofit: Retrofit,
-    ): Converter<ResponseBody, *>? {
+    ): Converter<ResponseBody, *> {
         return if (type is ParameterizedType && BaseResponse::class.java.isAssignableFrom(type.rawType as Class<*>)) {
             BdbGsonResponseBodyConverter(
                 gson,
@@ -53,13 +51,11 @@ class BdbGsonConverterFactory @Inject constructor(
         retrofit: Retrofit,
     ): Converter<*, RequestBody> {
         return BdbGsonRequestBodyConverter(gson,
-            gson.getAdapter(TypeToken.get(type)),
-            accountManager,
-            tActivityLifecycle)
+            gson.getAdapter(TypeToken.get(type)))
     }
 }
 
-//region repsonse
+//region response
 internal class BdbGsonResponseBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
@@ -123,8 +119,6 @@ internal class GsonResponseBodyConverter<T>(
 internal class BdbGsonRequestBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
-    private val accountManager: AccountManager,
-    private val tActivityLifecycle: TActivityLifecycle,
 ) :
     Converter<T, RequestBody> {
     @Throws(Exception::class)

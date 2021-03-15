@@ -1,7 +1,8 @@
 package com.bdb.lottery.utils.ui.popup
 
 data class CommonPopData(
-    val text: String? = null,
-    val click: ((String?) -> Unit)?,
-    val imgRes: Int? = null
+    var text: String? = null,
+    var click: ((String?) -> Unit)? = null,
+    var visible: Boolean = true,
+    var imgRes: Int? = null,
 )

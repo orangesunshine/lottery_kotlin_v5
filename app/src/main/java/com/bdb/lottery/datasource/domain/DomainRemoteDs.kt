@@ -12,6 +12,7 @@ import com.bdb.lottery.const.DEBUGCONFIG
 import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.common.LiveDataWrapper
+import com.bdb.lottery.datasource.domain.data.AppConfigInfo
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.inject.TConfig
@@ -140,7 +141,7 @@ class DomainRemoteDs @Inject constructor(
     ) {
         Timber.d("getOnlineDomain")
         val configPath = BdbApp.context.getString(R.string.api_txt_path)
-        val onlineObservables = mutableListOf<Observable<String>>()
+        val onlineObservables = mutableListOf<Observable<AppConfigInfo>>()
         val hosts = URL.DOMAINS_API_TXT
         if (!hosts.isNullOrEmpty()) {
             for (host in hosts) {
@@ -157,7 +158,7 @@ class DomainRemoteDs @Inject constructor(
                 .observeOn(Schedulers.io())
                 .map {
                     Timber.d("online域名配置：${it}")
-                    if (!it.isSpace()) it.split("@") else null
+                    if (!it.domains.isSpace()) it.domains.split("@") else null
                 }
                 .observeOn(Schedulers.io())
                 .flatMap {

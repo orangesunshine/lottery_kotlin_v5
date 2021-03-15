@@ -5,14 +5,11 @@ object URL {
      * TXT域名
      */
     val DOMAINS_API_TXT = arrayOf(
-        //阿里云
-        "https://ythcoceanpark.net/",
-        "https://dongfangyinfeng.com/",
-        "https://bdbapp.oss-cn-shenzhen.aliyuncs.com/",
-        //七牛
-        "https://gxtgw.cn/",
-        "http://oklznzb.com/",
-        "https://o3rjctsi8.qnssl.com/"
+        "http://appcommon.test.upcdn.net/",
+        "https://jhxdvip.com/",
+        "https://lxxgc.com/",
+        "http://oukalai.com/",
+        "http://oklznzb.com/"
     )
 
     const val URL_PLATFORM_PARAMS = "/system-config/front.mvc"//前台配置

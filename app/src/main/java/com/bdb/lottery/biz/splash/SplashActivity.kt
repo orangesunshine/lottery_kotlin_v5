@@ -13,6 +13,7 @@ import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.startNdFinish
 import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.cache.TCache
+import com.bdb.lottery.utils.timber.TPeriod
 import com.bdb.lottery.utils.ui.app.Apps
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.splash_activity.*

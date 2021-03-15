@@ -1,5 +1,6 @@
 package com.bdb.lottery.datasource.lot.data.countdown
 
+import com.bdb.lottery.utils.time.Times
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -35,6 +36,13 @@ data class CountDownData(
 
         init {
             initVar()
+        }
+
+        fun genCountDownBean(): CountDownBean {
+            val isClose = isclose
+            val showHour = betTotalTime / 1000 / 60 / 60 > 0//是否显示小时
+            val surplusTime = if (isClose) openSurplusTime else betSurplusTime
+            return CountDownBean(isClose.toString(), Times.mills2hms(showHour, surplusTime))
         }
     }
 

@@ -11,7 +11,6 @@ object WebViews {
      * @param paramsJson：js方法参数
      */
     fun loadUrl(webView: WebView, methodName: String, paramsJson: String) {
-        Timber.d("paramsJson: ${paramsJson}")
         webView.loadUrl(String.format("javascript:${methodName}('${paramsJson}')"))
     }
 }

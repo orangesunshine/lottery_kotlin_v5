@@ -79,7 +79,7 @@ class HomeCollectionFragment : BaseFragment(R.layout.recyclerview_single_layout)
                             val collectType = item.collectType
                             if (collectType.equalsNSpace("-1")) {
                                 //收藏
-                            } else if(collectType.equalsNSpace("0")){
+                            } else if (collectType.equalsNSpace("0")) {
                                 //彩票
                                 var jdEnable: Boolean? = false
                                 var trEnable: Boolean? = false
@@ -107,7 +107,7 @@ class HomeCollectionFragment : BaseFragment(R.layout.recyclerview_single_layout)
                                     it.putExtra(EXTRA.TR_ENABLE_GAME_EXTRA, trEnable)
                                     it.putExtra(EXTRA.WT_ENABLE_GAME_EXTRA, wtEnable)
                                 }
-                            }else{
+                            } else {
                                 //游戏
                             }
                         }

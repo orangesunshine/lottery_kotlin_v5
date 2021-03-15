@@ -56,9 +56,7 @@ class HomeViewModel @ViewModelInject @Inject constructor(
     //region 余额
     fun netBalance() {
         accountRemoteDs.balance {
-            it?.let {
-                accountManager.saveUserBalance(it)
-            }
+            accountManager.saveUserBalance(it)
         }
     }
     //endregion

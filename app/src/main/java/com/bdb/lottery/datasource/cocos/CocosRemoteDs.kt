@@ -52,6 +52,7 @@ class CocosRemoteDs @Inject constructor(
                             if (alreadyConfig.compareAndSet(false, true)) {
                                 Timber.d("alreadyConfig")
                                 dispose?.isDisposed
+                                tCache.cacheCocosConfig(it)
                                 success(it, cocosDownloadPath!!)
                             }
                         }
@@ -68,8 +69,7 @@ class CocosRemoteDs @Inject constructor(
                 FileDownloadQueueSet(FileDownloadListenerAdapter())
             val tasks: MutableList<BaseDownloadTask> = ArrayList()
             data.forEach {
-                tCocos.clearSize()
-                if (tCocos.checkCocosBatchDownload(path, it)) {
+                if (tCocos.checkCocos(path, it)) {
                     tasks.add(
                         FileDownloader.getImpl().create(it.androidZipUrl)
                             .setTag(it)
@@ -107,11 +107,11 @@ class CocosRemoteDs @Inject constructor(
             FileDownloader.setup(context)
             data.forEach {
                 if (it.name.equalsNSpace(cocosName)) {
-                    if (tCocos.checkCocosSingleDownload(path, it)) {
+                    if (tCocos.checkCocos(path, it)) {
                         FileDownloader.getImpl()
                             .create(it.androidZipUrl)
                             .setTag(it)
-                            .setPath(path)
+                            .setPath(tCocos.cocosZipFileFullName(path, it.name))
                             .setCallbackProgressMinInterval(200)
                             .setListener(object : FileDownloadListenerAdapter() {
                                 override fun progress(
@@ -119,15 +119,17 @@ class CocosRemoteDs @Inject constructor(
                                     soFarBytes: Int,
                                     totalBytes: Int,
                                 ) {
+                                    Timber.d("downloadSingleCocos--progress")
                                     progress?.invoke(soFarBytes, totalBytes, task?.speed ?: -1)
                                 }
 
                                 override fun error(task: BaseDownloadTask?, e: Throwable?) {
                                     super.error(task, e)
-                                    Timber.d(e.msg)
+                                    Timber.e("downloadSingleCocos--error：" + e.msg)
                                 }
                             })
                             .addFinishListener {
+                                Timber.e("downloadSingleCocos--finish--status: ${it.status} ,path：${it.path} ,filename：${it.filename}")
                                 val cocos = it.tag as CocosData.CocosDataItem
                                 if (tCocos.decompressZip(path, cocos)) {
                                     success?.invoke(path)

@@ -41,6 +41,7 @@ import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.thread.TThread
+import com.bdb.lottery.utils.timber.TPeriod
 import com.bdb.lottery.utils.time.TTime
 import com.bdb.lottery.utils.time.Times
 import com.bdb.lottery.utils.ui.activity.Activitys
@@ -66,9 +67,6 @@ import javax.inject.Inject
 @RuntimePermissions
 class LotActivity : BaseActivity(R.layout.lot_activity) {
     @Inject
-    lateinit var tGame: TGame
-
-    @Inject
     lateinit var tLot: TLot
 
     override var statusbarLight = false;//状态栏是否半透明
@@ -88,9 +86,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         initFragment(bundle)
     }
 
-    private var timeRecord: Long = 0
     override fun onCreate(savedInstanceState: Bundle?) {
-        timeRecord = SystemClock.elapsedRealtime()
         super.onCreate(savedInstanceState)
         initCup()//奖杯
         skin4GameType()//换肤
@@ -119,7 +115,6 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
         //data
         requestDatas()
-        Timber.d("onCreate--period: " + (SystemClock.elapsedRealtime() - timeRecord))
     }
 
     //region 玩法缓存：读取上次彩种选中玩法
@@ -454,11 +449,13 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         currentTime?.let {
             mCurIssue = it.issueno
             mIsClose = it.isclose
+            if (mCocosEngineInited.get()) cocosCountDown(it)
             if (mCountDownGeted.compareAndSet(false, true)) {
                 lazyLoadCocos()
             }
             mOpenFormatTime = Times.formatHMS(it.lotteryTime)
-            val data = tLot.countDownData(it, mLotJdFragment)
+            val data = tLot.countDownData(it)
+            mLotJdFragment?.updateLotStatus(mIsClose)
             val showHour = data.size > 2
             lotCountdownDotFirstTv.visible(showHour)
             lotCountdownFourthTv.visible(!showHour)
@@ -507,7 +504,6 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     override fun onStart() {
         super.onStart()
-        Timber.d("onCreate--period: " + (SystemClock.elapsedRealtime() - timeRecord))
         mMarqueeView.startFlipping()
     }
 
@@ -526,7 +522,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
 
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun cocosDownload() {
-        //下载全部cocos文件
+        //下载当前cocos文件
         val name = vm.cocosName()
         vm.downloadCocos(name) {
             //cocos初始化完成监听
@@ -604,6 +600,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     }
     //endregion
 
+    //region cocos倒计时
+    private fun cocosCountDown(currentTime: CountDownData.CurrentTime) {
+        tCocos.cocosCountDown(lotCocosWv, currentTime)
+    }
+    //endregion
+
 
     //region 玩法菜单：fragment切换tab、玩法列表
     private var mPlayMenuVisible = false
@@ -676,6 +678,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     }
     //endregion
 
+    //region 隐藏玩法菜单
     fun gonePlayMenu() {
         mPlayMenuVisible = false
         lotMenuLl.visible(false)
@@ -785,7 +788,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                             object : LotBetAdapter(it) {
                                 override fun convert(
                                     holder: BaseViewHolder,
-                                    item: BetItem
+                                    item: BetItem,
                                 ) {
                                     super.convert(holder, item)
                                     holder.getView<TextView>(R.id.text_common_tv).isSelected =
@@ -864,8 +867,12 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         popDatas.add(CommonPopData("走势图", {}))
         popDatas.add(CommonPopData("盈亏报表", {}))
         popDatas.add(CommonPopData("官方验证", {}))
-        mMenuPopWin.init(popDatas, Sizes.dp2px(100f))
+        mMenuPopWin.init(Sizes.dp2px(100f), popDatas)
         mMenuPopWin.showAtScreenLocation(actionbar_right_id, Sizes.dp2px(8f), -Sizes.dp2px(8f))
+    }
+
+    fun visibleMenuVerifyBanner(startExplain: Boolean, startSign: Boolean) {
+        mMenuPopWin.visibleBanner("官方验证", startExplain || startSign)
     }
     //endregion
 }

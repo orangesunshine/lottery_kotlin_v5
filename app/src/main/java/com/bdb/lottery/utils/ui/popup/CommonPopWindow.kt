@@ -10,8 +10,9 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.setPadding
 import com.bdb.lottery.R
+import com.bdb.lottery.extension.equalsNSpace
+import com.bdb.lottery.extension.visible
 import com.bdb.lottery.utils.ui.size.Sizes
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
@@ -21,24 +22,72 @@ import javax.inject.Inject
 open class CommonPopWindow @Inject constructor(
     @ActivityContext private val context: Context,
 ) : TPopupWindow() {
+    private var mPopDatas: MutableList<CommonPopData> = mutableListOf()
 
     fun init(
-        popDatas: List<CommonPopData>,
         width: Int = WindowManager.LayoutParams.WRAP_CONTENT,
+        popDatas: List<CommonPopData>? = null,
     ) {
         content(width) {
             val root = LinearLayout(context)
             root.orientation = LinearLayout.VERTICAL
             root.gravity = Gravity.CENTER_HORIZONTAL
-            if (!popDatas.isNullOrEmpty()) {
-                for (popData in popDatas) {
-                    attachItem(root, popData)
-                }
-                if (root.childCount > 0) {
-                    root.removeViewAt(root.childCount - 1)
-                }
-            }
+            updateBanners(root, popDatas)
             root
+        }
+    }
+
+    private fun updateBanners(root: ViewGroup, popDatas: List<CommonPopData>?) {
+        if (!popDatas.isNullOrEmpty()) {
+            root.removeAllViews()
+            mPopDatas.clear()
+            mPopDatas.addAll(popDatas)
+            for (popData in popDatas) {
+                attachItem(root, popData)
+            }
+            if (root.childCount > 0) {
+                root.removeViewAt(root.childCount - 1)
+            }
+        }
+    }
+
+    fun updateBanners(popDatas: List<CommonPopData>) {
+        updateBanners(mContent, popDatas)
+    }
+
+    fun visibleBanner(bannerText: String, visible: Boolean) {
+        if (mPopDatas.isNullOrEmpty()) return
+        for (i in 0 until mPopDatas.size) {
+            if (mPopDatas[i].text.equalsNSpace(bannerText)) {
+                mPopDatas[i].visible = visible
+                if (mContent.childCount > 2 * i) {
+                    mContent.getChildAt(2 * i).run { visible(visible) }
+                }
+                if (mContent.childCount > 2 * i + 1) mContent.getChildAt(2 * i + 1).visible(visible)
+                break
+            }
+        }
+    }
+
+    fun visibleBanner(bannerText: String, visible: Boolean, click: ((String?) -> Unit)?) {
+        if (mPopDatas.isNullOrEmpty()) return
+        for (i in 0 until mPopDatas.size) {
+            if (mPopDatas[i].text.equalsNSpace(bannerText)) {
+                mPopDatas[i].visible = visible
+                mPopDatas[i].click = click
+                if (mContent.childCount > 2 * i) {
+                    mContent.getChildAt(2 * i).run {
+                        visible(visible)
+                        click?.let {
+                            this.setOnClickListener {
+                                click.invoke(mPopDatas[i].text)
+                            }
+                        }
+                    }
+                }
+                if (mContent.childCount > 2 * i + 1) mContent.getChildAt(2 * i + 1).visible(visible)
+                break
+            }
         }
     }
 
@@ -48,11 +97,12 @@ open class CommonPopWindow @Inject constructor(
     private fun attachItem(
         root: ViewGroup,
         popData: CommonPopData,
-        width: Int = LinearLayout.LayoutParams.MATCH_PARENT
+        width: Int = LinearLayout.LayoutParams.MATCH_PARENT,
     ) {
         val imgRes = popData.imgRes
         val text = popData.text
         val click = popData.click
+        val visible = popData.visible
         val tv = TextView(context)
         tv.layoutParams = LinearLayout.LayoutParams(width, dp40)
         tv.text = text
@@ -68,11 +118,13 @@ open class CommonPopWindow @Inject constructor(
             }
         }
         root.addView(tv)
+        tv.visible(visible)
         val line = View(context)
         line.layoutParams =
             LinearLayout.LayoutParams(width, Sizes.dp2px(0.5f))
         line.setBackgroundColor(bgColor)
         root.addView(line)
+        line.visible(visible)
     }
 
     fun showAtScreenLocation(

@@ -13,7 +13,7 @@ import javax.inject.Inject
 @ActivityScoped
 class TLot @Inject constructor(
     @ActivityContext private val context: Context,
-    private val tTime: TTime
+    private val tTime: TTime,
 ) {
     //region 经典：单式输入法适配
     fun adjustSoftInput(listener: KeyBoards.OnSoftInputChangedListener) {
@@ -25,8 +25,7 @@ class TLot @Inject constructor(
 
     //region 倒计时返回：状态、时分秒
     fun countDownData(
-        currentTime: CountDownData.CurrentTime,
-        lotJdFragment: LotJdFragment?
+        currentTime: CountDownData.CurrentTime
     ): Array<String> {
         val isClosed = currentTime.isclose
         val showHour = currentTime.betTotalTime / 1000 / 60 / 60 > 0//是否显示小时
@@ -40,9 +39,6 @@ class TLot @Inject constructor(
         val minute = if (split.size > 2) split[1] else if (split.size > 1) split[0] else "00"
         val second =
             if (split.size > 2) split[2] else if (split.size > 1) split[1] else if (split.isNotEmpty()) split[0] else "00"
-
-        //更新经典状态
-        lotJdFragment?.updateLotStatus(isClosed)
         return if (showHourReal) {
             arrayOf(hour, minute, second)
         } else {
