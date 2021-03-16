@@ -87,7 +87,11 @@ object URL {
     //region 经典
     const val URL_INIT_GAME = "/gameType/initGame.mvc"//经典彩种初始化
 
-    const val URL_GET_BET_TYPE = "/gameType/getBetType.mvc"//
+    const val URL_GET_BET_TYPE = "/gameType/getBetType.mvc"//玩法配置
+
+    const val URL_HISTORY_LEAVE_OUT = "/betRecord/historyLeaveOut.mvc"//遗漏
+
+    const val URL_COLD_HOT = "/betRecord/coldHot.mvc"//冷热
     //endregion
 
     //region kg

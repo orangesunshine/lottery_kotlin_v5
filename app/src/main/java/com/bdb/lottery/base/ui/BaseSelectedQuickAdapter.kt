@@ -18,6 +18,10 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
         const val PAY_LOADS_SELECTED = "pay_loads_selected"
     }
 
+    override fun convert(holder: VH, item: T) {
+        holder.setItemSelected(isItemSelected(holder))
+    }
+
     override fun convert(holder: VH, item: T, payloads: List<Any>) {
         if (PAY_LOADS_SELECTED.equalsPayLoads(payloads)) {
             holder.setItemSelected(isItemSelected(holder))

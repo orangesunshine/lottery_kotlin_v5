@@ -125,7 +125,7 @@ class CocosRemoteDs @Inject constructor(
 
                                 override fun error(task: BaseDownloadTask?, e: Throwable?) {
                                     super.error(task, e)
-                                    Timber.e("downloadSingleCocos--error：" + e.msg)
+                                    Timber.e("downloadSingleCocos--error：%s", e.msg)
                                 }
                             })
                             .addFinishListener {

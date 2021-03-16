@@ -8,6 +8,8 @@ import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.GameInitData
+import com.bdb.lottery.datasource.lot.data.jd.HotData
+import com.bdb.lottery.datasource.lot.data.jd.LeaveData
 import com.bdb.lottery.datasource.lot.data.tr.TrBetTypeData
 import com.bdb.lottery.datasource.lot.data.tr.TrInitGameData
 import com.bdb.lottery.datasource.lot.data.wt.WtBetTypeData
@@ -70,6 +72,14 @@ class LotRemoteDs @Inject constructor(
 
     fun getBetType(gameId: String, success: (GameBetTypeData) -> Unit) {
         retrofitWrapper.observe(lotApi.getBetType(gameId), success)
+    }
+
+    fun getLeave(gameType:String, success: (LeaveData) -> Unit){
+        retrofitWrapper.observe(lotApi.getLeave(gameType), success)
+    }
+
+    fun getHot(gameType:String, success: (HotData) -> Unit){
+        retrofitWrapper.observe(lotApi.getHot(gameType), success)
     }
     //endregion
 

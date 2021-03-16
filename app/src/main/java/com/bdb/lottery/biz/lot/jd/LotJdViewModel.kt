@@ -43,13 +43,13 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private var mUserRebate: Double = 0.0//三方游戏返点
     private var mSingledInfo: SingledInfo? = null//最高限红
     private var mAlreadyInitGame = AtomicBoolean()
-    val mOddInfoMapLd = LiveDataWrapper<MutableMap<String, Double>>()
+    val oddInfoMapLd = LiveDataWrapper<MutableMap<String, Double>>()
     val gameLd = LiveDataWrapper<Game>()
     fun netInitGame() {
         lotRemoteDs.initGame(mGameId.toString()) {
             mAlreadyInitGame.set(true)
             gameLd.setData(it.game)
-            mOddInfoMapLd.setData(genOddInfoMap(it.oddInfo))
+            oddInfoMapLd.setData(genOddInfoMap(it.oddInfo))
             mSingledInfo = it.singledInfo
             mUserBonus = it.userBonus
             mUserRebate = it.user
@@ -58,23 +58,29 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
-
-    //region 奖金
-    private fun genOddInfoMap(oddInfos: List<OddInfo>): MutableMap<String, Double> {
-        val oddInfoMap = mutableMapOf<String, Double>()
-        if (!oddInfos.isNullOrEmpty()) {
-            for (oddInfo in oddInfos) {
-                oddInfoMap.put(
-                    oddInfo.special_number,
-                    BetCenter.computeBonus(oddInfo, mUserBonus)
-                )
-            }
+    //region 冷热：网络请求
+    val hotLd = LiveDataWrapper<HotData>()
+    fun netHot() {
+        lotRemoteDs.getHot(mGameId.toString()) {
+            hotLd.setData(it)
         }
-        return oddInfoMap
     }
 
-    fun getOddInfoMap(): MutableMap<String, Double> {
-        return mOddInfoMapLd.getData() ?: mutableMapOf()
+    fun getHotDatas(): HotData? {
+        return hotLd.getData()
+    }
+    //endregion
+
+    //region 遗漏：网络请求
+    val leaveLd = LiveDataWrapper<LeaveData>()
+    fun netLeave() {
+        lotRemoteDs.getLeave(mGameId.toString()) {
+            leaveLd.setData(it)
+        }
+    }
+
+    fun getLeaveDatas(): LeaveData? {
+        return leaveLd.getData()
     }
     //endregion
 
@@ -104,7 +110,6 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         mBetTypeId = betTypeId
         lotLocalDs.queryBetTypeByPlayId(betTypeId)
             ?.let {
-
                 val subPlayMethod = if (it.size > 1) {
                     it.last { !it.belongto.contains("PK10") }
                 } else {
@@ -166,6 +171,25 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
             mBetTypeId = it.getInt(EXTRA.ID_BET_TYPE_EXTRA)
             mGameName = it.getString(EXTRA.NAME_GAME_EXTRA)
         }
+    }
+    //endregion
+
+    //region 奖金
+    private fun genOddInfoMap(oddInfos: List<OddInfo>): MutableMap<String, Double> {
+        val oddInfoMap = mutableMapOf<String, Double>()
+        if (!oddInfos.isNullOrEmpty()) {
+            for (oddInfo in oddInfos) {
+                oddInfoMap.put(
+                    oddInfo.special_number,
+                    BetCenter.computeBonus(oddInfo, mUserBonus)
+                )
+            }
+        }
+        return oddInfoMap
+    }
+
+    fun getOddInfoMap(): MutableMap<String, Double>? {
+        return oddInfoMapLd.getData()
     }
     //endregion
 

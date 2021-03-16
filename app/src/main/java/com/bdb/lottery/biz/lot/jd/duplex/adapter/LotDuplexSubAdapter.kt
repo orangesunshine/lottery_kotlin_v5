@@ -1,10 +1,9 @@
 package com.bdb.lottery.biz.lot.jd.duplex.adapter
 
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.core.util.isNotEmpty
-import androidx.core.util.valueIterator
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseSelectedQuickAdapter
 import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
@@ -28,14 +27,19 @@ class LotDuplexSubAdapter(
     private var betTypeId: Int,
     private var spanCount: Int,
     private var lotLotDuplexData: LotDuplexData,
+    var oddInfoMap: Map<String, Double>?,
+    var hot: List<Int>?,
+    var leave: List<Int>?,
     updateBlock: (list: ArrayList<Int>) -> Unit,
 ) : BaseSelectedQuickAdapter<String, BaseViewHolder>(
     R.layout.lot_duplex_sub_item,
     lotLotDuplexData.genBallDatas(), updateBlock
 ) {
     companion object {
-        const val PAY_LOADS_HOT_LEAVE = "PAY_LOADS_HOT_LEAVE"
+        const val PAY_LOADS_HOT_LEAVE_VISIBLE = "PAY_LOADS_HOT_LEAVE"
         const val PAY_LOAD_ODD_INFO = "PAY_LOAD_ODD_INFO"
+        const val PAY_LOAD_HOT = "PAY_LOAD_HOT"
+        const val PAY_LOAD_LEAVE = "PAY_LOAD_LEAVE"
     }
 
     private var isk3HeZhi = Lots.isK3HeZhi(betTypeId)//快三和值特殊处理（同时数字球，非数字球）：大小单上一行4列，数字号码一行6列
@@ -81,6 +85,7 @@ class LotDuplexSubAdapter(
     private val isPk10 = GAME.TYPE_GAME_PK10 == gameType || GAME.TYPE_GAME_PK8 == gameType
     override fun convert(holder: BaseViewHolder, item: String) {
         val itemViewType = holder.itemViewType
+        val adapterPosition = holder.adapterPosition
         if (itemViewType == LONG_HU_HE_VIEW) {//龙虎和
             holder.setImageResource(
                 R.id.lot_duplex_sub_item_iv, when (item) {
@@ -90,7 +95,9 @@ class LotDuplexSubAdapter(
                     else -> -1
                 }
             )
-            holder.setText(R.id.lot_duplex_sub_item_tv, getItem(holder.adapterPosition))
+            holder.setText(R.id.lot_duplex_sub_item_tv,
+                if (Lots.isLHH(item) && !Games.isPK(gameType)) (oddInfoMap?.get(item)
+                    ?: 0.0).format() else getItem(adapterPosition))
             holder.setTextColorStateList(
                 context,
                 R.id.lot_duplex_sub_item_tv,
@@ -100,7 +107,7 @@ class LotDuplexSubAdapter(
         } else {//非龙虎和
             //设置球文字
             holder.setText(
-                R.id.lot_duplex_sub_item_tv, getItem(holder.adapterPosition)//数据源已处理过非数字球，这里直接取
+                R.id.lot_duplex_sub_item_tv, getItem(adapterPosition)//数据源已处理过非数字球，这里直接取
             )
             val isK3 = Games.isK3(gameType)
             val containsDxds = StringUtils.containsAny(item, "大", "小", "单", "双")
@@ -150,20 +157,39 @@ class LotDuplexSubAdapter(
                     else -> R.drawable.lot_duplex_sub_item_selector
                 }
             )
-            holder.setItemChildSelected(R.id.lot_duplex_sub_item_tv, isItemSelected(holder))
+            //false：显示冷热，true：显示遗漏，null：都不显示
+            mHotLeaveVisible?.let {
+                holder.setText(R.id.lot_duplex_sub_item_hot_tv,
+                    ((if (it) leave else hot)?.get(adapterPosition) ?: 0).toString())
+                holder.setTextColor(R.id.lot_duplex_sub_item_hot_tv,
+                    if (it) leaveTextColor(item, leave) else hotTextColor(item, hot))
+            }
         }
     }
 
     override fun convert(holder: BaseViewHolder, item: String, payloads: List<Any>) {
         super.convert(holder, item, payloads)
-        //冷热遗漏
-        if (PAY_LOADS_HOT_LEAVE.equalsPayLoads(payloads)) {
+        val adapterPosition = holder.adapterPosition
+        //冷热遗漏可见
+        if (PAY_LOADS_HOT_LEAVE_VISIBLE.equalsPayLoads(payloads)) {
             holder.setGone(R.id.lot_duplex_sub_item_hot_tv, null == mHotLeaveVisible)
         }
 
+        if (PAY_LOAD_HOT.equalsPayLoads(payloads)) {
+            holder.setText(R.id.lot_duplex_sub_item_hot_tv,
+                (hot?.get(adapterPosition) ?: 0).toString())
+            holder.setTextColor(R.id.lot_duplex_sub_item_hot_tv, hotTextColor(item, hot))
+        }
+
+        if (PAY_LOAD_LEAVE.equalsPayLoads(payloads)) {
+            holder.setText(R.id.lot_duplex_sub_item_hot_tv,
+                (leave?.get(adapterPosition) ?: 0).toString())
+            holder.setTextColor(R.id.lot_duplex_sub_item_hot_tv, leaveTextColor(item, hot))
+        }
+
         //龙虎和奖金
-        if (Games.isLHH(false, item, gameType) && PAY_LOAD_ODD_INFO.equalsPayLoads(payloads)) {
-            holder.setText(R.id.lot_duplex_sub_item_tv, (mOddInfoMap[item] ?: 0.0).format())
+        if (Lots.isLHH(item) && PAY_LOAD_ODD_INFO.equalsPayLoads(payloads)) {
+            holder.setText(R.id.lot_duplex_sub_item_tv, (oddInfoMap?.get(item) ?: 0.0).format())
         }
     }
 
@@ -174,6 +200,24 @@ class LotDuplexSubAdapter(
             YoYo.with(Techniques.ZoomIn).duration(100).playOn(view)//小到大动画效果
             notifySelectedPositionWithPayLoads(position, singleSelected = singleClick)//通知选中状态更新
         }
+    }
+
+    private fun hotTextColor(num: String, nums: List<Int>?): Int {
+        return Color.parseColor(try {
+            val toInt = num.toInt()
+            if (nums?.maxOrNull() == toInt) "#f9583f" else if (nums?.minOrNull() == toInt) "#4c9ae8" else "#7e7f7f"
+        } catch (e: Exception) {
+            "#7e7f7f"
+        })
+    }
+
+    private fun leaveTextColor(num: String, nums: List<Int>?): Int {
+        return Color.parseColor(try {
+            val toInt = num.toInt()
+            if (nums?.maxOrNull() == toInt) "#4c9ae8" else if (nums?.minOrNull() == toInt) "#f9583f" else "#7e7f7f"
+        } catch (e: Exception) {
+            "#7e7f7f"
+        })
     }
 
     //region 大小单双
@@ -281,7 +325,7 @@ class LotDuplexSubAdapter(
     private var mHotLeaveVisible: Boolean? = null
     fun hotLeaveVisible(visible: Boolean?) {
         mHotLeaveVisible = visible
-        notifyItemRangeChanged(0, itemCount, PAY_LOADS_HOT_LEAVE)
+        notifyItemRangeChanged(0, itemCount, PAY_LOADS_HOT_LEAVE_VISIBLE)
     }
     //endregion
 
@@ -301,13 +345,20 @@ class LotDuplexSubAdapter(
     }
     //endregion
 
-
     //region 渲染龙虎和：奖金
-    private val mOddInfoMap: MutableMap<String, Double> = mutableMapOf()
-    fun renderLhhOddInfo(oddInfoMap: MutableMap<String, Double>) {
-        mOddInfoMap.clear()
-        mOddInfoMap.putAll(oddInfoMap)
+    fun renderLhhOddInfo(oddInfoMap: MutableMap<String, Double>?) {
+        this.oddInfoMap = oddInfoMap
         notifyItemRangeChanged(0, itemCount, PAY_LOAD_ODD_INFO)
     }
     //endregion
+
+    fun renderHot(hot: List<Int>?) {
+        this.hot = hot
+        notifyItemRangeChanged(0, itemCount, PAY_LOAD_HOT)
+    }
+
+    fun renderLeave(leave: List<Int>?) {
+        this.leave = leave
+        notifyItemRangeChanged(0, itemCount, PAY_LOAD_LEAVE)
+    }
 }

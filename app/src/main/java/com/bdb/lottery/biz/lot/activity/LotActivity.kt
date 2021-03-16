@@ -77,7 +77,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             toast.showError("配置错误！")
             finish()
         }
-        playSelectedPosCache()
+        posCache()
 
         initFragment(bundle)
     }
@@ -122,7 +122,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     private var mBetSelectedPos: Int = 0
     private var mBetTypeId: Int = 0
     private var mParentPlayId: Int = 0
-    private fun playSelectedPosCache() {
+    private fun posCache() {
         val gameId = vm.getGameId()
         mPlaySelectedPos = tCache.playCacheByGameId(gameId) ?: 0
         mGroupSelectedPos = tCache.playGroupCacheByGameId(gameId) ?: 0
@@ -133,7 +133,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //endregion
 
     //region 玩法缓存：选中玩法后缓存（二级玩法选中）
-    private fun cachePlay4GameId(gameId: Int) {
+    private fun cachePos(gameId: Int) {
         tCache.cachePlay4GameId(
             gameId, mPlaySelectedPos, mGroupSelectedPos, mBetSelectedPos, mParentPlayId, mBetTypeId
         )
@@ -815,7 +815,6 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                         groupPosition, PAY_LOADS_SELECTED
                                     )
                                     notifySelectedPositionWithPayLoads(position, false)
-                                    cachePlay4GameId(vm.getGameId())//缓存玩法
                                     adapter.getItemOrNull(position)?.let {
                                         if (it is BetItem) {
                                             onBetSelected(it)
@@ -825,7 +824,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
                                     mBetSelectedPos = position
                                     mGroupSelectedPos = groupPosition
                                     mPlaySelectedPos = mPlaySelectedRef
-
+                                    cachePos(vm.getGameId())//缓存玩法
                                 }
                             }
                         }

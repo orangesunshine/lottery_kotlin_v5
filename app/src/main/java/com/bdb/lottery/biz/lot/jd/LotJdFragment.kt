@@ -21,6 +21,8 @@ import com.bdb.lottery.biz.lot.jd.single.SingleTextWatcher
 import com.bdb.lottery.const.EXTRA
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.jd.BetItem
+import com.bdb.lottery.datasource.lot.data.jd.HotData
+import com.bdb.lottery.datasource.lot.data.jd.LeaveData
 import com.bdb.lottery.dialog.ConfirmDialog
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.TextWatcherAdapter
@@ -115,7 +117,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     }
     //endregion
 
-    //region 点击：玩法菜单数据获取失败，点击重新请求数据
+    //region 网络数据失败：玩法菜单数据获取失败，点击重新请求数据
     private fun playMenuRetryWhenErr() {
         aliveActivity<LotActivity>()?.mPlayLoadingLayout?.setRetryListener {
             vm.netBetType()
@@ -170,6 +172,8 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private fun requestDatas() {
         vm.netInitGame()//初始化彩票
         vm.netBetType()//玩法配置接口
+        vm.netHot()//冷热
+        vm.netLeave()//遗漏
     }
     //endregion
 
@@ -245,7 +249,10 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                         lotDuplexLd.gameType,
                         lotDuplexLd.betTypeId,
                         lotDuplexLd.ballTextList,
-                        lotDuplexLd.lotDuplexDatas
+                        lotDuplexLd.lotDuplexDatas,
+                        vm.getOddInfoMap(),
+                        vm.getHotDatas(),
+                        vm.getLeaveDatas()
                     ) {
                         mDuplexNums = vm.makeBetNumStr(it)
                         var count = 0
@@ -287,12 +294,31 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         }
 
-        ob(vm.mOddInfoMapLd.getLiveData()){
-//            lot_jd_duplex_rv.adapter?.let {
-//                if (it is LotDuplexAdapter) {
-//                    it.renderLhhOddInfo(vm.getOddInfoMap())
-//                }
-//            }
+        //奖金
+        ob(vm.oddInfoMapLd.getLiveData()) { oddInfo: MutableMap<String, Double> ->
+            lot_jd_duplex_rv.adapter?.let {
+                if (it is LotDuplexAdapter) {
+                    it.renderLhhOddInfo(oddInfo)
+                }
+            }
+        }
+
+        //冷热
+        ob(vm.hotLd.getLiveData()) { hot: HotData ->
+            lot_jd_duplex_rv.adapter?.let {
+                if (it is LotDuplexAdapter) {
+                    it.renderHot(hot)
+                }
+            }
+        }
+
+        //遗漏
+        ob(vm.leaveLd.getLiveData()) { leave: LeaveData ->
+            lot_jd_duplex_rv.adapter?.let {
+                if (it is LotDuplexAdapter) {
+                    it.renderLeave(leave)
+                }
+            }
         }
     }
     //endregion
@@ -460,6 +486,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mHotLeave: Boolean? = null//false：显示冷热，true：显示遗漏，null：都不显示
     private fun hotLeaveClick() {
         lot_jd_play_hot_tv.setOnClickListener {
+            vm.netHot()
             lot_jd_duplex_rv.adapter?.let {
                 if (it is LotDuplexAdapter) {
                     mHotLeave = if (mHotLeave == false) null else false
@@ -471,6 +498,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         }
 
         lot_jd_play_leave_tv.setOnClickListener {
+            vm.netLeave()
             lot_jd_duplex_rv.adapter?.let {
                 if (it is LotDuplexAdapter) {
                     mHotLeave = if (mHotLeave == true) null else true

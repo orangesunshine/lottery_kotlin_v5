@@ -13,6 +13,8 @@ import com.bdb.lottery.R
 import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
 import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexLd
 import com.bdb.lottery.const.GAME
+import com.bdb.lottery.datasource.lot.data.jd.HotData
+import com.bdb.lottery.datasource.lot.data.jd.LeaveData
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
@@ -25,6 +27,9 @@ class LotDuplexAdapter constructor(
     private var betTypeId: Int,
     private var ballTextList: List<String>?,//不为空：非数字球，否则数字球
     duplexDatas: MutableList<LotDuplexData>?,
+    var oddInfoMap: Map<String, Double>?,
+    var hot: HotData?,
+    var leave: LeaveData?,
     private val noteCountBlock: ((List<List<String?>?>) -> Unit)?,
 ) : BaseQuickAdapter<LotDuplexData, BaseViewHolder>(
     R.layout.lot_duplex_item,
@@ -63,6 +68,38 @@ class LotDuplexAdapter constructor(
         renderDxds(item, adapterPosition, holder)
         //divide
         holder.setGone(R.id.lot_duplex_item_divide, adapterPosition == itemCount - 1)
+    }
+
+    override fun convert(holder: BaseViewHolder, item: LotDuplexData, payloads: List<Any>) {
+        val adapterPosition = holder.adapterPosition
+        var dxdsTag = -1
+        val preTag = mDxdsSparseArray[adapterPosition]
+        when (payloads[0]) {
+            PAY_LOAD_BIG -> {
+                dxdsTag = 0//大
+            }
+            PAY_LOAD_SMALL -> {
+                dxdsTag = 1//小
+            }
+            PAY_LOAD_SINGLE -> {
+                dxdsTag = 2//单
+            }
+            PAY_LOAD_DOUBLE -> {
+                dxdsTag = 3//双
+            }
+            PAY_LOAD_NONE -> {
+                dxdsTag = -1//取消大小单双选中
+            }
+        }
+        if (-1 != preTag)
+            dxdsSelectedChange(holder, preTag, false)
+        if (dxdsTag == preTag) {
+            if (-1 != preTag)
+                mDxdsSparseArray[adapterPosition] = -1
+        } else {
+            dxdsSelectedChange(holder, dxdsTag, true)
+            mDxdsSparseArray[adapterPosition] = dxdsTag
+        }
     }
 
     //region 每项对应的：号码球、大小单双、万千百十个
@@ -122,7 +159,11 @@ class LotDuplexAdapter constructor(
                 gameType,
                 betTypeId,
                 mSpanCount,
-                item
+                item,
+                oddInfoMap,
+                if (hot?.coldHot?.size ?: 0 > adapterPosition) hot?.coldHot?.get(adapterPosition) else null,
+                if (leave?.leaveOut?.size ?: 0 > adapterPosition) leave?.leaveOut?.get(
+                    adapterPosition) else null
             ) {
                 //号码球选中切换回调
                 noteCountBlock?.invoke(getAllSelectedNums())
@@ -265,38 +306,6 @@ class LotDuplexAdapter constructor(
     }
     //endregion
 
-    override fun convert(holder: BaseViewHolder, item: LotDuplexData, payloads: List<Any>) {
-        val adapterPosition = holder.adapterPosition
-        var dxdsTag = -1
-        val preTag = mDxdsSparseArray[adapterPosition]
-        when (payloads[0]) {
-            PAY_LOAD_BIG -> {
-                dxdsTag = 0//大
-            }
-            PAY_LOAD_SMALL -> {
-                dxdsTag = 1//小
-            }
-            PAY_LOAD_SINGLE -> {
-                dxdsTag = 2//单
-            }
-            PAY_LOAD_DOUBLE -> {
-                dxdsTag = 3//双
-            }
-            PAY_LOAD_NONE -> {
-                dxdsTag = -1//取消大小单双选中
-            }
-        }
-        if (-1 != preTag)
-            dxdsSelectedChange(holder, preTag, false)
-        if (dxdsTag == preTag) {
-            if (-1 != preTag)
-                mDxdsSparseArray[adapterPosition] = -1
-        } else {
-            dxdsSelectedChange(holder, dxdsTag, true)
-            mDxdsSparseArray[adapterPosition] = dxdsTag
-        }
-    }
-
     //region tag对应大小大双按钮，切换select
     private fun dxdsSelectedChange(holder: BaseViewHolder, tag: Int, selected: Boolean) {
         when (tag) {
@@ -389,11 +398,36 @@ class LotDuplexAdapter constructor(
     }
     //endregion
 
-    //region 渲染龙虎和：奖金
-    fun renderLhhOddInfo(oddInfoMap: MutableMap<String, Double>){
+    //region 渲染：龙虎和奖金
+    fun renderLhhOddInfo(oddInfoMap: MutableMap<String, Double>?) {
+        this.oddInfoMap = oddInfoMap
         if (mSubAdapters.isNotEmpty()) {
             for (adapter in mSubAdapters.valueIterator()) {
                 adapter.renderLhhOddInfo(oddInfoMap)
+            }
+        }
+    }
+    //endregion
+
+    //region 渲染：冷热
+    fun renderHot(hot: HotData?) {
+        this.hot = hot
+        if (mSubAdapters.isNotEmpty()) {
+            for ((index, adapter) in mSubAdapters.valueIterator().withIndex()) {
+                adapter.renderHot(if (hot?.coldHot?.size ?: 0 > index) hot?.coldHot?.get(
+                    index) else null)
+            }
+        }
+    }
+    //endregion
+
+    //region 渲染：遗漏
+    fun renderLeave(leave: LeaveData?) {
+        this.leave = leave
+        if (mSubAdapters.isNotEmpty()) {
+            for ((index, adapter) in mSubAdapters.valueIterator().withIndex()) {
+                adapter.renderLeave(if (leave?.leaveOut?.size ?: 0 > index) leave?.leaveOut?.get(
+                    index) else null)
             }
         }
     }

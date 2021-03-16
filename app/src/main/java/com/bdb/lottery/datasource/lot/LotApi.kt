@@ -8,6 +8,8 @@ import com.bdb.lottery.datasource.lot.data.TodayLotteryNumsData
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
 import com.bdb.lottery.datasource.lot.data.jd.GameBetTypeData
 import com.bdb.lottery.datasource.lot.data.jd.GameInitData
+import com.bdb.lottery.datasource.lot.data.jd.HotData
+import com.bdb.lottery.datasource.lot.data.jd.LeaveData
 import com.bdb.lottery.datasource.lot.data.tr.TrBetTypeData
 import com.bdb.lottery.datasource.lot.data.tr.TrInitGameData
 import com.bdb.lottery.datasource.lot.data.wt.WtBetTypeData
@@ -51,6 +53,14 @@ interface LotApi {
     @POST(URL.URL_GET_BET_TYPE)
     @FormUrlEncoded
     fun getBetType(@Field("gameId") gameId: String): Observable<BaseResponse<GameBetTypeData>>
+
+    @POST(URL.URL_HISTORY_LEAVE_OUT)
+    @FormUrlEncoded
+    fun getLeave(@Field("gameType") gameType: String):Observable<BaseResponse<LeaveData>>
+
+    @POST(URL.URL_COLD_HOT)
+    @FormUrlEncoded
+    fun getHot(@Field("gameType") gameType: String):Observable<BaseResponse<HotData>>
     //endregion
 
     //region Kg
