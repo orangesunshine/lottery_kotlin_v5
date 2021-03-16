@@ -195,6 +195,8 @@ GREEN_DAO << "classpath__org.greenrobot:greendao-gradle-plugin:$green_dao_versio
 GREEN_DAO << "plugin__org.greenrobot.greendao"
 GREEN_DAO << "org.greenrobot:greendao:$green_dao_version"
 
+DEPS.put("LEAKCANARY", "debug__com.squareup.leakcanary:leakcanary-android:2.6")
+
 if (!ext.has("config")) {
     def config = parseConfig()
     ext.config = config

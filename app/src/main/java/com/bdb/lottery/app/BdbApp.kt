@@ -90,8 +90,8 @@ class BdbApp : Application() {
     }
 
     private fun initBugly() {
-        FileDownloader.setupOnApplicationOnCreate(this).connectionCreator(OkHttp3Connection.Creator(
-            SSLUtils.createOkHttp()))
+//        FileDownloader.setupOnApplicationOnCreate(this).connectionCreator(OkHttp3Connection.Creator(
+//            SSLUtils.createOkHttp()))
         // 设置是否为上报进程
         val strategy = CrashReport.UserStrategy(context)
         strategy.setUploadProcess(tApp.isMainProcess())

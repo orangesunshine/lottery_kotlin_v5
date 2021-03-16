@@ -33,6 +33,10 @@ fun View.visible(visible: Boolean) {
     visibility = if (visible) View.VISIBLE else View.GONE
 }
 
+fun View.select(select: Boolean) {
+    isSelected = select
+}
+
 fun View.alphaVisible(visible: Boolean) {
     visibility = if (visible) View.VISIBLE else View.GONE
     startAnimation(if (visible) appearAnim else disappearAnim)

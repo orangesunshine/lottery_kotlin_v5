@@ -105,6 +105,10 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     //region recyclerview滑动不触发下拉刷新：smartRefreshLayout noFling
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        noFling()
+    }
+
+    private fun noFling() {
         (fragments[0] as HomeCollectionFragment).bindNoFling {
             home_refreshLayout.bindNoFlingRecyclerView(
                 it
@@ -156,7 +160,7 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     lateinit var accountManager: AccountManager
     override fun observe() {
         ob(accountManager.mUserBalance.getLiveData()) {
-            home_balance_tv.text = (it?.center ?: 0.0).money()
+            home_balance_tv.text = (it.center ?: 0.0).money()
         }
         ob(vm.bannerLd.getLiveData()) {
             loadBanner(it)

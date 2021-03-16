@@ -84,7 +84,6 @@ class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
 
     private fun dismissLoading() {
         lot_dialog_loading_success_iv.clearAnimation()
-        lot_dialog_loading_success_iv.visible(false)
         lot_dialog_submit_bt.visible(false)
     }
 

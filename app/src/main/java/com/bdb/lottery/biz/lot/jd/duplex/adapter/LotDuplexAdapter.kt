@@ -72,6 +72,7 @@ class LotDuplexAdapter constructor(
         adapterPosition: Int,
     ) {
         val rv: RecyclerView = holder.getView(R.id.lot_duplex_item_rv)
+        rv.itemAnimator = null
         //球：网格布局
         rv.layoutManager = GridLayoutManager(context, mSpanCount).apply {
             if (gameType == GAME.TYPE_GAME_K3) {
@@ -185,7 +186,7 @@ class LotDuplexAdapter constructor(
                 holder.setTextColorStateList(
                     context,
                     R.id.lot_duplex_item_big,
-                    R.color.lot_duplex_sub_item_dxds_text_color_selector
+                    R.color.lot_duplex_sub_item_dxds_text_selector
                 )
                 holder.setBackgroundResource(
                     R.id.lot_duplex_item_small,
@@ -194,7 +195,7 @@ class LotDuplexAdapter constructor(
                 holder.setTextColorStateList(
                     context,
                     R.id.lot_duplex_item_small,
-                    R.color.lot_duplex_sub_item_dxds_text_color_selector
+                    R.color.lot_duplex_sub_item_dxds_text_selector
                 )
                 holder.setBackgroundResource(
                     R.id.lot_duplex_item_single,
@@ -203,7 +204,7 @@ class LotDuplexAdapter constructor(
                 holder.setTextColorStateList(
                     context,
                     R.id.lot_duplex_item_single,
-                    R.color.lot_duplex_sub_item_dxds_text_color_selector
+                    R.color.lot_duplex_sub_item_dxds_text_selector
                 )
                 holder.setBackgroundResource(
                     R.id.lot_duplex_item_double,
@@ -212,7 +213,7 @@ class LotDuplexAdapter constructor(
                 holder.setTextColorStateList(
                     context,
                     R.id.lot_duplex_item_double,
-                    R.color.lot_duplex_sub_item_dxds_text_color_selector
+                    R.color.lot_duplex_sub_item_dxds_text_selector
                 )
             }
         }
@@ -232,14 +233,14 @@ class LotDuplexAdapter constructor(
             holder.setTextColorStateList(
                 context,
                 R.id.lot_duplex_item_label_tv,
-                R.color.lot_duplex_item_label_text_color_selector
+                R.color.lot_duplex_item_label_color_selector
             )
             //选中背景
             holder.setBackgroundResource(
                 R.id.lot_duplex_item_label_tv,
                 when (gameType) {
-                    GAME.TYPE_GAME_11X5 -> R.drawable.lot_duplex_item_label_bg_11x5_selector
-                    GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> R.drawable.lot_duplex_item_label_bg_pk_selector
+                    GAME.TYPE_GAME_11X5 -> R.drawable.lot_duplex_item_label_11x5_bg_selector
+                    GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> R.drawable.lot_duplex_item_label_pk_bg_selector
                     else -> R.drawable.lot_duplex_item_label_bg_selector
                 }
             )
@@ -344,21 +345,11 @@ class LotDuplexAdapter constructor(
     }
     //endregion
 
-    //region 冷热
-    fun hotVisible(visible: Boolean) {
+    //region 冷热遗漏
+    fun hotLeaveVisible(visible: Boolean?) {
         if (mSubAdapters.isNotEmpty()) {
             for (adapter in mSubAdapters.valueIterator()) {
-                adapter.hotVisible(visible)
-            }
-        }
-    }
-    //endregion
-
-    //region 遗漏
-    fun leaveVisible(visible: Boolean) {
-        if (mSubAdapters.isNotEmpty()) {
-            for (adapter in mSubAdapters.valueIterator()) {
-                adapter.hotVisible(visible)
+                adapter.hotLeaveVisible(visible)
             }
         }
     }
@@ -386,6 +377,7 @@ class LotDuplexAdapter constructor(
     }
     //endregion
 
+    //region 获取全部号码球
     fun getAllSelectedNums(): List<List<String?>?> {
         val allSelectedNums = ArrayList<List<String>>()
         if (mSubAdapters.isNotEmpty()) {
@@ -395,4 +387,15 @@ class LotDuplexAdapter constructor(
         }
         return allSelectedNums
     }
+    //endregion
+
+    //region 渲染龙虎和：奖金
+    fun renderLhhOddInfo(oddInfoMap: MutableMap<String, Double>){
+        if (mSubAdapters.isNotEmpty()) {
+            for (adapter in mSubAdapters.valueIterator()) {
+                adapter.renderLhhOddInfo(oddInfoMap)
+            }
+        }
+    }
+    //endregion
 }

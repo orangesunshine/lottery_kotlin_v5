@@ -77,6 +77,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         playMenuRetryWhenErr()//玩法菜单数据获取失败，点击重新请求数据
 
         playDescClick()//玩法说明
+        hotLeaveClick()//冷热遗漏
         digitClick()//digit：万位、千位、百位、十位、个位（任选玩法）
         repeatNdErrorClick()//删除重复、错误号码
         clearNumsCLick() //清空号码
@@ -87,8 +88,14 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //region 换肤
     private fun skin4GameType() {
-        lot_jd_desc_divide_view.setBackgroundColor(ContextCompat.getColor(requireContext(),
-            vm.betAreaTopDivideSkinByGameType()))//投注区域顶部分割线
+        lot_jd_play_hot_tv.setBackgroundResource(if (vm.isPK()) R.drawable.lot_jd_hot_hot_leave_pk_bg_selector else R.drawable.lot_jd_hot_hot_leave_bg_selector)
+        lot_jd_play_leave_tv.setBackgroundResource(if (vm.isPK()) R.drawable.lot_jd_hot_hot_leave_pk_bg_selector else R.drawable.lot_jd_hot_hot_leave_bg_selector)
+        lot_jd_desc_divide_view.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                vm.betAreaTopDivideSkinByGameType()
+            )
+        )//投注区域顶部分割线
         val bgRes = ContextCompat.getColor(requireContext(), vm.betAreaBgResSkinByGameType())
         lot_jd_bet_info_expl.setBackgroundColor(bgRes)//底部投注信息栏
         //投注区域背景
@@ -102,6 +109,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
     //region 复式：投注区域
     private fun initDuplexRv() {
+        lot_jd_duplex_rv.itemAnimator = null//删除不必要的动画
         lot_jd_duplex_rv.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
     }
@@ -227,7 +235,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         ob(vm.duplexBallDatasLd.getLiveData()) { lotDuplexLd ->
             lot_jd_duplex_rv.adapter?.let {
                 //刷新复式列表
-                if (it is LotDuplexAdapter) it.notifyChangeWhenPlayChange(lotDuplexLd)
+                if (it is LotDuplexAdapter) {
+                    it.notifyChangeWhenPlayChange(lotDuplexLd)
+                }
             } ?: let {
                 //初始化复式列表
                 lot_jd_duplex_rv.adapter =
@@ -251,6 +261,11 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                         toggleAmountBanner(count)
                     }
             }
+            lot_jd_duplex_rv.adapter.let {
+                if (it is LotDuplexAdapter) {
+                    it.renderLhhOddInfo(vm.getOddInfoMap())
+                }
+            }
         }
 
         //玩法切换
@@ -260,12 +275,24 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
             lot_jd_bet_single_ll.visible(it)
             //复式
             lot_jd_duplex_rv.visible(!it)
+            //冷热遗漏
+            val visibleHotLeave = vm.visibleHotLeave()
+            lot_jd_play_hot_tv.visible(visibleHotLeave)
+            lot_jd_play_leave_tv.visible(visibleHotLeave)
         }
 
         //官方验证：标题栏popup菜单
         ob(vm.gameLd.getLiveData()) {
-            aliveActivity<LotActivity>()?.visibleMenuVerifyBanner(it.startExplain, it.startSign)
+            aliveActivity<LotActivity>()?.visibleMenuPopVerifyBanner(it.startExplain, it.startSign)
 
+        }
+
+        ob(vm.mOddInfoMapLd.getLiveData()){
+//            lot_jd_duplex_rv.adapter?.let {
+//                if (it is LotDuplexAdapter) {
+//                    it.renderLhhOddInfo(vm.getOddInfoMap())
+//                }
+//            }
         }
     }
     //endregion
@@ -423,6 +450,33 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                     //玩法说明弹窗
                     lotPlayDescDialog.setGameType(gameType).setPlayDescContent(it)
                         .show(childFragmentManager)
+                }
+            }
+        }
+    }
+    //endregion
+
+    //region 点击：冷热遗漏
+    private var mHotLeave: Boolean? = null//false：显示冷热，true：显示遗漏，null：都不显示
+    private fun hotLeaveClick() {
+        lot_jd_play_hot_tv.setOnClickListener {
+            lot_jd_duplex_rv.adapter?.let {
+                if (it is LotDuplexAdapter) {
+                    mHotLeave = if (mHotLeave == false) null else false
+                    it.hotLeaveVisible(mHotLeave)
+                    lot_jd_play_hot_tv.select(mHotLeave == false)
+                    lot_jd_play_leave_tv.select(false)
+                }
+            }
+        }
+
+        lot_jd_play_leave_tv.setOnClickListener {
+            lot_jd_duplex_rv.adapter?.let {
+                if (it is LotDuplexAdapter) {
+                    mHotLeave = if (mHotLeave == true) null else true
+                    it.hotLeaveVisible(mHotLeave)
+                    lot_jd_play_hot_tv.select(false)
+                    lot_jd_play_leave_tv.select(mHotLeave == true)
                 }
             }
         }

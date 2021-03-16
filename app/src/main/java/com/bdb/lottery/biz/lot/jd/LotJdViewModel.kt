@@ -19,14 +19,13 @@ import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.SingleBet
 import com.bdb.lottery.datasource.lot.data.TouZhuHaoMa
 import com.bdb.lottery.datasource.lot.data.jd.*
-import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.isDigit
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.convert.Converts
+import com.bdb.lottery.utils.game.Games
 import com.bdb.lottery.utils.gson.Gsons
 import com.bdb.lottery.utils.ui.toast.AbsToast
-import org.apache.commons.lang3.StringUtils
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -43,19 +42,39 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private var mUserBonus: Double = 0.0
     private var mUserRebate: Double = 0.0//三方游戏返点
     private var mSingledInfo: SingledInfo? = null//最高限红
-    private var mOddInfo: List<OddInfo>? = null//理论最高奖金
     private var mAlreadyInitGame = AtomicBoolean()
+    val mOddInfoMapLd = LiveDataWrapper<MutableMap<String, Double>>()
     val gameLd = LiveDataWrapper<Game>()
     fun netInitGame() {
         lotRemoteDs.initGame(mGameId.toString()) {
             mAlreadyInitGame.set(true)
             gameLd.setData(it.game)
+            mOddInfoMapLd.setData(genOddInfoMap(it.oddInfo))
             mSingledInfo = it.singledInfo
-            mOddInfo = it.oddInfo
             mUserBonus = it.userBonus
             mUserRebate = it.user
             mToken = it.token
         }
+    }
+    //endregion
+
+
+    //region 奖金
+    private fun genOddInfoMap(oddInfos: List<OddInfo>): MutableMap<String, Double> {
+        val oddInfoMap = mutableMapOf<String, Double>()
+        if (!oddInfos.isNullOrEmpty()) {
+            for (oddInfo in oddInfos) {
+                oddInfoMap.put(
+                    oddInfo.special_number,
+                    BetCenter.computeBonus(oddInfo, mUserBonus)
+                )
+            }
+        }
+        return oddInfoMap
+    }
+
+    fun getOddInfoMap(): MutableMap<String, Double> {
+        return mOddInfoMapLd.getData() ?: mutableMapOf()
     }
     //endregion
 
@@ -85,6 +104,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         mBetTypeId = betTypeId
         lotLocalDs.queryBetTypeByPlayId(betTypeId)
             ?.let {
+
                 val subPlayMethod = if (it.size > 1) {
                     it.last { !it.belongto.contains("PK10") }
                 } else {
@@ -149,9 +169,23 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     }
     //endregion
 
-    //region 判断快三：彩种大类
+    //region 可见：冷热遗漏
+    fun visibleHotLeave(): Boolean {
+        return !isSingleMode() && !mDigits.isSpace() && (Games.isSSC(mGameType) || Games.isPK(
+            mGameType
+        ))
+    }
+    //endregion
+
+    //region 快三：彩种大类
     fun isK3(): Boolean {
-        return GAME.TYPE_GAME_K3 == mGameType
+        return Games.isK3(mGameType)
+    }
+    //endregion
+
+    //region PK系列：彩种大类
+    fun isPK(): Boolean {
+        return Games.isPK(mGameType)
     }
     //endregion
 
@@ -208,8 +242,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     //region 颜色资源：换肤-投注区域、底部投注信息栏
     fun betAreaBgResSkinByGameType(): Int {
         return when (mGameType) {
-            GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> R.color.color_skin_pk_bg_jd
-            GAME.TYPE_GAME_K3 -> R.color.color_skin_k3_bg_jd
+            GAME.TYPE_GAME_PK8, GAME.TYPE_GAME_PK10 -> R.color.color_bg_skin_pk_jd
+            GAME.TYPE_GAME_K3 -> R.color.color_bg_skin_k3_jd
             else -> R.color.color_bg
         }
     }
@@ -309,16 +343,8 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         userRebate: Double = mUserRebate,
         amountModelValue: Double = 1.0,
     ): Double {
-        if (isLHH(betNums)) {
-            mOddInfo?.let {
-                for (oddInfo in it) {
-                    if (oddInfo.special_number.equalsNSpace(betNums)) return BetCenter.computeBonusText(
-                        oddInfo,
-                        mUserBonus
-                    )
-                }
-            }
-            return 0.0
+        if (Games.isLHH(isSingleMode(), betNums, mGameType)) {
+            return getOddInfoMap()?.run { this[betNums] } ?: 0.0
         } else {
             val baseScale = betItem?.baseScale ?: 0.0
             val scale = userRebate * (betItem?.multiple ?: 0.0)
@@ -326,22 +352,6 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         }
     }
 
-    /**
-     * 根据彩种大类，投注号码判断是否使用龙虎和奖金(initGame->oddInfo)
-     */
-    private fun isLHH(betNums: String?): Boolean {
-        if (isSingleMode()) return false//单式
-        return when (mGameType) {
-            GAME.TYPE_GAME_SSC -> return StringUtils.equalsAny(betNums, "龙", "虎", "和")
-            GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> return StringUtils.equalsAny(
-                betNums,
-                "大小单双",
-                "和值"
-            )
-            GAME.TYPE_GAME_K3 -> return StringUtils.equals(betNums, "和值")
-            else -> false
-        }
-    }
     //endregion
 
     //region 单挑提示语：下注弹窗

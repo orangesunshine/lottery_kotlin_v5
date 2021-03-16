@@ -3,7 +3,6 @@ package com.bdb.lottery.biz.lot.activity
 import android.Manifest
 import android.graphics.Color
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.Gravity
 import android.view.View
 import android.view.animation.Animation
@@ -39,9 +38,7 @@ import com.bdb.lottery.datasource.lot.data.jd.PlayItem
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.adapterPattern.OnTabSelectedListenerAdapter
 import com.bdb.lottery.utils.cache.TCache
-import com.bdb.lottery.utils.game.TGame
 import com.bdb.lottery.utils.thread.TThread
-import com.bdb.lottery.utils.timber.TPeriod
 import com.bdb.lottery.utils.time.TTime
 import com.bdb.lottery.utils.time.Times
 import com.bdb.lottery.utils.ui.activity.Activitys
@@ -59,7 +56,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.actionbar_lot_layout.*
 import kotlinx.android.synthetic.main.lot_activity.*
 import permissions.dispatcher.*
-import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
@@ -89,6 +85,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initCup()//奖杯
+        initMenuPopDatas()//标题栏右侧菜单
         skin4GameType()//换肤
 
         //形态文本框宽度（时时彩70dp，其他40dp）
@@ -167,7 +164,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 点击：标题栏菜单
     private fun actbarMenuClick() {
         actionbar_right_id.setOnClickListener {
-            popActbarRightMenu()
+            mMenuPopWin.showAtScreenLocation(actionbar_right_id, Sizes.dp2px(8f), -Sizes.dp2px(8f))
         }
     }
     //endregion
@@ -329,9 +326,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         if (k3) {
             val k3TextColor = ContextCompat.getColor(
                 this,
-                R.color.color_skin_k3_text_color
+                R.color.color_text_skin_k3
             )
-            lotJdHistoryLl.setBackgroundResource(R.color.color_skin_k3_bg)
+            lotJdHistoryLl.setBackgroundResource(R.color.color_bg_skin_k3)
             lotJdHistoryIssueTv.setTextColor(k3TextColor)
             lotJdHistoryOpenTv.setTextColor(k3TextColor)
             lotJdHistoryLabelTv.setTextColor(k3TextColor)
@@ -716,7 +713,10 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             return
         }
         lotParam.issueNo = mCurIssue//当前期号
-        lotDialog.lotParams(lotParam).lotSuccess(success).lotError(error)
+        lotDialog.lotParams(lotParam).lotSuccess({
+            vm.refreshBalanceByPostGlobalEvent()
+            success?.invoke(it)
+        }).lotError(error)
             .setDanTiaoTips(danTiaoTips).show(supportFragmentManager)
     }
     //endregion
@@ -859,7 +859,7 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
     //region 弹出右侧菜单：快捷充值、投注记录、追号记录、走势图、盈亏报表、官方验证
     @Inject
     lateinit var mMenuPopWin: CommonPopWindow
-    private fun popActbarRightMenu() {
+    private fun initMenuPopDatas() {
         val popDatas = ArrayList<CommonPopData>()
         popDatas.add(CommonPopData("快捷充值", {}))
         popDatas.add(CommonPopData("投注记录", {}))
@@ -868,10 +868,9 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
         popDatas.add(CommonPopData("盈亏报表", {}))
         popDatas.add(CommonPopData("官方验证", {}))
         mMenuPopWin.init(Sizes.dp2px(100f), popDatas)
-        mMenuPopWin.showAtScreenLocation(actionbar_right_id, Sizes.dp2px(8f), -Sizes.dp2px(8f))
     }
 
-    fun visibleMenuVerifyBanner(startExplain: Boolean, startSign: Boolean) {
+    fun visibleMenuPopVerifyBanner(startExplain: Boolean, startSign: Boolean) {
         mMenuPopWin.visibleBanner("官方验证", startExplain || startSign)
     }
     //endregion

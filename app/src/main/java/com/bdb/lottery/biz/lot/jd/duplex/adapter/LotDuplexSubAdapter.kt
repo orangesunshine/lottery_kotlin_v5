@@ -11,6 +11,7 @@ import com.bdb.lottery.biz.lot.jd.duplex.LotDuplexData
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.module.application.AppEntries
+import com.bdb.lottery.utils.game.Games
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -32,6 +33,11 @@ class LotDuplexSubAdapter(
     R.layout.lot_duplex_sub_item,
     lotLotDuplexData.genBallDatas(), updateBlock
 ) {
+    companion object {
+        const val PAY_LOADS_HOT_LEAVE = "PAY_LOADS_HOT_LEAVE"
+        const val PAY_LOAD_ODD_INFO = "PAY_LOAD_ODD_INFO"
+    }
+
     private var isk3HeZhi = Lots.isK3HeZhi(betTypeId)//快三和值特殊处理（同时数字球，非数字球）：大小单上一行4列，数字号码一行6列
 
     private val tSound by lazy {
@@ -88,7 +94,7 @@ class LotDuplexSubAdapter(
             holder.setTextColorStateList(
                 context,
                 R.id.lot_duplex_sub_item_tv,
-                R.color.lot_duplex_sub_item_long_ball_text_color_selector
+                R.color.lot_duplex_sub_item_long_ball_color_selector
             )
             holder.setItemChildSelected(R.id.lot_duplex_sub_item_iv, isItemSelected(holder))
         } else {//非龙虎和
@@ -96,14 +102,14 @@ class LotDuplexSubAdapter(
             holder.setText(
                 R.id.lot_duplex_sub_item_tv, getItem(holder.adapterPosition)//数据源已处理过非数字球，这里直接取
             )
-            val isK3 = GAME.TYPE_GAME_K3 == gameType
+            val isK3 = Games.isK3(gameType)
             val containsDxds = StringUtils.containsAny(item, "大", "小", "单", "双")
             //根据gameType设置球选中文字颜色
             holder.setTextColorStateList(
                 context, R.id.lot_duplex_sub_item_tv, when (gameType) {
-                    GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.lot_duplex_sub_item_pk_ball_text_color_selector
-                    GAME.TYPE_GAME_K3 -> R.color.lot_duplex_sub_item_k3_ball_text_color_selector
-                    else -> R.color.lot_duplex_sub_item_ball_text_color_selector
+                    GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.lot_duplex_sub_item_pk_ball_color_selector
+                    GAME.TYPE_GAME_K3 -> R.color.lot_duplex_sub_item_k3_ball_color_selector
+                    else -> R.color.lot_duplex_sub_item_ball_color_selector
                 }
             )
             holder.setTextSize(
@@ -149,10 +155,16 @@ class LotDuplexSubAdapter(
     }
 
     override fun convert(holder: BaseViewHolder, item: String, payloads: List<Any>) {
-        holder.setItemChildSelected(//选中状态更新
-            if (Lots.isLHH(item)) R.id.lot_duplex_sub_item_iv else R.id.lot_duplex_sub_item_tv,
-            isItemSelected(holder)
-        )
+        super.convert(holder, item, payloads)
+        //冷热遗漏
+        if (PAY_LOADS_HOT_LEAVE.equalsPayLoads(payloads)) {
+            holder.setGone(R.id.lot_duplex_sub_item_hot_tv, null == mHotLeaveVisible)
+        }
+
+        //龙虎和奖金
+        if (Games.isLHH(false, item, gameType) && PAY_LOAD_ODD_INFO.equalsPayLoads(payloads)) {
+            holder.setText(R.id.lot_duplex_sub_item_tv, (mOddInfoMap[item] ?: 0.0).format())
+        }
     }
 
     init {
@@ -265,13 +277,11 @@ class LotDuplexSubAdapter(
     //endregion
     //endregion
 
-    //region 冷热
-    fun hotVisible(visible: Boolean) {
-    }
-    //endregion
-
-    //region 遗漏
-    fun leaveVisible(visible: Boolean) {
+    //region 冷热遗漏
+    private var mHotLeaveVisible: Boolean? = null
+    fun hotLeaveVisible(visible: Boolean?) {
+        mHotLeaveVisible = visible
+        notifyItemRangeChanged(0, itemCount, PAY_LOADS_HOT_LEAVE)
     }
     //endregion
 
@@ -288,6 +298,16 @@ class LotDuplexSubAdapter(
             }
         }
         return selectedNums
+    }
+    //endregion
+
+
+    //region 渲染龙虎和：奖金
+    private val mOddInfoMap: MutableMap<String, Double> = mutableMapOf()
+    fun renderLhhOddInfo(oddInfoMap: MutableMap<String, Double>) {
+        mOddInfoMap.clear()
+        mOddInfoMap.putAll(oddInfoMap)
+        notifyItemRangeChanged(0, itemCount, PAY_LOAD_ODD_INFO)
     }
     //endregion
 }

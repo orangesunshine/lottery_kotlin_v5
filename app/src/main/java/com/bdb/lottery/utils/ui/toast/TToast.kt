@@ -216,7 +216,7 @@ class WindowManagerToast @Inject constructor(
     private val mParams: WindowManager.LayoutParams = WindowManager.LayoutParams()
 
     override fun show(text: CharSequence?, duration: Long, tips: Boolean?) {
-        if (null == mToastView) return
+        if (null == mToastView || !Activitys.isActivityAlive(context)) return
         if (null != tips && tips) {
             mToastView?.tipsText(text)//温馨提示
         } else {

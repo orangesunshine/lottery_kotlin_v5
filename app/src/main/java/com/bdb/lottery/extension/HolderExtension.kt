@@ -17,6 +17,10 @@ fun BaseViewHolder.setItemChildSelected(@IdRes id: Int, isSelected: Boolean) {
     getView<View>(id).isSelected = isSelected
 }
 
+fun BaseViewHolder.setItemSelected(isSelected: Boolean) {
+    itemView.isSelected = isSelected
+}
+
 fun BaseViewHolder.setTextSize(
     @IdRes id: Int,
     size: Float,

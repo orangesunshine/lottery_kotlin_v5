@@ -160,7 +160,9 @@ def moduleDeps(String modulename) {
 
 //处理依赖
 def handleDep(DependencyHandler handler, CharSequence dep) {
-    if (dep.startsWithAny("test__")) {
+    if (dep.startsWithAny("debug__")) {
+        handler.debugImplementation dep.replaceAll("debug__", "")
+    } else if (dep.startsWithAny("test__")) {
         handler.testImplementation dep.replaceAll("test__", "")
     } else if (dep.startsWithAny("androidtest__")) {
         handler.androidTestImplementation dep.replaceAll("androidtest__", "")

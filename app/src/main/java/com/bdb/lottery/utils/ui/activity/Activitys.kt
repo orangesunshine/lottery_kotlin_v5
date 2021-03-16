@@ -17,15 +17,15 @@ object Activitys {
     /**
      * 判断activity是否是活的
      */
-    fun isActivityAlive(activity: Activity?): Boolean {
-        return (activity != null && !activity.isFinishing
-                && (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || !activity.isDestroyed))
+    fun isActivityAlive(context: Context?): Boolean {
+        return (context != null && context is Activity && !context.isFinishing
+                && (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || !context.isDestroyed))
     }
 
     /**
      * @return the activities which topActivity is first position
      */
-    fun getActivitiesByReflect(): List<Activity>? {
+    fun getActivitiesByReflect(): List<Activity> {
         val list = LinkedList<Activity>()
         var topActivity: Activity? = null
         try {

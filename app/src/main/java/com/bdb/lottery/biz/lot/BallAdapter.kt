@@ -9,6 +9,7 @@ import com.bdb.lottery.R
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.lot.data.HistoryData
 import com.bdb.lottery.extension.equalsNSpace
+import com.bdb.lottery.extension.equalsPayLoads
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
@@ -138,9 +139,7 @@ class BallAdapter(
         item: HistoryData.HistoryItem,
         payloads: List<Any>
     ) {
-        if (payloads.isNullOrEmpty()) return
-        val payload: String = payloads[0] as String
-        if (PAYLOAD_LABEL.equalsNSpace(payload)) {
+        if (PAYLOAD_LABEL.equalsPayLoads(payloads)) {
             holder.setText(R.id.lot_history_item_label_tv, labelText(item))
         } else {
             val nums = item.nums

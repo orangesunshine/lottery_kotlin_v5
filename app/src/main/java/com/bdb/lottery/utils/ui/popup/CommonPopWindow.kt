@@ -60,10 +60,10 @@ open class CommonPopWindow @Inject constructor(
         for (i in 0 until mPopDatas.size) {
             if (mPopDatas[i].text.equalsNSpace(bannerText)) {
                 mPopDatas[i].visible = visible
-                if (mContent.childCount > 2 * i) {
-                    mContent.getChildAt(2 * i).run { visible(visible) }
+                if (mContent.childCount > 2 * i - 1 && 2 * i - 1 > 0) {
+                    mContent.getChildAt(2 * i - 1).run { visible(visible) }
                 }
-                if (mContent.childCount > 2 * i + 1) mContent.getChildAt(2 * i + 1).visible(visible)
+                if (mContent.childCount > 2 * i) mContent.getChildAt(2 * i).visible(visible)
                 break
             }
         }

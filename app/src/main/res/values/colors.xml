@@ -51,13 +51,15 @@
     <color name="color_lot_text_color_default">#c8e2f9</color>
     <color name="color_skin_pk_text_color">#FFEBCE</color>
 
-    <color name="color_skin_k3_bg">#10523B</color>
-    <color name="color_skin_k3_text_color">#a7dbc8</color>
+    <color name="color_bg_skin_k3">#10523B</color>
+    <color name="color_text_skin_k3">#a7dbc8</color>
     <color name="color_skin_k3_line">#256c53</color>
 
 
-    <color name="color_skin_k3_bg_jd">#0E4B35</color>
-    <color name="color_skin_pk_bg_jd">#EFEDEA</color>
+    <color name="color_bg_skin_k3_jd">#0E4B35</color>
+    <color name="color_bg_skin_pk_jd">#EFEDEA</color>
+
+    <color name="color_text_hot_leave_selected">#fefeff</color>
 
     <!--    玩法说明分割线背景颜色-->
     <color name="color_play_desc_skin_pk_divide">#DBD8D0</color>

@@ -327,7 +327,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp">
+        android:layout_height="80dp"
+        android:layout_marginBottom="8dp">
 
         <TextView
             android:id="@+id/lot_dialog_submit_bt"
@@ -344,7 +345,7 @@
             android:id="@+id/lot_dialog_loading_success_iv"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="8dp"
             android:src="@drawable/lot_dialog_bet_loading"
             android:visibility="gone" />
@@ -353,7 +354,8 @@
             android:id="@+id/lot_dialog_success_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="4dp"
             android:text="投注成功"
             android:textColor="@color/color_333333"
             android:textSize="15dp"

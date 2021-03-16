@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
-import android.os.Bundle
 import android.os.IBinder
 import androidx.hilt.lifecycle.ViewModelInject
 import com.bdb.lottery.R
@@ -218,7 +217,7 @@ class LotViewModel @ViewModelInject @Inject constructor(
     //region 换肤-倒计时栏文字颜色（历史期号、往期开奖、当前期号、受注状态）
     fun countDownTextColor(): Int {
         return when (mGameType) {
-            GAME.TYPE_GAME_K3 -> R.color.color_skin_k3_text_color
+            GAME.TYPE_GAME_K3 -> R.color.color_text_skin_k3
             GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.color_skin_pk_text_color
             else -> R.color.white
         }
@@ -254,13 +253,13 @@ class LotViewModel @ViewModelInject @Inject constructor(
 
     //region 彩种大类判断：快三
     fun isK3(): Boolean {
-        return GAME.TYPE_GAME_K3 == mGameType
+        return Games.isK3(mGameType)
     }
     //endregion
 
     // region 彩种大类判断：时时彩
     fun isSSC(): Boolean {
-        return GAME.TYPE_GAME_SSC == mGameType
+        return Games.isSSC(mGameType)
     }
     //endregion
 

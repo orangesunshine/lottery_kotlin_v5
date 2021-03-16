@@ -4,9 +4,10 @@ import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
 import com.google.gson.GsonBuilder
 import org.junit.Assert
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -155,8 +156,8 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun assertReduce(){
-        val list= listOf(1, 2, 3)
+    fun assertReduce() {
+        val list = listOf(1, 2, 3)
         val result = list.reduce { s, t ->
             print("s=$s ")
             print("t=$t")
@@ -167,14 +168,14 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun test(){
+    fun test() {
         val phonenum = "13177668655"
         val chpier = phonenum.replace("(\\d{3})\\d{4}(\\d{4})".toRegex(), "$1****$2")
         println(chpier)
     }
 
     @Test
-    fun match(){
+    fun match() {
         val compile = Pattern.compile("(http|https)://([\\w.]+/?)\\w*")
         val matcher = compile.matcher("fjdsfjlk你好吗http://www.baidu.com/你好啊")
         if (matcher.find()) {
@@ -183,5 +184,23 @@ class ExampleUnitTest {
             val end = matcher.end()
             println("group: ${group}, start: ${start}, end: ${end}")
         }
+    }
+
+    @Test
+    fun testFormat() {
+        val decimalFormat = DecimalFormat("0.###")
+        decimalFormat.roundingMode = RoundingMode.DOWN
+//        decimalFormat.maximumFractionDigits = 3
+//        decimalFormat.isGroupingUsed = false
+        println(decimalFormat.format(7.00))
+        println(decimalFormat.format(7.01))
+        println(decimalFormat.format(7.010))
+        println(decimalFormat.format(7.01131))
+        println(decimalFormat.format(-7.01131))
+        println(decimalFormat.format(7.01041234513))
+        println(decimalFormat.format(-7.01041234513))
+        println(decimalFormat.format(0.6666))
+        println(decimalFormat.format(0.4641313))
+        println(decimalFormat.format(0.00005))
     }
 }

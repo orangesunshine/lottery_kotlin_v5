@@ -23,7 +23,7 @@ class OpenBallAdapter constructor(
     private var lotPlace: String,
 ) : TagAdapter<String>(nums.split(" ")) {
 
-    fun ballSize(gameType: Int): Int {
+    private fun ballSize(gameType: Int): Int {
         return Sizes.dp2px(
             when (gameType) {
                 GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> 17f
@@ -49,6 +49,10 @@ class OpenBallAdapter constructor(
     }
 
     override fun getView(parent: FlowLayout?, position: Int, num: String?): View {
+        return ball(num, position)
+    }
+
+    private fun ball(num: String?, position: Int): TextView {
         var bgRes = -1
         var textSize = 11
         var content: String? = null
@@ -94,7 +98,6 @@ class OpenBallAdapter constructor(
             ballSpace(gameType)
 
         textView.gravity = Gravity.CENTER
-        textView.includeFontPadding = false
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize.toFloat())
         textView.setTextColor(Color.parseColor("#333333"))
         val str = if (position + 1 == 10) "*" else (position + 1).toString()

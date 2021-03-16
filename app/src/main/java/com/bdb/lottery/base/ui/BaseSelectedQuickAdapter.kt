@@ -1,7 +1,8 @@
 package com.bdb.lottery.base.ui
 
 import androidx.annotation.LayoutRes
-import com.bdb.lottery.extension.validIndex
+import com.bdb.lottery.extension.*
+import com.bdb.lottery.extension.setItemChildSelected
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 
@@ -15,6 +16,12 @@ abstract class BaseSelectedQuickAdapter<T, VH : BaseViewHolder> constructor(
 ) : BaseQuickAdapter<T, VH>(layoutResId, data) {
     companion object {
         const val PAY_LOADS_SELECTED = "pay_loads_selected"
+    }
+
+    override fun convert(holder: VH, item: T, payloads: List<Any>) {
+        if (PAY_LOADS_SELECTED.equalsPayLoads(payloads)) {
+            holder.setItemSelected(isItemSelected(holder))
+        }
     }
 
     private var mSelectedPosition: MutableList<Int> =

@@ -30,7 +30,7 @@ open class LotBetAdapter constructor(list: List<BetItem>?) :
             setTextColor(
                 ContextCompat.getColorStateList(
                     context,
-                    R.color.lot_jd_play_menu_selector
+                    R.color.lot_jd_play_menu_color_selector
                 )
             )
             setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13f)

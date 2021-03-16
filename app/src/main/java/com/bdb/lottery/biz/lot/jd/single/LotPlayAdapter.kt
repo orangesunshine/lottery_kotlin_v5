@@ -31,7 +31,7 @@ class LotPlayAdapter constructor(betTypeDatas: GameBetTypeData?) :
             setTextColor(
                 ContextCompat.getColorStateList(
                     context,
-                    R.color.lot_jd_play_menu_selector
+                    R.color.lot_jd_play_menu_color_selector
                 )
             )
             setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)

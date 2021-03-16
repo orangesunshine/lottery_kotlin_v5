@@ -3,9 +3,8 @@ package com.bdb.lottery.biz.lot
 import com.bdb.lottery.algorithm.*
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.lot.data.jd.OddInfo
-import com.bdb.lottery.extension.money
-import java.math.RoundingMode
-import java.text.DecimalFormat
+import com.chad.library.adapter.base.BaseQuickAdapter
+import timber.log.Timber
 
 object BetCenter {
     //region 单式
@@ -117,7 +116,7 @@ object BetCenter {
     //endregion
 
     //region 计算特殊玩法bonus（LotJdViewModel-->isLHH）
-    private fun computeBonusText(
+    private fun computeBonus(
         baseScale: Double,
         multiple: Double,
         userBonus: Double,
@@ -130,8 +129,8 @@ object BetCenter {
         }
     }
 
-    fun computeBonusText(oddInfo: OddInfo, userBonus: Double): Double {
-        return computeBonusText(oddInfo.odds, oddInfo.limit_money, userBonus, true)
+    fun computeBonus(oddInfo: OddInfo, userBonus: Double): Double {
+        return computeBonus(oddInfo.odds, oddInfo.limit_money, userBonus, true)
     }
     //endregion
 }

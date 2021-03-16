@@ -18,6 +18,7 @@ object ServiceManager {
         var service = mServiceStack.pop()
         while (null != service) {
             service.stopSelf()
+            if (!mServiceStack.isEmpty())
             service = mServiceStack.pop()
         }
     }
