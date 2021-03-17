@@ -11,8 +11,10 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.dialog.BaseDialog
 import com.bdb.lottery.datasource.lot.data.LotParam
 import com.bdb.lottery.datasource.lot.data.countdown.CountDownData
+import com.bdb.lottery.extension.loadImageUrl
 import com.bdb.lottery.extension.money
 import com.bdb.lottery.extension.visible
+import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.thread.Threads
 import com.bdb.lottery.utils.time.TTime
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,14 +24,18 @@ import javax.inject.Inject
 
 @ActivityScoped
 @AndroidEntryPoint
-class LotDialog @Inject constructor() : BaseDialog(R.layout.lot_dialog) {
-    private val LOT_DIALOG_TAG = "lot_dialog_tag"
+class LotDialog @Inject constructor(val tCache: TCache) : BaseDialog(R.layout.lot_dialog) {
+    companion object {
+        private const val LOT_DIALOG_TAG = "lot_dialog_tag"
+    }
+
     override var mShowBottomEnable = true
     private var mCanBet = true//请求过投注不能再次下注
     private val vm by viewModels<LotDialogViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lot_dialog_iv.loadImageUrl(tCache.platformParamsCache()?.imgRound(mLotParam.gameId))
         lot_dialog_singled_out_tv.visible(mLotParam.isDanTiao())
         lot_dialog_tips_tv.visible(mLotParam.isDanTiao())
         lot_dialog_game_name_tv.text = mLotParam.gameName//彩票名称

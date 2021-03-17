@@ -1,6 +1,7 @@
 package com.bdb.lottery.extension
 
 import android.os.SystemClock
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -111,6 +112,10 @@ fun TabLayout.Tab?.updateTab(selected: Boolean) {
             if (selected) R.style.TabLayoutTextSelected else R.style.TabLayoutTextUnSelected
         )
     }
+}
+
+fun TextView.setDpTextSize(size:Float){
+    setTextSize(TypedValue.COMPLEX_UNIT_DIP,size)
 }
 
 //防抖动，点击特效

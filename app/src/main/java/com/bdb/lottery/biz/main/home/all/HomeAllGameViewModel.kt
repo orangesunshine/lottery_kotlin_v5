@@ -27,13 +27,13 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
                         else -> it.gameKind
                     }
                 }.map { data: AllGameItemData ->
-                    platform.lotteryFileImgRound(data)
+                    platform.homeAllGameImg(data)
                     data
                 }.groupBy {
                     it.gameType
                 }.filter { !it.value.isNullOrEmpty() }
                     .run {
-                        val datalist = mutableListOf<AllGameDataMapper>()
+                        val dataList = mutableListOf<AllGameDataMapper>()
                         val iterator = this.iterator()
                         var i = 0
                         var mapper: AllGameDataMapper? = null
@@ -41,7 +41,7 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
                             val next = iterator.next()
                             if (i % 2 == 0) {
                                 mapper = AllGameDataMapper()
-                                datalist.add(mapper)
+                                dataList.add(mapper)
                                 mapper.leftGameType = next.key
                                 mapper.leftData = next.value
                             } else {
@@ -50,7 +50,7 @@ class HomeAllGameViewModel @ViewModelInject @Inject constructor(
                             }
                             i++
                         }
-                        allGameLd.setData(datalist)
+                        allGameLd.setData(dataList)
                     }
             }
         }

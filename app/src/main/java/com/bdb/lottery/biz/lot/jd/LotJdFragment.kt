@@ -30,6 +30,7 @@ import com.bdb.lottery.utils.convert.Converts
 import com.bdb.lottery.utils.thread.Threads
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.lot_jd_fragment.*
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -257,13 +258,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                         mDuplexNums = vm.makeBetNumStr(it)
                         var count = 0
                         try {
-                            count = BetCenter.computeStakeCount(
-                                mDuplexNums,
-                                lotDuplexLd.gameType,
-                                lotDuplexLd.betTypeId,
-                                vm.getDigit(getSelectedDigits())
-                            )
+                            count = vm.computeDuplexCount(mDuplexNums,vm.getDigit(getSelectedDigits()))
                         } catch (e: Exception) {
+                            Timber.e(e)
                         }
                         toggleAmountBanner(count)
                     }
@@ -277,7 +274,6 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //玩法切换
         ob(vm.singleModeLd.getLiveData()) {
-            clearNums()//清空号码
             //单式
             lot_jd_bet_single_ll.visible(it)
             //复式
@@ -360,6 +356,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     //region 切换玩法：title、玩法配置、投注单位更新
     private var mSelectedBetItem: BetItem? = null
     fun onBetSelected(item: BetItem?) {
+        clearNums()
         item?.let {
             val betTypeId = it.betType//玩法id
             mSelectedBetItem = it//更新数据

@@ -84,6 +84,7 @@ class LotDuplexSubAdapter(
 
     private val isPk10 = GAME.TYPE_GAME_PK10 == gameType || GAME.TYPE_GAME_PK8 == gameType
     override fun convert(holder: BaseViewHolder, item: String) {
+        super.convert(holder, item)
         val itemViewType = holder.itemViewType
         val adapterPosition = holder.adapterPosition
         if (itemViewType == LONG_HU_HE_VIEW) {//龙虎和
@@ -103,7 +104,6 @@ class LotDuplexSubAdapter(
                 R.id.lot_duplex_sub_item_tv,
                 R.color.lot_duplex_sub_item_long_ball_color_selector
             )
-            holder.setItemChildSelected(R.id.lot_duplex_sub_item_iv, isItemSelected(holder))
         } else {//非龙虎和
             //设置球文字
             holder.setText(

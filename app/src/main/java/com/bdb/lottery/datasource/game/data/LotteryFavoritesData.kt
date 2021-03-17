@@ -26,12 +26,12 @@ data class FavoritesGameType(
         if (collectType.equalsNSpace("0")) {
             placeholder = R.drawable.home_placeholder_round_img_ic
             //彩票
-            homeImgUrl = platform?.lotteryFileImgSquare(gameInfo)
+            homeImgUrl = platform?.homeFavoritesImgUrl(gameInfo)
 //            gameType = gameInfo?.gameKind.toString()
         } else if (collectType.equalsNSpace("1")) {
             placeholder = R.drawable.home_placeholder_round_img_ic
             //第三方游戏
-            homeImgUrl = platform?.thirdGameImgUrl(thirdGameInfo)
+            homeImgUrl = platform?.homeThirdGameImgUrl(thirdGameInfo)
 //            gameType = thirdGameInfo?.gameType
         }
         return HomeFavoritesMapper(

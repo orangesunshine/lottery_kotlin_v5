@@ -10,6 +10,7 @@ import android.widget.TextView
 import com.bdb.lottery.R
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.setDpTextSize
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.zhy.view.flowlayout.FlowLayout
@@ -100,6 +101,7 @@ class OpenBallAdapter constructor(
         textView.gravity = Gravity.CENTER
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize.toFloat())
         textView.setTextColor(Color.parseColor("#333333"))
+        textView.setDpTextSize(11f)
         val str = if (position + 1 == 10) "*" else (position + 1).toString()
         textView.alpha = if (lotPlace.isSpace() || lotPlace.contains(str)) 1f else 0.6f
         return textView

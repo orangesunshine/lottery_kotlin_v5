@@ -227,7 +227,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
 
     //region 计算注数--复式
     fun computeDuplexCount(
-        numsText: String,
+        numsText: String?,
         selectedDigit: String,
     ): Int {
         return BetCenter.computeStakeCount(

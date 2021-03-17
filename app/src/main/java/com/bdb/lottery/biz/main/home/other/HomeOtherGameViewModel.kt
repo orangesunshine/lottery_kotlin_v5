@@ -22,7 +22,7 @@ class HomeOtherGameViewModel @ViewModelInject @Inject constructor(
             mir?.let {
                 appRemoteDs.cachePrePlatformParams { platform: PlatformData? ->
                     mir.asSequence().map {
-                        platform?.otherGameImgUrl(it)
+                        platform?.homeOtherGameImg(it)
                         it
                     }.groupBy { it.subPlatform }.filter { !it.value.isNullOrEmpty() }
                         .run {

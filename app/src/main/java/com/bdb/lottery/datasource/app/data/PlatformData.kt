@@ -49,19 +49,17 @@ data class PlatformData(
     var verifyCapitalPassword: String,
     var wtChatWebConfig: String,
 ) {
-    //彩票圆形
-    fun lotteryFileImgRound(allGameItemData: AllGameItemData?) {
-        allGameItemData?.let {
-            it.imgUrl = StringBuilder().append(imgurl)
-                .append(lotteryFileImgRound)
-                .append(it.gameId)
-                .append(".png")
-                .append(imgFlushSuffix).toString()
-        }
+    //圆形图片
+    fun imgRound(gameId: String): String {
+        return StringBuilder().append(imgurl)
+            .append(lotteryFileImgRound)
+            .append(gameId)
+            .append(".png")
+            .append(imgFlushSuffix).toString()
     }
 
-    //彩票圆角
-    fun lotteryFileImgSquare(gameInfo: GameInfo?): String {
+    //方形图片
+    private fun imgSquare(gameInfo: GameInfo?): String {
         return StringBuilder().append(imgurl)
             .append(lotteryFileImgSquare)
             .append(gameInfo?.recommendType?.let { if (!it.isSpace()) gameInfo.gameId.toString() + "_" + it else gameInfo.gameId }
@@ -70,20 +68,35 @@ data class PlatformData(
             .append(imgFlushSuffix).toString()
     }
 
-    //三方游戏
-    fun thirdGameImgUrl(thirdGameInfo: ThirdGameInfo?): String {
+    //拼接imgUrl
+    private fun imgUrlAppend(append: String): String {
+        return StringBuilder().append(imgurl)
+            .append(append).toString()
+    }
+
+    //首页--全部游戏
+    fun homeAllGameImg(allGameItemData: AllGameItemData?) {
+        allGameItemData?.let {
+            it.imgUrl = imgRound(it.gameId.toString())
+        }
+    }
+
+    //首页--娱乐
+    fun homeOtherGameImg(other: OtherPlatformMIR?) {
+        other?.let { it.imgUrl = imgUrlAppend(it.appImgUrl) }
+    }
+
+    //收藏--彩票圆角
+    fun homeFavoritesImgUrl(gameInfo: GameInfo?): String {
+        return imgSquare(gameInfo)
+    }
+
+    //收藏--三方游戏
+    fun homeThirdGameImgUrl(thirdGameInfo: ThirdGameInfo?): String {
         return StringBuilder().append(imgurl)
             .append(thirdGameInfo?.appImgUrlSquare)
             .append("?")
             .append(imgFlushSuffix).toString()
-    }
-
-    //娱乐
-    fun otherGameImgUrl(other: OtherPlatformMIR?) {
-        other?.let {
-            it.imgUrl = StringBuilder().append(imgurl)
-                .append(it.appImgUrl).toString()
-        }
     }
 
     //玩法说明

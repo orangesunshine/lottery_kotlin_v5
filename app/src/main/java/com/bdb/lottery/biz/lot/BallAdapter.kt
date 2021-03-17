@@ -8,9 +8,9 @@ import android.widget.TextView
 import com.bdb.lottery.R
 import com.bdb.lottery.const.GAME
 import com.bdb.lottery.datasource.lot.data.HistoryData
-import com.bdb.lottery.extension.equalsNSpace
 import com.bdb.lottery.extension.equalsPayLoads
 import com.bdb.lottery.extension.isSpace
+import com.bdb.lottery.extension.setDpTextSize
 import com.bdb.lottery.utils.lot.Lots
 import com.bdb.lottery.utils.ui.size.Sizes
 import com.chad.library.adapter.base.BaseQuickAdapter
@@ -105,6 +105,7 @@ class BallAdapter(
 
         textView.gravity = Gravity.CENTER
         textView.setTextColor(Color.parseColor(textColor))
+        textView.setDpTextSize(11f)
         val str = if (position + 1 == 10) "*" else (position + 1).toString()
         textView.alpha = if (lotPlace.isSpace() || lotPlace.contains(str)) 1f else 0.4f
         return textView
@@ -141,21 +142,7 @@ class BallAdapter(
     ) {
         if (PAYLOAD_LABEL.equalsPayLoads(payloads)) {
             holder.setText(R.id.lot_history_item_label_tv, labelText(item))
-        } else {
-            val nums = item.nums
-            nums?.let {
-                val split = it.split(" ")
-                holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter =
-                    object : TagAdapter<String>(split) {
-                        override fun getView(
-                            parent: FlowLayout?,
-                            position: Int,
-                            num: String?
-                        ): View {
-                            return ball(position, num)
-                        }
-                    }
-            }
+            holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter.notifyDataChanged()
         }
     }
 

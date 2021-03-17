@@ -713,10 +713,10 @@ class LotActivity : BaseActivity(R.layout.lot_activity) {
             return
         }
         lotParam.issueNo = mCurIssue//当前期号
-        lotDialog.lotParams(lotParam).lotSuccess({
+        lotDialog.lotParams(lotParam).lotSuccess {
             vm.refreshBalanceByPostGlobalEvent()
             success?.invoke(it)
-        }).lotError(error)
+        }.lotError(error)
             .setDanTiaoTips(danTiaoTips).show(supportFragmentManager)
     }
     //endregion

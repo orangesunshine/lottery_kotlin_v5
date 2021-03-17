@@ -3,11 +3,17 @@ package com.bdb.lottery
 import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.extension.money
 import com.google.gson.GsonBuilder
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableOnSubscribe
+import io.reactivex.rxjava3.observables.GroupedObservable
 import org.junit.Assert
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.lang.NumberFormatException
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -202,5 +208,78 @@ class ExampleUnitTest {
         println(decimalFormat.format(0.6666))
         println(decimalFormat.format(0.4641313))
         println(decimalFormat.format(0.00005))
+    }
+
+    @Test
+    fun rxTest() {
+        val lists =
+            listOf(
+                listOf(listOf(1, 2, 3), listOf(4, 5, 6), listOf(7, 8, 9)),
+                listOf(listOf(11, 12, 13), listOf(14, 15, 16), listOf(17, 18, 19)),
+                listOf(listOf(21, 22, 23), listOf(24, 25, 26), listOf(27, 28, 29))
+            )
+
+        var flag: Boolean = true
+        Observable.fromIterable(lists).concatMap {
+            if (flag) {
+                flag = false
+                Observable.fromIterable(it).delay(2, TimeUnit.SECONDS)
+            } else {
+                Observable.fromIterable(it)
+            }
+        }.flatMap { Observable.fromIterable(it) }
+            .subscribe {
+                println("subscribe: $it")
+            }
+
+        Thread.sleep(5000)
+    }
+
+    @Test
+    fun rxGroup() {
+        Observable.just(5, 2, 3, 4, 1, 6, 8, 9, 7, 10)
+            .groupBy {
+                it % 3
+            }
+            .doOnSubscribe {
+                println("doOnSubscribe")
+            }
+            .subscribe({ group: GroupedObservable<Int, Int> ->
+                group.subscribe {
+                    println("group: ${group.key}, value: $it")
+                }
+            }, {
+
+            }, {
+
+            })
+    }
+
+    @Test
+    fun rxConcatErr() {
+        val list = listOf<Int>(1, 2, 3, 4, 5)
+        Observable.just(list)
+            .flatMap {
+                Observable.mergeArrayDelayError(
+                    *(mutableListOf(
+                        Observable.create(
+                            ObservableOnSubscribe {
+                                it.onNext(5)
+                                it.onError(NumberFormatException())
+                            }), Observable.fromIterable(it)
+                    )).toTypedArray()
+                )
+            }.flatMap {
+                Observable.just("flapMap-$it")
+            }.doOnSubscribe {
+                println("doOnSubscribe===>")
+            }
+            .subscribe({
+                println("onNext===>$it")
+            }, {
+                println("onError===>$it")
+            }, {
+                println("onComplete")
+            })
     }
 }

@@ -123,12 +123,15 @@ class LotDuplexAdapter constructor(
         }
         rv.adapter?.let {
             //刷新item同时刷新号码球
-            if (it is LotDuplexSubAdapter) it.notifyChangeWhenPlayChange(
-                m11x5DanTuo && adapterPosition == 0,//11选5胆码：单选
-                betTypeId,
-                mSpanCount,
-                item
-            )
+            if (it is LotDuplexSubAdapter) {
+                it.notifyChangeWhenPlayChange(
+                    m11x5DanTuo && adapterPosition == 0,//11选5胆码：单选
+                    betTypeId,
+                    mSpanCount,
+                    item
+                )
+                mSubAdapters.put(adapterPosition, it)
+            }
         } ?: let {//初始化号码球
             rv.addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(
@@ -163,7 +166,8 @@ class LotDuplexAdapter constructor(
                 oddInfoMap,
                 if (hot?.coldHot?.size ?: 0 > adapterPosition) hot?.coldHot?.get(adapterPosition) else null,
                 if (leave?.leaveOut?.size ?: 0 > adapterPosition) leave?.leaveOut?.get(
-                    adapterPosition) else null
+                    adapterPosition
+                ) else null
             ) {
                 //号码球选中切换回调
                 noteCountBlock?.invoke(getAllSelectedNums())
@@ -371,6 +375,7 @@ class LotDuplexAdapter constructor(
         m11x5DanTuo =//11选5组选胆拖的胆码
             betTypeId == 586 || betTypeId == 587 || betTypeId == 179 || betTypeId == 182 || betTypeId == 176
         mSpanCount = spanCountByGameTypeNdLHH(lotDuplexLd.gameType)
+        mSubAdapters.clear()
         setNewInstance(lotDuplexLd.lotDuplexDatas)
     }
     //endregion
@@ -414,8 +419,11 @@ class LotDuplexAdapter constructor(
         this.hot = hot
         if (mSubAdapters.isNotEmpty()) {
             for ((index, adapter) in mSubAdapters.valueIterator().withIndex()) {
-                adapter.renderHot(if (hot?.coldHot?.size ?: 0 > index) hot?.coldHot?.get(
-                    index) else null)
+                adapter.renderHot(
+                    if (hot?.coldHot?.size ?: 0 > index) hot?.coldHot?.get(
+                        index
+                    ) else null
+                )
             }
         }
     }
@@ -426,8 +434,11 @@ class LotDuplexAdapter constructor(
         this.leave = leave
         if (mSubAdapters.isNotEmpty()) {
             for ((index, adapter) in mSubAdapters.valueIterator().withIndex()) {
-                adapter.renderLeave(if (leave?.leaveOut?.size ?: 0 > index) leave?.leaveOut?.get(
-                    index) else null)
+                adapter.renderLeave(
+                    if (leave?.leaveOut?.size ?: 0 > index) leave?.leaveOut?.get(
+                        index
+                    ) else null
+                )
             }
         }
     }

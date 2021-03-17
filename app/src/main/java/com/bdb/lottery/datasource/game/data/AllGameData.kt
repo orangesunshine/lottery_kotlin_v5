@@ -2,7 +2,7 @@ package com.bdb.lottery.datasource.game.data
 
 data class AllGameItemData(
     var deep: Int,
-    var gameId: Int?,
+    var gameId: Int,
     var gameKind: Int?,
     var hotSort: Int,
     var kgEnable: Boolean,
