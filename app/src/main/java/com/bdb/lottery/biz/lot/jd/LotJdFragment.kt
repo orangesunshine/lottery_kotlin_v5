@@ -258,7 +258,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
                         mDuplexNums = vm.makeBetNumStr(it)
                         var count = 0
                         try {
-                            count = vm.computeDuplexCount(mDuplexNums,vm.getDigit(getSelectedDigits()))
+                            count = vm.computeDuplexCount(mDuplexNums, vm.getDigit(getSelectedDigits()))
                         } catch (e: Exception) {
                             Timber.e(e)
                         }
@@ -301,18 +301,22 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
 
         //冷热
         ob(vm.hotLd.getLiveData()) { hot: HotData ->
-            lot_jd_duplex_rv.adapter?.let {
-                if (it is LotDuplexAdapter) {
-                    it.renderHot(hot)
+            if (mHotLeave == false) {
+                lot_jd_duplex_rv.adapter?.let {
+                    if (it is LotDuplexAdapter) {
+                        it.renderHot(hot)
+                    }
                 }
             }
         }
 
         //遗漏
         ob(vm.leaveLd.getLiveData()) { leave: LeaveData ->
-            lot_jd_duplex_rv.adapter?.let {
-                if (it is LotDuplexAdapter) {
-                    it.renderLeave(leave)
+            if (mHotLeave == true) {
+                lot_jd_duplex_rv.adapter?.let {
+                    if (it is LotDuplexAdapter) {
+                        it.renderLeave(leave)
+                    }
                 }
             }
         }
@@ -324,15 +328,9 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
         val canPutBasket = noteCount > 0
         if (mCanPutBasket != canPutBasket) {
             //加入购物篮切换
-            if (canPutBasket) lot_jd_bet_info_expl.expand(true) else lot_jd_bet_info_expl.collapse(
-                true
-            )
-            lot_jd_add_to_shopping_bar_tv.setTextSize(
-                TypedValue.COMPLEX_UNIT_DIP,
-                if (canPutBasket) 12f else 15f
-            )
-            lot_jd_add_to_shopping_bar_tv.text =
-                getString(if (canPutBasket) R.string.lot_jd_put_shopping_bar else R.string.lot_jd_shopping_bar)
+            if (canPutBasket) lot_jd_bet_info_expl.expand(false) else lot_jd_bet_info_expl.collapse(false)
+            lot_jd_add_to_shopping_bar_tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, if (canPutBasket) 12f else 15f)
+            lot_jd_add_to_shopping_bar_tv.text = getString(if (canPutBasket) R.string.lot_jd_put_shopping_bar else R.string.lot_jd_shopping_bar)
             mCanPutBasket = canPutBasket
         }
         if (mNoteCount != noteCount) {
@@ -346,8 +344,7 @@ class LotJdFragment : BaseFragment(R.layout.lot_jd_fragment) {
     private var mClosed = false
     fun updateLotStatus(closed: Boolean) {
         if (mClosed == closed) return
-        lot_jd_direct_betting_tv.text =
-            getString(if (closed) R.string.lot_jd_closed else R.string.lot_jd_direct_betting)
+        lot_jd_direct_betting_tv.text = getString(if (closed) R.string.lot_jd_closed else R.string.lot_jd_direct_betting)
         lot_jd_direct_betting_tv.isActivated = closed
         mClosed = closed
     }

@@ -106,6 +106,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
     private var mDigits: String? = null
     private var mIsBuildAll: Boolean? = null
     private var mDigitTitles: String? = null
+    private var mTitle: String? = null//用于计算奖金
     fun dbBetType(betTypeId: Int) {
         mBetTypeId = betTypeId
         lotLocalDs.queryBetTypeByPlayId(betTypeId)
@@ -117,6 +118,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
                 }
                 subPlayMethod?.let { it ->
                     mDigits = it.subPlayMethodDesc.digit
+                    mTitle = it.subPlayMethodDesc.ball_groups_item_title
 
                     singleModeLd.setData(it.subPlayMethodDesc.isdanshi)
                     if (isSingleMode()) {
@@ -367,7 +369,7 @@ class LotJdViewModel @ViewModelInject @Inject constructor(
         userRebate: Double = mUserRebate,
         amountModelValue: Double = 1.0,
     ): Double {
-        if (Games.isLHH(isSingleMode(), betNums, mGameType)) {
+        if (Games.visibleOdd(mGameType,isSingleMode(), betNums,mTitle)) {
             return getOddInfoMap()?.run { this[betNums] } ?: 0.0
         } else {
             val baseScale = betItem?.baseScale ?: 0.0

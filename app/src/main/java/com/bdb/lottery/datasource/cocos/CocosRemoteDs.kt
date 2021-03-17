@@ -8,6 +8,7 @@ import com.bdb.lottery.extension.msg
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.file.Files
 import com.bdb.lottery.utils.file.TPath
+import com.bdb.lottery.utils.net.SSLs
 import com.liulishuo.filedownloader.BaseDownloadTask
 import com.liulishuo.filedownloader.FileDownloadQueueSet
 import com.liulishuo.filedownloader.FileDownloader
@@ -84,6 +85,7 @@ class CocosRemoteDs @Inject constructor(
                 }
             }
             if (tasks.isNotEmpty()) {
+                SSLs.allowAllSSL()
                 queueSet.disableCallbackProgressTimes().setAutoRetryTimes(1)
                     .downloadTogether(tasks)
                     .addTaskFinishListener {
@@ -108,6 +110,7 @@ class CocosRemoteDs @Inject constructor(
             data.forEach {
                 if (it.name.equalsNSpace(cocosName)) {
                     if (tCocos.checkCocos(path, it)) {
+                        SSLs.allowAllSSL()
                         FileDownloader.getImpl()
                             .create(it.androidZipUrl)
                             .setTag(it)

@@ -5,8 +5,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import javax.net.ssl.X509TrustManager
 
-@Singleton
-class SsX509TrustManager @Inject constructor() : X509TrustManager {
+object SsX509TrustManager : X509TrustManager {
     override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
     }
 

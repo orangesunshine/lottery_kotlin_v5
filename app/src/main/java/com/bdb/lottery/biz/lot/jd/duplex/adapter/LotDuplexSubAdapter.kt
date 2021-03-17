@@ -22,15 +22,9 @@ import dagger.hilt.android.EntryPointAccessors
 import org.apache.commons.lang3.StringUtils
 
 class LotDuplexSubAdapter(
-    private var singleClick: Boolean = false,
-    private val gameType: Int,
-    private var betTypeId: Int,
-    private var spanCount: Int,
-    private var lotLotDuplexData: LotDuplexData,
-    var oddInfoMap: Map<String, Double>?,
-    var hot: List<Int>?,
-    var leave: List<Int>?,
-    updateBlock: (list: ArrayList<Int>) -> Unit,
+    private var singleClick: Boolean = false, private val gameType: Int, private var betTypeId: Int,
+    private var spanCount: Int, private var lotLotDuplexData: LotDuplexData, var oddInfoMap: Map<String, Double>?,
+    var hot: List<Int>?, var leave: List<Int>?, updateBlock: (list: ArrayList<Int>) -> Unit,
 ) : BaseSelectedQuickAdapter<String, BaseViewHolder>(
     R.layout.lot_duplex_sub_item,
     lotLotDuplexData.genBallDatas(), updateBlock
@@ -49,12 +43,7 @@ class LotDuplexSubAdapter(
     }
 
     //region 玩法改变刷新
-    fun notifyChangeWhenPlayChange(
-        singleClick: Boolean = false,
-        betTypeId: Int,
-        spanCount: Int,
-        lotLotDuplexData: LotDuplexData,
-    ) {
+    fun notifyChangeWhenPlayChange(singleClick: Boolean = false, betTypeId: Int, spanCount: Int, lotLotDuplexData: LotDuplexData) {
         this.singleClick = singleClick
         this.betTypeId = betTypeId
         this.spanCount = spanCount
@@ -88,82 +77,58 @@ class LotDuplexSubAdapter(
         val itemViewType = holder.itemViewType
         val adapterPosition = holder.adapterPosition
         if (itemViewType == LONG_HU_HE_VIEW) {//龙虎和
-            holder.setImageResource(
-                R.id.lot_duplex_sub_item_iv, when (item) {
+            holder.setImageResource(R.id.lot_duplex_sub_item_iv,
+                when (item) {
                     "龙" -> if (isPk10) R.drawable.lot_duplex_sub_item_pk_long_selected else R.drawable.lot_duplex_sub_item_long_selector
                     "虎" -> if (isPk10) R.drawable.lot_duplex_sub_item_pk_hu_selected else R.drawable.lot_duplex_sub_item_hu_selector
                     "和" -> R.drawable.lot_duplex_sub_item_he_selector
                     else -> -1
-                }
-            )
-            holder.setText(R.id.lot_duplex_sub_item_tv,
-                if (Lots.isLHH(item) && !Games.isPK(gameType)) (oddInfoMap?.get(item)
-                    ?: 0.0).format() else getItem(adapterPosition))
-            holder.setTextColorStateList(
-                context,
-                R.id.lot_duplex_sub_item_tv,
-                R.color.lot_duplex_sub_item_long_ball_color_selector
-            )
-        } else {//非龙虎和
-            //设置球文字
-            holder.setText(
-                R.id.lot_duplex_sub_item_tv, getItem(adapterPosition)//数据源已处理过非数字球，这里直接取
-            )
+                })
+            holder.setText(R.id.lot_duplex_sub_item_tv, (oddInfoMap?.get(item) ?: 0.0).format())
+            holder.setTextColorStateList(context, R.id.lot_duplex_sub_item_tv, R.color.lot_duplex_sub_item_long_ball_color_selector)
+        } else {
+            //非龙虎和
+            holder.setText(R.id.lot_duplex_sub_item_tv, getItem(adapterPosition))//数据源已处理过非数字球，这里直接取
             val isK3 = Games.isK3(gameType)
             val containsDxds = StringUtils.containsAny(item, "大", "小", "单", "双")
             //根据gameType设置球选中文字颜色
-            holder.setTextColorStateList(
-                context, R.id.lot_duplex_sub_item_tv, when (gameType) {
-                    GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.lot_duplex_sub_item_pk_ball_color_selector
-                    GAME.TYPE_GAME_K3 -> R.color.lot_duplex_sub_item_k3_ball_color_selector
-                    else -> R.color.lot_duplex_sub_item_ball_color_selector
-                }
-            )
-            holder.setTextSize(
-                R.id.lot_duplex_sub_item_tv, when (spanCount) {
-                    6 -> {
-                        if (isK3) 20f else 14f
-                    }
-                    12 -> {
-                        if (isK3 && isk3HeZhi) 16f else 18f
-                    }
-                    else -> {
-                        if (item.length > 1) 15f else 18f
-                    }
-                }
-            )
+            val textColor = when (gameType) {
+                GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> R.color.lot_duplex_sub_item_pk_ball_color_selector
+                GAME.TYPE_GAME_K3 -> R.color.lot_duplex_sub_item_k3_ball_color_selector
+                else -> R.color.lot_duplex_sub_item_ball_color_selector
+            }
+            holder.setTextColorStateList(context, R.id.lot_duplex_sub_item_tv, textColor)
+            holder.setTextSize(R.id.lot_duplex_sub_item_tv,
+                when (spanCount) {
+                    6 -> if (isK3) 20f else 14f
+                    12 -> if (isK3 && isk3HeZhi) 16f else 18f
+                    else -> if (item.length > 1) 15f else 18f
+                })
             when (spanCount) {
-                6 ->
-                    holder.setWH(
-                        R.id.lot_duplex_sub_item_tv, Sizes.dp2px(if (isK3) 40f else 30f)
-                    )
-                12 ->
-                    holder.setWH(//快三宽度铺满，高度45
-                        R.id.lot_duplex_sub_item_tv,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        Sizes.dp2px(45f)
-                    )
-                else ->//5列
-                    holder.setWH(
-                        R.id.lot_duplex_sub_item_tv,
-                        Sizes.dp2px(35f)
-                    )
+                6 -> holder.setWH(R.id.lot_duplex_sub_item_tv, Sizes.dp2px(if (isK3) 40f else 30f))
+                12 -> holder.setWH(R.id.lot_duplex_sub_item_tv, LinearLayout.LayoutParams.MATCH_PARENT, Sizes.dp2px(45f))//快三宽度铺满，高度45
+                else -> holder.setWH(R.id.lot_duplex_sub_item_tv, Sizes.dp2px(35f))//5列
             }
             //根据gameType设置球选中背景
             holder.setBackgroundResource(
-                R.id.lot_duplex_sub_item_tv, when (gameType) {
+                R.id.lot_duplex_sub_item_tv,
+                when (gameType) {
                     GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> if (containsDxds) R.drawable.lot_duplex_sub_item_pk_circle_selector else R.drawable.lot_duplex_sub_item_pk_round_selector
                     GAME.TYPE_GAME_K3 -> R.drawable.lot_duplex_sub_item_k3_selector
                     else -> R.drawable.lot_duplex_sub_item_selector
-                }
-            )
+                })
             //false：显示冷热，true：显示遗漏，null：都不显示
+            val visibleOdd = Games.visibleOdd(gameType, false, item, lotLotDuplexData.label)
+            holder.setText(R.id.lot_duplex_sub_item_hot_leave_tv,
+                mHotLeaveVisible?.let { ((if (it) leave else hot)?.get(adapterPosition) ?: 0).toString() } ?: let {
+                    if (visibleOdd) (oddInfoMap?.get(item) ?: 0.0).format() else "0"
+                })
             mHotLeaveVisible?.let {
-                holder.setText(R.id.lot_duplex_sub_item_hot_tv,
-                    ((if (it) leave else hot)?.get(adapterPosition) ?: 0).toString())
-                holder.setTextColor(R.id.lot_duplex_sub_item_hot_tv,
-                    if (it) leaveTextColor(item, leave) else hotTextColor(item, hot))
+                holder.setTextColor(R.id.lot_duplex_sub_item_hot_leave_tv, if (it) leaveTextColor(item, leave) else hotTextColor(item, hot))
+            } ?: let {
+                if (visibleOdd) holder.setTextColorStateList(context, R.id.lot_duplex_sub_item_hot_leave_tv, textColor)
             }
+            holder.setGone(R.id.lot_duplex_sub_item_hot_leave_tv, null == mHotLeaveVisible && !visibleOdd)
         }
     }
 
@@ -171,20 +136,21 @@ class LotDuplexSubAdapter(
         super.convert(holder, item, payloads)
         val adapterPosition = holder.adapterPosition
         //冷热遗漏可见
+        val visibleOdd = Games.visibleOdd(gameType, false, item, lotLotDuplexData.label)
         if (PAY_LOADS_HOT_LEAVE_VISIBLE.equalsPayLoads(payloads)) {
-            holder.setGone(R.id.lot_duplex_sub_item_hot_tv, null == mHotLeaveVisible)
+            holder.setGone(R.id.lot_duplex_sub_item_hot_leave_tv, null == mHotLeaveVisible && !visibleOdd)
         }
 
         if (PAY_LOAD_HOT.equalsPayLoads(payloads)) {
-            holder.setText(R.id.lot_duplex_sub_item_hot_tv,
-                (hot?.get(adapterPosition) ?: 0).toString())
-            holder.setTextColor(R.id.lot_duplex_sub_item_hot_tv, hotTextColor(item, hot))
+            holder.setText(R.id.lot_duplex_sub_item_hot_leave_tv,
+                (hot?.getOrNull(adapterPosition) ?: 0).toString())
+            holder.setTextColor(R.id.lot_duplex_sub_item_hot_leave_tv, hotTextColor(item, hot))
         }
 
         if (PAY_LOAD_LEAVE.equalsPayLoads(payloads)) {
-            holder.setText(R.id.lot_duplex_sub_item_hot_tv,
-                (leave?.get(adapterPosition) ?: 0).toString())
-            holder.setTextColor(R.id.lot_duplex_sub_item_hot_tv, leaveTextColor(item, hot))
+            holder.setText(R.id.lot_duplex_sub_item_hot_leave_tv,
+                (leave?.getOrNull(adapterPosition) ?: 0).toString())
+            holder.setTextColor(R.id.lot_duplex_sub_item_hot_leave_tv, leaveTextColor(item, leave))
         }
 
         //龙虎和奖金
@@ -223,16 +189,12 @@ class LotDuplexSubAdapter(
     //region 大小单双
     fun selectedList2DxdsTag(list: ArrayList<Int>): Int {
         list.sort()
-        return if (list.equals(getBigBallSelectedPositions())) {
-            0
-        } else if (list.equals(getSmallBallSelectedPositions())) {
-            1
-        } else if (list.equals(getSingleBallSelectedPositions())) {
-            2
-        } else if (list.equals(getDoubleBallSelectedPositions())) {
-            3
-        } else {
-            -1
+        return when {
+            list.equals(getBigBallSelectedPositions()) -> 0
+            list.equals(getSmallBallSelectedPositions()) -> 1
+            list.equals(getSingleBallSelectedPositions()) -> 2
+            list.equals(getDoubleBallSelectedPositions()) -> 3
+            else -> -1
         }
     }
 

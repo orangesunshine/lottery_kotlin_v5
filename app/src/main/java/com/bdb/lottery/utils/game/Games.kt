@@ -31,17 +31,17 @@ object Games {
         return gameType == GAME.TYPE_GAME_PK10 || gameType == GAME.TYPE_GAME_PK8
     }
 
-    //region 龙虎和：用于显示奖金
-    fun isLHH(singleMode: Boolean, betNums: String?, gameType: Int): Boolean {
+    //region 龙虎和、pk（和值），k3（直选）：用于显示奖金;title:本地数据库ball_groups_item_title
+    fun visibleOdd(gameType: Int, singleMode: Boolean, betNums: String?, title: String?): Boolean {
         if (singleMode) return false//单式
         return when (gameType) {
             GAME.TYPE_GAME_SSC -> return StringUtils.equalsAny(betNums, "龙", "虎", "和")
             GAME.TYPE_GAME_PK10, GAME.TYPE_GAME_PK8 -> return StringUtils.equalsAny(
-                betNums,
+                title,
                 "大小单双",
                 "和值"
             )
-            GAME.TYPE_GAME_K3 -> return StringUtils.equals(betNums, "和值")
+            GAME.TYPE_GAME_K3 -> return StringUtils.equals(title, "直选")
             else -> false
         }
     }

@@ -142,7 +142,7 @@ class BallAdapter(
     ) {
         if (PAYLOAD_LABEL.equalsPayLoads(payloads)) {
             holder.setText(R.id.lot_history_item_label_tv, labelText(item))
-            holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter.notifyDataChanged()
+            holder.getView<TagFlowLayout>(R.id.lot_history_item_nums_fl).adapter?.notifyDataChanged()
         }
     }
 
