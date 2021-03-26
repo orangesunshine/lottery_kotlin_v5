@@ -21,7 +21,6 @@ import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
 import com.bdb.lottery.base.ui.BaseFragment
 import com.bdb.lottery.const.CONST
-import com.bdb.lottery.utils.timber.TPeriod
 import kotlin.reflect.KProperty1
 
 fun Context.toast(@StringRes resId: Int, length: Int = Toast.LENGTH_LONG) {
@@ -33,7 +32,6 @@ fun Context.toast(msg: String?, length: Int = Toast.LENGTH_LONG) {
 }
 
 inline fun <reified T : Activity> Context.start() {
-    TPeriod.print("start====>")
     val intent = Intent(this, T::class.java)
     if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     startActivity(intent)
@@ -44,21 +42,19 @@ inline fun <reified T : Activity> Context.startNdFinish() {
     if (this is Activity) finish()
 }
 
-inline fun <reified T : Activity> Context.startWithArgs(block: (Intent) -> Any) {
+inline fun <reified T : Activity> Context.start(block: (Intent) -> Unit) {
     val intent = Intent(this, T::class.java)
+    if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     block(intent)
     start<T>()
 }
 
-inline fun <reified T : Activity> Context.startNdFinishWithArgs(block: (Intent) -> Any) {
-    val intent = Intent(this, T::class.java)
-    block(intent)
-    startActivity(intent)
+inline fun <reified T : Activity> Context.startNdFinishWithArgs(block: (Intent) -> Unit) {
+    start<T>(block)
     if (this is Activity) finish()
 }
 
 inline fun <reified T : Activity> Fragment.start() {
-    TPeriod.print("start====>")
     startActivity(Intent(this.activity, T::class.java))
 }
 
@@ -68,7 +64,6 @@ inline fun <reified T : Activity> Fragment.startNdFinish() {
 }
 
 inline fun <reified T : Activity> Fragment.startWithArgs(block: (Intent) -> Any) {
-    TPeriod.print("start====>")
     val intent = Intent(this.activity, T::class.java)
     block(intent)
     startActivity(intent)
@@ -90,7 +85,7 @@ inline fun <reified T : AppCompatActivity> Context.startActivity(
     startActivity(intent)
 }
 
-fun BaseActivity.loading(show: Boolean) {
+fun BaseActivity<*>.loading(show: Boolean) {
     if (show) {
         show()
     } else {
@@ -111,7 +106,7 @@ fun BaseFragment.loading(show: Boolean) {
  * @param light:true 黑色，false：白色
  */
 fun Activity.statusbar(light: Boolean) {
-    if (this is BaseActivity)
+    if (this is BaseActivity<*>)
         statusBar?.let {
             (it.layoutParams as ViewGroup.MarginLayoutParams).topMargin = CONST.HEIGHT_STATUS_BAR
         }

@@ -17,10 +17,6 @@ import java.nio.charset.Charset
 object Resources {
     private const val BUFFER_SIZE = 8192
 
-    private fun ResourceUtils() {
-        throw UnsupportedOperationException("u can't instantiate me...")
-    }
-
     /**
      * Return the drawable by identifier.
      *

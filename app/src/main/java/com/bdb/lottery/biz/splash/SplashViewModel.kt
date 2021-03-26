@@ -1,7 +1,6 @@
 package com.bdb.lottery.biz.splash
 
 import androidx.hilt.lifecycle.ViewModelInject
-import com.bdb.lottery.app.BdbApp
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.datasource.app.AppRemoteDs
 import com.bdb.lottery.datasource.common.LiveDataWrapper

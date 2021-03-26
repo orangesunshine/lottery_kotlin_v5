@@ -22,8 +22,7 @@ import kotlinx.android.synthetic.main.login_activity.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginActivity : BaseActivity(R.layout.login_activity) {
-    private val vm by viewModels<LoginViewModel>()
+class LoginActivity : BaseActivity<LoginViewModel>(R.layout.login_activity) {
 
     @Inject
     lateinit var domainLocalDs: DomainLocalDs

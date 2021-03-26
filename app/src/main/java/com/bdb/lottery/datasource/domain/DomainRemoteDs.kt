@@ -12,7 +12,7 @@ import com.bdb.lottery.const.DEBUGCONFIG
 import com.bdb.lottery.const.URL
 import com.bdb.lottery.datasource.app.data.PlatformData
 import com.bdb.lottery.datasource.common.LiveDataWrapper
-import com.bdb.lottery.datasource.domain.data.AppConfigInfo
+import com.bdb.lottery.datasource.domain.data.DomainConfigData
 import com.bdb.lottery.extension.*
 import com.bdb.lottery.utils.cache.TCache
 import com.bdb.lottery.utils.inject.TConfig
@@ -141,7 +141,7 @@ class DomainRemoteDs @Inject constructor(
     ) {
         Timber.d("getOnlineDomain")
         val configPath = BdbApp.context.getString(R.string.api_txt_path)
-        val onlineObservables = mutableListOf<Observable<AppConfigInfo>>()
+        val onlineObservables = mutableListOf<Observable<DomainConfigData>>()
         val hosts = URL.DOMAINS_API_TXT
         if (!hosts.isNullOrEmpty()) {
             for (host in hosts) {
@@ -155,22 +155,11 @@ class DomainRemoteDs @Inject constructor(
             var disposable: Disposable? = null
             val already = AtomicBoolean(false)
             observe(Observable.mergeArrayDelayError(*(onlineObservables.toTypedArray()))
-                .observeOn(Schedulers.io())
-                .map {
-                    Timber.d("online域名配置：${it}")
-                    if (!it.domains.isSpace()) it.domains.split("@") else null
-                }
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .flatMap {
-                    Timber.d("online域名配置列表：${it}")
-                    if (!it.isNullOrEmpty()) Observable.fromIterable(it) else null
-                }
-                .observeOn(Schedulers.io())
-                .flatMap {
-                    Timber.d("online域名：${it}")
-                    if (it.isDomainUrl()) domainApi.urlPlatformParams(
-                        it + URL.URL_PLATFORM_PARAMS
-                    ) else null
+                    Observable.mergeArrayDelayError(
+                        *(it.mapperDomainObs(domainApi).toTypedArray())
+                    )
                 }, {
                 //获取配置成功
                 Timber.d("online__onNext__response: ${it}")

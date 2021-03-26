@@ -9,19 +9,20 @@ import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bdb.lottery.R
 import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.dialog.LoadingDialog
 import com.bdb.lottery.extension.loading
 import com.bdb.lottery.extension.ob
 import com.bdb.lottery.extension.statusbar
+import com.bdb.lottery.utils.reflect.Reflections
 import com.bdb.lottery.utils.timber.TPeriod
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import com.bdb.lottery.widget.LoadingLayout
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
-open class BaseActivity(
+open class BaseActivity<VM : BaseViewModel>(
     var layoutId: Int,
 ) : FragmentActivity() {
 
@@ -48,28 +49,24 @@ open class BaseActivity(
         get() = findViewById(R.id.actionbar_right_id)
     private val actbarCenter: View?
         get() = findViewById(R.id.actionbar_center_id)
-    protected var mActivity: WeakReference<FragmentActivity>? = null//当前activity引用
+
+    protected val vm: VM by lazy {
+        val genericActualTypeArg = Reflections.getGenericActualTypeArg(javaClass)
+        ViewModelProvider(this).get(genericActualTypeArg as Class<VM>)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TPeriod.print("super.onCreate---${localClassName}")
         //初始化变量
         initVar(savedInstanceState)
         //解析布局文件
         val content: FrameLayout = window.decorView.findViewById(android.R.id.content)
-        TPeriod.print("attachView---before")
         attachView(content)
-        TPeriod.print("attachView---after")
         statusbar(statusbarLight)
         actbar()
         loadingLayoutWrap()
         obLoadingLayout()
         observe()
-        TPeriod.print("observe")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        TPeriod.print("super.onStart")
     }
 
     private fun actbar() {
@@ -140,14 +137,11 @@ open class BaseActivity(
 
     @CallSuper
     open fun initVar(bundle: Bundle?) {
-        mActivity = WeakReference(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         toast.cancel()
-        mActivity?.clear()
-        mActivity = null
     }
 
     fun show() {
@@ -160,7 +154,7 @@ open class BaseActivity(
     }
 
     private fun obLoadingLayout() {
-        ob(getVm()?.viewStatus?.getLiveData()) {
+        ob(vm.viewStatus.getLiveData()) {
             it?.let {
                 loading(it.isLoading)
                 if (it.isError) {
@@ -189,9 +183,9 @@ open class BaseActivity(
     }
 
     //需要loading时候
-    protected open fun getVm(): BaseViewModel? {
-        return null
-    }
+//    protected open fun getVm(): BaseViewModel? {
+//        return null
+//    }
 
     //空、网络错误 覆盖根布局
     protected open fun emptyErrorRoot(): ViewGroup? {

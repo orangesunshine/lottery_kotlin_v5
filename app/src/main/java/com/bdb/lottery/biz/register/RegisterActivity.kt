@@ -8,7 +8,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.register_activity.*
 
 @AndroidEntryPoint
-class RegisterActivity : BaseActivity(R.layout.register_activity) {
+class RegisterActivity : BaseActivity<RegisterViewModel>(R.layout.register_activity) {
     private val vm by viewModels<RegisterViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

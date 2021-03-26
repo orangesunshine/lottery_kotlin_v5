@@ -168,10 +168,10 @@ IMMERSIONBAR << "com.gyf.immersionbar:immersionbar:$immersionbar_version"
 IMMERSIONBAR << "com.gyf.immersionbar:immersionbar-components:$immersionbar_version"
 IMMERSIONBAR << "com.gyf.immersionbar:immersionbar-ktx:$immersionbar_version"
 
-def REFRESH = []
-DEPS.REFRESH = REFRESH
-REFRESH << "com.scwang.smart:refresh-layout-kernel:$refresh_version"
-REFRESH << "com.scwang.smart:refresh-header-classics:$refresh_version"
+def SMARTREFRESH = []
+DEPS.SMARTREFRESH = SMARTREFRESH
+SMARTREFRESH << "com.scwang.smart:refresh-layout-kernel:$refresh_version"
+SMARTREFRESH << "com.scwang.smart:refresh-header-classics:$refresh_version"
 
 def GLIDE = []
 DEPS.GLIDE = GLIDE

@@ -10,10 +10,12 @@ import com.bdb.lottery.extension.isSpace
 import com.bdb.lottery.utils.device.Devices
 import com.bdb.lottery.utils.gson.Gsons
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * 统一缓存方法，mmkv可以替换
  */
+@Singleton
 class TCache @Inject constructor() {
     //region uuid
     //缓存uuid
@@ -111,7 +113,7 @@ class TCache @Inject constructor() {
         return Caches.getString(CACHE.TOKEN_CACHE)
     }
 
-    fun clearTokenCache(){
+    fun clearTokenCache() {
         Caches.putString(CACHE.TOKEN_CACHE)
     }
     //endregion

@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,7 +62,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @RuntimePermissions
-class LotActivity : BaseActivity(R.layout.lot_activity) {
+class LotActivity : BaseActivity<LotViewModel>(R.layout.lot_activity) {
     @Inject
     lateinit var tLot: TLot
 

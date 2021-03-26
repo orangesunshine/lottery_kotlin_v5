@@ -31,8 +31,7 @@ import javax.inject.Inject
  *  日期：2021/3/13
  */
 @AndroidEntryPoint
-class SplashActivity : BaseActivity(R.layout.splash_activity) {
-    private val vm by viewModels<SplashViewModel>()
+class SplashActivity : BaseActivity<SplashViewModel>(R.layout.splash_activity) {
 
     @Inject
     lateinit var tCache: TCache
