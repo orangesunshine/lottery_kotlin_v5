@@ -39,7 +39,7 @@ class AppRemoteDs @Inject constructor(
     fun preCacheCustomServiceUrl() {
         retrofitWrapper.preCache(
             URL.URL_CUSTOM_SERVICE,
-            appApi.customservice()
+            appApi.customService()
         )
     }
 
@@ -47,7 +47,7 @@ class AppRemoteDs @Inject constructor(
     fun cachePreCustomServiceUrl(success: ((CustomServiceData) -> Unit)? = null) {
         retrofitWrapper.cachePre(
             URL.URL_CUSTOM_SERVICE,
-            appApi.customservice(),
+            appApi.customService(),
             success
         )
     }

@@ -10,6 +10,7 @@ import android.view.animation.AlphaAnimation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bdb.lottery.R
 import com.bdb.lottery.utils.ui.anim.ClickAnimator

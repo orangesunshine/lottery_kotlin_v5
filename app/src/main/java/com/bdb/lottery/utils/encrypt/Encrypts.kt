@@ -12,7 +12,7 @@ object Encrypts {
     }
 
 
-    fun base64Decode(base64: String): ByteArray {
+    private fun base64Decode(base64: String): ByteArray {
         return Base64().decode(base64.toByteArray())
     }
 

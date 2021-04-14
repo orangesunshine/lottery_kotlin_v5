@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.viewpager2.widget.ViewPager2
 import com.bdb.lottery.R
 import com.bdb.lottery.base.ui.BaseActivity
+import com.bdb.lottery.biz.base.BaseViewModel
 import com.bdb.lottery.biz.main.MainActivity
 import com.bdb.lottery.extension.alphaVisible
 import com.bdb.lottery.extension.startNdFinish
@@ -20,7 +21,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class GuideActivity : BaseActivity<ViewModel>(R.layout.guide_activity) {
+class GuideActivity : BaseActivity<BaseViewModel>(R.layout.guide_activity) {
     @Inject
     lateinit var tApp: TApp
 

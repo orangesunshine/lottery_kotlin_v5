@@ -17,4 +17,4 @@ data class BannerItemData(
     var type: Int
 )
 
-data class BannerMapper(val imgurl: String, val needJump: Boolean, val jumpTitle: String?)
+data class BannerMapper(val imgUrl: String, val needJump: Boolean, val jumpTitle: String?)

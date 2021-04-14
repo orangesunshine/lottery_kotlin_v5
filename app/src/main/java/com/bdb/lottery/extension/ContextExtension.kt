@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -31,58 +30,41 @@ fun Context.toast(msg: String?, length: Int = Toast.LENGTH_LONG) {
     Toast.makeText(this, msg, length).show()
 }
 
-inline fun <reified T : Activity> Context.start() {
+inline fun <reified T : Activity> Context.start(noinline block: ((Intent) -> Unit)? = null) {
     val intent = Intent(this, T::class.java)
     if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    block?.invoke(intent)
     startActivity(intent)
 }
 
-inline fun <reified T : Activity> Context.startNdFinish() {
-    start<T>()
-    if (this is Activity) finish()
-}
-
-inline fun <reified T : Activity> Context.start(block: (Intent) -> Unit) {
-    val intent = Intent(this, T::class.java)
-    if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    block(intent)
-    start<T>()
-}
-
-inline fun <reified T : Activity> Context.startNdFinishWithArgs(block: (Intent) -> Unit) {
+inline fun <reified T : Activity> Context.startNdFinish(noinline block: ((Intent) -> Unit)? = null) {
     start<T>(block)
     if (this is Activity) finish()
 }
 
-inline fun <reified T : Activity> Fragment.start() {
-    startActivity(Intent(this.activity, T::class.java))
+inline fun <reified T : Activity> Fragment.start(noinline block: ((Intent) -> Unit)? = null) {
+    this.activity?.start<T>(block)
 }
 
-inline fun <reified T : Activity> Fragment.startNdFinish() {
-    startActivity(Intent(this.activity, T::class.java))
-    if (this is Activity) finish()
+inline fun <reified T : Activity> Fragment.startNdFinish(noinline block: ((Intent) -> Unit)? = null) {
+    this.activity?.startNdFinish<T>(block)
 }
 
-inline fun <reified T : Activity> Fragment.startWithArgs(block: (Intent) -> Any) {
-    val intent = Intent(this.activity, T::class.java)
-    block(intent)
-    startActivity(intent)
+inline fun <reified T : Activity> View.start(noinline block: ((Intent) -> Unit)? = null) {
+    context.start<T>(block)
 }
 
-inline fun <reified T : Activity> Fragment.startNdFinishWithArgs(block: (Intent) -> Any) {
-    val intent = Intent(this.activity, T::class.java)
-    block(intent)
-    startActivity(intent)
-    if (this is Activity) finish()
+inline fun <reified T : Activity> View.startNdFinish(noinline block: ((Intent) -> Unit)? = null) {
+    context.startNdFinish<T>(block)
 }
 
-inline fun <reified T : AppCompatActivity> Context.startActivity(
+inline fun <reified T : Activity> Context.startActivity(
     vararg params: Pair<KProperty1<out Any?, Any?>, Any?>,
 ) {
-    val extras = params.map { it.first.name to it.second }.toTypedArray()
-    val intent = Intent(this, T::class.java)
-    intent.putExtras(bundleOf(*extras))
-    startActivity(intent)
+    start<T> {
+        val extras = params.map { it.first.name to it.second }.toTypedArray()
+        it.putExtras(bundleOf(*extras))
+    }
 }
 
 fun BaseActivity<*>.loading(show: Boolean) {

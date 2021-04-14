@@ -17,11 +17,9 @@ import com.bdb.lottery.const.CONST
 import com.bdb.lottery.extension.statusbar
 import com.bdb.lottery.extension.validIndex
 import com.bdb.lottery.service.ServiceManager
-import com.bdb.lottery.utils.timber.TPeriod
 import com.bdb.lottery.utils.ui.app.Apps
 import com.bdb.lottery.utils.ui.toast.AbsToast
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
 

@@ -92,7 +92,7 @@ class RetrofitWrapper @Inject constructor(
                                 code,
                                 msg, null
                             )
-                        ) ?: let { toast?.showError(msg) }
+                        ) ?: let { toast.showError(msg) }
                         if (code >= 500) domainLocalDs.clearDomain()
                         viewState?.setData(ViewState(false))
                         complete?.invoke()

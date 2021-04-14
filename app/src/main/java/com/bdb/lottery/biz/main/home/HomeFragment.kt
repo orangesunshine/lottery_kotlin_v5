@@ -56,9 +56,6 @@ class HomeFragment : BaseFragment(R.layout.main_home_fragment) {
     }
 
     private fun initVp() {
-        //禁用预加载
-        homeGameVp.offscreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT;
-
         //Adapter
         homeGameVp.adapter = object : FragmentStateAdapter(childFragmentManager, lifecycle) {
             override fun getItemCount(): Int {

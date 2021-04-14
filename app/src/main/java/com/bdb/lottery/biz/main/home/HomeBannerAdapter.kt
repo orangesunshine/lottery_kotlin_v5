@@ -31,7 +31,7 @@ class HomeBannerAdapter(private val context: Context, mData: List<BannerMapper>?
         size: Int,
     ) {
         Glide.with(holder!!.itemView)
-            .load(data?.imgurl)
+            .load(data?.imgUrl)
             .thumbnail(
                 Glide.with(holder.itemView)
                     .load(R.drawable.placeholder_square_picture_bg)
